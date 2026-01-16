@@ -1,0 +1,16 @@
+[Unit]
+Description=Event Driven Repository Understanding System
+After=network.target
+
+[Service]
+Type=simple
+User=$USER
+WorkingDirectory=$PWD
+ExecStart=/usr/bin/python3 $PWD/event_driven_system.py
+Restart=always
+RestartSec=10
+StandardOutput=append:$PWD/logs/system.log
+StandardError=append:$PWD/logs/error.log
+
+[Install]
+WantedBy=multi-user.target
