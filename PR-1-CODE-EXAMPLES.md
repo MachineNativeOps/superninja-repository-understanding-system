@@ -736,7 +736,7 @@ def process_namespace(namespace_id, config):
 
 **✅ 改進後**:
 ```python
-from typing import Dict, Any
+from typing import Dict, Any, List
 from dataclasses import dataclass
 
 @dataclass
@@ -752,7 +752,7 @@ class ProcessResult:
     namespace_id: str
     status: str
     data: Dict[str, Any]
-    errors: list[str]
+    errors: List[str]
 
 def process_namespace(
     namespace_id: str, 

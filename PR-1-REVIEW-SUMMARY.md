@@ -190,8 +190,8 @@ npm install -D eslint @typescript-eslint/eslint-plugin prettier
 
 ### 步驟 2: 設定 Pre-commit
 ```bash
-# 複製範例設定檔
-cp PR-1-CODE-EXAMPLES.md .pre-commit-config.yaml  # 提取範例
+# 建立 .pre-commit-config.yaml（參考 PR-1-CODE-EXAMPLES.md 中的範例）
+# 手動提取 Pre-commit 設定範例並建立檔案
 pre-commit install
 ```
 
