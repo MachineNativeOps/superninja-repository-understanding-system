@@ -229,21 +229,64 @@ learning_system.generate_best_practice(operation, error_feedback)
 
 ```
 repository-understanding-system/
-├── phase1_scanner.py              # 第一階段掃描器
-├── phase2_operation_checker.py    # 第二階段操作檢查器
-├── phase3_visualizer.py           # 第三階段視覺化查詢系統
-├── phase4_learning_system.py      # 第四階段持續學習系統
-├── knowledge_base.json             # 儲存庫知識庫
-├── phase1_report.md               # 第一階段報告
-├── phase2_report.md               # 第二階段報告
-├── phase3_report.md               # 第三階段報告
-├── phase4_report.md               # 第四階段報告
-├── PHASES_COMPLETION_SUMMARY.md   # 完成總結
+├── phase1_scanner.py                    # 第一階段掃描器
+├── phase2_operation_checker.py          # 第二階段操作檢查器
+├── phase3_visualizer.py                 # 第三階段視覺化查詢系統
+├── phase4_learning_system.py            # 第四階段持續學習系統
+├── auto_maintenance_wrapper.py          # 🤖 輕量級自動維護包裝器
+├── automated_maintenance_system.py      # 進階自動維護系統
+├── knowledge_base.json                   # 儲存庫知識庫
+├── phase1_report.md                     # 第一階段報告
+├── phase2_report.md                     # 第二階段報告
+├── phase3_report.md                     # 第三階段報告
+├── phase4_report.md                     # 第四階段報告
+├── PHASES_COMPLETION_SUMMARY.md         # 完成總結
 ├── AUTOMATED_REPOSITORY_UNDERSTANDING_SYSTEM.md  # 本文檔
-└── run_all_phases.sh              # 一鍵執行腳本
+└── run_all_phases.sh                    # 一鍵執行腳本
 ```
 
 ## 🔧 使用方式
+
+### 🤖 完全自動化模式（推薦）
+
+**使用輕量級自動維護包裝器**：
+
+```bash
+# 啟動交互式選擇器
+python3 auto_maintenance_wrapper.py
+
+# 選項 1: 守護進程模式 - 持續監控和自動維護
+# 選項 2: 工作流程集成 - 在工作前後執行維護
+# 選項 3: 立即執行 - 單次執行維護
+# 選項 4: 狀態檢查 - 檢查系統狀態
+```
+
+**自動維護特性**：
+- ✅ **自動檢測** - 監控檔案系統變化
+- ✅ **智能觸發** - 只在需要時執行維護
+- ✅ **背景運行** - 不干擾主要工作
+- ✅ **錯誤恢復** - 自動處理維護錯誤
+- ✅ **狀態監控** - 實時顯示系統狀態
+
+**集成到工作流程**：
+
+```python
+from auto_maintenance_wrapper import LightweightAutoMaintenance
+
+# 在你的程式中集成
+maintenance = LightweightAutoMaintenance()
+
+# 工作開始前
+if maintenance.check_if_maintenance_needed():
+    maintenance.perform_maintenance()
+
+# 執行你的主要工作
+print("執行主要工作任務...")
+
+# 工作結束後
+if maintenance.check_if_maintenance_needed():
+    maintenance.perform_maintenance()
+```
 
 ### 基本使用
 
