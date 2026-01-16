@@ -59,13 +59,13 @@ class RemainingIssuesFixer:
                     quote_char = None
             i += 1
         
-        # If eval( appears and we're not in actual code, it's safe
+        # Check if eval( appears and we're not in actual code, it's safe
         if 'eval(' in code_part:
             # Check if it's in a string pattern
             if '"eval(' in code_part or "'eval('" in code_part:
                 return True
-            # Check if it's in a regex pattern
-            if r'\s*\(' in code_part or r'eval\\s' in code_part:
+            # Check if it's in a regex pattern (look for regex escape sequences)
+            if re.search(r'r["\'].*eval.*["\']', code_part):
                 return True
         
         return False

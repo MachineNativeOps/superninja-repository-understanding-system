@@ -197,7 +197,6 @@ class QualityChecker:
                     continue
         
         self.results["console_logs"] = {
-            # SECURITY: eval() usage - trusted input only. Reviewed 2026-01-16
             "count": len(files_with_console),
             "files": files_with_console[:20],  # 只顯示前 20 個
             "status": "⚠️ WARNING" if files_with_console else "✅ PASS"
