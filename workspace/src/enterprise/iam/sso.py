@@ -31,67 +31,49 @@ logger = logging.getLogger(__name__)
 class SSORepository(Protocol):
     """Repository interface for SSO configuration"""
 
-    async def save_sso_config(self, config: SSOConfig) -> SSOConfig:
-        ...
+    async def save_sso_config(self, config: SSOConfig) -> SSOConfig: ...
 
-    async def get_sso_config(self, org_id: UUID) -> SSOConfig | None:
-        ...
+    async def get_sso_config(self, org_id: UUID) -> SSOConfig | None: ...
 
-    async def update_sso_config(self, config: SSOConfig) -> SSOConfig:
-        ...
+    async def update_sso_config(self, config: SSOConfig) -> SSOConfig: ...
 
-    async def delete_sso_config(self, org_id: UUID) -> bool:
-        ...
+    async def delete_sso_config(self, org_id: UUID) -> bool: ...
 
 
 class UserRepository(Protocol):
     """Repository interface for user operations"""
 
-    async def get_user_by_email(self, email: str) -> User | None:
-        ...
+    async def get_user_by_email(self, email: str) -> User | None: ...
 
-    async def get_user_by_sso(
-        self, sso_provider: str, sso_subject: str
-    ) -> User | None:
-        ...
+    async def get_user_by_sso(self, sso_provider: str, sso_subject: str) -> User | None: ...
 
-    async def save_user(self, user: User) -> User:
-        ...
+    async def save_user(self, user: User) -> User: ...
 
-    async def update_user(self, user: User) -> User:
-        ...
+    async def update_user(self, user: User) -> User: ...
 
 
 class MembershipRepository(Protocol):
     """Repository interface for membership operations"""
 
-    async def get_membership(
-        self, org_id: UUID, user_id: UUID
-    ) -> Membership | None:
-        ...
+    async def get_membership(self, org_id: UUID, user_id: UUID) -> Membership | None: ...
 
-    async def save_membership(self, membership: Membership) -> Membership:
-        ...
+    async def save_membership(self, membership: Membership) -> Membership: ...
 
 
 class HTTPClient(Protocol):
     """HTTP client interface for OIDC operations"""
 
-    async def get(self, url: str, headers: dict[str, str] = None) -> dict[str, Any]:
-        ...
+    async def get(self, url: str, headers: dict[str, str] = None) -> dict[str, Any]: ...
 
     async def post(
-        self,
-        url: str,
-        data: dict[str, Any] = None,
-        headers: dict[str, str] = None
-    ) -> dict[str, Any]:
-        ...
+        self, url: str, data: dict[str, Any] = None, headers: dict[str, str] = None
+    ) -> dict[str, Any]: ...
 
 
 @dataclass
 class OIDCAuthorizationRequest:
     """OIDC Authorization Request data"""
+
     authorization_url: str
     state: str
     nonce: str
@@ -101,6 +83,7 @@ class OIDCAuthorizationRequest:
 @dataclass
 class OIDCTokens:
     """OIDC Token response"""
+
     access_token: str
     id_token: str
     refresh_token: str | None = None
@@ -111,6 +94,7 @@ class OIDCTokens:
 @dataclass
 class OIDCUserInfo:
     """User information from OIDC provider"""
+
     subject: str  # 'sub' claim
     email: str
     email_verified: bool = False
@@ -281,7 +265,8 @@ class SSOManager:
         # Generate code challenge (PKCE)
         code_challenge = hashlib.sha256(code_verifier.encode()).digest()
         import base64
-        code_challenge_b64 = base64.urlsafe_b64encode(code_challenge).decode().rstrip('=')
+
+        code_challenge_b64 = base64.urlsafe_b64encode(code_challenge).decode().rstrip("=")
 
         # Store pending auth for validation
         self._pending_auth[state] = {
@@ -380,13 +365,13 @@ class SSOManager:
             jwks_uri = discovery.get("jwks_uri")
             if not jwks_uri:
                 raise ValueError("JWKS URI not found in discovery document")
-            
+
             # Create JWKS client to fetch and cache signing keys
             jwks_client = PyJWKClient(jwks_uri)
-            
+
             # Get the signing key from the JWT header
             signing_key = jwks_client.get_signing_key_from_jwt(tokens.id_token)
-            
+
             # Verify and decode the ID token with full signature verification
             id_token_claims = pyjwt.decode(
                 tokens.id_token,
@@ -394,14 +379,14 @@ class SSOManager:
                 algorithms=["RS256", "RS384", "RS512", "ES256", "ES384", "ES512"],
                 audience=config.client_id,
                 issuer=discovery.get("issuer"),
-                options={"verify_signature": True, "verify_exp": True, "verify_aud": True}
+                options={"verify_signature": True, "verify_exp": True, "verify_aud": True},
             )
-            
+
             # Validate nonce to prevent replay attacks
             token_nonce = id_token_claims.get("nonce")
             if token_nonce != nonce:
                 raise ValueError("ID token nonce does not match expected nonce")
-                
+
         except pyjwt.ExpiredSignatureError as e:
             raise ValueError(f"ID token has expired: {e}")
         except pyjwt.InvalidSignatureError as e:
@@ -436,9 +421,7 @@ class SSOManager:
             user_info=user_info,
         )
 
-        logger.info(
-            f"OIDC login completed: org={org_id} user={user.id} email={user.email}"
-        )
+        logger.info(f"OIDC login completed: org={org_id} user={user.id} email={user.email}")
 
         return user, membership
 
@@ -481,9 +464,7 @@ class SSOManager:
         else:
             # JIT provisioning - create new user
             if not config.jit_enabled:
-                raise ValueError(
-                    "User not found and JIT provisioning is disabled"
-                )
+                raise ValueError("User not found and JIT provisioning is disabled")
 
             # Check allowed domains
             if config.jit_allowed_domains:

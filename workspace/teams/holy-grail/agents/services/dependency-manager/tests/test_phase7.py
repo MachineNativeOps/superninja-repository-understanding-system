@@ -4,14 +4,7 @@ Phase 7 測試 - SMART-V 評估框架
 測試 SMART-V 量化評估系統的各項功能。
 """
 
-import os
-import sys
-import unittest
-
-# 添加 src 目錄到路徑
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', 'src'))
-
-from evaluation.evaluation_report import EvaluationReportGenerator
+from evaluation.weight_config import CompanyStage, WeightConfigManager
 from evaluation.smartv_framework import (
     AchievabilityEvaluator,
     EvaluationDimension,
@@ -22,7 +15,13 @@ from evaluation.smartv_framework import (
     TechnologyMaturityEvaluator,
     ValueCreationEvaluator,
 )
-from evaluation.weight_config import CompanyStage, WeightConfigManager
+from evaluation.evaluation_report import EvaluationReportGenerator
+import os
+import sys
+import unittest
+
+# 添加 src 目錄到路徑
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "src"))
 
 
 class TestScalabilityEvaluator(unittest.TestCase):
@@ -42,7 +41,7 @@ class TestScalabilityEvaluator(unittest.TestCase):
             "max_rps": 1000,
             "auto_scaling": True,
             "load_balancer": True,
-            "stateless": True
+            "stateless": True,
         }
         result = self.evaluator.evaluate(data)
         self.assertGreaterEqual(result.score, 8.0)
@@ -57,7 +56,7 @@ class TestScalabilityEvaluator(unittest.TestCase):
             "current_rps": 900,
             "max_rps": 1000,
             "auto_scaling": False,
-            "load_balancer": False
+            "load_balancer": False,
         }
         result = self.evaluator.evaluate(data)
         self.assertLess(result.score, 5.0)
@@ -76,7 +75,7 @@ class TestMarketFitEvaluator(unittest.TestCase):
             "market_maturity": "growing",
             "competitor_count": 3,
             "differentiation_level": "high",
-            "som": 100_000_000
+            "som": 100_000_000,
         }
         result = self.evaluator.evaluate(data)
         self.assertGreaterEqual(result.score, 7.0)
@@ -88,7 +87,7 @@ class TestMarketFitEvaluator(unittest.TestCase):
             "market_maturity": "declining",
             "competitor_count": 20,
             "differentiation_level": "low",
-            "som": 500_000
+            "som": 500_000,
         }
         result = self.evaluator.evaluate(data)
         self.assertLess(result.score, 5.0)
@@ -110,7 +109,7 @@ class TestAchievabilityEvaluator(unittest.TestCase):
             "buffer_percentage": 25,
             "risk_level": "low",
             "mitigation_plans": ["Plan A", "Plan B"],
-            "resource_availability_score": 9
+            "resource_availability_score": 9,
         }
         result = self.evaluator.evaluate(data)
         self.assertGreaterEqual(result.score, 8.0)
@@ -130,7 +129,7 @@ class TestROIEvaluator(unittest.TestCase):
             "npv": 1000000,
             "irr": 30,
             "productivity_gain": 50,
-            "automation_level": 80
+            "automation_level": 80,
         }
         result = self.evaluator.evaluate(data)
         self.assertGreaterEqual(result.score, 8.0)
@@ -151,7 +150,7 @@ class TestTechnologyMaturityEvaluator(unittest.TestCase):
             "community_size": 2000000,
             "enterprise_adoption": 80,
             "documentation_quality": "excellent",
-            "avg_onboarding_days": 7
+            "avg_onboarding_days": 7,
         }
         result = self.evaluator.evaluate(data)
         self.assertGreaterEqual(result.score, 8.0)
@@ -174,7 +173,7 @@ class TestValueCreationEvaluator(unittest.TestCase):
             "nps_score": 60,
             "patents": 15,
             "industry_first": True,
-            "tech_leadership": True
+            "tech_leadership": True,
         }
         result = self.evaluator.evaluate(data)
         self.assertGreaterEqual(result.score, 8.0)
@@ -193,36 +192,25 @@ class TestSMARTVFramework(unittest.TestCase):
                 "microservices": True,
                 "containerized": True,
                 "growth_rate": 50,
-                "auto_scaling": True
+                "auto_scaling": True,
             },
             "market_fit": {
                 "user_needs_score": 8,
                 "market_maturity": "growing",
-                "competitor_count": 5
+                "competitor_count": 5,
             },
-            "achievability": {
-                "skill_coverage": 75,
-                "experience_years": 4,
-                "budget_adequate": True
-            },
-            "roi": {
-                "roi_percentage": 150,
-                "payback_months": 12
-            },
-            "technology_maturity": {
-                "tech_age_years": 5,
-                "library_count": 10000
-            },
-            "value_creation": {
-                "moat_strength": "medium",
-                "brand_recognition": 60
-            }
+            "achievability": {"skill_coverage": 75, "experience_years": 4, "budget_adequate": True},
+            "roi": {"roi_percentage": 150, "payback_months": 12},
+            "technology_maturity": {"tech_age_years": 5, "library_count": 10000},
+            "value_creation": {"moat_strength": "medium", "brand_recognition": 60},
         }
 
         result = self.framework.evaluate("測試專案", data)
 
         self.assertEqual(result.project_name, "測試專案")
-        self.assertIn(result.overall_grade, ["A+", "A", "A-", "B+", "B", "B-", "C+", "C", "C-", "D", "F"])
+        self.assertIn(
+            result.overall_grade, ["A+", "A", "A-", "B+", "B", "B-", "C+", "C", "C-", "D", "F"]
+        )
         self.assertEqual(len(result.scores), 6)
         self.assertGreater(result.weighted_total, 0)
 
@@ -267,14 +255,11 @@ class TestWeightConfigManager(unittest.TestCase):
             "achievability": 0.15,
             "roi": 0.20,
             "technology_maturity": 0.10,
-            "value_creation": 0.15
+            "value_creation": 0.15,
         }
 
         profile = self.manager.create_custom_profile(
-            name="custom_test",
-            stage=CompanyStage.GROWTH,
-            weights=weights,
-            description="測試配置"
+            name="custom_test", stage=CompanyStage.GROWTH, weights=weights, description="測試配置"
         )
 
         self.assertEqual(profile.name, "custom_test")
@@ -288,7 +273,7 @@ class TestWeightConfigManager(unittest.TestCase):
             "achievability": 2,
             "roi": 4,
             "technology_maturity": 1,
-            "value_creation": 3
+            "value_creation": 3,
         }
 
         suggested = self.manager.suggest_weights(priorities)
@@ -313,7 +298,7 @@ class TestEvaluationReportGenerator(unittest.TestCase):
             "achievability": {"skill_coverage": 70},
             "roi": {"roi_percentage": 100},
             "technology_maturity": {"tech_age_years": 5},
-            "value_creation": {"moat_strength": "medium"}
+            "value_creation": {"moat_strength": "medium"},
         }
         self.result = self.framework.evaluate("報告測試專案", self.test_data)
 
@@ -338,6 +323,7 @@ class TestEvaluationReportGenerator(unittest.TestCase):
         report = self.generator.generate(self.result, "json")
 
         import json
+
         data = json.loads(report)
         self.assertEqual(data["project_name"], "報告測試專案")
         self.assertIn("weighted_total", data)
@@ -369,5 +355,5 @@ class TestGradeCalculation(unittest.TestCase):
         self.assertEqual(self.framework._grade(2.0), "F")
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main(verbosity=2)

@@ -15,6 +15,7 @@ from typing import Any
 
 class ExecutionMode(Enum):
     """Phase execution modes"""
+
     SEQUENTIAL = "sequential"
     PARALLEL = "parallel"
     CONDITIONAL = "conditional"
@@ -23,6 +24,7 @@ class ExecutionMode(Enum):
 
 class PhaseState(Enum):
     """Phase states"""
+
     PENDING = "pending"
     QUEUED = "queued"
     RUNNING = "running"
@@ -35,6 +37,7 @@ class PhaseState(Enum):
 @dataclass
 class PhaseDefinition:
     """Phase definition"""
+
     id: str
     name: str
     description: str
@@ -52,6 +55,7 @@ class PhaseDefinition:
 @dataclass
 class PhaseTransition:
     """Phase transition record"""
+
     from_phase: str
     to_phase: str
     timestamp: datetime
@@ -64,6 +68,7 @@ class PhaseTransition:
 @dataclass
 class PhaseExecutionResult:
     """Phase execution result"""
+
     phase_id: str
     state: PhaseState
     started_at: datetime
@@ -77,7 +82,7 @@ class PhaseExecutionResult:
 class PhaseOrchestrator:
     """
     Phase Orchestrator - 階段協調器
-    
+
     Coordinates execution of all system phases:
     - Manages phase dependencies
     - Handles phase transitions
@@ -118,79 +123,79 @@ class PhaseOrchestrator:
                 id="phase_1",
                 name="Core Autonomous Coordination",
                 description="自主協調核心",
-                dependencies=[]
+                dependencies=[],
             ),
             PhaseDefinition(
                 id="phase_2",
                 name="Advanced Interaction & Orchestration",
                 description="進階互動與編排",
-                dependencies=["phase_1"]
+                dependencies=["phase_1"],
             ),
             PhaseDefinition(
                 id="phase_3",
                 name="AI Core, Bridges & Automation",
                 description="AI核心、橋接與自動化",
-                dependencies=["phase_1", "phase_2"]
+                dependencies=["phase_1", "phase_2"],
             ),
             PhaseDefinition(
                 id="phase_4",
                 name="Autonomous Trust & Governance",
                 description="自主信任與治理",
-                dependencies=["phase_3"]
+                dependencies=["phase_3"],
             ),
             PhaseDefinition(
                 id="phase_5",
                 name="AI Quality & Bug Prevention",
                 description="AI品質與漏洞預防",
-                dependencies=["phase_3"]
+                dependencies=["phase_3"],
             ),
             PhaseDefinition(
                 id="phase_6",
                 name="AI Supreme Directive Constitution",
                 description="AI最高指令憲法",
-                dependencies=["phase_4", "phase_5"]
+                dependencies=["phase_4", "phase_5"],
             ),
             PhaseDefinition(
                 id="phase_7",
                 name="Knowledge & Skills Training",
                 description="知識與技能訓練",
-                dependencies=["phase_6"]
+                dependencies=["phase_6"],
             ),
             PhaseDefinition(
                 id="phase_8",
                 name="Execution Engine & Tech Stack",
                 description="執行引擎與技術棧",
-                dependencies=["phase_7"]
+                dependencies=["phase_7"],
             ),
             PhaseDefinition(
                 id="phase_9",
                 name="Complete Execution Architecture",
                 description="完整執行架構",
-                dependencies=["phase_8"]
+                dependencies=["phase_8"],
             ),
             PhaseDefinition(
                 id="phase_10",
                 name="Safety Mechanisms",
                 description="安全機制",
-                dependencies=["phase_9"]
+                dependencies=["phase_9"],
             ),
             PhaseDefinition(
                 id="phase_11",
                 name="Intelligent Monitoring & Remediation",
                 description="智能監控與修復",
-                dependencies=["phase_10"]
+                dependencies=["phase_10"],
             ),
             PhaseDefinition(
                 id="phase_12",
                 name="CI Error Auto-Handler",
                 description="CI錯誤自動處理",
-                dependencies=["phase_11"]
+                dependencies=["phase_11"],
             ),
             PhaseDefinition(
                 id="phase_13",
                 name="Deep Verifiable YAML System",
                 description="深度可驗證YAML系統",
-                dependencies=["phase_12"]
+                dependencies=["phase_12"],
             ),
         ]
 
@@ -218,7 +223,7 @@ class PhaseOrchestrator:
     def get_execution_order(self) -> list[str]:
         """
         Get execution order based on dependencies
-        
+
         Returns:
             List of phase IDs in execution order
         """
@@ -244,10 +249,10 @@ class PhaseOrchestrator:
     def can_execute(self, phase_id: str) -> bool:
         """
         Check if a phase can be executed
-        
+
         Args:
             phase_id: Phase ID to check
-            
+
         Returns:
             True if phase can be executed
         """
@@ -267,14 +272,16 @@ class PhaseOrchestrator:
         # Check condition
         return not (phase.condition and not phase.condition())
 
-    def execute_phase(self, phase_id: str, executor: Callable | None = None) -> PhaseExecutionResult:
+    def execute_phase(
+        self, phase_id: str, executor: Callable | None = None
+    ) -> PhaseExecutionResult:
         """
         Execute a single phase
-        
+
         Args:
             phase_id: Phase ID to execute
             executor: Optional executor function
-            
+
         Returns:
             Execution result
         """
@@ -284,7 +291,7 @@ class PhaseOrchestrator:
                 phase_id=phase_id,
                 state=PhaseState.FAILED,
                 started_at=datetime.now(),
-                error="Phase not found"
+                error="Phase not found",
             )
 
         if not self.can_execute(phase_id):
@@ -292,7 +299,7 @@ class PhaseOrchestrator:
                 phase_id=phase_id,
                 state=PhaseState.SKIPPED,
                 started_at=datetime.now(),
-                error="Dependencies not satisfied or condition not met"
+                error="Dependencies not satisfied or condition not met",
             )
 
         self.logger.info(f"Executing phase: {phase_id}")
@@ -301,9 +308,7 @@ class PhaseOrchestrator:
 
         started_at = datetime.now()
         result = PhaseExecutionResult(
-            phase_id=phase_id,
-            state=PhaseState.RUNNING,
-            started_at=started_at
+            phase_id=phase_id, state=PhaseState.RUNNING, started_at=started_at
         )
 
         try:
@@ -342,13 +347,15 @@ class PhaseOrchestrator:
 
         return result
 
-    def execute_all(self, executors: dict[str, Callable] | None = None) -> dict[str, PhaseExecutionResult]:
+    def execute_all(
+        self, executors: dict[str, Callable] | None = None
+    ) -> dict[str, PhaseExecutionResult]:
         """
         Execute all phases in order
-        
+
         Args:
             executors: Optional dict of phase ID to executor function
-            
+
         Returns:
             Dict of phase ID to execution result
         """
@@ -375,12 +382,12 @@ class PhaseOrchestrator:
     def transition(self, from_phase: str, to_phase: str, trigger: str) -> PhaseTransition:
         """
         Record a phase transition
-        
+
         Args:
             from_phase: Source phase ID
             to_phase: Target phase ID
             trigger: Transition trigger
-            
+
         Returns:
             Transition record
         """
@@ -405,7 +412,7 @@ class PhaseOrchestrator:
             trigger=trigger,
             success=success,
             duration_seconds=0.0,
-            error=error
+            error=error,
         )
 
         self._transitions.append(transition)
@@ -420,10 +427,10 @@ class PhaseOrchestrator:
     def reset_phase(self, phase_id: str) -> bool:
         """
         Reset a phase to pending state
-        
+
         Args:
             phase_id: Phase ID to reset
-            
+
         Returns:
             True if reset successful
         """
@@ -445,7 +452,7 @@ class PhaseOrchestrator:
     def get_summary(self) -> dict[str, Any]:
         """
         Get execution summary
-        
+
         Returns:
             Summary dict
         """
@@ -463,7 +470,7 @@ class PhaseOrchestrator:
             "skipped": skipped,
             "completion_rate": completed / total if total > 0 else 0,
             "transitions": len(self._transitions),
-            "current_phase": self._current_phase
+            "current_phase": self._current_phase,
         }
 
     @property

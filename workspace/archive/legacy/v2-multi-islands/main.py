@@ -5,6 +5,9 @@ SynergyMesh v2-multi-islands 主執行入口
 多語言自動化無人之島系統的主要入口點，提供命令行介面。
 """
 
+from utils import Colors, print_error, print_info, print_success
+from orchestrator import IslandOrchestrator
+from islands import GoIsland, JavaIsland, PythonIsland, RustIsland, TypeScriptIsland
 import argparse
 import sys
 from pathlib import Path
@@ -13,10 +16,6 @@ from pathlib import Path
 _current_dir = Path(__file__).resolve().parent
 sys.path.insert(0, str(_current_dir))
 sys.path.insert(0, str(_current_dir.parent))
-
-from islands import GoIsland, JavaIsland, PythonIsland, RustIsland, TypeScriptIsland
-from orchestrator import IslandOrchestrator
-from utils import Colors, print_error, print_info, print_success
 
 
 def show_banner() -> None:
@@ -40,11 +39,11 @@ def run_orchestrator() -> int:
 def run_island(island_id: str) -> int:
     """執行指定島嶼"""
     island_map = {
-        'rust': RustIsland,
-        'go': GoIsland,
-        'typescript': TypeScriptIsland,
-        'python': PythonIsland,
-        'java': JavaIsland,
+        "rust": RustIsland,
+        "go": GoIsland,
+        "typescript": TypeScriptIsland,
+        "python": PythonIsland,
+        "java": JavaIsland,
     }
 
     island_class = island_map.get(island_id)
@@ -108,7 +107,7 @@ def run_all_islands() -> int:
 def main() -> int:
     """主程式"""
     parser = argparse.ArgumentParser(
-        description='SynergyMesh v2-multi-islands - 多語言自動化無人之島系統',
+        description="SynergyMesh v2-multi-islands - 多語言自動化無人之島系統",
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="""
 範例:
@@ -119,33 +118,27 @@ def main() -> int:
   python3 v2-multi-islands/main.py --island=typescript   # 執行 TypeScript 島嶼
   python3 v2-multi-islands/main.py --island=java         # 執行 Java 島嶼
   python3 v2-multi-islands/main.py --all                 # 執行所有島嶼
-        """
+        """,
     )
 
     parser.add_argument(
-        '--mode', '-m',
-        choices=['auto', 'manual'],
-        default='auto',
-        help='運行模式: auto(自動), manual(手動)'
+        "--mode",
+        "-m",
+        choices=["auto", "manual"],
+        default="auto",
+        help="運行模式: auto(自動), manual(手動)",
     )
 
     parser.add_argument(
-        '--island', '-i',
-        choices=['rust', 'go', 'typescript', 'python', 'java', 'orchestrator'],
-        help='指定要執行的島嶼'
+        "--island",
+        "-i",
+        choices=["rust", "go", "typescript", "python", "java", "orchestrator"],
+        help="指定要執行的島嶼",
     )
 
-    parser.add_argument(
-        '--all', '-a',
-        action='store_true',
-        help='執行所有島嶼'
-    )
+    parser.add_argument("--all", "-a", action="store_true", help="執行所有島嶼")
 
-    parser.add_argument(
-        '--verbose', '-v',
-        action='store_true',
-        help='詳細輸出'
-    )
+    parser.add_argument("--verbose", "-v", action="store_true", help="詳細輸出")
 
     args = parser.parse_args()
 
@@ -156,17 +149,17 @@ def main() -> int:
         return run_all_islands()
 
     if args.island:
-        if args.island == 'orchestrator':
+        if args.island == "orchestrator":
             return run_orchestrator()
         return run_island(args.island)
 
     # 預設執行自動模式
-    if args.mode == 'auto':
+    if args.mode == "auto":
         return run_auto()
     else:
         print_info("手動模式 - 請指定 --island 參數")
         return 0
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     sys.exit(main())

@@ -5,7 +5,9 @@
 import json
 import sys
 from pathlib import Path
+
 import yaml
+
 
 def detect_cycle_and_toposort(mods: dict):
     graph = {mid: set((mods[mid].get("dependencies") or [])) for mid in mods}
@@ -42,6 +44,7 @@ def detect_cycle_and_toposort(mods: dict):
                 return False, cycle, []
     return True, [], order
 
+
 def main():
     repo = Path(".")
     registry_path = repo / "root/registry/root.registry.modules.yaml"
@@ -74,6 +77,7 @@ def main():
     out_report.write_text(json.dumps(result, ensure_ascii=False, indent=2), encoding="utf-8")
     print(json.dumps(result, ensure_ascii=False, indent=2))
     return 0 if result["result"] == "pass" else 2
+
 
 if __name__ == "__main__":
     sys.exit(main())

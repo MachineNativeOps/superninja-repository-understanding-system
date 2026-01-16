@@ -16,7 +16,7 @@ from .base_drone import BaseDrone, DroneStatus
 class CoordinatorDrone(BaseDrone):
     """
     協調器無人機
-    
+
     作為無人機編隊的主控制器，負責：
     - 環境分析
     - 任務調度
@@ -65,53 +65,52 @@ class CoordinatorDrone(BaseDrone):
     def analyze_environment(self) -> dict[str, Any]:
         """
         分析當前開發環境
-        
+
         Returns:
             環境分析結果
         """
         analysis = {
-            'timestamp': datetime.now().isoformat(),
-            'project_root': str(self.project_root),
-            'tools': {},
-            'structure': {},
-            'recommendations': []
+            "timestamp": datetime.now().isoformat(),
+            "project_root": str(self.project_root),
+            "tools": {},
+            "structure": {},
+            "recommendations": [],
         }
 
         # 檢查工具
-        tools = ['node', 'npm', 'python3', 'docker', 'git']
+        tools = ["node", "npm", "python3", "docker", "git"]
         for tool in tools:
             try:
                 result = subprocess.run(
-                    [tool, '--version'],
-                    capture_output=True,
-                    text=True,
-                    timeout=5
+                    [tool, "--version"], capture_output=True, text=True, timeout=5
                 )
-                analysis['tools'][tool] = {
-                    'installed': result.returncode == 0,
-                    'version': result.stdout.strip().split('\n')[0] if result.returncode == 0 else None
+                analysis["tools"][tool] = {
+                    "installed": result.returncode == 0,
+                    "version": (
+                        result.stdout.strip().split("\n")[0] if result.returncode == 0 else None
+                    ),
                 }
             except (FileNotFoundError, subprocess.TimeoutExpired):
-                analysis['tools'][tool] = {'installed': False, 'version': None}
+                analysis["tools"][tool] = {"installed": False, "version": None}
 
         # 檢查專案結構
-        required_dirs = ['config/dev', '.vscode', 'v1-python-drones', 'shared', 'migration']
+        required_dirs = ["config/dev", ".vscode", "v1-python-drones", "shared", "migration"]
         for dir_name in required_dirs:
             dir_path = self.project_root / dir_name
-            analysis['structure'][dir_name] = dir_path.exists()
+            analysis["structure"][dir_name] = dir_path.exists()
 
         # 檢查配置檔案
-        config_files = ['drone-config.yml', 'auto-scaffold.json', 'automation-entry.sh']
+        config_files = ["drone-config.yml", "auto-scaffold.json", "automation-entry.sh"]
         for config_file in config_files:
             file_path = self.project_root / config_file
-            analysis['structure'][config_file] = file_path.exists()
+            analysis["structure"][config_file] = file_path.exists()
 
         # 生成建議
-        if not analysis['tools'].get('docker', {}).get('installed'):
-            analysis['recommendations'].append("建議安裝 Docker 以支援容器化開發")
+        if not analysis["tools"].get("docker", {}).get("installed"):
+            analysis["recommendations"].append("建議安裝 Docker 以支援容器化開發")
 
-        if not analysis['structure'].get('config/dev'):
-            analysis['recommendations'].append("缺少 config/dev 目錄")
+        if not analysis["structure"].get("config/dev"):
+            analysis["recommendations"].append("缺少 config/dev 目錄")
 
         return analysis
 
@@ -120,19 +119,19 @@ class CoordinatorDrone(BaseDrone):
         self.log_info("📊 環境分析報告:")
 
         print("\n  🔧 工具檢查:")
-        for tool, info in analysis['tools'].items():
-            status = '✅' if info.get('installed') else '❌'
-            version = info.get('version', '未安裝')
+        for tool, info in analysis["tools"].items():
+            status = "✅" if info.get("installed") else "❌"
+            version = info.get("version", "未安裝")
             print(f"    {status} {tool}: {version}")
 
         print("\n  📁 結構檢查:")
-        for item, exists in analysis['structure'].items():
-            status = '✅' if exists else '❌'
+        for item, exists in analysis["structure"].items():
+            status = "✅" if exists else "❌"
             print(f"    {status} {item}")
 
-        if analysis['recommendations']:
+        if analysis["recommendations"]:
             print("\n  💡 建議:")
-            for rec in analysis['recommendations']:
+            for rec in analysis["recommendations"]:
                 print(f"    • {rec}")
 
         print()
@@ -146,18 +145,19 @@ class CoordinatorDrone(BaseDrone):
             from ..config import DroneConfig
         except (ImportError, ValueError):
             import sys
-            sys.path.insert(0, str(self.project_root / 'v1-python-drones'))
+
+            sys.path.insert(0, str(self.project_root / "v1-python-drones"))
             from config import DroneConfig
 
         config = DroneConfig.load()
 
         for drone_id, drone_config in config.drone_fleet.items():
             self.fleet[drone_id] = {
-                'name': drone_config.get('name', drone_id),
-                'script': drone_config.get('script'),
-                'priority': drone_config.get('priority', 99),
-                'auto_start': drone_config.get('auto_start', False),
-                'status': 'initialized'
+                "name": drone_config.get("name", drone_id),
+                "script": drone_config.get("script"),
+                "priority": drone_config.get("priority", 99),
+                "auto_start": drone_config.get("auto_start", False),
+                "status": "initialized",
             }
             self.log_info(f"  ✓ {drone_config.get('name', drone_id)}")
 
@@ -166,11 +166,11 @@ class CoordinatorDrone(BaseDrone):
     def dispatch_task(self, drone_id: str, task: str) -> bool:
         """
         調度任務給指定無人機
-        
+
         Args:
             drone_id: 目標無人機 ID
             task: 任務名稱
-            
+
         Returns:
             是否調度成功
         """
@@ -185,11 +185,11 @@ class CoordinatorDrone(BaseDrone):
     def run_core_coordinator(self) -> int:
         """
         執行核心協調器 (config/dev/automation/drone-coordinator.py)
-        
+
         Returns:
             執行結果代碼
         """
-        core_script = self.project_root / 'config/dev' / 'automation' / 'drone-coordinator.py'
+        core_script = self.project_root / "config/dev" / "automation" / "drone-coordinator.py"
 
         if not core_script.exists():
             self.log_error(f"核心協調器腳本不存在: {core_script}")
@@ -199,8 +199,7 @@ class CoordinatorDrone(BaseDrone):
 
         try:
             result = subprocess.run(
-                ['python3', str(core_script), '--mode=auto'],
-                cwd=self.project_root
+                ["python3", str(core_script), "--mode=auto"], cwd=self.project_root
             )
             return result.returncode
         except Exception as e:

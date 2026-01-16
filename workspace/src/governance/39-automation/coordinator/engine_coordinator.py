@@ -19,10 +19,10 @@ import asyncio
 import json
 import logging
 from collections import defaultdict
-from dataclasses import dataclass, asdict, field
+from dataclasses import asdict, dataclass, field
 from datetime import datetime
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Set, Callable, Awaitable
+from typing import Any, Awaitable, Callable, Dict, List, Optional, Set
 
 import yaml
 
@@ -30,6 +30,7 @@ import yaml
 @dataclass
 class EngineRegistration:
     """Registration info for a dimension engine."""
+
     engine_id: str
     dimension_name: str
     dimension_path: str
@@ -43,6 +44,7 @@ class EngineRegistration:
 @dataclass
 class CoordinationMessage:
     """Message for inter-engine communication."""
+
     message_id: str
     source_engine: str
     target_engine: str
@@ -97,7 +99,7 @@ class EngineCoordinator:
         if not logger.handlers:
             handler = logging.StreamHandler()
             formatter = logging.Formatter(
-                '%(asctime)s - [EngineCoordinator] %(levelname)s - %(message)s'
+                "%(asctime)s - [EngineCoordinator] %(levelname)s - %(message)s"
             )
             handler.setFormatter(formatter)
             logger.addHandler(handler)
@@ -111,7 +113,11 @@ class EngineCoordinator:
             "governance_architecture": set(),  # No dependencies
             "decision_governance": {"governance_architecture"},
             "change_governance": {"governance_architecture", "decision_governance"},
-            "risk_governance": {"governance_architecture", "decision_governance", "change_governance"},
+            "risk_governance": {
+                "governance_architecture",
+                "decision_governance",
+                "change_governance",
+            },
             "compliance_governance": {"governance_architecture", "risk_governance"},
             "security_governance": {"compliance_governance", "risk_governance"},
             "audit_governance": {"compliance_governance", "security_governance"},
@@ -121,12 +127,13 @@ class EngineCoordinator:
             "governance_tools": {"governance_architecture"},
             "governance_culture": {"governance_architecture"},
             "governance_metrics": {
-                "decision_governance", "change_governance", "risk_governance",
-                "compliance_governance", "performance_governance"
+                "decision_governance",
+                "change_governance",
+                "risk_governance",
+                "compliance_governance",
+                "performance_governance",
             },
-            "governance_improvement": {
-                "governance_metrics", "audit_governance"
-            },
+            "governance_improvement": {"governance_metrics", "audit_governance"},
         }
         return dependencies
 
@@ -135,7 +142,8 @@ class EngineCoordinator:
         self.logger.info("🔍 Discovering dimension automation engines...")
 
         dimension_dirs = [
-            d for d in self.governance_root.iterdir()
+            d
+            for d in self.governance_root.iterdir()
             if d.is_dir() and d.name.endswith("-governance") or d.name.startswith("governance-")
         ]
 
@@ -146,9 +154,7 @@ class EngineCoordinator:
                 # Extract engine ID from directory name
                 engine_id = dim_dir.name.replace("-", "_")
                 registration = EngineRegistration(
-                    engine_id=engine_id,
-                    dimension_name=dim_dir.name,
-                    dimension_path=str(dim_dir)
+                    engine_id=engine_id, dimension_name=dim_dir.name, dimension_path=str(dim_dir)
                 )
                 self.engines[engine_id] = registration
                 discovered_engines.append(engine_id)
@@ -236,9 +242,7 @@ class EngineCoordinator:
             return False
 
     def register_message_handler(
-        self,
-        message_type: str,
-        handler: Callable[[CoordinationMessage], Awaitable[Any]]
+        self, message_type: str, handler: Callable[[CoordinationMessage], Awaitable[Any]]
     ) -> None:
         """Register a handler for a specific message type."""
         self.message_handlers[message_type].append(handler)
@@ -250,7 +254,7 @@ class EngineCoordinator:
         target_engine: str,
         message_type: str,
         payload: Dict[str, Any],
-        priority: int = 5
+        priority: int = 5,
     ) -> bool:
         """Send a message from one engine to another."""
         message = CoordinationMessage(
@@ -259,7 +263,7 @@ class EngineCoordinator:
             target_engine=target_engine,
             message_type=message_type,
             payload=payload,
-            priority=priority
+            priority=priority,
         )
 
         self.message_queue.put_nowait(message)
@@ -307,11 +311,7 @@ class EngineCoordinator:
 
         return results
 
-    def broadcast_to_all_engines(
-        self,
-        message_type: str,
-        payload: Dict[str, Any]
-    ) -> int:
+    def broadcast_to_all_engines(self, message_type: str, payload: Dict[str, Any]) -> int:
         """Broadcast a message to all engines."""
         count = 0
         for engine_id in self.engines.keys():
@@ -320,7 +320,7 @@ class EngineCoordinator:
                     source_engine="coordinator",
                     target_engine=engine_id,
                     message_type=message_type,
-                    payload=payload
+                    payload=payload,
                 )
             )
             count += 1
@@ -343,7 +343,7 @@ class EngineCoordinator:
                     "last_heartbeat": reg.last_heartbeat,
                 }
                 for engine_id, reg in self.engines.items()
-            }
+            },
         }
 
     async def perform_health_check(self) -> None:
@@ -376,7 +376,7 @@ class EngineCoordinator:
         }
 
         if filepath:
-            with open(filepath, 'w') as f:
+            with open(filepath, "w") as f:
                 yaml.dump(metrics, f, default_flow_style=False)
             self.logger.info(f"Metrics exported to {filepath}")
 

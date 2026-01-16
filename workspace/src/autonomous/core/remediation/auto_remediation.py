@@ -9,15 +9,16 @@ Responsibilities:
 - Health restoration
 """
 
-from typing import Dict, List, Optional, Any, Callable
-from dataclasses import dataclass
-from enum import Enum
-from datetime import datetime, timezone
 import asyncio
+from dataclasses import dataclass
+from datetime import datetime, timezone
+from enum import Enum
+from typing import Any, Callable, Dict, List, Optional
 
 
 class RemediationStrategy(Enum):
     """Remediation strategies."""
+
     RESTART = "restart"
     ROLLBACK = "rollback"
     SCALE = "scale"
@@ -28,6 +29,7 @@ class RemediationStrategy(Enum):
 
 class RemediationStatus(Enum):
     """Remediation status."""
+
     PENDING = "pending"
     IN_PROGRESS = "in_progress"
     COMPLETED = "completed"
@@ -38,17 +40,19 @@ class RemediationStatus(Enum):
 @dataclass
 class RemediationAction:
     """Single remediation action."""
+
     id: str
     strategy: RemediationStrategy
     target: str
     parameters: Dict[str, Any]
     timeout: int = 60  # seconds
-    rollback_action: Optional['RemediationAction'] = None
+    rollback_action: Optional["RemediationAction"] = None
 
 
 @dataclass
 class RemediationJob:
     """Remediation job containing multiple actions."""
+
     id: str
     issue_id: str
     actions: List[RemediationAction]
@@ -119,8 +123,7 @@ class AutoRemediation:
 
         try:
             result = await asyncio.wait_for(
-                handler(action.target, action.parameters),
-                timeout=action.timeout
+                handler(action.target, action.parameters), timeout=action.timeout
             )
             return result
         except asyncio.TimeoutError:
@@ -157,8 +160,7 @@ class AutoRemediation:
         duration = params.get("duration", 300)
         return {"target": target, "action": "isolate", "duration": duration}
 
-    def register_handler(self, strategy: RemediationStrategy,
-                        handler: Callable) -> None:
+    def register_handler(self, strategy: RemediationStrategy, handler: Callable) -> None:
         """Register a custom remediation handler."""
         self._handlers[strategy] = handler
 

@@ -22,6 +22,7 @@ logger = logging.getLogger(__name__)
 
 class WebhookEventType(Enum):
     """Standard webhook event types across providers"""
+
     # Pull Request events
     PULL_REQUEST_OPENED = "pull_request.opened"
     PULL_REQUEST_SYNCHRONIZE = "pull_request.synchronize"
@@ -54,6 +55,7 @@ class WebhookEventType(Enum):
 
 class WebhookValidationError(Exception):
     """Raised when webhook validation fails"""
+
     pass
 
 
@@ -64,6 +66,7 @@ class WebhookEvent:
 
     Normalized representation across different Git providers.
     """
+
     id: UUID = field(default_factory=uuid4)
 
     # Event metadata
@@ -124,12 +127,7 @@ class NonceStore(Protocol):
 class RateLimiter(Protocol):
     """Interface for rate limiting"""
 
-    async def check_rate_limit(
-        self,
-        key: str,
-        limit: int,
-        window_seconds: int
-    ) -> tuple[bool, int]:
+    async def check_rate_limit(self, key: str, limit: int, window_seconds: int) -> tuple[bool, int]:
         """
         Check rate limit for a key.
 
@@ -202,9 +200,7 @@ class WebhookReceiver:
         """
         # Size check
         if len(body) > self.max_payload_size:
-            raise WebhookValidationError(
-                f"Payload too large: {len(body)} bytes"
-            )
+            raise WebhookValidationError(f"Payload too large: {len(body)} bytes")
 
         # Verify signature
         if provider == "github":
@@ -220,9 +216,7 @@ class WebhookReceiver:
         delivery_id = self._get_delivery_id(provider, headers)
         if delivery_id:
             if not await self._check_nonce(delivery_id):
-                raise WebhookValidationError(
-                    f"Replay detected: delivery_id={delivery_id}"
-                )
+                raise WebhookValidationError(f"Replay detected: delivery_id={delivery_id}")
 
         # Rate limit check
         rate_key = self._get_rate_limit_key(provider, headers, body)
@@ -233,9 +227,7 @@ class WebhookReceiver:
                 60,
             )
             if not allowed:
-                raise WebhookValidationError(
-                    f"Rate limit exceeded for {rate_key}"
-                )
+                raise WebhookValidationError(f"Rate limit exceeded for {rate_key}")
 
         # Parse and normalize
         event = await self._parse_event(provider, headers, body)
@@ -382,8 +374,7 @@ class WebhookReceiver:
 
         # Clean old nonces
         expired = [
-            n for n, ts in self._nonce_timestamps.items()
-            if now - ts > self.replay_window_seconds
+            n for n, ts in self._nonce_timestamps.items() if now - ts > self.replay_window_seconds
         ]
         for n in expired:
             self._nonces.discard(n)

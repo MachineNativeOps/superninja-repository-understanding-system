@@ -7,8 +7,9 @@ Centralized configuration using environment variables and Pydantic settings.
 
 import os
 from typing import List, Optional
-from pydantic_settings import BaseSettings
+
 from pydantic import Field
+from pydantic_settings import BaseSettings
 
 
 class Settings(BaseSettings):
@@ -37,25 +38,16 @@ class Settings(BaseSettings):
 
     # Agent Registry
     monitoring_agent_url: str = Field(
-        default="http://monitoring-agent:8080",
-        env="MONITORING_AGENT_URL"
+        default="http://monitoring-agent:8080", env="MONITORING_AGENT_URL"
     )
     problem_solver_agent_url: str = Field(
-        default="http://problem-solver-agent:8080",
-        env="PROBLEM_SOLVER_AGENT_URL"
+        default="http://problem-solver-agent:8080", env="PROBLEM_SOLVER_AGENT_URL"
     )
-    qa_agent_url: str = Field(
-        default="http://qa-agent:8080",
-        env="QA_AGENT_URL"
-    )
+    qa_agent_url: str = Field(default="http://qa-agent:8080", env="QA_AGENT_URL")
     maintenance_agent_url: str = Field(
-        default="http://maintenance-agent:8080",
-        env="MAINTENANCE_AGENT_URL"
+        default="http://maintenance-agent:8080", env="MAINTENANCE_AGENT_URL"
     )
-    learning_agent_url: str = Field(
-        default="http://learning-agent:8080",
-        env="LEARNING_AGENT_URL"
-    )
+    learning_agent_url: str = Field(default="http://learning-agent:8080", env="LEARNING_AGENT_URL")
 
     # Circuit Breaker
     circuit_breaker_failure_threshold: int = Field(default=5, env="CB_FAILURE_THRESHOLD")
@@ -68,7 +60,9 @@ class Settings(BaseSettings):
     consensus_approval_threshold: float = Field(default=0.6, env="CONSENSUS_APPROVAL_THRESHOLD")
 
     # Event Store
-    event_store_type: str = Field(default="memory", env="EVENT_STORE_TYPE")  # memory, sqlite, postgres
+    event_store_type: str = Field(
+        default="memory", env="EVENT_STORE_TYPE"
+    )  # memory, sqlite, postgres
     event_store_path: str = Field(default="/var/lib/super-agent/events.db", env="EVENT_STORE_PATH")
     event_store_max_events: int = Field(default=100000, env="EVENT_STORE_MAX_EVENTS")
 
@@ -90,9 +84,9 @@ class Settings(BaseSettings):
             "qa-agent",
             "maintenance-agent",
             "learning-agent",
-            "test-client"
+            "test-client",
         ],
-        env="ALLOWED_AGENTS"
+        env="ALLOWED_AGENTS",
     )
 
     class Config:

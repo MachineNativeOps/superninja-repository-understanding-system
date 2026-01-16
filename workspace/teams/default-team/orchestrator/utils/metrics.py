@@ -5,11 +5,11 @@ Prometheus Metrics for SuperAgent
 Provides metrics collection and exposition compatible with Prometheus.
 """
 
+import asyncio
 import time
+from collections import defaultdict
 from datetime import datetime
 from typing import Any, Dict, List, Optional
-from collections import defaultdict
-import asyncio
 
 
 class Counter:
@@ -37,12 +37,14 @@ class Counter:
         result = []
         for key, value in self._values.items():
             labels = dict(zip(self.labels, key))
-            result.append({
-                "name": self.name,
-                "type": "counter",
-                "value": value,
-                "labels": labels,
-            })
+            result.append(
+                {
+                    "name": self.name,
+                    "type": "counter",
+                    "value": value,
+                    "labels": labels,
+                }
+            )
         return result
 
     def prometheus_format(self) -> str:
@@ -93,12 +95,14 @@ class Gauge:
         result = []
         for key, value in self._values.items():
             labels = dict(zip(self.labels, key))
-            result.append({
-                "name": self.name,
-                "type": "gauge",
-                "value": value,
-                "labels": labels,
-            })
+            result.append(
+                {
+                    "name": self.name,
+                    "type": "gauge",
+                    "value": value,
+                    "labels": labels,
+                }
+            )
         return result
 
     def prometheus_format(self) -> str:
@@ -130,7 +134,9 @@ class Histogram:
         self.description = description
         self.labels = labels or []
         self.buckets = buckets or self.DEFAULT_BUCKETS
-        self._buckets: Dict[tuple, Dict[float, int]] = defaultdict(lambda: {b: 0 for b in self.buckets})
+        self._buckets: Dict[tuple, Dict[float, int]] = defaultdict(
+            lambda: {b: 0 for b in self.buckets}
+        )
         self._sums: Dict[tuple, float] = defaultdict(float)
         self._counts: Dict[tuple, int] = defaultdict(int)
         self._lock = asyncio.Lock()
@@ -154,14 +160,16 @@ class Histogram:
         result = []
         for key in set(list(self._sums.keys()) + list(self._counts.keys())):
             labels = dict(zip(self.labels, key))
-            result.append({
-                "name": self.name,
-                "type": "histogram",
-                "sum": self._sums[key],
-                "count": self._counts[key],
-                "buckets": dict(self._buckets[key]),
-                "labels": labels,
-            })
+            result.append(
+                {
+                    "name": self.name,
+                    "type": "histogram",
+                    "sum": self._sums[key],
+                    "count": self._counts[key],
+                    "buckets": dict(self._buckets[key]),
+                    "labels": labels,
+                }
+            )
         return result
 
     def prometheus_format(self) -> str:

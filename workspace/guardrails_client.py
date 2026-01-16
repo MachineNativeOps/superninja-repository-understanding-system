@@ -33,9 +33,7 @@ DEFAULT_MODEL = (
 
 
 def _get_api_key() -> Optional[str]:
-    return os.environ.get("AI_INTEGRATIONS_OPENAI_API_KEY") or os.environ.get(
-        "OPENAI_API_KEY"
-    )
+    return os.environ.get("AI_INTEGRATIONS_OPENAI_API_KEY") or os.environ.get("OPENAI_API_KEY")
 
 
 def get_api_key() -> Optional[str]:
@@ -44,9 +42,7 @@ def get_api_key() -> Optional[str]:
 
 
 def _get_base_url() -> Optional[str]:
-    return os.environ.get("AI_INTEGRATIONS_OPENAI_BASE_URL") or os.environ.get(
-        "OPENAI_BASE_URL"
-    )
+    return os.environ.get("AI_INTEGRATIONS_OPENAI_BASE_URL") or os.environ.get("OPENAI_BASE_URL")
 
 
 def client_available(api_key: Optional[str] = None) -> bool:

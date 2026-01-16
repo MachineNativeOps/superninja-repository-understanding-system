@@ -9,15 +9,16 @@ Provides complete audit logging for all operations including:
 - Agent communications
 """
 
-import json
+import asyncio
 import hashlib
+import json
+import uuid
+from collections import deque
 from datetime import datetime
 from enum import Enum
 from typing import Any, Dict, List, Optional
+
 from pydantic import BaseModel, Field
-import uuid
-import asyncio
-from collections import deque
 
 
 class AuditAction(str, Enum):
@@ -60,12 +61,10 @@ class AuditEntry(BaseModel):
     """Single audit log entry."""
 
     audit_id: str = Field(
-        default_factory=lambda: str(uuid.uuid4()),
-        description="Unique audit entry ID"
+        default_factory=lambda: str(uuid.uuid4()), description="Unique audit entry ID"
     )
     timestamp: str = Field(
-        default_factory=lambda: datetime.now().isoformat(),
-        description="Entry timestamp"
+        default_factory=lambda: datetime.now().isoformat(), description="Entry timestamp"
     )
     action: AuditAction = Field(..., description="Type of action")
     actor: str = Field(..., description="Agent or user performing action")
@@ -83,17 +82,20 @@ class AuditEntry(BaseModel):
 
     def compute_checksum(self) -> str:
         """Compute SHA256 checksum of entry content."""
-        content = json.dumps({
-            "audit_id": self.audit_id,
-            "timestamp": self.timestamp,
-            "action": self.action.value,
-            "actor": self.actor,
-            "target": self.target,
-            "trace_id": self.trace_id,
-            "incident_id": self.incident_id,
-            "success": self.success,
-            "details": self.details,
-        }, sort_keys=True)
+        content = json.dumps(
+            {
+                "audit_id": self.audit_id,
+                "timestamp": self.timestamp,
+                "action": self.action.value,
+                "actor": self.actor,
+                "target": self.target,
+                "trace_id": self.trace_id,
+                "incident_id": self.incident_id,
+                "success": self.success,
+                "details": self.details,
+            },
+            sort_keys=True,
+        )
         return hashlib.sha256(content.encode()).hexdigest()
 
     def finalize(self) -> "AuditEntry":
@@ -225,7 +227,11 @@ class AuditTrail:
     ) -> AuditEntry:
         """Log consensus result."""
         return await self.log(
-            action=AuditAction.CONSENSUS_REACHED if result in ["approved", "rejected"] else AuditAction.CONSENSUS_FAILED,
+            action=(
+                AuditAction.CONSENSUS_REACHED
+                if result in ["approved", "rejected"]
+                else AuditAction.CONSENSUS_FAILED
+            ),
             actor="consensus-manager",
             target=consensus_id,
             trace_id=trace_id,
@@ -283,7 +289,7 @@ class AuditTrail:
             filtered = [e for e in filtered if e.success == success_only]
 
         # Apply pagination
-        return filtered[offset:offset + limit]
+        return filtered[offset : offset + limit]
 
     async def get_incident_audit(self, incident_id: str) -> List[AuditEntry]:
         """Get all audit entries for an incident."""

@@ -52,35 +52,35 @@ from .verification_engine import (
 
 __all__ = [
     # Execution Engine
-    'ExecutionEngine',
-    'ExecutionContext',
-    'ExecutionResult',
-    'ExecutionStatus',
-    'ActionType',
+    "ExecutionEngine",
+    "ExecutionContext",
+    "ExecutionResult",
+    "ExecutionStatus",
+    "ActionType",
     # Capability Registry
-    'CapabilityRegistry',
-    'Capability',
-    'CapabilityStatus',
-    'CapabilityRequirement',
+    "CapabilityRegistry",
+    "Capability",
+    "CapabilityStatus",
+    "CapabilityRequirement",
     # Connector Manager
-    'ConnectorManager',
-    'Connector',
-    'ConnectorType',
-    'ConnectionStatus',
+    "ConnectorManager",
+    "Connector",
+    "ConnectorType",
+    "ConnectionStatus",
     # Action Executor
-    'ActionExecutor',
-    'ActionPlan',
-    'ActionStep',
-    'StepResult',
+    "ActionExecutor",
+    "ActionPlan",
+    "ActionStep",
+    "StepResult",
     # Verification Engine
-    'VerificationEngine',
-    'VerificationResult',
-    'VerificationStrategy',
+    "VerificationEngine",
+    "VerificationResult",
+    "VerificationStrategy",
     # Rollback Manager
-    'RollbackManager',
-    'RollbackPlan',
-    'RollbackStatus',
-    'Checkpoint',
+    "RollbackManager",
+    "RollbackPlan",
+    "RollbackStatus",
+    "Checkpoint",
 ]
 
-__version__ = '1.0.0'
+__version__ = "1.0.0"

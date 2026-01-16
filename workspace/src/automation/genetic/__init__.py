@@ -6,9 +6,9 @@ AXIOM Layer 10 Components
 
 from .genetic_optimizer import (
     GeneticOptimizer,
+    Individual,
     OptimizationConfig,
     OptimizationResult,
-    Individual,
     SelectionMethod,
 )
 

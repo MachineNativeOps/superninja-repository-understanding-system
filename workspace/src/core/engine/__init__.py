@@ -17,22 +17,22 @@ Status: P0 core implementation complete.
 __version__ = "0.2.0"
 __plugin_id__ = "hlp-executor-core"
 
-from typing import Dict, Any
+from typing import Any, Dict
 
 # Import core components
 from .dag_engine import DAGEngine, DAGNode, NodeStatus
-from .state_machine import (
-    StateMachine,
-    ExecutionState,
-    ExecutionOrchestrator,
-    StateTransition,
-)
 from .partial_rollback import (
+    Checkpoint,
     PartialRollbackManager,
     RollbackLevel,
-    RollbackStatus,
-    Checkpoint,
     RollbackOperation,
+    RollbackStatus,
+)
+from .state_machine import (
+    ExecutionOrchestrator,
+    ExecutionState,
+    StateMachine,
+    StateTransition,
 )
 
 # Plugin metadata for service discovery
@@ -63,7 +63,7 @@ PLUGIN_METADATA: Dict[str, Any] = {
 def get_plugin_info() -> Dict[str, Any]:
     """
     Get plugin information for service discovery.
-    
+
     Returns:
         dict: Plugin metadata including version, capabilities, and requirements
     """
@@ -90,4 +90,3 @@ __all__ = [
     "Checkpoint",
     "RollbackOperation",
 ]
-

@@ -22,36 +22,40 @@ from typing import Any
 
 class StrategyPriority(Enum):
     """策略優先級"""
-    CURRENT = "current"         # 當前（3 個）
-    PREPARING = "preparing"     # 準備中（2 個）
-    RESEARCHING = "researching" # 研究中（1 個）
+
+    CURRENT = "current"  # 當前（3 個）
+    PREPARING = "preparing"  # 準備中（2 個）
+    RESEARCHING = "researching"  # 研究中（1 個）
 
 
 class SkillCategory(Enum):
     """技能類別"""
-    TECHNICAL = "technical"             # 技術技能
-    ARCHITECTURE = "architecture"       # 架構設計
-    SECURITY = "security"               # 安全
-    DEVOPS = "devops"                   # DevOps
-    DATA = "data"                       # 數據
-    AI_ML = "ai_ml"                     # AI/ML
-    CLOUD = "cloud"                     # 雲端
-    MOBILE = "mobile"                   # 移動開發
-    FRONTEND = "frontend"               # 前端
-    BACKEND = "backend"                 # 後端
+
+    TECHNICAL = "technical"  # 技術技能
+    ARCHITECTURE = "architecture"  # 架構設計
+    SECURITY = "security"  # 安全
+    DEVOPS = "devops"  # DevOps
+    DATA = "data"  # 數據
+    AI_ML = "ai_ml"  # AI/ML
+    CLOUD = "cloud"  # 雲端
+    MOBILE = "mobile"  # 移動開發
+    FRONTEND = "frontend"  # 前端
+    BACKEND = "backend"  # 後端
 
 
 class ReviewCycle(Enum):
     """檢視週期"""
-    WEEKLY = "weekly"           # 每週
-    MONTHLY = "monthly"         # 每月
-    QUARTERLY = "quarterly"     # 每季
-    ANNUAL = "annual"           # 每年
+
+    WEEKLY = "weekly"  # 每週
+    MONTHLY = "monthly"  # 每月
+    QUARTERLY = "quarterly"  # 每季
+    ANNUAL = "annual"  # 每年
 
 
 @dataclass
 class StrategyItem:
     """策略項目"""
+
     strategy_id: str
     name: str
     description: str
@@ -61,21 +65,22 @@ class StrategyItem:
     required_skills: list[SkillCategory] = field(default_factory=list)
 
     # 資源需求
-    estimated_investment: float = 0.0    # 預估投資
-    estimated_time_months: int = 0       # 預估時間
-    team_size_required: int = 0          # 所需團隊規模
+    estimated_investment: float = 0.0  # 預估投資
+    estimated_time_months: int = 0  # 預估時間
+    team_size_required: int = 0  # 所需團隊規模
 
     # 預期收益
-    expected_roi: float = 0.0            # 預期 ROI
-    market_potential: str = "medium"     # 市場潛力 (low, medium, high)
+    expected_roi: float = 0.0  # 預期 ROI
+    market_potential: str = "medium"  # 市場潛力 (low, medium, high)
 
     # 風險
-    risk_level: str = "medium"           # 風險等級
+    risk_level: str = "medium"  # 風險等級
     risk_factors: list[str] = field(default_factory=list)
 
     # 狀態
-    progress: float = 0.0                # 進度 (0-100)
-    status: str = "planned"              # 狀態 (planned, in_progress, completed, paused)
+    progress: float = 0.0  # 進度 (0-100)
+    # 狀態 (planned, in_progress, completed, paused)
+    status: str = "planned"
     started_at: datetime | None = None
     completed_at: datetime | None = None
 
@@ -84,17 +89,18 @@ class StrategyItem:
 class Strategy321:
     """
     3-2-1 策略管理
-    
+
     同時關注：
     - 3 個當前優先提示詞
     - 2 個準備中的提示詞
     - 1 個研究中的未來提示詞
     """
+
     organization_id: str
 
     # 策略項目
-    current_strategies: list[StrategyItem] = field(default_factory=list)      # 最多 3 個
-    preparing_strategies: list[StrategyItem] = field(default_factory=list)    # 最多 2 個
+    current_strategies: list[StrategyItem] = field(default_factory=list)  # 最多 3 個
+    preparing_strategies: list[StrategyItem] = field(default_factory=list)  # 最多 2 個
     researching_strategies: list[StrategyItem] = field(default_factory=list)  # 最多 1 個
 
     # 歷史記錄
@@ -110,16 +116,13 @@ class Strategy321:
     next_review: datetime | None = None
     review_cycle: ReviewCycle = ReviewCycle.QUARTERLY
 
-    def add_strategy(
-        self,
-        strategy: StrategyItem
-    ) -> tuple[bool, str]:
+    def add_strategy(self, strategy: StrategyItem) -> tuple[bool, str]:
         """
         添加策略
-        
+
         Args:
             strategy: 策略項目
-        
+
         Returns:
             Tuple[bool, str]: (是否成功, 消息)
         """
@@ -140,16 +143,13 @@ class Strategy321:
 
         return True, "策略添加成功"
 
-    def promote_strategy(
-        self,
-        strategy_id: str
-    ) -> tuple[bool, str]:
+    def promote_strategy(self, strategy_id: str) -> tuple[bool, str]:
         """
         提升策略優先級
-        
+
         Args:
             strategy_id: 策略 ID
-        
+
         Returns:
             Tuple[bool, str]: (是否成功, 消息)
         """
@@ -179,18 +179,14 @@ class Strategy321:
 
         return False, "找不到指定策略"
 
-    def complete_strategy(
-        self,
-        strategy_id: str,
-        actual_roi: float = 0.0
-    ) -> tuple[bool, str]:
+    def complete_strategy(self, strategy_id: str, actual_roi: float = 0.0) -> tuple[bool, str]:
         """
         完成策略
-        
+
         Args:
             strategy_id: 策略 ID
             actual_roi: 實際 ROI
-        
+
         Returns:
             Tuple[bool, str]: (是否成功, 消息)
         """
@@ -200,81 +196,69 @@ class Strategy321:
                 s.completed_at = datetime.now()
                 s.progress = 100
                 self.current_strategies.pop(i)
-                self._record_history(
-                    strategy_id,
-                    "completed",
-                    f"actual_roi: {actual_roi}"
-                )
+                self._record_history(strategy_id, "completed", f"actual_roi: {actual_roi}")
                 return True, "策略已完成"
 
         return False, "找不到指定策略或策略不在當前執行中"
 
-    def _record_history(
-        self,
-        strategy_id: str,
-        action: str,
-        details: str
-    ) -> None:
+    def _record_history(self, strategy_id: str, action: str, details: str) -> None:
         """記錄歷史"""
-        self.strategy_history.append({
-            'strategy_id': strategy_id,
-            'action': action,
-            'details': details,
-            'timestamp': datetime.now().isoformat()
-        })
+        self.strategy_history.append(
+            {
+                "strategy_id": strategy_id,
+                "action": action,
+                "details": details,
+                "timestamp": datetime.now().isoformat(),
+            }
+        )
 
     def get_status_report(self) -> dict[str, Any]:
         """獲取狀態報告"""
         return {
-            'organization_id': self.organization_id,
-            'current_strategies': [
-                {
-                    'id': s.strategy_id,
-                    'name': s.name,
-                    'progress': s.progress,
-                    'status': s.status
-                }
+            "organization_id": self.organization_id,
+            "current_strategies": [
+                {"id": s.strategy_id, "name": s.name, "progress": s.progress, "status": s.status}
                 for s in self.current_strategies
             ],
-            'preparing_strategies': [
-                {'id': s.strategy_id, 'name': s.name}
-                for s in self.preparing_strategies
+            "preparing_strategies": [
+                {"id": s.strategy_id, "name": s.name} for s in self.preparing_strategies
             ],
-            'researching_strategies': [
-                {'id': s.strategy_id, 'name': s.name}
-                for s in self.researching_strategies
+            "researching_strategies": [
+                {"id": s.strategy_id, "name": s.name} for s in self.researching_strategies
             ],
-            'slots': {
-                'current': f"{len(self.current_strategies)}/{self.max_current}",
-                'preparing': f"{len(self.preparing_strategies)}/{self.max_preparing}",
-                'researching': f"{len(self.researching_strategies)}/{self.max_researching}"
+            "slots": {
+                "current": f"{len(self.current_strategies)}/{self.max_current}",
+                "preparing": f"{len(self.preparing_strategies)}/{self.max_preparing}",
+                "researching": f"{len(self.researching_strategies)}/{self.max_researching}",
             },
-            'next_review': self.next_review.isoformat() if self.next_review else None,
-            'report_date': datetime.now().isoformat()
+            "next_review": self.next_review.isoformat() if self.next_review else None,
+            "report_date": datetime.now().isoformat(),
         }
 
 
 @dataclass
 class TeamSkillAssessment:
     """團隊技能評估"""
+
     skill_category: SkillCategory
-    current_level: float = 0.0          # 當前水平 (0-100)
-    target_level: float = 0.0           # 目標水平
-    team_members_with_skill: int = 0    # 擁有此技能的成員數
-    training_hours_needed: int = 0      # 所需培訓時數
-    priority: str = "medium"            # 優先級
+    current_level: float = 0.0  # 當前水平 (0-100)
+    target_level: float = 0.0  # 目標水平
+    team_members_with_skill: int = 0  # 擁有此技能的成員數
+    training_hours_needed: int = 0  # 所需培訓時數
+    priority: str = "medium"  # 優先級
 
 
 @dataclass
 class TeamCapability:
     """
     團隊能力管理
-    
+
     功能：
     - 技能評估
     - 培訓計劃
     - 能力差距分析
     """
+
     team_id: str
     team_name: str
     team_size: int
@@ -293,17 +277,17 @@ class TeamCapability:
         category: SkillCategory,
         current_level: float,
         target_level: float,
-        members_with_skill: int
+        members_with_skill: int,
     ) -> TeamSkillAssessment:
         """
         評估技能
-        
+
         Args:
             category: 技能類別
             current_level: 當前水平
             target_level: 目標水平
             members_with_skill: 擁有此技能的成員數
-        
+
         Returns:
             TeamSkillAssessment: 評估結果
         """
@@ -326,7 +310,7 @@ class TeamCapability:
             target_level=target_level,
             team_members_with_skill=members_with_skill,
             training_hours_needed=training_hours,
-            priority=priority
+            priority=priority,
         )
 
         self.skill_assessments[category] = assessment
@@ -341,46 +325,48 @@ class TeamCapability:
         for category, assessment in self.skill_assessments.items():
             gap = assessment.target_level - assessment.current_level
             if gap > 0:
-                gaps.append({
-                    'skill': category.value,
-                    'current': assessment.current_level,
-                    'target': assessment.target_level,
-                    'gap': gap,
-                    'priority': assessment.priority,
-                    'training_hours': assessment.training_hours_needed,
-                    'coverage': f"{assessment.team_members_with_skill}/{self.team_size}"
-                })
+                gaps.append(
+                    {
+                        "skill": category.value,
+                        "current": assessment.current_level,
+                        "target": assessment.target_level,
+                        "gap": gap,
+                        "priority": assessment.priority,
+                        "training_hours": assessment.training_hours_needed,
+                        "coverage": f"{assessment.team_members_with_skill}/{self.team_size}",
+                    }
+                )
 
         # 按差距大小排序
-        return sorted(gaps, key=lambda x: x['gap'], reverse=True)
+        return sorted(gaps, key=lambda x: x["gap"], reverse=True)
 
     def create_training_plan(
         self,
         skill_category: SkillCategory,
         training_name: str,
         duration_hours: int,
-        cost: float = 0.0
+        cost: float = 0.0,
     ) -> dict[str, Any]:
         """
         創建培訓計劃
-        
+
         Args:
             skill_category: 技能類別
             training_name: 培訓名稱
             duration_hours: 時長
             cost: 成本
-        
+
         Returns:
             Dict: 培訓計劃
         """
         plan = {
-            'plan_id': f"tp_{len(self.training_plans) + 1}",
-            'skill_category': skill_category.value,
-            'training_name': training_name,
-            'duration_hours': duration_hours,
-            'cost': cost,
-            'status': 'planned',
-            'created_at': datetime.now().isoformat()
+            "plan_id": f"tp_{len(self.training_plans) + 1}",
+            "skill_category": skill_category.value,
+            "training_name": training_name,
+            "duration_hours": duration_hours,
+            "cost": cost,
+            "status": "planned",
+            "created_at": datetime.now().isoformat(),
         }
 
         self.training_plans.append(plan)
@@ -391,15 +377,14 @@ class TeamCapability:
         if not self.skill_assessments:
             return 0.0
 
-        total_score = sum(
-            a.current_level for a in self.skill_assessments.values()
-        )
+        total_score = sum(a.current_level for a in self.skill_assessments.values())
         return total_score / len(self.skill_assessments)
 
 
 @dataclass
 class OptimizationReview:
     """優化審查記錄"""
+
     review_id: str
     review_date: datetime
     review_type: ReviewCycle
@@ -420,7 +405,7 @@ class OptimizationReview:
 class ContinuousOptimization:
     """
     持續優化管理
-    
+
     功能：
     - 定期策略檢視
     - 績效追蹤
@@ -433,17 +418,15 @@ class ContinuousOptimization:
         self.alerts: list[dict[str, Any]] = []
 
     def schedule_review(
-        self,
-        review_cycle: ReviewCycle,
-        start_date: datetime | None = None
+        self, review_cycle: ReviewCycle, start_date: datetime | None = None
     ) -> datetime:
         """
         排程審查
-        
+
         Args:
             review_cycle: 審查週期
             start_date: 開始日期
-        
+
         Returns:
             datetime: 下次審查日期
         """
@@ -454,24 +437,22 @@ class ContinuousOptimization:
             ReviewCycle.WEEKLY: 7,
             ReviewCycle.MONTHLY: 30,
             ReviewCycle.QUARTERLY: 90,
-            ReviewCycle.ANNUAL: 365
+            ReviewCycle.ANNUAL: 365,
         }
 
         next_review = start_date + timedelta(days=delta_days[review_cycle])
         return next_review
 
     def conduct_review(
-        self,
-        strategy_321: Strategy321,
-        team_capability: TeamCapability
+        self, strategy_321: Strategy321, team_capability: TeamCapability
     ) -> OptimizationReview:
         """
         執行審查
-        
+
         Args:
             strategy_321: 3-2-1 策略
             team_capability: 團隊能力
-        
+
         Returns:
             OptimizationReview: 審查結果
         """
@@ -479,10 +460,10 @@ class ContinuousOptimization:
 
         # 收集當前指標
         current_metrics = {
-            'active_strategies': len(strategy_321.current_strategies),
-            'preparing_strategies': len(strategy_321.preparing_strategies),
-            'team_capability_score': team_capability.get_overall_capability_score(),
-            'capability_gaps': len(team_capability.get_capability_gaps())
+            "active_strategies": len(strategy_321.current_strategies),
+            "preparing_strategies": len(strategy_321.preparing_strategies),
+            "team_capability_score": team_capability.get_overall_capability_score(),
+            "capability_gaps": len(team_capability.get_capability_gaps()),
         }
 
         # 生成變更和建議
@@ -500,13 +481,11 @@ class ContinuousOptimization:
 
         # 檢查準備中策略
         if len(strategy_321.preparing_strategies) < strategy_321.max_preparing:
-            recommendations.append(
-                "準備中策略不足，建議從研究中提升或添加新策略"
-            )
+            recommendations.append("準備中策略不足，建議從研究中提升或添加新策略")
 
         # 檢查團隊能力差距
         gaps = team_capability.get_capability_gaps()
-        high_priority_gaps = [g for g in gaps if g['priority'] == 'high']
+        high_priority_gaps = [g for g in gaps if g["priority"] == "high"]
         if high_priority_gaps:
             recommendations.append(
                 f"發現 {len(high_priority_gaps)} 個高優先級能力差距，建議安排培訓"
@@ -517,13 +496,13 @@ class ContinuousOptimization:
             review_id=review_id,
             review_date=datetime.now(),
             review_type=strategy_321.review_cycle,
-            strategies_reviewed=len(strategy_321.current_strategies) +
-                               len(strategy_321.preparing_strategies),
+            strategies_reviewed=len(strategy_321.current_strategies)
+            + len(strategy_321.preparing_strategies),
             changes_made=changes,
             recommendations=recommendations,
             metrics_before=self.metrics_history[-1] if self.metrics_history else {},
             metrics_after=current_metrics,
-            next_review_date=self.schedule_review(strategy_321.review_cycle)
+            next_review_date=self.schedule_review(strategy_321.review_cycle),
         )
 
         self.reviews.append(review)
@@ -558,73 +537,80 @@ class ContinuousOptimization:
             report_lines.append(f"  {metric}: {value}")
 
         if latest_review.recommendations:
-            report_lines.extend([
-                "",
-                "💡 建議",
-                "-" * 40,
-            ])
+            report_lines.extend(
+                [
+                    "",
+                    "💡 建議",
+                    "-" * 40,
+                ]
+            )
             for rec in latest_review.recommendations:
                 report_lines.append(f"  • {rec}")
 
         if latest_review.next_review_date:
-            report_lines.extend([
-                "",
-                f"📅 下次審查: {latest_review.next_review_date.strftime('%Y-%m-%d')}",
-            ])
+            report_lines.extend(
+                [
+                    "",
+                    f"📅 下次審查: {latest_review.next_review_date.strftime('%Y-%m-%d')}",
+                ]
+            )
 
         return "\n".join(report_lines)
 
     def set_alert(
-        self,
-        metric_name: str,
-        threshold: float,
-        comparison: str = "below"  # below, above
+        self, metric_name: str, threshold: float, comparison: str = "below"  # below, above
     ) -> None:
         """
         設置警報
-        
+
         Args:
             metric_name: 指標名稱
             threshold: 閾值
             comparison: 比較方式
         """
-        self.alerts.append({
-            'metric_name': metric_name,
-            'threshold': threshold,
-            'comparison': comparison,
-            'created_at': datetime.now().isoformat()
-        })
+        self.alerts.append(
+            {
+                "metric_name": metric_name,
+                "threshold": threshold,
+                "comparison": comparison,
+                "created_at": datetime.now().isoformat(),
+            }
+        )
 
     def check_alerts(self, current_metrics: dict[str, float]) -> list[dict[str, Any]]:
         """
         檢查警報
-        
+
         Args:
             current_metrics: 當前指標
-        
+
         Returns:
             List[Dict]: 觸發的警報
         """
         triggered = []
 
         for alert in self.alerts:
-            metric_name = alert['metric_name']
+            metric_name = alert["metric_name"]
             if metric_name in current_metrics:
                 value = current_metrics[metric_name]
-                threshold = alert['threshold']
+                threshold = alert["threshold"]
 
-                if alert['comparison'] == 'below' and value < threshold:
-                    triggered.append({
-                        'alert': alert,
-                        'current_value': value,
-                        'message': f"{metric_name} ({value}) 低於閾值 ({threshold})"
-                    })
-                elif alert['comparison'] == 'above' and value > threshold:
-                    triggered.append({
-                        'alert': alert,
-                        'current_value': value,
-                        'message': f"{metric_name} ({value}) 高於閾值 ({threshold})"
-                    })
+                if alert["comparison"] == "below" and value < threshold:
+                    triggered.append(
+                        {
+                            "alert": alert,
+                            "current_value": value,
+                            "message": f"{metric_name} ({value}) 低於閾值 ({threshold})",
+                        }
+                    )
+                elif alert["comparison"] == "above" and value > threshold:
+                    triggered.append(
+                        {
+                            "alert": alert,
+                            "current_value": value,
+                            "message": f"{metric_name} ({value}) 高於閾值 ({threshold})",
+                        }
+                    )
 
         return triggered
 
@@ -632,55 +618,41 @@ class ContinuousOptimization:
 class DevelopmentTracker:
     """
     發展追蹤器
-    
+
     整合 3-2-1 策略、團隊能力和持續優化
-    
+
     Usage:
         tracker = DevelopmentTracker("org_001")
-        
+
         # 添加策略
         strategy = StrategyItem(...)
         tracker.add_strategy(strategy)
-        
+
         # 評估團隊能力
         tracker.assess_team_skill(SkillCategory.SECURITY, 60, 80, 5)
-        
+
         # 執行審查
         review = tracker.conduct_quarterly_review()
-        
+
         # 獲取報告
         report = tracker.generate_full_report()
     """
 
     def __init__(
-        self,
-        organization_id: str,
-        team_name: str = "Development Team",
-        team_size: int = 10
+        self, organization_id: str, team_name: str = "Development Team", team_size: int = 10
     ):
         self.strategy_321 = Strategy321(organization_id=organization_id)
         self.team_capability = TeamCapability(
-            team_id=f"{organization_id}_team",
-            team_name=team_name,
-            team_size=team_size
+            team_id=f"{organization_id}_team", team_name=team_name, team_size=team_size
         )
         self.continuous_optimization = ContinuousOptimization()
 
     def add_strategy(
-        self,
-        strategy_id: str,
-        name: str,
-        description: str,
-        priority: StrategyPriority,
-        **kwargs
+        self, strategy_id: str, name: str, description: str, priority: StrategyPriority, **kwargs
     ) -> tuple[bool, str]:
         """添加策略"""
         strategy = StrategyItem(
-            strategy_id=strategy_id,
-            name=name,
-            description=description,
-            priority=priority,
-            **kwargs
+            strategy_id=strategy_id, name=name, description=description, priority=priority, **kwargs
         )
         return self.strategy_321.add_strategy(strategy)
 
@@ -689,7 +661,7 @@ class DevelopmentTracker:
         category: SkillCategory,
         current_level: float,
         target_level: float,
-        members_with_skill: int
+        members_with_skill: int,
     ) -> TeamSkillAssessment:
         """評估團隊技能"""
         return self.team_capability.assess_skill(
@@ -699,10 +671,7 @@ class DevelopmentTracker:
     def conduct_quarterly_review(self) -> OptimizationReview:
         """執行季度審查"""
         self.strategy_321.review_cycle = ReviewCycle.QUARTERLY
-        return self.continuous_optimization.conduct_review(
-            self.strategy_321,
-            self.team_capability
-        )
+        return self.continuous_optimization.conduct_review(self.strategy_321, self.team_capability)
 
     def generate_full_report(self) -> str:
         """生成完整報告"""
@@ -718,24 +687,26 @@ class DevelopmentTracker:
         status = self.strategy_321.get_status_report()
 
         report_lines.append(f"當前執行 ({status['slots']['current']}):")
-        for s in status['current_strategies']:
+        for s in status["current_strategies"]:
             report_lines.append(f"  • {s['name']} - {s['progress']}% ({s['status']})")
 
         report_lines.append(f"準備中 ({status['slots']['preparing']}):")
-        for s in status['preparing_strategies']:
+        for s in status["preparing_strategies"]:
             report_lines.append(f"  • {s['name']}")
 
         report_lines.append(f"研究中 ({status['slots']['researching']}):")
-        for s in status['researching_strategies']:
+        for s in status["researching_strategies"]:
             report_lines.append(f"  • {s['name']}")
 
         # 團隊能力
-        report_lines.extend([
-            "",
-            "👥 團隊能力",
-            "-" * 50,
-            f"整體能力分數: {self.team_capability.get_overall_capability_score():.1f}/100",
-        ])
+        report_lines.extend(
+            [
+                "",
+                "👥 團隊能力",
+                "-" * 50,
+                f"整體能力分數: {self.team_capability.get_overall_capability_score():.1f}/100",
+            ]
+        )
 
         gaps = self.team_capability.get_capability_gaps()
         if gaps:
@@ -747,11 +718,13 @@ class DevelopmentTracker:
                 )
 
         # 優化建議
-        report_lines.extend([
-            "",
-            "💡 優化建議",
-            "-" * 50,
-        ])
+        report_lines.extend(
+            [
+                "",
+                "💡 優化建議",
+                "-" * 50,
+            ]
+        )
 
         if self.continuous_optimization.reviews:
             latest = self.continuous_optimization.reviews[-1]
@@ -760,10 +733,12 @@ class DevelopmentTracker:
         else:
             report_lines.append("  尚無審查記錄，建議執行首次審查")
 
-        report_lines.extend([
-            "",
-            "=" * 70,
-            f"報告生成時間: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}",
-        ])
+        report_lines.extend(
+            [
+                "",
+                "=" * 70,
+                f"報告生成時間: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}",
+            ]
+        )
 
         return "\n".join(report_lines)

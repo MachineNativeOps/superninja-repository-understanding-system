@@ -3,6 +3,11 @@
 Phase 2 Tests - Analyzers and Utils
 """
 
+from utils.dependency_tree import DependencyTree, RiskLevel
+from utils.audit_logger import AuditEventType, AuditLogger, AuditSeverity
+from models.dependency import Dependency, DependencyType, Ecosystem
+from analyzers.pip_analyzer import PipAnalyzer
+from analyzers.go_analyzer import GoAnalyzer
 import os
 import sys
 import tempfile
@@ -11,13 +16,7 @@ from pathlib import Path
 import pytest
 
 # 添加 src 目錄到路徑
-sys.path.insert(0, str(Path(__file__).parent.parent / 'src'))
-
-from analyzers.go_analyzer import GoAnalyzer
-from analyzers.pip_analyzer import PipAnalyzer
-from models.dependency import Dependency, DependencyType, Ecosystem
-from utils.audit_logger import AuditEventType, AuditLogger, AuditSeverity
-from utils.dependency_tree import DependencyTree, RiskLevel
+sys.path.insert(0, str(Path(__file__).parent.parent / "src"))
 
 
 class TestPipAnalyzer:
@@ -60,7 +59,7 @@ class TestPipAnalyzer:
         analyzer = PipAnalyzer()
 
         # 創建臨時文件
-        with tempfile.NamedTemporaryFile(mode='w', suffix='.txt', delete=False) as f:
+        with tempfile.NamedTemporaryFile(mode="w", suffix=".txt", delete=False) as f:
             f.write("# Test requirements\n")
             f.write("requests==2.28.0\n")
             f.write("flask>=2.0.0\n")
@@ -133,7 +132,7 @@ class TestGoAnalyzer:
         analyzer = GoAnalyzer()
 
         # 創建臨時 go.mod 文件
-        with tempfile.NamedTemporaryFile(mode='w', suffix='.mod', delete=False) as f:
+        with tempfile.NamedTemporaryFile(mode="w", suffix=".mod", delete=False) as f:
             f.write("module github.com/test/project\n\n")
             f.write("go 1.21\n\n")
             f.write("require (\n")
@@ -186,7 +185,7 @@ class TestDependencyTree:
             current_version="1.0.0",
             ecosystem=Ecosystem.NPM,
             has_vulnerability=True,
-            vulnerability_count=3
+            vulnerability_count=3,
         )
 
         risk = tree._calculate_risk(vulnerable_dep)
@@ -197,7 +196,7 @@ class TestDependencyTree:
             name="outdated-pkg",
             current_version="1.0.0",
             latest_version="2.0.0",
-            ecosystem=Ecosystem.NPM
+            ecosystem=Ecosystem.NPM,
         )
 
         risk = tree._calculate_risk(outdated_dep)
@@ -228,13 +227,13 @@ class TestDependencyTree:
                 name="pkg2",
                 current_version="1.0.0",
                 latest_version="2.0.0",
-                ecosystem=Ecosystem.NPM
+                ecosystem=Ecosystem.NPM,
             ),
             Dependency(
                 name="pkg3",
                 current_version="1.0.0",
                 ecosystem=Ecosystem.NPM,
-                has_vulnerability=True
+                has_vulnerability=True,
             ),
         ]
 
@@ -254,9 +253,7 @@ class TestAuditLogger:
         audit = AuditLogger()
 
         event = audit.log(
-            event_type=AuditEventType.ANALYSIS_STARTED,
-            target="test-project",
-            details="開始分析"
+            event_type=AuditEventType.ANALYSIS_STARTED, target="test-project", details="開始分析"
         )
 
         assert event.event_type == AuditEventType.ANALYSIS_STARTED
@@ -283,9 +280,7 @@ class TestAuditLogger:
         audit = AuditLogger()
 
         event = audit.log_vulnerability_detected(
-            package="lodash",
-            vulnerability_id="CVE-2021-23337",
-            severity="CRITICAL"
+            package="lodash", vulnerability_id="CVE-2021-23337", severity="CRITICAL"
         )
 
         assert event.event_type == AuditEventType.VULNERABILITY_DETECTED
@@ -325,7 +320,7 @@ class TestAuditLogger:
 
     def test_file_logging(self):
         """測試文件記錄"""
-        with tempfile.NamedTemporaryFile(mode='w', suffix='.log', delete=False) as f:
+        with tempfile.NamedTemporaryFile(mode="w", suffix=".log", delete=False) as f:
             temp_path = f.name
 
         try:
@@ -335,7 +330,7 @@ class TestAuditLogger:
             audit.log_analysis_completed("test-project", 10, 1, 0)
 
             # 驗證文件內容
-            with open(temp_path, encoding='utf-8') as f:
+            with open(temp_path, encoding="utf-8") as f:
                 lines = f.readlines()
 
             assert len(lines) == 2

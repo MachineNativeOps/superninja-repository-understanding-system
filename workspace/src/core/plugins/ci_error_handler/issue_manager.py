@@ -17,6 +17,7 @@ from .ci_error_analyzer import CIError, ErrorCategory, ErrorSeverity
 
 class IssueStatus(Enum):
     """Status of a CI issue"""
+
     OPEN = "open"
     IN_PROGRESS = "in_progress"
     FIX_ATTEMPTED = "fix_attempted"
@@ -29,6 +30,7 @@ class IssueStatus(Enum):
 @dataclass
 class IssueTemplate:
     """Template for creating CI error issues"""
+
     template_id: str
     name: str
     title_format: str
@@ -57,25 +59,26 @@ class IssueTemplate:
             stack_trace=error.stack_trace or "No stack trace available",
             fix_suggestion=error.fix_suggestion or "No automatic fix suggestion",
             auto_fixable="Yes ✅" if error.auto_fixable else "No ❌",
-            workflow_name=workflow_info.get('workflow_name', 'Unknown'),
-            workflow_run_id=workflow_info.get('run_id', 'Unknown'),
-            workflow_url=workflow_info.get('url', '#'),
-            branch=workflow_info.get('branch', 'Unknown'),
-            commit_sha=workflow_info.get('commit_sha', 'Unknown'),
+            workflow_name=workflow_info.get("workflow_name", "Unknown"),
+            workflow_run_id=workflow_info.get("run_id", "Unknown"),
+            workflow_url=workflow_info.get("url", "#"),
+            branch=workflow_info.get("branch", "Unknown"),
+            commit_sha=workflow_info.get("commit_sha", "Unknown"),
             timestamp=error.timestamp.isoformat(),
         )
 
         return {
-            'title': title[:256],  # GitHub title limit
-            'body': body,
-            'labels': self.labels,
-            'assignees': self.assignees,
+            "title": title[:256],  # GitHub title limit
+            "body": body,
+            "labels": self.labels,
+            "assignees": self.assignees,
         }
 
 
 @dataclass
 class CIIssue:
     """Represents a GitHub issue for a CI error"""
+
     issue_id: int | None
     error: CIError
     status: IssueStatus
@@ -91,25 +94,25 @@ class CIIssue:
     def to_dict(self) -> dict[str, Any]:
         """Convert to dictionary"""
         return {
-            'issue_id': self.issue_id,
-            'error': self.error.to_dict(),
-            'status': self.status.value,
-            'workflow_info': self.workflow_info,
-            'github_url': self.github_url,
-            'created_at': self.created_at.isoformat(),
-            'updated_at': self.updated_at.isoformat(),
-            'fix_attempts_count': len(self.fix_attempts),
-            'labels': self.labels,
-            'assignees': self.assignees,
+            "issue_id": self.issue_id,
+            "error": self.error.to_dict(),
+            "status": self.status.value,
+            "workflow_info": self.workflow_info,
+            "github_url": self.github_url,
+            "created_at": self.created_at.isoformat(),
+            "updated_at": self.updated_at.isoformat(),
+            "fix_attempts_count": len(self.fix_attempts),
+            "labels": self.labels,
+            "assignees": self.assignees,
         }
 
 
 class IssueManager:
     """
     Issue Manager
-    
+
     Create and manage GitHub issues for CI/CD errors.
-    
+
     Features:
     - Template-based issue creation
     - Label management based on error type
@@ -207,29 +210,26 @@ class IssueManager:
     def __init__(self, custom_templates: dict[str, IssueTemplate] | None = None):
         """
         Initialize the Issue Manager
-        
+
         Args:
             custom_templates: Custom templates by category
         """
-        self.templates = {'default': self.DEFAULT_TEMPLATE}
+        self.templates = {"default": self.DEFAULT_TEMPLATE}
         if custom_templates:
             self.templates.update(custom_templates)
         self._issues: dict[str, CIIssue] = {}
 
     def create_issue_content(
-        self,
-        error: CIError,
-        workflow_info: dict[str, Any],
-        template_id: str = "default"
+        self, error: CIError, workflow_info: dict[str, Any], template_id: str = "default"
     ) -> dict[str, Any]:
         """
         Create issue content from error
-        
+
         Args:
             error: The CI error
             workflow_info: Information about the workflow run
             template_id: Template to use
-            
+
         Returns:
             Dictionary with issue title, body, labels, etc.
         """
@@ -237,12 +237,12 @@ class IssueManager:
         content = template.render(error, workflow_info)
 
         # Add category and severity labels
-        all_labels = list(content['labels'])
+        all_labels = list(content["labels"])
         all_labels.extend(self.CATEGORY_LABELS.get(error.category, []))
         all_labels.append(self.SEVERITY_LABELS.get(error.severity, ""))
 
         # Remove empty labels and duplicates
-        content['labels'] = list({l for l in all_labels if l})
+        content["labels"] = list({l for l in all_labels if l})
 
         return content
 
@@ -251,17 +251,17 @@ class IssueManager:
         error: CIError,
         workflow_info: dict[str, Any],
         issue_id: int | None = None,
-        github_url: str | None = None
+        github_url: str | None = None,
     ) -> CIIssue:
         """
         Register a new CI issue
-        
+
         Args:
             error: The CI error
             workflow_info: Information about the workflow run
             issue_id: GitHub issue ID (if created)
             github_url: GitHub issue URL
-            
+
         Returns:
             The registered CIIssue
         """
@@ -286,35 +286,28 @@ class IssueManager:
             return issue
         return None
 
-    def add_fix_attempt(
-        self,
-        error_id: str,
-        fix_info: dict[str, Any]
-    ) -> CIIssue | None:
+    def add_fix_attempt(self, error_id: str, fix_info: dict[str, Any]) -> CIIssue | None:
         """Add a fix attempt to an issue"""
         if error_id in self._issues:
             issue = self._issues[error_id]
-            fix_info['timestamp'] = datetime.now().isoformat()
+            fix_info["timestamp"] = datetime.now().isoformat()
             issue.fix_attempts.append(fix_info)
             issue.status = IssueStatus.FIX_ATTEMPTED
             issue.updated_at = datetime.now()
             return issue
         return None
 
-    def add_comment(
-        self,
-        error_id: str,
-        comment: str,
-        author: str = "bot"
-    ) -> CIIssue | None:
+    def add_comment(self, error_id: str, comment: str, author: str = "bot") -> CIIssue | None:
         """Add a comment to an issue"""
         if error_id in self._issues:
             issue = self._issues[error_id]
-            issue.comments.append({
-                'text': comment,
-                'author': author,
-                'timestamp': datetime.now().isoformat(),
-            })
+            issue.comments.append(
+                {
+                    "text": comment,
+                    "author": author,
+                    "timestamp": datetime.now().isoformat(),
+                }
+            )
             issue.updated_at = datetime.now()
             return issue
         return None
@@ -335,21 +328,25 @@ class IssueManager:
     def check_duplicate(self, error: CIError) -> CIIssue | None:
         """
         Check if a similar issue already exists
-        
+
         Args:
             error: The new error to check
-            
+
         Returns:
             Existing issue if duplicate found, None otherwise
         """
         for issue in self._issues.values():
             # Same category, file, and similar message
-            if (issue.error.category == error.category and
-                issue.error.file_path == error.file_path and
-                issue.status in {IssueStatus.OPEN, IssueStatus.IN_PROGRESS}):
+            if (
+                issue.error.category == error.category
+                and issue.error.file_path == error.file_path
+                and issue.status in {IssueStatus.OPEN, IssueStatus.IN_PROGRESS}
+            ):
                 # Check message similarity (simple check)
-                if (error.message[:100] in issue.error.message or
-                    issue.error.message[:100] in error.message):
+                if (
+                    error.message[:100] in issue.error.message
+                    or issue.error.message[:100] in error.message
+                ):
                     return issue
         return None
 
@@ -374,7 +371,7 @@ This issue has been resolved.
         """Get statistics about managed issues"""
         total = len(self._issues)
         if total == 0:
-            return {'total': 0}
+            return {"total": 0}
 
         by_status = {}
         by_category = {}
@@ -389,12 +386,12 @@ This issue has been resolved.
             by_category[category] = by_category.get(category, 0) + 1
             by_severity[severity] = by_severity.get(severity, 0) + 1
 
-        resolved = by_status.get('resolved', 0) + by_status.get('closed', 0)
+        resolved = by_status.get("resolved", 0) + by_status.get("closed", 0)
 
         return {
-            'total': total,
-            'by_status': by_status,
-            'by_category': by_category,
-            'by_severity': by_severity,
-            'resolution_rate': resolved / total if total > 0 else 0,
+            "total": total,
+            "by_status": by_status,
+            "by_category": by_category,
+            "by_severity": by_severity,
+            "resolution_rate": resolved / total if total > 0 else 0,
         }

@@ -50,7 +50,8 @@ class BaselineValidationEngine:
     @staticmethod
     def validate_namespace_name(namespace: str) -> bool:
         """Validate namespace name matches RFC 1123 label"""
-        # Kubernetes namespace must match RFC 1123 label: lowercase alphanumerics and '-', 1-63 chars
+        # Kubernetes namespace must match RFC 1123 label: lowercase
+        # alphanumerics and '-', 1-63 chars
         return bool(re.fullmatch(r"[a-z0-9]([-a-z0-9]{0,61}[a-z0-9])?", namespace))
 
     def __init__(self, namespace: str = "machinenativenops-system"):
@@ -69,7 +70,10 @@ class BaselineValidationEngine:
             with open(self.log_file, "a", encoding="utf-8") as f:
                 f.write(log_entry + "\n")
         except IOError as e:
-            print(f"[{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] [ERROR] Failed to write log: {e}", file=sys.stderr)
+            print(
+                f"[{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] [ERROR] Failed to write log: {e}",
+                file=sys.stderr,
+            )
 
     def add_result(
         self,
@@ -99,9 +103,36 @@ class BaselineValidationEngine:
         """Execute kubectl command after validating subcommand"""
         # Allowlist of safe kubectl subcommands
         allowed_subcommands = {
-            "get", "describe", "apply", "delete", "logs", "exec", "create", "edit", "replace", "patch", "scale", "cordon",
-            "uncordon", "drain", "rollout", "top", "expose", "run", "explain", "version", "cluster-info", "api-resources",
-            "api-versions", "config", "label", "annotate", "attach", "port-forward", "cp", "auth"
+            "get",
+            "describe",
+            "apply",
+            "delete",
+            "logs",
+            "exec",
+            "create",
+            "edit",
+            "replace",
+            "patch",
+            "scale",
+            "cordon",
+            "uncordon",
+            "drain",
+            "rollout",
+            "top",
+            "expose",
+            "run",
+            "explain",
+            "version",
+            "cluster-info",
+            "api-resources",
+            "api-versions",
+            "config",
+            "label",
+            "annotate",
+            "attach",
+            "port-forward",
+            "cp",
+            "auth",
         }
         if not args or args[0] not in allowed_subcommands:
             error_msg = f"Disallowed or missing kubectl subcommand: {args[0] if args else '(none)'}"

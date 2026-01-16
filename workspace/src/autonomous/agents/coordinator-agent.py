@@ -14,8 +14,8 @@ from pathlib import Path
 from typing import Any
 
 # Import from kebab-case filename base-agent.py
-_base_agent_path = Path(__file__).parent / 'base-agent.py'
-_spec = importlib.util.spec_from_file_location('base_agent', _base_agent_path)
+_base_agent_path = Path(__file__).parent / "base-agent.py"
+_spec = importlib.util.spec_from_file_location("base_agent", _base_agent_path)
 if _spec and _spec.loader:
     _base_agent_module = importlib.util.module_from_spec(_spec)
     _spec.loader.exec_module(_base_agent_module)
@@ -82,48 +82,47 @@ class CoordinatorAgent(BaseAgent):
             環境分析結果
         """
         analysis = {
-            'timestamp': datetime.now().isoformat(),
-            'project_root': str(self.project_root),
-            'tools': {},
-            'structure': {},
-            'recommendations': []
+            "timestamp": datetime.now().isoformat(),
+            "project_root": str(self.project_root),
+            "tools": {},
+            "structure": {},
+            "recommendations": [],
         }
 
         # 檢查工具
-        tools = ['node', 'npm', 'python3', 'docker', 'git']
+        tools = ["node", "npm", "python3", "docker", "git"]
         for tool in tools:
             try:
                 result = subprocess.run(
-                    [tool, '--version'],
-                    capture_output=True,
-                    text=True,
-                    timeout=5
+                    [tool, "--version"], capture_output=True, text=True, timeout=5
                 )
-                analysis['tools'][tool] = {
-                    'installed': result.returncode == 0,
-                    'version': result.stdout.strip().split('\n')[0] if result.returncode == 0 else None
+                analysis["tools"][tool] = {
+                    "installed": result.returncode == 0,
+                    "version": (
+                        result.stdout.strip().split("\n")[0] if result.returncode == 0 else None
+                    ),
                 }
             except (FileNotFoundError, subprocess.TimeoutExpired):
-                analysis['tools'][tool] = {'installed': False, 'version': None}
+                analysis["tools"][tool] = {"installed": False, "version": None}
 
         # 檢查專案結構
-        required_dirs = ['config/dev', '.vscode', 'v1-python-drones', 'shared', 'migration']
+        required_dirs = ["config/dev", ".vscode", "v1-python-drones", "shared", "migration"]
         for dir_name in required_dirs:
             dir_path = self.project_root / dir_name
-            analysis['structure'][dir_name] = dir_path.exists()
+            analysis["structure"][dir_name] = dir_path.exists()
 
         # 檢查配置檔案
-        config_files = ['drone-config.yml', 'auto-scaffold.json', 'automation-entry.sh']
+        config_files = ["drone-config.yml", "auto-scaffold.json", "automation-entry.sh"]
         for config_file in config_files:
             file_path = self.project_root / config_file
-            analysis['structure'][config_file] = file_path.exists()
+            analysis["structure"][config_file] = file_path.exists()
 
         # 生成建議
-        if not analysis['tools'].get('docker', {}).get('installed'):
-            analysis['recommendations'].append("建議安裝 Docker 以支援容器化開發")
+        if not analysis["tools"].get("docker", {}).get("installed"):
+            analysis["recommendations"].append("建議安裝 Docker 以支援容器化開發")
 
-        if not analysis['structure'].get('config/dev'):
-            analysis['recommendations'].append("缺少 config/dev 目錄")
+        if not analysis["structure"].get("config/dev"):
+            analysis["recommendations"].append("缺少 config/dev 目錄")
 
         return analysis
 
@@ -132,19 +131,19 @@ class CoordinatorAgent(BaseAgent):
         self.log_info("📊 環境分析報告:")
 
         print("\n  🔧 工具檢查:")
-        for tool, info in analysis['tools'].items():
-            status = '✅' if info.get('installed') else '❌'
-            version = info.get('version', '未安裝')
+        for tool, info in analysis["tools"].items():
+            status = "✅" if info.get("installed") else "❌"
+            version = info.get("version", "未安裝")
             print(f"    {status} {tool}: {version}")
 
         print("\n  📁 結構檢查:")
-        for item, exists in analysis['structure'].items():
-            status = '✅' if exists else '❌'
+        for item, exists in analysis["structure"].items():
+            status = "✅" if exists else "❌"
             print(f"    {status} {item}")
 
-        if analysis['recommendations']:
+        if analysis["recommendations"]:
             print("\n  💡 建議:")
-            for rec in analysis['recommendations']:
+            for rec in analysis["recommendations"]:
                 print(f"    • {rec}")
 
         print()
@@ -158,18 +157,19 @@ class CoordinatorAgent(BaseAgent):
             from .config import AgentConfig
         except (ImportError, ValueError):
             import sys
-            sys.path.insert(0, str(self.project_root / 'src/autonomous/agents'))
+
+            sys.path.insert(0, str(self.project_root / "src/autonomous/agents"))
             from config import AgentConfig
 
         config = AgentConfig.load()
 
         for agent_id, agent_config in config.agent_fleet.items():
             self.fleet[agent_id] = {
-                'name': agent_config.get('name', agent_id),
-                'script': agent_config.get('script'),
-                'priority': agent_config.get('priority', 99),
-                'auto_start': agent_config.get('auto_start', False),
-                'status': 'initialized'
+                "name": agent_config.get("name", agent_id),
+                "script": agent_config.get("script"),
+                "priority": agent_config.get("priority", 99),
+                "auto_start": agent_config.get("auto_start", False),
+                "status": "initialized",
             }
             self.log_info(f"  ✓ {agent_config.get('name', agent_id)}")
 
@@ -201,7 +201,7 @@ class CoordinatorAgent(BaseAgent):
         Returns:
             執行結果代碼
         """
-        core_script = self.project_root / 'config/dev' / 'automation' / 'drone-coordinator.py'
+        core_script = self.project_root / "config/dev" / "automation" / "drone-coordinator.py"
 
         if not core_script.exists():
             self.log_error(f"核心協調器腳本不存在: {core_script}")
@@ -211,8 +211,7 @@ class CoordinatorAgent(BaseAgent):
 
         try:
             result = subprocess.run(
-                ['python3', str(core_script), '--mode=auto'],
-                cwd=self.project_root
+                ["python3", str(core_script), "--mode=auto"], cwd=self.project_root
             )
             return result.returncode
         except Exception as e:

@@ -7,7 +7,9 @@ import os
 import shutil
 import sys
 from pathlib import Path
+
 import yaml
+
 
 def copy_tree(src: Path, dst: Path):
     for root, dirs, files in os.walk(src):
@@ -23,9 +25,12 @@ def copy_tree(src: Path, dst: Path):
                 raise RuntimeError(f"Rootfs path conflict: {t}")
             shutil.copy2(s, t)
 
+
 def main():
     repo = Path(".")
-    reg = yaml.safe_load((repo / "root/registry/root.registry.modules.yaml").read_text(encoding="utf-8"))
+    reg = yaml.safe_load(
+        (repo / "root/registry/root.registry.modules.yaml").read_text(encoding="utf-8")
+    )
     modules = reg["modules"]
 
     rootfs = repo / "dist/rootfs"
@@ -34,7 +39,19 @@ def main():
     rootfs.mkdir(parents=True, exist_ok=True)
 
     # 建立最小 FHS 目錄（避免空目錄被忽略）
-    for d in ["bin", "sbin", "etc", "lib", "var", "usr/bin", "usr/lib", "tmp", "opt", "srv", "home"]:
+    for d in [
+        "bin",
+        "sbin",
+        "etc",
+        "lib",
+        "var",
+        "usr/bin",
+        "usr/lib",
+        "tmp",
+        "opt",
+        "srv",
+        "home",
+    ]:
         (rootfs / d).mkdir(parents=True, exist_ok=True)
 
     manifest = []
@@ -61,6 +78,7 @@ def main():
     )
     print(f"Assembled rootfs -> {rootfs}")
     return 0
+
 
 if __name__ == "__main__":
     sys.exit(main())

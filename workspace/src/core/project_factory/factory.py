@@ -6,14 +6,14 @@ Core factory for generating complete projects with governance compliance.
 """
 
 import logging
-from pathlib import Path
-from typing import Dict, Any, Optional
 from datetime import datetime
+from pathlib import Path
+from typing import Any, Dict, Optional
 
-from .spec import ProjectSpec
 from .generator import ProjectGenerator
-from .validator import GovernanceValidator
+from .spec import ProjectSpec
 from .templates import TemplateEngine
+from .validator import GovernanceValidator
 
 logger = logging.getLogger(__name__)
 
@@ -33,11 +33,7 @@ class GeneratedProject:
     """
 
     def __init__(
-        self,
-        spec: ProjectSpec,
-        root_path: Path,
-        files: Dict[str, str],
-        metadata: Dict[str, Any]
+        self, spec: ProjectSpec, root_path: Path, files: Dict[str, str], metadata: Dict[str, Any]
     ):
         self.spec = spec
         self.root_path = root_path
@@ -74,7 +70,7 @@ class GeneratedProject:
             full_path.parent.mkdir(parents=True, exist_ok=True)
 
             # Write content
-            with open(full_path, 'w', encoding='utf-8') as f:
+            with open(full_path, "w", encoding="utf-8") as f:
                 f.write(content)
 
             logger.debug(f"Created: {file_path}")
@@ -82,7 +78,8 @@ class GeneratedProject:
         # Write metadata
         metadata_path = target / ".project-factory-metadata.json"
         import json
-        with open(metadata_path, 'w', encoding='utf-8') as f:
+
+        with open(metadata_path, "w", encoding="utf-8") as f:
             json.dump(self.metadata, f, indent=2)
 
         logger.info(f"✅ Project exported successfully: {target}")
@@ -174,9 +171,7 @@ class ProjectFactory:
     """
 
     def __init__(
-        self,
-        template_dir: Optional[Path] = None,
-        governance_config: Optional[Path] = None
+        self, template_dir: Optional[Path] = None, governance_config: Optional[Path] = None
     ):
         """
         Initialize Project Factory.
@@ -205,10 +200,7 @@ class ProjectFactory:
         return Path(__file__).parents[2] / "governance" / "governance.yaml"
 
     def generate(
-        self,
-        spec: ProjectSpec,
-        output_path: Optional[Path] = None,
-        validate: bool = True
+        self, spec: ProjectSpec, output_path: Optional[Path] = None, validate: bool = True
     ) -> GeneratedProject:
         """
         Generate complete project from specification.
@@ -261,7 +253,7 @@ class ProjectFactory:
             spec=spec,
             root_path=output_path or Path(f"./{spec.name}"),
             files=files,
-            metadata=self._create_metadata(spec, context)
+            metadata=self._create_metadata(spec, context),
         )
 
         # Step 5: Validate governance (if requested)
@@ -300,30 +292,24 @@ class ProjectFactory:
             "framework": spec.framework,
             "description": spec.description,
             "version": spec.version,
-
             # Package names (sanitized for code)
             "package_name": spec.name.replace("-", "_"),
             "module_name": spec.name.replace("-", "_"),
-
             # Architecture
             "architecture_pattern": spec.architecture.pattern.value,
             "layers": spec.architecture.layers,
-
             # Features
             "has_database": spec.features.database is not None,
             "has_cache": spec.features.cache is not None,
             "has_messaging": spec.features.messaging is not None,
-
             # Deliverables
             "needs_docker": spec.deliverables.docker.multi_stage,
             "needs_k8s": spec.deliverables.kubernetes.deployment,
             "needs_ci_cd": spec.deliverables.ci_cd.platform is not None,
-
             # Governance
             "compliance_standards": spec.governance.compliance,
             "security_level": spec.governance.security_level,
             "license": spec.governance.license,
-
             # Generation metadata
             "generated_at": datetime.utcnow().isoformat(),
             "generator_version": "1.0.0",
@@ -360,7 +346,7 @@ class ProjectFactory:
             "governance": {
                 "compliance": spec.governance.compliance,
                 "validation_performed": True,
-            }
+            },
         }
 
     def list_templates(self) -> Dict[str, list]:

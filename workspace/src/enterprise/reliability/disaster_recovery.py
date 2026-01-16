@@ -20,14 +20,16 @@ logger = logging.getLogger(__name__)
 
 class BackupType(Enum):
     """Backup types"""
-    FULL = "full"               # Complete backup
-    INCREMENTAL = "incremental" # Changes since last backup
-    DIFFERENTIAL = "differential" # Changes since last full
-    SNAPSHOT = "snapshot"       # Point-in-time snapshot
+
+    FULL = "full"  # Complete backup
+    INCREMENTAL = "incremental"  # Changes since last backup
+    DIFFERENTIAL = "differential"  # Changes since last full
+    SNAPSHOT = "snapshot"  # Point-in-time snapshot
 
 
 class BackupStatus(Enum):
     """Backup status"""
+
     PENDING = "pending"
     IN_PROGRESS = "in_progress"
     COMPLETED = "completed"
@@ -37,6 +39,7 @@ class BackupStatus(Enum):
 
 class RecoveryStatus(Enum):
     """Recovery operation status"""
+
     PENDING = "pending"
     VALIDATING = "validating"
     RESTORING = "restoring"
@@ -52,13 +55,14 @@ class BackupConfig:
 
     Defines backup schedule and retention.
     """
+
     # Schedule
-    full_backup_interval_hours: int = 24      # Daily full backup
-    incremental_interval_hours: int = 1       # Hourly incremental
+    full_backup_interval_hours: int = 24  # Daily full backup
+    incremental_interval_hours: int = 1  # Hourly incremental
 
     # Retention
-    full_backup_retention_days: int = 30      # Keep 30 days of full backups
-    incremental_retention_days: int = 7       # Keep 7 days of incrementals
+    full_backup_retention_days: int = 30  # Keep 30 days of full backups
+    incremental_retention_days: int = 7  # Keep 7 days of incrementals
 
     # Targets
     backup_database: bool = True
@@ -84,6 +88,7 @@ class BackupRecord:
     """
     Record of a backup
     """
+
     id: UUID = field(default_factory=uuid4)
 
     # Backup details
@@ -128,6 +133,7 @@ class RecoveryPoint:
 
     Represents a point to which we can recover.
     """
+
     id: UUID = field(default_factory=uuid4)
 
     # Point in time
@@ -156,13 +162,14 @@ class RecoveryPlan:
     """
     Recovery plan for disaster scenarios
     """
+
     id: UUID = field(default_factory=uuid4)
     name: str = ""
     description: str = ""
 
     # Recovery objectives
-    target_rto_minutes: int = 60    # Recovery Time Objective
-    target_rpo_minutes: int = 15    # Recovery Point Objective
+    target_rto_minutes: int = 60  # Recovery Time Objective
+    target_rpo_minutes: int = 15  # Recovery Point Objective
 
     # Steps
     steps: list[dict[str, Any]] = field(default_factory=list)
@@ -185,22 +192,18 @@ class RecoveryPlan:
 class BackupStorage(Protocol):
     """Interface for backup storage"""
 
-    async def save_backup(self, record: BackupRecord) -> BackupRecord:
-        ...
+    async def save_backup(self, record: BackupRecord) -> BackupRecord: ...
 
-    async def get_backup(self, backup_id: UUID) -> BackupRecord | None:
-        ...
+    async def get_backup(self, backup_id: UUID) -> BackupRecord | None: ...
 
     async def list_backups(
         self,
         backup_type: BackupType | None = None,
         status: BackupStatus | None = None,
         limit: int = 100,
-    ) -> list[BackupRecord]:
-        ...
+    ) -> list[BackupRecord]: ...
 
-    async def delete_backup(self, backup_id: UUID) -> bool:
-        ...
+    async def delete_backup(self, backup_id: UUID) -> bool: ...
 
 
 class DatabaseBackupService(Protocol):
@@ -210,21 +213,18 @@ class DatabaseBackupService(Protocol):
         self,
         backup_type: BackupType,
         destination: str,
-    ) -> dict[str, Any]:
-        ...
+    ) -> dict[str, Any]: ...
 
     async def restore_backup(
         self,
         source: str,
         target_database: str,
-    ) -> dict[str, Any]:
-        ...
+    ) -> dict[str, Any]: ...
 
     async def verify_backup(
         self,
         source: str,
-    ) -> bool:
-        ...
+    ) -> bool: ...
 
 
 class EventLogBackupService(Protocol):
@@ -235,14 +235,12 @@ class EventLogBackupService(Protocol):
         start_time: datetime,
         end_time: datetime,
         destination: str,
-    ) -> dict[str, Any]:
-        ...
+    ) -> dict[str, Any]: ...
 
     async def import_events(
         self,
         source: str,
-    ) -> int:
-        ...
+    ) -> int: ...
 
 
 @dataclass
@@ -313,8 +311,7 @@ class DisasterRecovery:
             # Create storage location
             timestamp = datetime.utcnow().strftime("%Y%m%d_%H%M%S")
             record.storage_location = (
-                f"s3://{self.config.backup_bucket}/backups/"
-                f"{backup_type.value}/{timestamp}"
+                f"s3://{self.config.backup_bucket}/backups/" f"{backup_type.value}/{timestamp}"
             )
 
             total_size = 0
@@ -346,9 +343,7 @@ class DisasterRecovery:
             record.size_bytes = total_size
             record.status = BackupStatus.COMPLETED
             record.completed_at = datetime.utcnow()
-            record.duration_seconds = (
-                record.completed_at - record.started_at
-            ).total_seconds()
+            record.duration_seconds = (record.completed_at - record.started_at).total_seconds()
 
             # Verify if configured
             if self.config.verify_after_backup:
@@ -425,8 +420,7 @@ class DisasterRecovery:
 
         # Filter by time range
         relevant = [
-            b for b in backups
-            if b.completed_at and start_time <= b.completed_at <= end_time
+            b for b in backups if b.completed_at and start_time <= b.completed_at <= end_time
         ]
 
         # Create recovery points
@@ -503,9 +497,7 @@ class DisasterRecovery:
 
             # Restore database
             if recovery_point.database_recoverable and self.db_backup_service:
-                backup = await self.backup_storage.get_backup(
-                    recovery_point.required_backups[0]
-                )
+                backup = await self.backup_storage.get_backup(recovery_point.required_backups[0])
                 await self.db_backup_service.restore_backup(
                     f"{backup.storage_location}/database",
                     f"{target_environment}_db",
@@ -514,12 +506,8 @@ class DisasterRecovery:
 
             # Restore events
             if recovery_point.event_log_recoverable and self.event_log_service:
-                backup = await self.backup_storage.get_backup(
-                    recovery_point.required_backups[0]
-                )
-                await self.event_log_service.import_events(
-                    f"{backup.storage_location}/events"
-                )
+                backup = await self.backup_storage.get_backup(recovery_point.required_backups[0])
+                await self.event_log_service.import_events(f"{backup.storage_location}/events")
                 result["steps_completed"].append("event_log_restore")
 
             result["status"] = RecoveryStatus.VERIFYING.value
@@ -607,10 +595,12 @@ class DisasterRecovery:
                 result["steps_tested"].append(step_name)
             except Exception as e:
                 result["success"] = False
-                result["errors"].append({
-                    "step": step_name,
-                    "error": str(e),
-                })
+                result["errors"].append(
+                    {
+                        "step": step_name,
+                        "error": str(e),
+                    }
+                )
 
         # Update plan
         plan.last_tested_at = datetime.utcnow()

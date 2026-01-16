@@ -9,6 +9,11 @@ Tests for Phase 24: Mind Matrix System Integration.
 Minimal test vectors ensuring compatibility and no overlap.
 """
 
+from runtime.mind_matrix.main import (
+    ExecutiveRole,
+    MindMatrix,
+    MindMatrixModel,
+)
 import sys
 from pathlib import Path
 
@@ -18,12 +23,6 @@ from pydantic import ValidationError
 
 # Add runtime to path for imports
 sys.path.insert(0, str(Path(__file__).parent.parent.parent))
-
-from runtime.mind_matrix.main import (
-    ExecutiveRole,
-    MindMatrix,
-    MindMatrixModel,
-)
 
 
 class TestTopologyLoadAndSelfcheck:

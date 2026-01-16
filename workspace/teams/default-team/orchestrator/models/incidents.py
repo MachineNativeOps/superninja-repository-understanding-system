@@ -8,27 +8,28 @@ Defines incident lifecycle data structures including:
 - State machine validation
 """
 
+import uuid
 from datetime import datetime
 from enum import Enum
 from typing import Any, Dict, List, Optional
+
 from pydantic import BaseModel, Field
-import uuid
 
 
 class IncidentState(str, Enum):
     """States in the incident lifecycle state machine."""
 
-    OPEN = "OPEN"          # Initial state when incident is created
-    TRIAGE = "TRIAGE"      # Severity assessment and categorization
-    RCA = "RCA"            # Root cause analysis in progress
-    PROPOSE = "PROPOSE"    # Fix proposals being generated
-    VERIFY = "VERIFY"      # Proposals under verification
-    APPROVE = "APPROVE"    # Waiting for approval
-    EXECUTE = "EXECUTE"    # Fix being executed
+    OPEN = "OPEN"  # Initial state when incident is created
+    TRIAGE = "TRIAGE"  # Severity assessment and categorization
+    RCA = "RCA"  # Root cause analysis in progress
+    PROPOSE = "PROPOSE"  # Fix proposals being generated
+    VERIFY = "VERIFY"  # Proposals under verification
+    APPROVE = "APPROVE"  # Waiting for approval
+    EXECUTE = "EXECUTE"  # Fix being executed
     VALIDATE = "VALIDATE"  # Validating the fix
     ROLLBACK = "ROLLBACK"  # Rolling back failed fix
-    CLOSE = "CLOSE"        # Incident resolved and closed
-    LEARN = "LEARN"        # Post-incident learning
+    CLOSE = "CLOSE"  # Incident resolved and closed
+    LEARN = "LEARN"  # Post-incident learning
 
 
 # Valid state transitions
@@ -49,10 +50,11 @@ VALID_TRANSITIONS: Dict[IncidentState, List[IncidentState]] = {
 
 class IncidentSeverity(str, Enum):
     """Incident severity levels."""
+
     CRITICAL = "critical"  # Service down, immediate action required
-    HIGH = "high"          # Major functionality impaired
-    MEDIUM = "medium"      # Degraded performance
-    LOW = "low"            # Minor issue
+    HIGH = "high"  # Major functionality impaired
+    MEDIUM = "medium"  # Degraded performance
+    LOW = "low"  # Minor issue
 
 
 class IncidentTransition(BaseModel):
@@ -61,8 +63,7 @@ class IncidentTransition(BaseModel):
     from_state: IncidentState = Field(..., description="Previous state")
     to_state: IncidentState = Field(..., description="New state")
     timestamp: str = Field(
-        default_factory=lambda: datetime.now().isoformat(),
-        description="Transition timestamp"
+        default_factory=lambda: datetime.now().isoformat(), description="Transition timestamp"
     )
     trigger: str = Field(..., description="What triggered the transition")
     triggered_by: str = Field(..., description="Agent or user that triggered transition")
@@ -108,8 +109,7 @@ class Incident(BaseModel):
     """Core incident model with full lifecycle support."""
 
     incident_id: str = Field(
-        default_factory=lambda: str(uuid.uuid4()),
-        description="Unique incident identifier"
+        default_factory=lambda: str(uuid.uuid4()), description="Unique incident identifier"
     )
     trace_id: str = Field(..., description="Distributed tracing ID")
     state: IncidentState = Field(default=IncidentState.OPEN, description="Current state")
@@ -119,12 +119,10 @@ class Incident(BaseModel):
     description: Optional[str] = Field(default=None, description="Detailed description")
     affected_resources: List[str] = Field(default_factory=list, description="Affected resources")
     created_at: str = Field(
-        default_factory=lambda: datetime.now().isoformat(),
-        description="Creation timestamp"
+        default_factory=lambda: datetime.now().isoformat(), description="Creation timestamp"
     )
     updated_at: str = Field(
-        default_factory=lambda: datetime.now().isoformat(),
-        description="Last update timestamp"
+        default_factory=lambda: datetime.now().isoformat(), description="Last update timestamp"
     )
     resolved_at: Optional[str] = Field(default=None, description="Resolution timestamp")
     assigned_to: Optional[str] = Field(default=None, description="Assigned agent/user")

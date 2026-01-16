@@ -7,30 +7,16 @@ Instant Generation Driven Architecture
 """
 
 from .agents import (
-    InputAnalysisAgent,
-    CodeGenerationAgent,
     ArchitectureDesignAgent,
-    TestingAgent,
+    CodeGenerationAgent,
     DeploymentAgent,
-    OptimizationAgent
+    InputAnalysisAgent,
+    OptimizationAgent,
+    TestingAgent,
 )
-
-from .workflows import (
-    InstantGenerationWorkflow,
-    DAGOrchestrator,
-    ParallelProcessor
-)
-
-from .optimization import (
-    PerformanceOptimizer,
-    ResourceManager,
-    SelfHealingSystem
-)
-
-from .monitoring import (
-    RealTimeMonitor,
-    PerformanceTracker
-)
+from .monitoring import PerformanceTracker, RealTimeMonitor
+from .optimization import PerformanceOptimizer, ResourceManager, SelfHealingSystem
+from .workflows import DAGOrchestrator, InstantGenerationWorkflow, ParallelProcessor
 
 __version__ = "1.0.0"
 __author__ = "MachineNativeOps Team"
@@ -42,7 +28,7 @@ INSTANT_GENERATION_CONFIG = {
     "max_parallel_agents": 6,
     "self_healing_enabled": True,
     "bypass_sandbox": True,
-    "fault_tolerance": "high"
+    "fault_tolerance": "high",
 }
 
 # Export main classes
@@ -57,5 +43,5 @@ __all__ = [
     "ArchitectureDesignAgent",
     "TestingAgent",
     "DeploymentAgent",
-    "OptimizationAgent"
+    "OptimizationAgent",
 ]

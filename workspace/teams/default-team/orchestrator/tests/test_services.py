@@ -10,6 +10,13 @@ Tests cover:
 - Agent client communication
 """
 
+from services.state_machine import IncidentStateMachine
+from services.event_store import EventStore, StoredEvent
+from services.consensus import ConsensusManager
+from services.audit_trail import AuditAction, AuditEntry, AuditTrail
+from services.agent_client import AgentClient, AgentRegistry
+from models.incidents import Incident, IncidentState
+from models.consensus import ConsensusState, VoteType
 import asyncio
 import os
 import sys
@@ -19,14 +26,6 @@ from unittest.mock import AsyncMock, MagicMock, patch
 import pytest
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-
-from services.audit_trail import AuditTrail, AuditEntry, AuditAction
-from services.event_store import EventStore, StoredEvent
-from services.state_machine import IncidentStateMachine
-from services.consensus import ConsensusManager
-from services.agent_client import AgentClient, AgentRegistry
-from models.incidents import Incident, IncidentState
-from models.consensus import VoteType, ConsensusState
 
 
 class TestAuditTrail:

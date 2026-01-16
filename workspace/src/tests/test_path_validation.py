@@ -163,7 +163,8 @@ class TestPathValidation:
         with tempfile.TemporaryDirectory() as outside_home:
             monkeypatch.setenv("HOME", outside_home)
 
-            # This should expand ~ to outside_home, which is outside temp_base_dir
+            # This should expand ~ to outside_home, which is outside
+            # temp_base_dir
             with pytest.raises(ValueError, match="must be within the current working directory"):
                 validate_project_path("~")
 

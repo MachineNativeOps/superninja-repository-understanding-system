@@ -21,6 +21,7 @@ logger = logging.getLogger(__name__)
 
 class ResourceType(Enum):
     """Types of resources that can be quotad"""
+
     CPU_SECONDS = "cpu_seconds"
     MEMORY_BYTES = "memory_bytes"
     ANALYSIS_COUNT = "analysis_count"
@@ -32,6 +33,7 @@ class ResourceType(Enum):
 
 class QuotaPeriod(Enum):
     """Quota period types"""
+
     HOURLY = "hourly"
     DAILY = "daily"
     MONTHLY = "monthly"
@@ -40,6 +42,7 @@ class QuotaPeriod(Enum):
 
 class QuotaExceededError(Exception):
     """Raised when a quota is exceeded"""
+
     def __init__(
         self,
         resource_type: ResourceType,
@@ -68,6 +71,7 @@ class ResourceQuota:
 
     Defines limits for a specific resource type.
     """
+
     resource_type: ResourceType
     limit: int
     period: QuotaPeriod = QuotaPeriod.MONTHLY
@@ -83,6 +87,7 @@ class ResourceQuota:
 @dataclass
 class QuotaUsage:
     """Current usage against a quota"""
+
     resource_type: ResourceType
     current: int
     limit: int
@@ -115,6 +120,7 @@ class OrgQuotaConfig:
 
     Different plans have different quotas.
     """
+
     org_id: UUID
     plan: str = "free"
 
@@ -370,9 +376,7 @@ class ResourceQuotaManager:
             )
 
         period_start = self._get_period_start(quota.period)
-        current = await self.storage.get_usage(
-            org_id, resource_type, quota.period, period_start
-        )
+        current = await self.storage.get_usage(org_id, resource_type, quota.period, period_start)
 
         return QuotaUsage(
             resource_type=resource_type,

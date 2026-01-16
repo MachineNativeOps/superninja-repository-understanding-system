@@ -9,15 +9,16 @@ Responsibilities:
 - Multi-objective optimization
 """
 
-from typing import Dict, List, Optional, Callable, Tuple
+import copy
+import random
 from dataclasses import dataclass
 from enum import Enum
-import random
-import copy
+from typing import Callable, Dict, List, Optional, Tuple
 
 
 class SelectionMethod(Enum):
     """Selection methods for genetic algorithm."""
+
     TOURNAMENT = "tournament"
     ROULETTE = "roulette"
     RANK = "rank"
@@ -27,6 +28,7 @@ class SelectionMethod(Enum):
 @dataclass
 class Individual:
     """Individual in the population."""
+
     genes: Dict[str, float]
     fitness: float = 0.0
     age: int = 0
@@ -35,6 +37,7 @@ class Individual:
 @dataclass
 class OptimizationConfig:
     """Genetic optimizer configuration."""
+
     population_size: int = 100
     generations: int = 50
     mutation_rate: float = 0.1
@@ -47,6 +50,7 @@ class OptimizationConfig:
 @dataclass
 class OptimizationResult:
     """Result of genetic optimization."""
+
     best_individual: Individual
     best_fitness: float
     generations_run: int
@@ -210,8 +214,7 @@ class GeneticOptimizer:
                 return individual
         return sorted_pop[-1]
 
-    def _crossover(self, parent1: Individual,
-                   parent2: Individual) -> Tuple[Individual, Individual]:
+    def _crossover(self, parent1: Individual, parent2: Individual) -> Tuple[Individual, Individual]:
         """Perform crossover between two parents."""
         child1_genes = {}
         child2_genes = {}
@@ -239,23 +242,24 @@ class GeneticOptimizer:
 
     def _check_convergence(self, recent_fitness: List[float]) -> bool:
         """Check if optimization has converged.
-        
+
         Args:
             recent_fitness: List of recent fitness values
-            
+
         Returns:
             True if variance is below threshold, False otherwise
         """
-        # Ensure we have sufficient data points for meaningful variance calculation
+        # Ensure we have sufficient data points for meaningful variance
+        # calculation
         if not recent_fitness or len(recent_fitness) < 2:
             return False
-        
+
         # Calculate mean once for efficiency
         mean = sum(recent_fitness) / len(recent_fitness)
-        
+
         # Calculate variance
         variance = sum((f - mean) ** 2 for f in recent_fitness) / len(recent_fitness)
-        
+
         return variance < 1e-6
 
 

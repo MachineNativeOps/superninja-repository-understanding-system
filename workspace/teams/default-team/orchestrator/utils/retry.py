@@ -16,7 +16,6 @@ from dataclasses import dataclass, field
 from functools import wraps
 from typing import Any, Callable, List, Optional, Tuple, Type, TypeVar
 
-
 T = TypeVar("T")
 
 
@@ -35,10 +34,7 @@ class RetryConfig:
 
     def calculate_delay(self, attempt: int) -> float:
         """Calculate delay for a given attempt."""
-        delay = min(
-            self.base_delay * (self.exponential_base ** attempt),
-            self.max_delay
-        )
+        delay = min(self.base_delay * (self.exponential_base**attempt), self.max_delay)
 
         if self.jitter:
             jitter_range = delay * self.jitter_factor
@@ -136,6 +132,7 @@ def retry(config: Optional[RetryConfig] = None):
         @wraps(func)
         async def wrapper(*args, **kwargs) -> T:
             return await retry_async(func, *args, config=config, **kwargs)
+
         return wrapper
 
     return decorator
@@ -154,7 +151,7 @@ class BackpressureController:
     def __init__(
         self,
         rate: float = 10.0,  # tokens per second
-        burst: int = 20,      # maximum burst
+        burst: int = 20,  # maximum burst
     ):
         self.rate = rate
         self.burst = burst
@@ -223,7 +220,9 @@ class BackpressureController:
             "total_requests": self._total_requests,
             "total_waits": self._total_waits,
             "total_wait_time": self._total_wait_time,
-            "wait_rate": self._total_waits / self._total_requests * 100 if self._total_requests > 0 else 0,
+            "wait_rate": (
+                self._total_waits / self._total_requests * 100 if self._total_requests > 0 else 0
+            ),
         }
 
 
@@ -255,9 +254,7 @@ class RateLimiter:
 
             # Clean old requests
             if key in self._requests:
-                self._requests[key] = [
-                    ts for ts in self._requests[key] if ts > window_start
-                ]
+                self._requests[key] = [ts for ts in self._requests[key] if ts > window_start]
             else:
                 self._requests[key] = []
 
@@ -275,9 +272,7 @@ class RateLimiter:
             window_start = now - self.window_seconds
 
             if key in self._requests:
-                self._requests[key] = [
-                    ts for ts in self._requests[key] if ts > window_start
-                ]
+                self._requests[key] = [ts for ts in self._requests[key] if ts > window_start]
             else:
                 self._requests[key] = []
 

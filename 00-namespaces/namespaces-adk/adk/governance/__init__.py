@@ -6,12 +6,12 @@ ARI index calculation, conformance checking, drift detection,
 containment, and audit trails.
 """
 
-from .mi9_runtime import MI9Runtime, GovernanceEvent, InterventionLevel
 from .ari_index import ARIIndex, ARIScore, RiskTier
-from .conformance_engine import ConformanceEngine
-from .drift_detection import DriftDetection
-from .containment import Containment
 from .audit_trail import AuditTrail
+from .conformance_engine import ConformanceEngine
+from .containment import Containment
+from .drift_detection import DriftDetection
+from .mi9_runtime import GovernanceEvent, InterventionLevel, MI9Runtime
 
 __all__ = [
     "MI9Runtime",

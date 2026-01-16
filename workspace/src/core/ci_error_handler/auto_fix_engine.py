@@ -7,27 +7,29 @@ Supports safe auto-fix for known patterns and AI-powered suggestions.
 Reference: Using Codex to auto-fix CI failures [10]
 """
 
-from enum import Enum
-from dataclasses import dataclass, field
-from typing import List, Dict, Any, Optional, Callable
-from datetime import datetime
 import re
+from dataclasses import dataclass, field
+from datetime import datetime
+from enum import Enum
+from typing import Any, Callable, Dict, List, Optional
 
 from .ci_error_analyzer import CIError, ErrorCategory
 
 
 class FixStrategy(Enum):
     """Strategy for fixing CI errors"""
-    AUTO_FIX = "auto_fix"           # Automatically apply fix
-    SUGGEST_FIX = "suggest_fix"     # Suggest fix via PR comment
-    CREATE_PR = "create_pr"         # Create PR with fix
-    MANUAL = "manual"               # Requires manual intervention
-    AI_ASSISTED = "ai_assisted"     # AI generates fix suggestion
+
+    AUTO_FIX = "auto_fix"  # Automatically apply fix
+    SUGGEST_FIX = "suggest_fix"  # Suggest fix via PR comment
+    CREATE_PR = "create_pr"  # Create PR with fix
+    MANUAL = "manual"  # Requires manual intervention
+    AI_ASSISTED = "ai_assisted"  # AI generates fix suggestion
 
 
 @dataclass
 class FixAttempt:
     """Record of a fix attempt"""
+
     attempt_id: str
     error_id: str
     strategy: FixStrategy
@@ -39,47 +41,49 @@ class FixAttempt:
     success: bool = False
     error_message: Optional[str] = None
     timestamp: datetime = field(default_factory=datetime.now)
-    
+
     def to_dict(self) -> Dict[str, Any]:
         """Convert to dictionary"""
         return {
-            'attempt_id': self.attempt_id,
-            'error_id': self.error_id,
-            'strategy': self.strategy.value,
-            'fix_description': self.fix_description,
-            'fix_code': self.fix_code,
-            'files_modified': self.files_modified,
-            'pr_number': self.pr_number,
-            'pr_url': self.pr_url,
-            'success': self.success,
-            'error_message': self.error_message,
-            'timestamp': self.timestamp.isoformat(),
+            "attempt_id": self.attempt_id,
+            "error_id": self.error_id,
+            "strategy": self.strategy.value,
+            "fix_description": self.fix_description,
+            "fix_code": self.fix_code,
+            "files_modified": self.files_modified,
+            "pr_number": self.pr_number,
+            "pr_url": self.pr_url,
+            "success": self.success,
+            "error_message": self.error_message,
+            "timestamp": self.timestamp.isoformat(),
         }
 
 
 @dataclass
 class FixResult:
     """Result of a fix operation"""
+
     success: bool
     message: str
     strategy_used: FixStrategy
     attempt: Optional[FixAttempt] = None
     suggested_actions: List[str] = field(default_factory=list)
-    
+
     def to_dict(self) -> Dict[str, Any]:
         """Convert to dictionary"""
         return {
-            'success': self.success,
-            'message': self.message,
-            'strategy_used': self.strategy_used.value,
-            'attempt': self.attempt.to_dict() if self.attempt else None,
-            'suggested_actions': self.suggested_actions,
+            "success": self.success,
+            "message": self.message,
+            "strategy_used": self.strategy_used.value,
+            "attempt": self.attempt.to_dict() if self.attempt else None,
+            "suggested_actions": self.suggested_actions,
         }
 
 
 @dataclass
 class FixRule:
     """Rule for automatic fixing"""
+
     rule_id: str
     category: ErrorCategory
     pattern: str  # Regex pattern to match
@@ -87,7 +91,7 @@ class FixRule:
     fix_description: str
     safe_to_auto_apply: bool = False
     prerequisites: List[str] = field(default_factory=list)
-    
+
     def matches(self, error: CIError) -> bool:
         """Check if this rule matches the error"""
         if error.category != self.category:
@@ -98,16 +102,16 @@ class FixRule:
 class AutoFixEngine:
     """
     Auto Fix Engine
-    
+
     Generate and apply fixes for CI/CD errors.
-    
+
     Features:
     - Rule-based auto-fix for known patterns
     - AI-powered fix suggestions
     - Safe execution with rollback
     - PR creation for suggested fixes
     """
-    
+
     # Default fix rules
     DEFAULT_FIX_RULES = [
         # Lint Fixes
@@ -147,7 +151,6 @@ class AutoFixEngine:
             safe_to_auto_apply=True,
             prerequisites=["python", "autopep8"],
         ),
-        
         # Dependency Fixes
         FixRule(
             rule_id="npm_audit_fix",
@@ -177,7 +180,7 @@ class AutoFixEngine:
             prerequisites=["python", "pip"],
         ),
     ]
-    
+
     # AI fix prompt templates
     AI_FIX_PROMPTS = {
         ErrorCategory.BUILD_ERROR: """
@@ -230,11 +233,11 @@ Provide:
 3. Related type definitions to update
 """,
     }
-    
+
     def __init__(self, custom_rules: Optional[List[FixRule]] = None):
         """
         Initialize the Auto Fix Engine
-        
+
         Args:
             custom_rules: Additional custom fix rules
         """
@@ -243,70 +246,72 @@ Provide:
             self.rules.extend(custom_rules)
         self._attempt_counter = 0
         self._attempts: Dict[str, FixAttempt] = {}
-    
+
     def _generate_attempt_id(self) -> str:
         """Generate unique attempt ID"""
         self._attempt_counter += 1
         return f"FIX-{datetime.now().strftime('%Y%m%d%H%M%S')}-{self._attempt_counter:04d}"
-    
+
     def analyze_fix_options(self, error: CIError) -> Dict[str, Any]:
         """
         Analyze available fix options for an error
-        
+
         Args:
             error: The CI error to fix
-            
+
         Returns:
             Dictionary with fix options and recommendations
         """
         options = {
-            'error_id': error.error_id,
-            'category': error.category.value,
-            'auto_fixable': error.auto_fixable,
-            'matching_rules': [],
-            'recommended_strategy': FixStrategy.MANUAL,
-            'ai_assist_available': error.category in self.AI_FIX_PROMPTS,
+            "error_id": error.error_id,
+            "category": error.category.value,
+            "auto_fixable": error.auto_fixable,
+            "matching_rules": [],
+            "recommended_strategy": FixStrategy.MANUAL,
+            "ai_assist_available": error.category in self.AI_FIX_PROMPTS,
         }
-        
+
         # Find matching rules
         for rule in self.rules:
             if rule.matches(error):
-                options['matching_rules'].append({
-                    'rule_id': rule.rule_id,
-                    'fix_command': rule.fix_command,
-                    'description': rule.fix_description,
-                    'safe_to_auto_apply': rule.safe_to_auto_apply,
-                })
-        
+                options["matching_rules"].append(
+                    {
+                        "rule_id": rule.rule_id,
+                        "fix_command": rule.fix_command,
+                        "description": rule.fix_description,
+                        "safe_to_auto_apply": rule.safe_to_auto_apply,
+                    }
+                )
+
         # Determine recommended strategy
-        if options['matching_rules']:
-            safe_rules = [r for r in options['matching_rules'] if r['safe_to_auto_apply']]
+        if options["matching_rules"]:
+            safe_rules = [r for r in options["matching_rules"] if r["safe_to_auto_apply"]]
             if safe_rules:
-                options['recommended_strategy'] = FixStrategy.AUTO_FIX
+                options["recommended_strategy"] = FixStrategy.AUTO_FIX
             else:
-                options['recommended_strategy'] = FixStrategy.CREATE_PR
-        elif options['ai_assist_available']:
-            options['recommended_strategy'] = FixStrategy.AI_ASSISTED
+                options["recommended_strategy"] = FixStrategy.CREATE_PR
+        elif options["ai_assist_available"]:
+            options["recommended_strategy"] = FixStrategy.AI_ASSISTED
         else:
-            options['recommended_strategy'] = FixStrategy.MANUAL
-        
+            options["recommended_strategy"] = FixStrategy.MANUAL
+
         return options
-    
+
     def generate_fix_suggestion(self, error: CIError) -> FixResult:
         """
         Generate a fix suggestion for an error
-        
+
         Args:
             error: The CI error to fix
-            
+
         Returns:
             FixResult with suggestion
         """
         options = self.analyze_fix_options(error)
-        
-        if options['matching_rules']:
+
+        if options["matching_rules"]:
             # Use rule-based fix
-            rule = options['matching_rules'][0]
+            rule = options["matching_rules"][0]
             return FixResult(
                 success=True,
                 message=f"Fix available: {rule['description']}",
@@ -317,8 +322,8 @@ Provide:
                     "Re-run CI pipeline",
                 ],
             )
-        
-        if options['ai_assist_available']:
+
+        if options["ai_assist_available"]:
             # Generate AI fix prompt
             prompt = self._generate_ai_prompt(error)
             return FixResult(
@@ -331,7 +336,7 @@ Provide:
                     "Test locally before committing",
                 ],
             )
-        
+
         return FixResult(
             success=False,
             message="No automatic fix available",
@@ -342,14 +347,13 @@ Provide:
                 "Consult team if needed",
             ],
         )
-    
+
     def _generate_ai_prompt(self, error: CIError) -> str:
         """Generate AI prompt for error analysis"""
         template = self.AI_FIX_PROMPTS.get(
-            error.category,
-            "Analyze this error and suggest a fix:\n\n{message}"
+            error.category, "Analyze this error and suggest a fix:\n\n{message}"
         )
-        
+
         return template.format(
             message=error.message,
             file_path=error.file_path or "Unknown",
@@ -357,25 +361,25 @@ Provide:
             code_snippet=error.code_snippet or "Not available",
             stack_trace=error.stack_trace or "Not available",
         )
-    
+
     def create_fix_attempt(
         self,
         error: CIError,
         strategy: FixStrategy,
         fix_description: str,
         fix_code: Optional[str] = None,
-        files_modified: Optional[List[str]] = None
+        files_modified: Optional[List[str]] = None,
     ) -> FixAttempt:
         """
         Create and record a fix attempt
-        
+
         Args:
             error: The CI error being fixed
             strategy: Strategy being used
             fix_description: Description of the fix
             fix_code: Code for the fix (if applicable)
             files_modified: List of files modified
-            
+
         Returns:
             The created FixAttempt
         """
@@ -387,73 +391,70 @@ Provide:
             fix_code=fix_code,
             files_modified=files_modified or [],
         )
-        
+
         self._attempts[attempt.attempt_id] = attempt
         return attempt
-    
+
     def record_attempt_result(
         self,
         attempt_id: str,
         success: bool,
         pr_number: Optional[int] = None,
         pr_url: Optional[str] = None,
-        error_message: Optional[str] = None
+        error_message: Optional[str] = None,
     ) -> Optional[FixAttempt]:
         """
         Record the result of a fix attempt
-        
+
         Args:
             attempt_id: ID of the attempt
             success: Whether the fix was successful
             pr_number: PR number if one was created
             pr_url: PR URL if one was created
             error_message: Error message if fix failed
-            
+
         Returns:
             Updated FixAttempt or None if not found
         """
         if attempt_id not in self._attempts:
             return None
-        
+
         attempt = self._attempts[attempt_id]
         attempt.success = success
         attempt.pr_number = pr_number
         attempt.pr_url = pr_url
         attempt.error_message = error_message
-        
+
         return attempt
-    
+
     def get_attempt(self, attempt_id: str) -> Optional[FixAttempt]:
         """Get a fix attempt by ID"""
         return self._attempts.get(attempt_id)
-    
+
     def get_attempts_for_error(self, error_id: str) -> List[FixAttempt]:
         """Get all fix attempts for an error"""
         return [a for a in self._attempts.values() if a.error_id == error_id]
-    
+
     def generate_fix_pr_content(
-        self,
-        error: CIError,
-        fix_description: str,
-        fix_code: str
+        self, error: CIError, fix_description: str, fix_code: str
     ) -> Dict[str, Any]:
         """
         Generate content for a fix PR
-        
+
         Args:
             error: The CI error being fixed
             fix_description: Description of the fix
             fix_code: The fix code
-            
+
         Returns:
             Dictionary with PR title, body, and branch name
         """
         branch_name = f"fix/ci-{error.error_id.lower()}"
-        
+
         title = f"fix: {error.title}"
         if error.file_path:
             title += f" in {error.file_path}"
-        
+
         body = f"""## 🔧 Automated CI Fix
 
 This PR was automatically generated to fix a CI error.
@@ -489,34 +490,34 @@ This PR was automatically generated to fix a CI error.
 
 *Generated by SynergyMesh Auto Fix Engine*
 """
-        
+
         return {
-            'branch_name': branch_name,
-            'title': title[:256],
-            'body': body,
-            'labels': ['automated-fix', 'ci-error'],
+            "branch_name": branch_name,
+            "title": title[:256],
+            "body": body,
+            "labels": ["automated-fix", "ci-error"],
         }
-    
+
     def add_rule(self, rule: FixRule) -> None:
         """Add a custom fix rule"""
         self.rules.append(rule)
-    
+
     def get_statistics(self) -> Dict[str, Any]:
         """Get statistics about fix attempts"""
         total = len(self._attempts)
         if total == 0:
-            return {'total': 0}
-        
+            return {"total": 0}
+
         successful = sum(1 for a in self._attempts.values() if a.success)
         by_strategy = {}
-        
+
         for attempt in self._attempts.values():
             strategy = attempt.strategy.value
             by_strategy[strategy] = by_strategy.get(strategy, 0) + 1
-        
+
         return {
-            'total': total,
-            'successful': successful,
-            'success_rate': successful / total if total > 0 else 0,
-            'by_strategy': by_strategy,
+            "total": total,
+            "successful": successful,
+            "success_rate": successful / total if total > 0 else 0,
+            "by_strategy": by_strategy,
         }

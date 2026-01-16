@@ -4,32 +4,34 @@
 根據公司階段提供不同的評估權重配置。
 """
 
-from dataclasses import dataclass, field
-from typing import Dict, List, Optional, Any
-from enum import Enum
-from datetime import datetime
 import json
+from dataclasses import dataclass, field
+from datetime import datetime
+from enum import Enum
+from typing import Any, Dict, List, Optional
 
 
 class CompanyStage(Enum):
     """公司發展階段"""
-    STARTUP = "startup"           # 初創期
-    GROWTH = "growth"             # 成長期
-    ENTERPRISE = "enterprise"     # 成熟企業
-    INNOVATION = "innovation"     # 創新轉型
+
+    STARTUP = "startup"  # 初創期
+    GROWTH = "growth"  # 成長期
+    ENTERPRISE = "enterprise"  # 成熟企業
+    INNOVATION = "innovation"  # 創新轉型
     RESTRUCTURING = "restructuring"  # 重組期
 
 
 @dataclass
 class WeightProfile:
     """權重配置檔"""
+
     name: str
     stage: CompanyStage
     weights: Dict[str, float]
     description: str
     use_cases: List[str] = field(default_factory=list)
     created_at: str = field(default_factory=lambda: datetime.now().isoformat())
-    
+
     def to_dict(self) -> Dict[str, Any]:
         return {
             "name": self.name,
@@ -37,13 +39,13 @@ class WeightProfile:
             "weights": self.weights,
             "description": self.description,
             "use_cases": self.use_cases,
-            "created_at": self.created_at
+            "created_at": self.created_at,
         }
 
 
 class WeightConfigManager:
     """權重配置管理器"""
-    
+
     # 預設權重配置
     PRESET_CONFIGS = {
         CompanyStage.STARTUP: {
@@ -87,7 +89,7 @@ class WeightConfigManager:
             "value_creation": 0.10,
         },
     }
-    
+
     # 權重描述
     WEIGHT_DESCRIPTIONS = {
         "scalability": "可擴展性 - 評估技術架構、用戶增長潛力、負載能力",
@@ -97,60 +99,60 @@ class WeightConfigManager:
         "technology_maturity": "技術成熟度 - 評估技術穩定性、生態系統、學習曲線",
         "value_creation": "價值創造 - 評估競爭優勢、品牌價值、創新影響",
     }
-    
+
     def __init__(self):
         self.custom_profiles: Dict[str, WeightProfile] = {}
-    
+
     def get_preset_weights(self, stage: CompanyStage) -> Dict[str, float]:
         """獲取預設權重"""
         return self.PRESET_CONFIGS.get(stage, self.PRESET_CONFIGS[CompanyStage.GROWTH])
-    
+
     def create_custom_profile(
         self,
         name: str,
         stage: CompanyStage,
         weights: Dict[str, float],
         description: str = "",
-        use_cases: Optional[List[str]] = None
+        use_cases: Optional[List[str]] = None,
     ) -> WeightProfile:
         """創建自定義權重配置"""
         # 驗證權重
         self._validate_weights(weights)
-        
+
         profile = WeightProfile(
             name=name,
             stage=stage,
             weights=self._normalize_weights(weights),
             description=description,
-            use_cases=use_cases or []
+            use_cases=use_cases or [],
         )
-        
+
         self.custom_profiles[name] = profile
         return profile
-    
+
     def get_profile(self, name: str) -> Optional[WeightProfile]:
         """獲取權重配置"""
         return self.custom_profiles.get(name)
-    
+
     def list_profiles(self) -> List[str]:
         """列出所有自定義配置"""
         return list(self.custom_profiles.keys())
-    
+
     def _validate_weights(self, weights: Dict[str, float]) -> None:
         """驗證權重配置"""
         required_keys = set(self.WEIGHT_DESCRIPTIONS.keys())
         provided_keys = set(weights.keys())
-        
+
         missing = required_keys - provided_keys
         if missing:
             raise ValueError(f"缺少必要的權重維度: {missing}")
-        
+
         for key, value in weights.items():
             if not isinstance(value, (int, float)):
                 raise ValueError(f"權重值必須為數字: {key}")
             if value < 0:
                 raise ValueError(f"權重值不能為負數: {key}")
-    
+
     def _normalize_weights(self, weights: Dict[str, float]) -> Dict[str, float]:
         """正規化權重（總和為 1）"""
         total = sum(weights.values())
@@ -159,11 +161,8 @@ class WeightConfigManager:
             n = len(weights)
             return {k: 1.0 / n for k in weights}
         return {k: v / total for k, v in weights.items()}
-    
-    def suggest_weights(
-        self,
-        priorities: Dict[str, int]  # 1-5 的優先級
-    ) -> Dict[str, float]:
+
+    def suggest_weights(self, priorities: Dict[str, int]) -> Dict[str, float]:  # 1-5 的優先級
         """根據優先級建議權重"""
         # 將優先級轉換為權重
         weights = {}
@@ -171,18 +170,15 @@ class WeightConfigManager:
             if dimension in self.WEIGHT_DESCRIPTIONS:
                 # 優先級 1-5 對應權重 0.1-0.5
                 weights[dimension] = 0.1 + (priority - 1) * 0.1
-        
+
         # 補充未提供的維度
         for dim in self.WEIGHT_DESCRIPTIONS:
             if dim not in weights:
                 weights[dim] = 0.15  # 預設中等權重
-        
+
         return self._normalize_weights(weights)
-    
-    def compare_profiles(
-        self,
-        profile_names: List[str]
-    ) -> Dict[str, Dict[str, float]]:
+
+    def compare_profiles(self, profile_names: List[str]) -> Dict[str, Dict[str, float]]:
         """比較多個權重配置"""
         comparison = {}
         for name in profile_names:
@@ -190,14 +186,14 @@ class WeightConfigManager:
             if profile:
                 comparison[name] = profile.weights
         return comparison
-    
+
     def export_profile(self, name: str) -> Optional[str]:
         """導出權重配置為 JSON"""
         profile = self.custom_profiles.get(name)
         if profile:
             return json.dumps(profile.to_dict(), ensure_ascii=False, indent=2)
         return None
-    
+
     def import_profile(self, json_str: str) -> WeightProfile:
         """從 JSON 導入權重配置"""
         data = json.loads(json_str)
@@ -206,9 +202,9 @@ class WeightConfigManager:
             stage=CompanyStage(data["stage"]),
             weights=data["weights"],
             description=data.get("description", ""),
-            use_cases=data.get("use_cases", [])
+            use_cases=data.get("use_cases", []),
         )
-    
+
     def get_stage_description(self, stage: CompanyStage) -> str:
         """獲取階段描述"""
         descriptions = {
@@ -219,7 +215,7 @@ class WeightConfigManager:
             CompanyStage.RESTRUCTURING: "重組期：優先考慮可實現性和投資回報，降低風險",
         }
         return descriptions.get(stage, "")
-    
+
     def get_all_weight_descriptions(self) -> Dict[str, str]:
         """獲取所有權重維度的描述"""
         return self.WEIGHT_DESCRIPTIONS.copy()

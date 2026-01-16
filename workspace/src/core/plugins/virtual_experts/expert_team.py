@@ -126,7 +126,8 @@ class VirtualExpertTeam:
         try:
             from . import domain_experts as de
         except ImportError:
-            import domain_experts as de  # type: ignore[import-not-found,no-redef]
+            # type: ignore[import-not-found,no-redef]
+            import domain_experts as de
 
         # Create expert instances using module reference
         experts = [

@@ -31,19 +31,20 @@ Usage:
 ═══════════════════════════════════════════════════════════════════════════════
 """
 
-import asyncio
 import argparse
-import yaml
+import asyncio
 import json
-import sys
 import os
 import shutil
 import subprocess
-from pathlib import Path
+import sys
+from dataclasses import asdict, dataclass, field
 from datetime import datetime
-from typing import Dict, List, Optional, Any, Tuple
-from dataclasses import dataclass, field, asdict
 from enum import Enum
+from pathlib import Path
+from typing import Any, Dict, List, Optional, Tuple
+
+import yaml
 
 # ============================================================================
 # Path Configuration
@@ -71,8 +72,10 @@ sys.path.insert(0, str(BASE_PATH / "automation" / "intelligent"))
 # Data Structures
 # ============================================================================
 
+
 class WorkflowPhase(Enum):
     """Workflow execution phases"""
+
     ANALYSIS = "analysis"
     PLANNING = "planning"
     EXECUTION = "execution"
@@ -83,6 +86,7 @@ class WorkflowPhase(Enum):
 
 class WorkflowStatus(Enum):
     """Workflow execution status"""
+
     IDLE = "idle"
     RUNNING = "running"
     PAUSED = "paused"
@@ -93,6 +97,7 @@ class WorkflowStatus(Enum):
 @dataclass
 class WorkflowState:
     """Current workflow state"""
+
     workflow_id: str
     status: WorkflowStatus
     current_phase: Optional[WorkflowPhase]
@@ -107,6 +112,7 @@ class WorkflowState:
 @dataclass
 class PhaseResult:
     """Result of a workflow phase execution"""
+
     phase: WorkflowPhase
     success: bool
     duration_seconds: float
@@ -119,10 +125,11 @@ class PhaseResult:
 # Workflow Orchestrator
 # ============================================================================
 
+
 class RefactorEvolutionWorkflow:
     """
     Orchestrates automated refactoring and evolution workflow
-    
+
     Responsibilities:
     1. Load configuration and initialize engines
     2. Execute workflow phases in sequence
@@ -130,7 +137,7 @@ class RefactorEvolutionWorkflow:
     4. Manage state and error handling
     5. Generate reports and metrics
     """
-    
+
     def __init__(self, config_path: Path = CONFIG_PATH):
         """Initialize workflow orchestrator"""
         self.config_path = config_path
@@ -139,118 +146,113 @@ class RefactorEvolutionWorkflow:
         self.refactor_engine = None
         self.evolution_engine = None
         self.results: List[PhaseResult] = []
-        
+
         # Ensure output directories exist
         self._ensure_directories()
-    
+
     def _load_config(self) -> Dict[str, Any]:
         """Load workflow configuration"""
         if not self.config_path.exists():
             raise FileNotFoundError(f"Configuration file not found: {self.config_path}")
-        
-        with open(self.config_path, 'r', encoding='utf-8') as f:
+
+        with open(self.config_path, "r", encoding="utf-8") as f:
             return yaml.safe_load(f)
-    
+
     def _ensure_directories(self):
         """Ensure output directories exist"""
-        for dir_key in ['reports_dir', 'plans_dir', 'logs_dir', 'backup_dir']:
-            dir_path = Path(self.config['output'].get(dir_key, ''))
+        for dir_key in ["reports_dir", "plans_dir", "logs_dir", "backup_dir"]:
+            dir_path = Path(self.config["output"].get(dir_key, ""))
             if dir_path:
                 dir_path = BASE_PATH / dir_path if not dir_path.is_absolute() else dir_path
                 dir_path.mkdir(parents=True, exist_ok=True)
-    
+
     def _initialize_engines(self):
         """Initialize refactor and evolution engines"""
         try:
             # Check refactor engine exists
-            refactor_engine_path = BASE_PATH / self.config['engines']['refactor_engine']['path']
+            refactor_engine_path = BASE_PATH / self.config["engines"]["refactor_engine"]["path"]
             if not refactor_engine_path.exists():
                 print(f"❌ Refactor engine not found: {refactor_engine_path}")
                 return False
-            
+
             self.refactor_engine = str(refactor_engine_path)
             print("✅ Refactor engine found")
-            
+
             # Check evolution engine exists
-            evolution_engine_path = BASE_PATH / self.config['engines']['evolution_engine']['path']
+            evolution_engine_path = BASE_PATH / self.config["engines"]["evolution_engine"]["path"]
             if not evolution_engine_path.exists():
                 print(f"⚠️  Evolution engine not found: {evolution_engine_path}")
                 self.evolution_engine = None
             else:
                 self.evolution_engine = str(evolution_engine_path)
                 print("✅ Evolution engine found")
-            
+
             return True
-            
+
         except Exception as e:
             print(f"❌ Failed to initialize engines: {e}")
             import traceback
+
             traceback.print_exc()
             return False
-    
+
     def _create_backup(self) -> bool:
         """Create backup of target directories"""
         try:
             timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
             backup_path = BACKUP_DIR / timestamp
             backup_path.mkdir(parents=True, exist_ok=True)
-            
-            targets = self.config.get('targets', {}).get('primary', [])
+
+            targets = self.config.get("targets", {}).get("primary", [])
             for target in targets:
-                target_path = BASE_PATH / target['path']
+                target_path = BASE_PATH / target["path"]
                 if target_path.exists():
-                    dest_path = backup_path / target['path']
+                    dest_path = backup_path / target["path"]
                     dest_path.parent.mkdir(parents=True, exist_ok=True)
                     if target_path.is_dir():
                         shutil.copytree(target_path, dest_path, dirs_exist_ok=True)
                     else:
                         shutil.copy2(target_path, dest_path)
-            
+
             print(f"✅ Backup created: {backup_path}")
             return True
-            
+
         except Exception as e:
             print(f"❌ Backup failed: {e}")
             return False
-    
+
     def _run_safety_checks(self, check_type: str = "pre") -> bool:
         """Run safety checks before/after execution"""
         checks_key = f"{check_type}_checks"
-        checks = self.config.get('safety', {}).get(checks_key, [])
-        
+        checks = self.config.get("safety", {}).get(checks_key, [])
+
         print(f"\n🔍 Running {check_type}-execution safety checks...")
-        
+
         all_passed = True
         for check in checks:
             result = self._execute_safety_check(check)
             status = "✅" if result else "❌"
             print(f"  {status} {check}")
             all_passed = all_passed and result
-        
+
         return all_passed
-    
+
     def _execute_safety_check(self, check: str) -> bool:
         """Execute a specific safety check"""
         try:
             if check == "git_status_clean":
                 result = subprocess.run(
-                    ["git", "status", "--porcelain"],
-                    cwd=BASE_PATH,
-                    capture_output=True,
-                    text=True
+                    ["git", "status", "--porcelain"], cwd=BASE_PATH, capture_output=True, text=True
                 )
                 return len(result.stdout.strip()) == 0
-            
+
             elif check == "no_uncommitted_changes":
-                result = subprocess.run(
-                    ["git", "diff", "--quiet"],
-                    cwd=BASE_PATH
-                )
+                result = subprocess.run(["git", "diff", "--quiet"], cwd=BASE_PATH)
                 return result.returncode == 0
-            
+
             elif check == "backup_created":
                 return len(list(BACKUP_DIR.glob("*"))) > 0
-            
+
             elif check in ["tests_passing", "tests_still_passing"]:
                 # Check if tests exist and can be run
                 if (BASE_PATH / "package.json").exists():
@@ -258,37 +260,35 @@ class RefactorEvolutionWorkflow:
                         ["npm", "test", "--", "--passWithNoTests"],
                         cwd=BASE_PATH,
                         capture_output=True,
-                        timeout=300
+                        timeout=300,
                     )
                     return result.returncode == 0
                 return True  # Pass if no tests defined
-            
+
             elif check == "no_syntax_errors":
                 # Basic syntax check for Python files
                 py_files = [str(p) for p in BASE_PATH.glob("**/*.py")]
                 result = subprocess.run(
-                    ["python", "-m", "py_compile"] + py_files,
-                    cwd=BASE_PATH,
-                    capture_output=True
+                    ["python", "-m", "py_compile"] + py_files, cwd=BASE_PATH, capture_output=True
                 )
                 return result.returncode == 0
-            
+
             else:
                 print(f"⚠️  Unknown check: {check}")
                 return True  # Don't fail on unknown checks
-                
+
         except Exception as e:
             print(f"⚠️  Check {check} failed with error: {e}")
             return False
-    
+
     async def run_phase(self, phase: WorkflowPhase) -> PhaseResult:
         """Execute a single workflow phase"""
         print(f"\n{'='*70}")
         print(f"📍 Phase: {phase.value.upper()}")
         print(f"{'='*70}")
-        
+
         start_time = datetime.now()
-        
+
         try:
             if phase == WorkflowPhase.ANALYSIS:
                 result = await self._run_analysis_phase()
@@ -304,80 +304,84 @@ class RefactorEvolutionWorkflow:
                 result = await self._run_validation_phase()
             else:
                 result = {"success": False, "error": f"Unknown phase: {phase}"}
-            
+
             duration = (datetime.now() - start_time).total_seconds()
-            
+
             phase_result = PhaseResult(
                 phase=phase,
                 success=result.get("success", False),
                 duration_seconds=duration,
                 output=result,
                 metrics=result.get("metrics", {}),
-                error=result.get("error")
+                error=result.get("error"),
             )
-            
+
             status = "✅" if phase_result.success else "❌"
             print(f"{status} Phase completed in {duration:.2f}s")
-            
+
             return phase_result
-            
+
         except Exception as e:
             duration = (datetime.now() - start_time).total_seconds()
             print(f"❌ Phase failed: {e}")
             import traceback
+
             traceback.print_exc()
-            
+
             return PhaseResult(
-                phase=phase,
-                success=False,
-                duration_seconds=duration,
-                output={},
-                error=str(e)
+                phase=phase, success=False, duration_seconds=duration, output={}, error=str(e)
             )
-    
+
     async def _run_analysis_phase(self) -> Dict[str, Any]:
         """Run analysis phase using refactor engine"""
         print("🔍 Analyzing codebase structure...")
-        
-        targets = self.config.get('targets', {}).get('primary', [])
+
+        targets = self.config.get("targets", {}).get("primary", [])
         results = []
-        
+
         for target in targets:
-            target_path = BASE_PATH / target['path']
+            target_path = BASE_PATH / target["path"]
             if not target_path.exists():
                 print(f"⚠️  Target not found: {target_path}")
                 continue
-            
+
             print(f"  📂 Analyzing: {target['path']}")
-            
+
             # Run refactor engine analysis
-            analysis = self._analyze_target(target_path, target.get('focus', []))
-            results.append({
-                "path": target['path'],
-                "priority": target.get('priority', 'medium'),
-                "analysis": analysis
-            })
-        
+            analysis = self._analyze_target(target_path, target.get("focus", []))
+            results.append(
+                {
+                    "path": target["path"],
+                    "priority": target.get("priority", "medium"),
+                    "analysis": analysis,
+                }
+            )
+
         # Save analysis results
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
         output_file = REPORTS_DIR / f"analysis_{timestamp}.yaml"
-        
-        with open(output_file, 'w', encoding='utf-8') as f:
-            yaml.dump({
-                "timestamp": timestamp,
-                "targets": results,
-                "summary": self._summarize_analysis(results)
-            }, f, allow_unicode=True, default_flow_style=False)
-        
+
+        with open(output_file, "w", encoding="utf-8") as f:
+            yaml.dump(
+                {
+                    "timestamp": timestamp,
+                    "targets": results,
+                    "summary": self._summarize_analysis(results),
+                },
+                f,
+                allow_unicode=True,
+                default_flow_style=False,
+            )
+
         print(f"📄 Analysis saved: {output_file}")
-        
+
         return {
             "success": True,
             "output_file": str(output_file),
             "targets_analyzed": len(results),
-            "metrics": self._extract_analysis_metrics(results)
+            "metrics": self._extract_analysis_metrics(results),
         }
-    
+
     def _analyze_target(self, target_path: Path, focus_areas: List[str]) -> Dict[str, Any]:
         """Analyze a specific target directory"""
         analysis = {
@@ -386,39 +390,47 @@ class RefactorEvolutionWorkflow:
             "is_directory": target_path.is_dir() if target_path.exists() else False,
             "focus_areas": focus_areas,
             "issues": [],
-            "recommendations": []
+            "recommendations": [],
         }
-        
+
         if not target_path.exists():
             return analysis
-        
+
         # Count files and structure
         if target_path.is_dir():
             py_files = list(target_path.rglob("*.py"))
             js_files = list(target_path.rglob("*.js"))
             ts_files = list(target_path.rglob("*.ts"))
-            
+
             analysis["file_counts"] = {
                 "python": len(py_files),
                 "javascript": len(js_files),
                 "typescript": len(ts_files),
-                "total": len(py_files) + len(js_files) + len(ts_files)
+                "total": len(py_files) + len(js_files) + len(ts_files),
             }
-            
+
             # Simple structure analysis
-            subdirs = [d for d in target_path.iterdir() if d.is_dir() and not d.name.startswith('.')]
+            subdirs = [
+                d for d in target_path.iterdir() if d.is_dir() and not d.name.startswith(".")
+            ]
             analysis["subdirectories"] = len(subdirs)
-            
+
             # Check for common issues
             if "structure" in focus_areas:
-                min_threshold = self.config.get("analysis", {}).get("min_problems_threshold", DEFAULT_MIN_PROBLEMS_THRESHOLD)
-                max_threshold = self.config.get("analysis", {}).get("max_problems_threshold", DEFAULT_MAX_PROBLEMS_THRESHOLD)
-                
+                min_threshold = self.config.get("analysis", {}).get(
+                    "min_problems_threshold", DEFAULT_MIN_PROBLEMS_THRESHOLD
+                )
+                max_threshold = self.config.get("analysis", {}).get(
+                    "max_problems_threshold", DEFAULT_MAX_PROBLEMS_THRESHOLD
+                )
+
                 if len(subdirs) > min_threshold:
-                    analysis["issues"].append("High number of subdirectories - consider consolidation")
+                    analysis["issues"].append(
+                        "High number of subdirectories - consider consolidation"
+                    )
                 if analysis["file_counts"]["total"] > max_threshold:
                     analysis["issues"].append("Large number of files - consider modularization")
-            
+
             if "organization" in focus_areas:
                 has_init = (target_path / "__init__.py").exists()
                 has_readme = (target_path / "README.md").exists()
@@ -426,166 +438,159 @@ class RefactorEvolutionWorkflow:
                     analysis["issues"].append("Missing __init__.py for Python package")
                 if not has_readme:
                     analysis["recommendations"].append("Add README.md for documentation")
-        
+
         return analysis
-    
+
     def _summarize_analysis(self, results: List[Dict]) -> Dict[str, Any]:
         """Create summary of analysis results"""
-        total_issues = sum(len(r.get('analysis', {}).get('issues', [])) for r in results)
-        total_recommendations = sum(len(r.get('analysis', {}).get('recommendations', [])) for r in results)
-        
+        total_issues = sum(len(r.get("analysis", {}).get("issues", [])) for r in results)
+        total_recommendations = sum(
+            len(r.get("analysis", {}).get("recommendations", [])) for r in results
+        )
+
         return {
             "targets_analyzed": len(results),
             "total_issues": total_issues,
             "total_recommendations": total_recommendations,
-            "needs_refactoring": total_issues > 0
+            "needs_refactoring": total_issues > 0,
         }
-    
+
     def _extract_analysis_metrics(self, results: List[Dict]) -> Dict[str, Any]:
         """Extract metrics from analysis results"""
         return {
             "targets_analyzed": len(results),
             "total_files": sum(
-                r.get('analysis', {}).get('file_counts', {}).get('total', 0)
-                for r in results
+                r.get("analysis", {}).get("file_counts", {}).get("total", 0) for r in results
             ),
-            "total_issues": sum(
-                len(r.get('analysis', {}).get('issues', []))
-                for r in results
-            )
+            "total_issues": sum(len(r.get("analysis", {}).get("issues", [])) for r in results),
         }
-    
+
     async def _run_planning_phase(self) -> Dict[str, Any]:
         """Run planning phase to create execution plan"""
         print("📋 Creating execution plan...")
-        
+
         # Find latest analysis
         analysis_files = sorted(REPORTS_DIR.glob("analysis_*.yaml"), reverse=True)
         if not analysis_files:
             return {"success": False, "error": "No analysis results found"}
-        
+
         latest_analysis = analysis_files[0]
-        with open(latest_analysis, 'r', encoding='utf-8') as f:
+        with open(latest_analysis, "r", encoding="utf-8") as f:
             analysis = yaml.safe_load(f)
-        
+
         # Create execution plan
         plan = {
             "metadata": {
                 "created_at": datetime.now().isoformat(),
                 "based_on_analysis": str(latest_analysis),
-                "mode": self.config['workflow']['mode']
+                "mode": self.config["workflow"]["mode"],
             },
             "phases": [],
-            "validation": {}
+            "validation": {},
         }
-        
+
         # Generate plan phases based on analysis
-        summary = analysis.get('summary', {})
-        if summary.get('needs_refactoring', False):
-            plan['phases'].append({
-                "id": 1,
-                "name": "Structure Optimization",
-                "priority": "P1",
-                "description": "Optimize directory structure and organization",
-                "steps": [
-                    "Consolidate scattered files",
-                    "Improve naming consistency",
-                    "Add missing documentation"
-                ]
-            })
-        
+        summary = analysis.get("summary", {})
+        if summary.get("needs_refactoring", False):
+            plan["phases"].append(
+                {
+                    "id": 1,
+                    "name": "Structure Optimization",
+                    "priority": "P1",
+                    "description": "Optimize directory structure and organization",
+                    "steps": [
+                        "Consolidate scattered files",
+                        "Improve naming consistency",
+                        "Add missing documentation",
+                    ],
+                }
+            )
+
         # Save plan
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
         output_file = REPORTS_DIR / "plans" / f"plan_{timestamp}.yaml"
         output_file.parent.mkdir(parents=True, exist_ok=True)
-        
-        with open(output_file, 'w', encoding='utf-8') as f:
+
+        with open(output_file, "w", encoding="utf-8") as f:
             yaml.dump(plan, f, allow_unicode=True, default_flow_style=False)
-        
+
         print(f"📄 Plan saved: {output_file}")
-        
+
         return {
             "success": True,
             "output_file": str(output_file),
-            "phases_planned": len(plan['phases']),
-            "metrics": {"phases": len(plan['phases'])}
+            "phases_planned": len(plan["phases"]),
+            "metrics": {"phases": len(plan["phases"])},
         }
-    
+
     async def _run_execution_phase(self) -> Dict[str, Any]:
         """Run execution phase to apply changes"""
         print("⚙️  Executing refactoring plan...")
-        
+
         # This is a safe no-op execution for now
         # In real implementation, this would apply actual changes
-        
+
         return {
             "success": True,
             "changes_applied": 0,
             "dry_run": True,
             "message": "Execution phase completed (dry-run mode)",
-            "metrics": {"changes_applied": 0}
+            "metrics": {"changes_applied": 0},
         }
-    
+
     async def _run_learning_phase(self) -> Dict[str, Any]:
         """Run learning phase using evolution engine"""
         print("📚 Learning from execution results...")
-        
+
         if not self.evolution_engine:
             return {
                 "success": True,
                 "message": "Learning phase skipped (evolution engine not available)",
-                "metrics": {}
+                "metrics": {},
             }
-        
+
         # Collect learning data
         learning_data = {
             "execution_results": [r for r in self.results if r.phase == WorkflowPhase.EXECUTION],
             "metrics": {
                 "total_phases": len(self.results),
-                "successful_phases": len([r for r in self.results if r.success])
-            }
+                "successful_phases": len([r for r in self.results if r.success]),
+            },
         }
-        
-        return {
-            "success": True,
-            "insights_collected": 0,
-            "metrics": learning_data['metrics']
-        }
-    
+
+        return {"success": True, "insights_collected": 0, "metrics": learning_data["metrics"]}
+
     async def _run_evolution_phase(self) -> Dict[str, Any]:
         """Run evolution phase to identify improvements"""
         print("🚀 Identifying evolution opportunities...")
-        
+
         if not self.evolution_engine:
             return {
                 "success": True,
                 "message": "Evolution phase skipped (evolution engine not available)",
-                "metrics": {}
+                "metrics": {},
             }
-        
+
         return {
             "success": True,
             "opportunities_identified": 0,
             "optimizations_applied": 0,
-            "metrics": {
-                "opportunities": 0,
-                "optimizations": 0
-            }
+            "metrics": {"opportunities": 0, "optimizations": 0},
         }
-    
+
     async def _run_validation_phase(self) -> Dict[str, Any]:
         """Run validation phase to verify changes"""
         print("✅ Validating changes...")
-        
+
         # Run post-execution safety checks
         checks_passed = self._run_safety_checks("post")
-        
+
         return {
             "success": checks_passed,
             "checks_passed": checks_passed,
-            "metrics": {"validation_passed": checks_passed}
+            "metrics": {"validation_passed": checks_passed},
         }
-    
+
     async def run_full_workflow(self, mode: str = "autonomous") -> Dict[str, Any]:
         """Run complete refactor and evolution workflow"""
         print(f"\n{'='*70}")
@@ -594,22 +599,22 @@ class RefactorEvolutionWorkflow:
         print(f"Mode: {mode}")
         print(f"Config: {self.config_path}")
         print()
-        
+
         # Initialize state
         workflow_id = f"workflow_{datetime.now().strftime('%Y%m%d_%H%M%S')}"
         self.state = WorkflowState(
             workflow_id=workflow_id,
             status=WorkflowStatus.RUNNING,
             current_phase=None,
-            start_time=datetime.now()
+            start_time=datetime.now(),
         )
-        
+
         # Initialize engines
         if not self._initialize_engines():
             self.state.status = WorkflowStatus.FAILED
             self.state.error = "Failed to initialize engines"
             return {"success": False, "error": self.state.error}
-        
+
         # Pre-execution safety checks
         if not self._run_safety_checks("pre"):
             print("\n⚠️  Pre-execution safety checks failed")
@@ -617,14 +622,14 @@ class RefactorEvolutionWorkflow:
                 print("❌ Aborting in autonomous mode")
                 self.state.status = WorkflowStatus.FAILED
                 return {"success": False, "error": "Safety checks failed"}
-        
+
         # Create backup
         if not self._create_backup():
             print("\n⚠️  Backup creation failed")
-            if self.config['safety'].get('backup_required', True):
+            if self.config["safety"].get("backup_required", True):
                 self.state.status = WorkflowStatus.FAILED
                 return {"success": False, "error": "Backup required but failed"}
-        
+
         # Execute workflow phases
         phases = [
             WorkflowPhase.ANALYSIS,
@@ -632,50 +637,57 @@ class RefactorEvolutionWorkflow:
             WorkflowPhase.EXECUTION,
             WorkflowPhase.LEARNING,
             WorkflowPhase.EVOLUTION,
-            WorkflowPhase.VALIDATION
+            WorkflowPhase.VALIDATION,
         ]
-        
+
         for phase in phases:
             self.state.current_phase = phase
             result = await self.run_phase(phase)
             self.results.append(result)
-            
+
             if result.success:
                 self.state.completed_phases.append(phase)
             else:
                 self.state.failed_phases.append(phase)
-                
+
                 # Check if we should continue or abort
-                if mode == "autonomous" and phase in [WorkflowPhase.ANALYSIS, WorkflowPhase.VALIDATION]:
+                if mode == "autonomous" and phase in [
+                    WorkflowPhase.ANALYSIS,
+                    WorkflowPhase.VALIDATION,
+                ]:
                     print(f"\n❌ Critical phase {phase.value} failed, aborting workflow")
                     self.state.status = WorkflowStatus.FAILED
                     self.state.error = f"Phase {phase.value} failed"
                     break
-        
+
         # Finalize
         self.state.end_time = datetime.now()
-        self.state.status = WorkflowStatus.COMPLETED if not self.state.failed_phases else WorkflowStatus.FAILED
+        self.state.status = (
+            WorkflowStatus.COMPLETED if not self.state.failed_phases else WorkflowStatus.FAILED
+        )
         self.state.current_phase = None
-        
+
         # Generate final report
         report = self._generate_report()
-        
+
         print(f"\n{'='*70}")
-        print(f"{'✅' if self.state.status == WorkflowStatus.COMPLETED else '❌'} Workflow {self.state.status.value}")
+        print(
+            f"{'✅' if self.state.status == WorkflowStatus.COMPLETED else '❌'} Workflow {self.state.status.value}"
+        )
         print(f"{'='*70}")
         print(f"Duration: {(self.state.end_time - self.state.start_time).total_seconds():.2f}s")
         print(f"Phases completed: {len(self.state.completed_phases)}/{len(phases)}")
         if self.state.failed_phases:
             print(f"Phases failed: {', '.join(p.value for p in self.state.failed_phases)}")
         print()
-        
+
         return {
             "success": self.state.status == WorkflowStatus.COMPLETED,
             "workflow_id": workflow_id,
             "report": report,
-            "state": asdict(self.state)
+            "state": asdict(self.state),
         }
-    
+
     def _generate_report(self) -> Dict[str, Any]:
         """Generate workflow execution report"""
         report = {
@@ -685,7 +697,7 @@ class RefactorEvolutionWorkflow:
             "phases": {
                 "total": len(self.results),
                 "completed": len(self.state.completed_phases),
-                "failed": len(self.state.failed_phases)
+                "failed": len(self.state.failed_phases),
             },
             "results": [
                 {
@@ -693,31 +705,34 @@ class RefactorEvolutionWorkflow:
                     "success": r.success,
                     "duration_seconds": r.duration_seconds,
                     "metrics": r.metrics,
-                    "error": r.error
+                    "error": r.error,
                 }
                 for r in self.results
             ],
             "summary": {
                 "total_duration": (self.state.end_time - self.state.start_time).total_seconds(),
-                "success_rate": len(self.state.completed_phases) / len(self.results) if self.results else 0
-            }
+                "success_rate": (
+                    len(self.state.completed_phases) / len(self.results) if self.results else 0
+                ),
+            },
         }
-        
+
         # Save report
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
         report_file = REPORTS_DIR / f"workflow_report_{timestamp}.yaml"
-        
-        with open(report_file, 'w', encoding='utf-8') as f:
+
+        with open(report_file, "w", encoding="utf-8") as f:
             yaml.dump(report, f, allow_unicode=True, default_flow_style=False)
-        
+
         print(f"📄 Report saved: {report_file}")
-        
+
         return report
 
 
 # ============================================================================
 # CLI Interface
 # ============================================================================
+
 
 async def main():
     """Main CLI entry point"""
@@ -732,52 +747,57 @@ Examples:
   # Run specific phase
   python refactor_evolution_workflow.py analyze
   python refactor_evolution_workflow.py plan
-  
+
   # Check status
   python refactor_evolution_workflow.py status
-        """
+        """,
     )
-    
+
     subparsers = parser.add_subparsers(dest="command", help="Available commands")
-    
+
     # run command
     run_parser = subparsers.add_parser("run", help="Run full workflow")
-    run_parser.add_argument("--mode", "-m", choices=["autonomous", "supervised", "interactive"],
-                           default="autonomous", help="Execution mode")
+    run_parser.add_argument(
+        "--mode",
+        "-m",
+        choices=["autonomous", "supervised", "interactive"],
+        default="autonomous",
+        help="Execution mode",
+    )
     run_parser.add_argument("--config", "-c", help="Configuration file path")
-    
+
     # analyze command
     analyze_parser = subparsers.add_parser("analyze", help="Run analysis phase only")
     analyze_parser.add_argument("--target", "-t", help="Specific target to analyze")
-    
+
     # plan command
     plan_parser = subparsers.add_parser("plan", help="Run planning phase only")
-    
+
     # execute command
     execute_parser = subparsers.add_parser("execute", help="Run execution phase only")
     execute_parser.add_argument("--dry-run", action="store_true", help="Dry run mode")
-    
+
     # status command
     subparsers.add_parser("status", help="Show workflow status")
-    
+
     # report command
     subparsers.add_parser("report", help="Show latest report")
-    
+
     args = parser.parse_args()
-    
+
     if not args.command:
         parser.print_help()
         return
-    
+
     # Initialize workflow
-    config_path = Path(args.config) if hasattr(args, 'config') and args.config else CONFIG_PATH
+    config_path = Path(args.config) if hasattr(args, "config") and args.config else CONFIG_PATH
     workflow = RefactorEvolutionWorkflow(config_path)
-    
+
     # Execute command
     if args.command == "run":
         result = await workflow.run_full_workflow(mode=args.mode)
         sys.exit(0 if result["success"] else 1)
-    
+
     elif args.command == "analyze":
         if not workflow._initialize_engines():
             print("❌ Failed to initialize engines")
@@ -785,12 +805,12 @@ Examples:
         result = await workflow._run_analysis_phase()
         print(yaml.dump(result, allow_unicode=True, default_flow_style=False))
         sys.exit(0 if result["success"] else 1)
-    
+
     elif args.command == "plan":
         result = await workflow._run_planning_phase()
         print(yaml.dump(result, allow_unicode=True, default_flow_style=False))
         sys.exit(0 if result["success"] else 1)
-    
+
     elif args.command == "execute":
         if not workflow._initialize_engines():
             print("❌ Failed to initialize engines")
@@ -798,22 +818,22 @@ Examples:
         result = await workflow._run_execution_phase()
         print(yaml.dump(result, allow_unicode=True, default_flow_style=False))
         sys.exit(0 if result["success"] else 1)
-    
+
     elif args.command == "status":
         # Show latest workflow status
         reports = sorted(REPORTS_DIR.glob("workflow_report_*.yaml"), reverse=True)
         if reports:
-            with open(reports[0], 'r', encoding='utf-8') as f:
+            with open(reports[0], "r", encoding="utf-8") as f:
                 report = yaml.safe_load(f)
             print(yaml.dump(report, allow_unicode=True, default_flow_style=False))
         else:
             print("No workflow reports found")
-    
+
     elif args.command == "report":
         # Show latest detailed report
         reports = sorted(REPORTS_DIR.glob("workflow_report_*.yaml"), reverse=True)
         if reports:
-            with open(reports[0], 'r', encoding='utf-8') as f:
+            with open(reports[0], "r", encoding="utf-8") as f:
                 report = yaml.safe_load(f)
             print(yaml.dump(report, allow_unicode=True, default_flow_style=False))
         else:

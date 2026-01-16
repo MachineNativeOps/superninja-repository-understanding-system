@@ -19,11 +19,12 @@ class Role(Enum):
 
     Hierarchy: OWNER > ADMIN > MEMBER > READONLY
     """
-    OWNER = "owner"           # Full control, can delete org, manage billing
-    ADMIN = "admin"           # Can manage settings, members, but not billing
-    MEMBER = "member"         # Can create/modify resources, run analyses
-    READONLY = "readonly"     # View-only access
-    SERVICE = "service"       # For worker/integration tokens (limited scope)
+
+    OWNER = "owner"  # Full control, can delete org, manage billing
+    ADMIN = "admin"  # Can manage settings, members, but not billing
+    MEMBER = "member"  # Can create/modify resources, run analyses
+    READONLY = "readonly"  # View-only access
+    SERVICE = "service"  # For worker/integration tokens (limited scope)
 
 
 class Permission(Enum):
@@ -32,6 +33,7 @@ class Permission(Enum):
 
     Format: RESOURCE_ACTION
     """
+
     # Organization permissions
     ORG_READ = "org:read"
     ORG_UPDATE = "org:update"
@@ -87,7 +89,6 @@ class Permission(Enum):
 # Role to Permission mapping
 ROLE_PERMISSIONS: dict[Role, set[Permission]] = {
     Role.OWNER: set(Permission),  # All permissions
-
     Role.ADMIN: {
         Permission.ORG_READ,
         Permission.ORG_UPDATE,
@@ -121,7 +122,6 @@ ROLE_PERMISSIONS: dict[Role, set[Permission]] = {
         Permission.TOKEN_REVOKE,
         Permission.AUDIT_READ,
     },
-
     Role.MEMBER: {
         Permission.ORG_READ,
         Permission.PROJECT_READ,
@@ -138,7 +138,6 @@ ROLE_PERMISSIONS: dict[Role, set[Permission]] = {
         Permission.TOKEN_CREATE,
         Permission.TOKEN_READ,
     },
-
     Role.READONLY: {
         Permission.ORG_READ,
         Permission.PROJECT_READ,
@@ -147,7 +146,6 @@ ROLE_PERMISSIONS: dict[Role, set[Permission]] = {
         Permission.RUN_READ,
         Permission.REPORT_READ,
     },
-
     Role.SERVICE: {
         Permission.REPO_READ,
         Permission.POLICY_READ,
@@ -168,6 +166,7 @@ class TokenScope(Enum):
     - INTEGRATION: For external integrations (GitHub App, etc.)
     - WORKER: For background job workers
     """
+
     READ = "read"
     WRITE = "write"
     INTEGRATION = "integration"
@@ -182,6 +181,7 @@ class Organization:
 
     org_id is the ROOT isolation key - every piece of data must reference this.
     """
+
     id: UUID = field(default_factory=uuid4)
     name: str = ""
     slug: str = ""  # URL-friendly identifier
@@ -226,8 +226,10 @@ class Project:
 
     Groups related repositories together.
     """
+
     id: UUID = field(default_factory=uuid4)
-    org_id: UUID = field(default_factory=uuid4)  # REQUIRED: Tenant isolation key
+    # REQUIRED: Tenant isolation key
+    org_id: UUID = field(default_factory=uuid4)
 
     name: str = ""
     slug: str = ""
@@ -252,8 +254,10 @@ class Repository:
 
     Represents a connection between the platform and an external Git repository.
     """
+
     id: UUID = field(default_factory=uuid4)
-    org_id: UUID = field(default_factory=uuid4)  # REQUIRED: Tenant isolation key
+    # REQUIRED: Tenant isolation key
+    org_id: UUID = field(default_factory=uuid4)
     project_id: UUID = field(default_factory=uuid4)
 
     name: str = ""
@@ -292,6 +296,7 @@ class User:
 
     Users can belong to multiple organizations with different roles.
     """
+
     id: UUID = field(default_factory=uuid4)
 
     email: str = ""
@@ -324,8 +329,10 @@ class Membership:
     """
     Organization membership - links Users to Organizations with Roles
     """
+
     id: UUID = field(default_factory=uuid4)
-    org_id: UUID = field(default_factory=uuid4)  # REQUIRED: Tenant isolation key
+    # REQUIRED: Tenant isolation key
+    org_id: UUID = field(default_factory=uuid4)
     user_id: UUID = field(default_factory=uuid4)
 
     role: Role = Role.MEMBER
@@ -349,15 +356,18 @@ class APIToken:
 
     Tokens are scoped, can be revoked, rotated, and have expiration.
     """
+
     id: UUID = field(default_factory=uuid4)
-    org_id: UUID = field(default_factory=uuid4)  # REQUIRED: Tenant isolation key
+    # REQUIRED: Tenant isolation key
+    org_id: UUID = field(default_factory=uuid4)
 
     name: str = ""
     description: str = ""
 
     # Token value (only shown once at creation)
     token_hash: str = ""  # SHA-256 hash of the actual token
-    token_prefix: str = ""  # First 8 chars for identification (e.g., "mno_abc1")
+    # First 8 chars for identification (e.g., "mno_abc1")
+    token_prefix: str = ""
 
     # Scope
     scope: TokenScope = TokenScope.READ
@@ -411,8 +421,10 @@ class SSOConfig:
 
     Stores the configuration needed for enterprise SSO integration.
     """
+
     id: UUID = field(default_factory=uuid4)
-    org_id: UUID = field(default_factory=uuid4)  # REQUIRED: Tenant isolation key
+    # REQUIRED: Tenant isolation key
+    org_id: UUID = field(default_factory=uuid4)
 
     provider_type: str = "oidc"  # oidc, saml
 
@@ -452,6 +464,7 @@ class OIDCProvider:
     This is the extension point mentioned in the requirements -
     MVP can use email/password + magic link, but backend must support OIDC/SAML.
     """
+
     id: UUID = field(default_factory=uuid4)
 
     name: str = ""  # e.g., "Okta", "Azure AD", "Google Workspace"
@@ -470,11 +483,13 @@ class OIDCProvider:
     default_scopes: list[str] = field(default_factory=lambda: ["openid", "email", "profile"])
 
     # Claim mapping
-    claim_mapping: dict[str, str] = field(default_factory=lambda: {
-        "sub": "sso_subject",
-        "email": "email",
-        "name": "display_name",
-    })
+    claim_mapping: dict[str, str] = field(
+        default_factory=lambda: {
+            "sub": "sso_subject",
+            "email": "email",
+            "name": "display_name",
+        }
+    )
 
     # Status
     is_verified: bool = False

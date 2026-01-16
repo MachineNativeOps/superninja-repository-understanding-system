@@ -7,12 +7,16 @@
 ============================================================================
 """
 
+from sqlalchemy.orm import Session, sessionmaker
+from sqlalchemy import create_engine
+from contextlib import contextmanager
 import enum
 from datetime import datetime
 from typing import Any
 
-from sqlalchemy import JSON, Column, DateTime, Float, ForeignKey, Index, Integer, String, Text
+from sqlalchemy import JSON, Column, DateTime
 from sqlalchemy import Enum as SQLEnum
+from sqlalchemy import Float, ForeignKey, Index, Integer, String, Text
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship
 
@@ -21,6 +25,7 @@ Base = declarative_base()
 
 class AnalysisStatus(str, enum.Enum):
     """分析狀態"""
+
     PENDING = "pending"
     RUNNING = "running"
     COMPLETED = "completed"
@@ -30,6 +35,7 @@ class AnalysisStatus(str, enum.Enum):
 
 class SeverityLevel(str, enum.Enum):
     """嚴重程度"""
+
     CRITICAL = "CRITICAL"
     HIGH = "HIGH"
     MEDIUM = "MEDIUM"
@@ -39,6 +45,7 @@ class SeverityLevel(str, enum.Enum):
 
 class IssueType(str, enum.Enum):
     """問題類型"""
+
     SECURITY = "SECURITY"
     PERFORMANCE = "PERFORMANCE"
     CODE_QUALITY = "CODE_QUALITY"
@@ -50,6 +57,7 @@ class IssueType(str, enum.Enum):
 
 class AnalysisRecord(Base):
     """分析記錄"""
+
     __tablename__ = "analysis_records"
 
     # 主鍵
@@ -96,8 +104,8 @@ class AnalysisRecord(Base):
 
     # 索引
     __table_args__ = (
-        Index('idx_repo_commit', 'repository', 'commit_hash'),
-        Index('idx_status_created', 'status', 'created_at'),
+        Index("idx_repo_commit", "repository", "commit_hash"),
+        Index("idx_status_created", "status", "created_at"),
     )
 
     def to_dict(self) -> dict[str, Any]:
@@ -125,6 +133,7 @@ class AnalysisRecord(Base):
 
 class IssueRecord(Base):
     """問題記錄"""
+
     __tablename__ = "issue_records"
 
     # 主鍵
@@ -162,8 +171,8 @@ class IssueRecord(Base):
 
     # 索引
     __table_args__ = (
-        Index('idx_analysis_severity', 'analysis_id', 'severity'),
-        Index('idx_type_severity', 'type', 'severity'),
+        Index("idx_analysis_severity", "analysis_id", "severity"),
+        Index("idx_type_severity", "type", "severity"),
     )
 
     def to_dict(self) -> dict[str, Any]:
@@ -192,11 +201,6 @@ class IssueRecord(Base):
 # 數據庫會話管理
 # ============================================================================
 
-from contextlib import contextmanager
-
-from sqlalchemy import create_engine
-from sqlalchemy.orm import Session, sessionmaker
-
 
 class DatabaseManager:
     """數據庫管理器"""
@@ -207,11 +211,7 @@ class DatabaseManager:
             echo=False,
             pool_pre_ping=True,
         )
-        self.SessionLocal = sessionmaker(
-            autocommit=False,
-            autoflush=False,
-            bind=self.engine
-        )
+        self.SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=self.engine)
 
     def create_tables(self):
         """創建所有表"""
@@ -238,6 +238,7 @@ class DatabaseManager:
 # ============================================================================
 # 數據訪問層 (DAO)
 # ============================================================================
+
 
 class AnalysisDAO:
     """分析數據訪問對象"""
@@ -269,10 +270,7 @@ class AnalysisDAO:
             session.query(AnalysisRecord).filter_by(id=analysis_id).delete()
 
     def list_analyses(
-        self,
-        limit: int = 10,
-        offset: int = 0,
-        status: AnalysisStatus | None = None
+        self, limit: int = 10, offset: int = 0, status: AnalysisStatus | None = None
     ) -> list[AnalysisRecord]:
         """列出分析記錄"""
         with self.db_manager.get_session() as session:

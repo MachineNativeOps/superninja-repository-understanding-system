@@ -72,24 +72,31 @@ Usage:
 Version: 1.0.0
 """
 
+import argparse
 import asyncio
-import json
-import yaml
-import sys
-import signal
 import importlib
 import importlib.util
-from pathlib import Path
-from datetime import datetime, timedelta
-from typing import Dict, List, Optional, Any, Type, Set, Callable, Union
-from dataclasses import dataclass, field, asdict
-from enum import Enum, auto
+import json
 import logging
-import argparse
+import signal
+import sys
+from dataclasses import asdict, dataclass, field
+from datetime import datetime, timedelta
+from enum import Enum, auto
+from pathlib import Path
+from typing import Any, Callable, Dict, List, Optional, Set, Type, Union
 
+import yaml
 from engine_base import (
-    BaseEngine, EngineConfig, EngineState, EngineType,
-    ExecutionMode, Priority, EngineEvent, TaskResult, HealthStatus
+    BaseEngine,
+    EngineConfig,
+    EngineEvent,
+    EngineState,
+    EngineType,
+    ExecutionMode,
+    HealthStatus,
+    Priority,
+    TaskResult,
 )
 
 # ============================================================================
@@ -105,28 +112,32 @@ STATE_PATH = BASE_PATH / ".automation_state"
 # 配置資料結構
 # ============================================================================
 
+
 @dataclass
 class OrchestratorConfig:
     """主控配置"""
+
     name: str = "SynergyMesh-Orchestrator"
     version: str = "1.0.0"
 
     # 自動化設定
-    auto_discover: bool = True              # 自動發現引擎
-    auto_start_engines: bool = True         # 自動啟動引擎
-    auto_recover: bool = True               # 自動恢復
-    auto_scale: bool = False                # 自動擴縮
+    auto_discover: bool = True  # 自動發現引擎
+    auto_start_engines: bool = True  # 自動啟動引擎
+    auto_recover: bool = True  # 自動恢復
+    auto_scale: bool = False  # 自動擴縮
 
     # 執行設定
-    max_concurrent_engines: int = 50        # 最大並行引擎數
-    health_check_interval: float = 30.0     # 健康檢查間隔
-    garbage_collect_interval: float = 300.0 # 垃圾回收間隔
+    max_concurrent_engines: int = 50  # 最大並行引擎數
+    health_check_interval: float = 30.0  # 健康檢查間隔
+    garbage_collect_interval: float = 300.0  # 垃圾回收間隔
 
     # 路徑配置
-    engines_paths: List[str] = field(default_factory=lambda: [
-        "tools/automation/engines",
-        "tools/refactor",
-    ])
+    engines_paths: List[str] = field(
+        default_factory=lambda: [
+            "tools/automation/engines",
+            "tools/refactor",
+        ]
+    )
     config_path: str = "config/automation"
     state_path: str = ".automation_state"
 
@@ -134,9 +145,11 @@ class OrchestratorConfig:
     event_queue_size: int = 10000
     event_retention_hours: int = 24
 
+
 @dataclass
 class PipelineConfig:
     """管道配置"""
+
     pipeline_id: str
     name: str
     description: str = ""
@@ -144,9 +157,11 @@ class PipelineConfig:
     triggers: List[Dict[str, Any]] = field(default_factory=list)
     enabled: bool = True
 
+
 @dataclass
 class EngineRegistration:
     """引擎註冊資訊"""
+
     engine_id: str
     engine_name: str
     engine_class: str
@@ -158,9 +173,11 @@ class EngineRegistration:
     last_health_check: str = ""
     healthy: bool = False
 
+
 # ============================================================================
 # 事件總線
 # ============================================================================
+
 
 class EventBus:
     """
@@ -192,7 +209,7 @@ class EventBus:
         # 記錄歷史
         self._history.append(event)
         if len(self._history) > self._max_history:
-            self._history = self._history[-self._max_history:]
+            self._history = self._history[-self._max_history :]
 
     def subscribe(self, event_type: str, handler: Callable):
         """訂閱事件"""
@@ -237,23 +254,25 @@ class EventBus:
             events = [e for e in events if e.event_type == event_type]
         return events[-limit:]
 
+
 # ============================================================================
 # 引擎註冊中心
 # ============================================================================
 
+
 class EngineRegistry:
     """
     引擎註冊中心 - 管理所有引擎的註冊與發現
-    
+
     Engine Registry - Central Hub for Engine Discovery & Lifecycle Management
-    
+
     Architecture Context / 架構定位
     ==============================
-    
-    The EngineRegistry serves as the **service registry component** within the 
+
+    The EngineRegistry serves as the **service registry component** within the
     Unmanned Island System's automation orchestration layer, bridging multiple
     subsystems:
-    
+
     ┌──────────────────────────────────────────────────────────────────┐
     │                    Master Orchestrator                           │
     │                    (tools/automation/)                           │
@@ -278,57 +297,57 @@ class EngineRegistry:
     │   │  • Event bus        │  • automation/hyperautomation/       │
     │   └─────────────────────┘                                      │
     └──────────────────────────────────────────────────────────────────┘
-    
+
     Integration Points / 整合接口
     -----------------------------
-    
+
     1. **Discovery Integration** (發現整合):
        - Scans `automation/` for BaseEngine subclasses
        - Loads engine.yaml configs from engine directories
        - Interfaces with governance schemas in `config/`
-    
+
     2. **SynergyMesh Core Integration** (核心整合):
        - Provides engine metadata to AI decision engine (`core/`)
        - Supports virtual expert coordination
        - Reports health status for monitoring
-    
+
     3. **Governance Integration** (治理整合):
        - Validates engine configs against governance schemas
        - Ensures SLSA provenance for discovered engines
        - Enforces policy constraints from `governance/policies/`
-    
+
     4. **Autonomous Framework Support** (自主框架支援):
        - Registers five-skeleton engines (`automation/autonomous/`)
        - Coordinates drone control engines
        - Manages ROS/C++ bridge engines
-    
+
     Key Responsibilities / 核心職責
     -------------------------------
-    
+
     - **Engine Discovery**: Automatic detection of engines via filesystem scan
     - **Registration Management**: Maintain engine inventory with metadata
     - **Type Classification**: Support filtering by EngineType enum
     - **Health Tracking**: Monitor engine lifecycle states
     - **Query Interface**: Provide lookup by ID, type, state, or tags
-    
+
     Configuration Sources / 配置來源
     --------------------------------
-    
+
     - Discovery paths: Defined in MasterOrchestrator initialization
     - Engine configs: `tools/automation/engines/*/engine.yaml`
     - Governance schemas: `config/system-manifest.yaml`
     - State persistence: `.automation_state/registry.json`
-    
+
     Thread Safety / 線程安全
     -----------------------
-    
+
     ⚠️ This class is NOT thread-safe by design. It's intended for use within
     the asyncio event loop of the MasterOrchestrator. For concurrent access,
     wrap operations in asyncio locks or use separate registry instances.
-    
+
     See Also / 參考文檔
     -------------------
-    
+
     - `automation/README.md` - Automation layer overview
     - `docs/architecture/repo-map.md` - System boundaries
     - `engine_base.py` - BaseEngine interface definition
@@ -491,7 +510,7 @@ class EngineRegistry:
 
             # 搜尋 Python 模組
             for py_file in search_path.rglob("*.py"):
-                if py_file.name.startswith('_'):
+                if py_file.name.startswith("_"):
                     continue
 
                 try:
@@ -504,10 +523,10 @@ class EngineRegistry:
             # 搜尋配置檔
             for config_file in search_path.rglob("engine.yaml"):
                 try:
-                    with open(config_file, 'r', encoding='utf-8') as f:
+                    with open(config_file, "r", encoding="utf-8") as f:
                         config = yaml.safe_load(f)
                     if config:
-                        config['config_path'] = str(config_file)
+                        config["config_path"] = str(config_file)
                         discovered.append(config)
                 except Exception as e:
                     self._logger.debug(f"讀取配置失敗 {config_file}: {e}")
@@ -546,8 +565,8 @@ class EngineRegistry:
         --------------------
         - **class_name**: Directly from the class `__name__` attribute
         - **module_path**: Converted to string for JSON serialization
-        - **engine_type**: String value extracted from the ENGINE_TYPE class 
-                           attribute if present, otherwise defaults to the 
+        - **engine_type**: String value extracted from the ENGINE_TYPE class
+                           attribute if present, otherwise defaults to the
                            string value of EngineType.EXECUTION
 
         Error Handling:
@@ -614,9 +633,7 @@ class EngineRegistry:
         engines = []
 
         try:
-            spec = importlib.util.spec_from_file_location(
-                module_path.stem, module_path
-            )
+            spec = importlib.util.spec_from_file_location(module_path.stem, module_path)
             if spec is None or spec.loader is None:
                 return engines
 
@@ -625,26 +642,32 @@ class EngineRegistry:
 
             # 尋找 BaseEngine 子類
             for name, obj in vars(module).items():
-                if (isinstance(obj, type) and
-                    issubclass(obj, BaseEngine) and
-                    obj is not BaseEngine and
-                    not name.startswith('_')):
+                if (
+                    isinstance(obj, type)
+                    and issubclass(obj, BaseEngine)
+                    and obj is not BaseEngine
+                    and not name.startswith("_")
+                ):
 
                     # 獲取引擎資訊
-                    engines.append({
-                        "class_name": name,
-                        "module_path": str(module_path),
-                        "engine_type": getattr(obj, 'ENGINE_TYPE', EngineType.EXECUTION).value,
-                    })
+                    engines.append(
+                        {
+                            "class_name": name,
+                            "module_path": str(module_path),
+                            "engine_type": getattr(obj, "ENGINE_TYPE", EngineType.EXECUTION).value,
+                        }
+                    )
 
         except Exception as e:
             pass
 
         return engines
 
+
 # ============================================================================
 # 引擎調度器
 # ============================================================================
+
 
 class EngineScheduler:
     """
@@ -706,9 +729,11 @@ class EngineScheduler:
 
         self._logger.warning(f"找不到合適的引擎執行任務: {task.get('task_id')}")
 
+
 # ============================================================================
 # 管道執行器
 # ============================================================================
+
 
 class PipelineExecutor:
     """
@@ -816,9 +841,11 @@ class PipelineExecutor:
             "duration_ms": result.duration_ms,
         }
 
+
 # ============================================================================
 # 健康監控器
 # ============================================================================
+
 
 class HealthMonitor:
     """
@@ -874,9 +901,13 @@ class HealthMonitor:
         """處理不健康的引擎"""
         self._logger.warning(f"引擎不健康: {reg.engine_name} - {health.state.name}")
 
-        event = EngineEvent.create("engine.unhealthy", reg.engine_id, {
-            "health": asdict(health),
-        })
+        event = EngineEvent.create(
+            "engine.unhealthy",
+            reg.engine_id,
+            {
+                "health": asdict(health),
+            },
+        )
         await self._event_bus.publish(event)
 
         # 自動恢復嘗試
@@ -906,9 +937,11 @@ class HealthMonitor:
             ],
         }
 
+
 # ============================================================================
 # 主控協調器
 # ============================================================================
+
 
 class MasterOrchestrator:
     """
@@ -945,8 +978,8 @@ class MasterOrchestrator:
         """設置日誌"""
         logging.basicConfig(
             level=logging.INFO,
-            format='%(asctime)s [%(name)s] %(levelname)s: %(message)s',
-            datefmt='%Y-%m-%d %H:%M:%S',
+            format="%(asctime)s [%(name)s] %(levelname)s: %(message)s",
+            datefmt="%Y-%m-%d %H:%M:%S",
         )
 
     # ========================================================================
@@ -997,6 +1030,7 @@ class MasterOrchestrator:
         except Exception as e:
             self._logger.error(f"啟動失敗: {e}")
             import traceback
+
             traceback.print_exc()
             return False
 
@@ -1022,6 +1056,7 @@ class MasterOrchestrator:
 
     def _setup_signal_handlers(self):
         """設置信號處理"""
+
         def handle_signal(sig, frame):
             self._logger.info(f"收到信號 {sig}，準備停止...")
             asyncio.create_task(self.stop())
@@ -1058,9 +1093,7 @@ class MasterOrchestrator:
 
         try:
             # 動態載入模組
-            spec = importlib.util.spec_from_file_location(
-                Path(module_path).stem, module_path
-            )
+            spec = importlib.util.spec_from_file_location(Path(module_path).stem, module_path)
             module = importlib.util.module_from_spec(spec)
             spec.loader.exec_module(module)
 
@@ -1147,7 +1180,7 @@ class MasterOrchestrator:
 
         for pipeline_file in config_path.glob("*.yaml"):
             try:
-                with open(pipeline_file, 'r', encoding='utf-8') as f:
+                with open(pipeline_file, "r", encoding="utf-8") as f:
                     data = yaml.safe_load(f)
 
                 pipeline = PipelineConfig(
@@ -1215,14 +1248,14 @@ class MasterOrchestrator:
             "pipelines": list(self.pipeline_executor._pipelines.keys()),
         }
 
+
 # ============================================================================
 # CLI 入口
 # ============================================================================
 
+
 async def main():
-    parser = argparse.ArgumentParser(
-        description="SynergyMesh Master Orchestrator - 主控引擎啟動器"
-    )
+    parser = argparse.ArgumentParser(description="SynergyMesh Master Orchestrator - 主控引擎啟動器")
 
     subparsers = parser.add_subparsers(dest="command", help="可用命令")
 
@@ -1284,6 +1317,7 @@ async def main():
         result = await orchestrator.execute_pipeline(args.pipeline, input_data)
         print(yaml.dump(result, allow_unicode=True, default_flow_style=False))
         await orchestrator.stop()
+
 
 if __name__ == "__main__":
     asyncio.run(main())

@@ -9,6 +9,7 @@ Tests the complete autonomous executive loop:
 perceive → reason → policy_gate → execute → prove → heal → evolve
 """
 
+from runtime.mind_matrix.executive_auto import ExecutiveAutoController
 import sys
 from pathlib import Path
 
@@ -16,8 +17,6 @@ import pytest
 
 # Add runtime to path for imports
 sys.path.insert(0, str(Path(__file__).parent.parent))
-
-from runtime.mind_matrix.executive_auto import ExecutiveAutoController
 
 
 class TestExecutiveAutoController:
@@ -260,9 +259,7 @@ class TestProveAndFreeze:
         """Create ExecutiveAutoController instance."""
         return ExecutiveAutoController()
 
-    def test_prove_and_freeze_creates_checkpoint(
-        self, controller: ExecutiveAutoController
-    ) -> None:
+    def test_prove_and_freeze_creates_checkpoint(self, controller: ExecutiveAutoController) -> None:
         """Test checkpoint creation."""
         exec_result = {"results": [{"status": "success"}]}
 
@@ -272,9 +269,7 @@ class TestProveAndFreeze:
         assert "checkpoint_id" in checkpoint
         assert checkpoint["rollback_available"] is True
 
-    def test_prove_and_freeze_creates_evidence(
-        self, controller: ExecutiveAutoController
-    ) -> None:
+    def test_prove_and_freeze_creates_evidence(self, controller: ExecutiveAutoController) -> None:
         """Test evidence is recorded for checkpoint."""
         exec_result = {"results": []}
         controller.prove_and_freeze(exec_result)

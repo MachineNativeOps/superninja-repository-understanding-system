@@ -22,34 +22,34 @@ from contextlib import asynccontextmanager
 from datetime import datetime
 from typing import Any, Dict, List, Optional, Tuple
 
+import uvicorn
 from fastapi import FastAPI, HTTPException, Request, Response
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import PlainTextResponse
-import uvicorn
 from gate_handler import gate_handler
+from models.consensus import ConsensusState, VoteType
+from models.incidents import Incident, IncidentState
+from models.messages import (
+    MessageEnvelope,
+    MessageResponse,
+    MessageType,
+    Urgency,
+)
 
 # Local imports
 from config import settings
-from models.messages import (
-    MessageEnvelope,
-    MessageType,
-    MessageResponse,
-    Urgency,
-)
-from models.incidents import IncidentState, Incident
-from models.consensus import VoteType, ConsensusState
-from services.state_machine import IncidentStateMachine
-from services.event_store import EventStore
-from services.audit_trail import AuditTrail, AuditAction
-from services.consensus import ConsensusManager
 from services.agent_client import AgentClient, AgentRegistry
-from utils.metrics import MetricsCollector
+from services.audit_trail import AuditAction, AuditTrail
+from services.consensus import ConsensusManager
+from services.event_store import EventStore
+from services.state_machine import IncidentStateMachine
 from utils.circuit_breaker import CircuitBreakerRegistry
+from utils.metrics import MetricsCollector
 from utils.retry import BackpressureController
 from utils.structured_logging import (
+    clear_trace_context,
     get_logger,
     set_trace_context,
-    clear_trace_context,
 )
 
 # Initialize logger
@@ -78,7 +78,7 @@ class SuperAgentCore:
         self.incidents: Dict[str, Incident] = {}
         self.startup_time = datetime.now()
         self._start_time = datetime.now()
-        
+
         # Initialize core services
         self.metrics = MetricsCollector()
         self.circuit_breakers = CircuitBreakerRegistry()
@@ -89,7 +89,7 @@ class SuperAgentCore:
         self.agent_client = AgentClient(registry=self.agent_registry)
         self.consensus = ConsensusManager()
         self.state_machine = IncidentStateMachine(event_store=self.event_store)
-        
+
         self.message_handlers = {
             MessageType.INCIDENT_SIGNAL: self.handle_incident_signal,
             MessageType.RCA_REPORT: self.handle_rca_report,
@@ -97,35 +97,35 @@ class SuperAgentCore:
             MessageType.VERIFICATION_REPORT: self.handle_verification_report,
             MessageType.EXECUTION_RESULT: self.handle_execution_result,
         }
-    
+
     async def initialize(self) -> None:
         """Initialize all services."""
         logger.info("Initializing SuperAgent services...")
-        if hasattr(self.event_store, 'initialize'):
+        if hasattr(self.event_store, "initialize"):
             await self.event_store.initialize()
-        if hasattr(self.audit_trail, 'initialize'):
+        if hasattr(self.audit_trail, "initialize"):
             await self.audit_trail.initialize()
-        if hasattr(self.metrics, 'initialize'):
+        if hasattr(self.metrics, "initialize"):
             await self.metrics.initialize()
-        if hasattr(self.agent_registry, 'initialize'):
+        if hasattr(self.agent_registry, "initialize"):
             await self.agent_registry.initialize()
         logger.info("SuperAgent services initialized")
-    
+
     async def shutdown(self) -> None:
         """Shutdown all services gracefully."""
         logger.info("Shutting down SuperAgent services...")
         await self.agent_client.close()
         await self.circuit_breakers.reset_all()
         logger.info("SuperAgent services shut down")
-        
+
     def generate_trace_id(self) -> str:
         """Generate unique trace ID"""
         return f"mno-{datetime.now().strftime('%Y%m%d')}-{uuid.uuid4()}"
-    
+
     def generate_span_id(self) -> str:
         """Generate unique span ID"""
         return str(uuid.uuid4())
-    
+
     def get_uptime(self) -> str:
         """Calculate uptime since startup"""
         uptime_delta = datetime.now() - self.startup_time
@@ -134,7 +134,7 @@ class SuperAgentCore:
         hours = (total_seconds % 86400) // 3600
         minutes = (total_seconds % 3600) // 60
         seconds = total_seconds % 60
-        
+
         if days > 0:
             return f"{days}d {hours}h {minutes}m {seconds}s"
         elif hours > 0:
@@ -143,7 +143,7 @@ class SuperAgentCore:
             return f"{minutes}m {seconds}s"
         else:
             return f"{seconds}s"
-    
+
     def validate_message_envelope(self, envelope: MessageEnvelope) -> Tuple[bool, Optional[str]]:
         """Validate message envelope structure and required fields"""
         try:
@@ -620,6 +620,7 @@ async def request_middleware(request: Request, call_next):
 
 # ==================== API Endpoints ====================
 
+
 @app.post("/message", response_model=MessageResponse)
 async def receive_message(message: MessageEnvelope):
     """Receive and route messages from other agents."""
@@ -857,7 +858,7 @@ async def get_metrics():
         },
         "message_types_supported": [mt.value for mt in MessageType],
         "uptime": super_agent.get_uptime(),
-        "timestamp": datetime.now().isoformat()
+        "timestamp": datetime.now().isoformat(),
     }
 
 
@@ -909,11 +910,8 @@ async def get_audit_entries(
             return asyncio.run(gate_handler.handle_gate_validation_request(request_data))
         except Exception as e:
             logger.error(f"Gate validation request failed: {e}")
-            return {
-                "status": "FAILED",
-                "error": str(e),
-                "timestamp": datetime.now().isoformat()
-            }
+            return {"status": "FAILED", "error": str(e), "timestamp": datetime.now().isoformat()}
+
 
 if __name__ == "__main__":
     uvicorn.run(

@@ -14,38 +14,49 @@ logger = logging.getLogger(__name__)
 
 class LicenseCategory(Enum):
     """許可證類別"""
-    PERMISSIVE = "permissive"       # 寬鬆許可證
-    COPYLEFT = "copyleft"           # Copyleft 許可證
-    WEAK_COPYLEFT = "weak_copyleft" # 弱 Copyleft
-    PROPRIETARY = "proprietary"     # 專有許可證
-    UNKNOWN = "unknown"             # 未知
+
+    PERMISSIVE = "permissive"  # 寬鬆許可證
+    COPYLEFT = "copyleft"  # Copyleft 許可證
+    WEAK_COPYLEFT = "weak_copyleft"  # 弱 Copyleft
+    PROPRIETARY = "proprietary"  # 專有許可證
+    UNKNOWN = "unknown"  # 未知
 
 
 class ComplianceStatus(Enum):
     """合規狀態"""
-    ALLOWED = "allowed"     # 允許使用
-    WARNING = "warning"     # 需要注意
-    BLOCKED = "blocked"     # 禁止使用
-    UNKNOWN = "unknown"     # 未知
+
+    ALLOWED = "allowed"  # 允許使用
+    WARNING = "warning"  # 需要注意
+    BLOCKED = "blocked"  # 禁止使用
+    UNKNOWN = "unknown"  # 未知
 
 
 @dataclass
 class LicensePolicy:
     """
     許可證政策配置
-    
+
     定義哪些許可證被允許、警告或禁止
     """
-    allowed: set[str] = field(default_factory=lambda: {
-        "MIT", "Apache-2.0", "BSD-2-Clause", "BSD-3-Clause",
-        "ISC", "CC0-1.0", "Unlicense", "0BSD"
-    })
-    warning: set[str] = field(default_factory=lambda: {
-        "LGPL-2.1", "LGPL-3.0", "MPL-2.0", "EPL-1.0", "EPL-2.0"
-    })
-    blocked: set[str] = field(default_factory=lambda: {
-        "GPL-2.0", "GPL-3.0", "AGPL-3.0", "SSPL-1.0"
-    })
+
+    allowed: set[str] = field(
+        default_factory=lambda: {
+            "MIT",
+            "Apache-2.0",
+            "BSD-2-Clause",
+            "BSD-3-Clause",
+            "ISC",
+            "CC0-1.0",
+            "Unlicense",
+            "0BSD",
+        }
+    )
+    warning: set[str] = field(
+        default_factory=lambda: {"LGPL-2.1", "LGPL-3.0", "MPL-2.0", "EPL-1.0", "EPL-2.0"}
+    )
+    blocked: set[str] = field(
+        default_factory=lambda: {"GPL-2.0", "GPL-3.0", "AGPL-3.0", "SSPL-1.0"}
+    )
     exceptions: dict[str, str] = field(default_factory=dict)
 
 
@@ -53,7 +64,7 @@ class LicensePolicy:
 class LicenseInfo:
     """
     許可證資訊
-    
+
     Attributes:
         package: 套件名稱
         license_id: SPDX 許可證 ID
@@ -62,6 +73,7 @@ class LicenseInfo:
         status: 合規狀態
         url: 許可證連結
     """
+
     package: str
     license_id: str
     license_name: str = ""
@@ -77,7 +89,7 @@ class LicenseInfo:
             "license_name": self.license_name,
             "category": self.category.value,
             "status": self.status.value,
-            "url": self.url
+            "url": self.url,
         }
 
 
@@ -85,7 +97,7 @@ class LicenseInfo:
 class LicenseScanResult:
     """
     許可證掃描結果
-    
+
     Attributes:
         scan_id: 掃描 ID
         licenses: 許可證資訊列表
@@ -94,6 +106,7 @@ class LicenseScanResult:
         blocked_count: 禁止的數量
         unknown_count: 未知的數量
     """
+
     scan_id: str
     licenses: list[LicenseInfo] = field(default_factory=list)
     allowed_count: int = 0
@@ -131,16 +144,16 @@ class LicenseScanResult:
                 "allowed": self.allowed_count,
                 "warning": self.warning_count,
                 "blocked": self.blocked_count,
-                "unknown": self.unknown_count
+                "unknown": self.unknown_count,
             },
-            "licenses": [l.to_dict() for l in self.licenses]
+            "licenses": [l.to_dict() for l in self.licenses],
         }
 
 
 class LicenseScanner:
     """
     許可證掃描器
-    
+
     檢查依賴項的許可證合規性
     """
 
@@ -155,19 +168,16 @@ class LicenseScanner:
         "CC0-1.0": LicenseCategory.PERMISSIVE,
         "Unlicense": LicenseCategory.PERMISSIVE,
         "0BSD": LicenseCategory.PERMISSIVE,
-
         # 弱 Copyleft
         "LGPL-2.1": LicenseCategory.WEAK_COPYLEFT,
         "LGPL-3.0": LicenseCategory.WEAK_COPYLEFT,
         "MPL-2.0": LicenseCategory.WEAK_COPYLEFT,
         "EPL-1.0": LicenseCategory.WEAK_COPYLEFT,
         "EPL-2.0": LicenseCategory.WEAK_COPYLEFT,
-
         # 強 Copyleft
         "GPL-2.0": LicenseCategory.COPYLEFT,
         "GPL-3.0": LicenseCategory.COPYLEFT,
         "AGPL-3.0": LicenseCategory.COPYLEFT,
-
         # 專有
         "SSPL-1.0": LicenseCategory.PROPRIETARY,
     }
@@ -175,27 +185,25 @@ class LicenseScanner:
     def __init__(self, policy: LicensePolicy | None = None):
         """
         初始化許可證掃描器
-        
+
         Args:
             policy: 許可證政策，如未提供則使用默認政策
         """
         self.policy = policy or LicensePolicy()
         logger.info("許可證掃描器初始化完成")
 
-    async def scan(
-        self,
-        dependencies: list[Dependency]
-    ) -> LicenseScanResult:
+    async def scan(self, dependencies: list[Dependency]) -> LicenseScanResult:
         """
         掃描依賴項列表的許可證
-        
+
         Args:
             dependencies: 待掃描的依賴項列表
-            
+
         Returns:
             許可證掃描結果
         """
         import uuid
+
         scan_id = f"license-{uuid.uuid4().hex[:8]}"
         result = LicenseScanResult(scan_id=scan_id)
 
@@ -220,10 +228,10 @@ class LicenseScanner:
     async def _check_license(self, dep: Dependency) -> LicenseInfo:
         """
         檢查單個依賴項的許可證
-        
+
         Args:
             dep: 依賴項
-            
+
         Returns:
             許可證資訊
         """
@@ -232,9 +240,7 @@ class LicenseScanner:
 
         if not license_id:
             return LicenseInfo(
-                package=dep.name,
-                license_id="UNKNOWN",
-                status=ComplianceStatus.UNKNOWN
+                package=dep.name, license_id="UNKNOWN", status=ComplianceStatus.UNKNOWN
             )
 
         # 判斷許可證類別
@@ -244,24 +250,17 @@ class LicenseScanner:
         status = self._check_compliance(dep.name, license_id)
 
         return LicenseInfo(
-            package=dep.name,
-            license_id=license_id,
-            category=category,
-            status=status
+            package=dep.name, license_id=license_id, category=category, status=status
         )
 
-    async def _get_license(
-        self,
-        package_name: str,
-        ecosystem: Ecosystem
-    ) -> str | None:
+    async def _get_license(self, package_name: str, ecosystem: Ecosystem) -> str | None:
         """
         獲取套件的許可證
-        
+
         Args:
             package_name: 套件名稱
             ecosystem: 生態系統
-            
+
         Returns:
             許可證 ID
         """
@@ -269,18 +268,14 @@ class LicenseScanner:
         logger.debug(f"獲取 {package_name} 許可證")
         return None
 
-    def _check_compliance(
-        self,
-        package_name: str,
-        license_id: str
-    ) -> ComplianceStatus:
+    def _check_compliance(self, package_name: str, license_id: str) -> ComplianceStatus:
         """
         檢查許可證合規狀態
-        
+
         Args:
             package_name: 套件名稱
             license_id: 許可證 ID
-            
+
         Returns:
             合規狀態
         """
@@ -304,12 +299,12 @@ class LicenseScanner:
     def _normalize_license_id(self, license_id: str) -> str:
         """
         正規化許可證 ID
-        
+
         處理常見的變體形式
-        
+
         Args:
             license_id: 原始許可證 ID
-            
+
         Returns:
             正規化後的許可證 ID
         """
@@ -317,20 +312,20 @@ class LicenseScanner:
         normalized = license_id.strip()
 
         # 處理 "+" 後綴（如 GPL-3.0+）
-        if normalized.endswith('+'):
+        if normalized.endswith("+"):
             normalized = normalized[:-1]
 
         # 處理 "-only" 和 "-or-later" 後綴
-        for suffix in ['-only', '-or-later']:
+        for suffix in ["-only", "-or-later"]:
             if normalized.endswith(suffix):
-                normalized = normalized.replace(suffix, '')
+                normalized = normalized.replace(suffix, "")
 
         return normalized
 
     def add_exception(self, package: str, reason: str) -> None:
         """
         添加許可證例外
-        
+
         Args:
             package: 套件名稱
             reason: 例外原因

@@ -17,6 +17,7 @@ from typing import Any
 
 class FunctionCallStatus(Enum):
     """Status of a function call"""
+
     PENDING = "pending"
     VALIDATING = "validating"
     EXECUTING = "executing"
@@ -29,16 +30,15 @@ class FunctionCallStatus(Enum):
 class FunctionDefinition:
     """
     OpenAI-compatible function definition
-    
+
     Reference: OpenAI function calling format
     """
+
     name: str
     description: str
-    parameters: dict[str, Any] = field(default_factory=lambda: {
-        "type": "object",
-        "properties": {},
-        "required": []
-    })
+    parameters: dict[str, Any] = field(
+        default_factory=lambda: {"type": "object", "properties": {}, "required": []}
+    )
 
     def to_openai_format(self) -> dict[str, Any]:
         """Convert to OpenAI function format"""
@@ -47,8 +47,8 @@ class FunctionDefinition:
             "function": {
                 "name": self.name,
                 "description": self.description,
-                "parameters": self.parameters
-            }
+                "parameters": self.parameters,
+            },
         }
 
     def validate_arguments(self, arguments: dict[str, Any]) -> list[str]:
@@ -86,6 +86,7 @@ class FunctionDefinition:
 @dataclass
 class FunctionCallResult:
     """Result of a function call"""
+
     function_name: str
     status: FunctionCallStatus
     arguments: dict[str, Any] = field(default_factory=dict)
@@ -102,7 +103,7 @@ class FunctionCallResult:
             "tool_call_id": self.call_id,
             "role": "tool",
             "name": self.function_name,
-            "content": json.dumps(self.result) if self.result else str(self.error)
+            "content": json.dumps(self.result) if self.result else str(self.error),
         }
 
 
@@ -117,11 +118,7 @@ class FunctionCallHandler:
         self._handlers: dict[str, Callable] = {}
         self._call_history: list[FunctionCallResult] = []
 
-    def register(
-        self,
-        function_def: FunctionDefinition,
-        handler: Callable
-    ) -> None:
+    def register(self, function_def: FunctionDefinition, handler: Callable) -> None:
         """Register a function with its handler"""
         self._functions[function_def.name] = function_def
         self._handlers[function_def.name] = handler
@@ -146,9 +143,7 @@ class FunctionCallHandler:
         return [f.to_openai_format() for f in self._functions.values()]
 
     async def handle_call(
-        self,
-        function_name: str,
-        arguments: dict[str, Any]
+        self, function_name: str, arguments: dict[str, Any]
     ) -> FunctionCallResult:
         """Handle a function call"""
         start_time = datetime.now()
@@ -159,7 +154,7 @@ class FunctionCallHandler:
                 function_name=function_name,
                 status=FunctionCallStatus.INVALID,
                 arguments=arguments,
-                error=f"Function not found: {function_name}"
+                error=f"Function not found: {function_name}",
             )
             self._call_history.append(result)
             return result
@@ -174,7 +169,7 @@ class FunctionCallHandler:
                 status=FunctionCallStatus.INVALID,
                 arguments=arguments,
                 validation_errors=validation_errors,
-                error=f"Validation failed: {'; '.join(validation_errors)}"
+                error=f"Validation failed: {'; '.join(validation_errors)}",
             )
             self._call_history.append(result)
             return result
@@ -186,7 +181,7 @@ class FunctionCallHandler:
                 function_name=function_name,
                 status=FunctionCallStatus.FAILED,
                 arguments=arguments,
-                error=f"No handler for function: {function_name}"
+                error=f"No handler for function: {function_name}",
             )
             self._call_history.append(result)
             return result
@@ -204,7 +199,7 @@ class FunctionCallHandler:
                 status=FunctionCallStatus.SUCCESS,
                 arguments=arguments,
                 result=output,
-                execution_time_ms=execution_time
+                execution_time_ms=execution_time,
             )
 
         except Exception as e:
@@ -214,16 +209,13 @@ class FunctionCallHandler:
                 status=FunctionCallStatus.FAILED,
                 arguments=arguments,
                 error=str(e),
-                execution_time_ms=execution_time
+                execution_time_ms=execution_time,
             )
 
         self._call_history.append(result)
         return result
 
-    def parse_openai_tool_call(
-        self,
-        tool_call: dict[str, Any]
-    ) -> tuple[str, dict[str, Any]]:
+    def parse_openai_tool_call(self, tool_call: dict[str, Any]) -> tuple[str, dict[str, Any]]:
         """Parse an OpenAI tool call response"""
         function_name = tool_call.get("function", {}).get("name", "")
         arguments_str = tool_call.get("function", {}).get("arguments", "{}")
@@ -247,6 +239,7 @@ class FunctionCallHandler:
 @dataclass
 class RoutingRule:
     """A rule for routing tool calls"""
+
     name: str
     condition: Callable[[str, dict[str, Any]], bool]
     executor_id: str
@@ -264,11 +257,7 @@ class ToolCallRouter:
         self._rules: list[RoutingRule] = []
         self._default_executor: str | None = None
 
-    def register_executor(
-        self,
-        executor_id: str,
-        executor: Any
-    ) -> None:
+    def register_executor(self, executor_id: str, executor: Any) -> None:
         """Register an executor"""
         self._executors[executor_id] = executor
 
@@ -291,11 +280,7 @@ class ToolCallRouter:
         """Set the default executor"""
         self._default_executor = executor_id
 
-    def route(
-        self,
-        tool_name: str,
-        params: dict[str, Any]
-    ) -> Any | None:
+    def route(self, tool_name: str, params: dict[str, Any]) -> Any | None:
         """Route a tool call to the appropriate executor"""
         # Check rules in priority order
         for rule in self._rules:
@@ -309,11 +294,7 @@ class ToolCallRouter:
 
         return None
 
-    async def execute(
-        self,
-        tool_name: str,
-        params: dict[str, Any]
-    ) -> Any:
+    async def execute(self, tool_name: str, params: dict[str, Any]) -> Any:
         """Route and execute a tool call"""
         executor = self.route(tool_name, params)
 
@@ -321,7 +302,7 @@ class ToolCallRouter:
             raise ValueError(f"No executor found for tool: {tool_name}")
 
         # Execute based on executor type
-        if hasattr(executor, 'execute'):
+        if hasattr(executor, "execute"):
             if asyncio.iscoroutinefunction(executor.execute):
                 return await executor.execute(tool_name, params)
             else:
@@ -345,8 +326,7 @@ class ToolCallRouter:
 
 # Helper functions for creating common function definitions
 def create_query_function(
-    name: str = "query_database",
-    description: str = "Execute a database query"
+    name: str = "query_database", description: str = "Execute a database query"
 ) -> FunctionDefinition:
     """Create a database query function definition"""
     return FunctionDefinition(
@@ -355,23 +335,16 @@ def create_query_function(
         parameters={
             "type": "object",
             "properties": {
-                "query": {
-                    "type": "string",
-                    "description": "The SQL query to execute"
-                },
-                "database": {
-                    "type": "string",
-                    "description": "The database to query"
-                }
+                "query": {"type": "string", "description": "The SQL query to execute"},
+                "database": {"type": "string", "description": "The database to query"},
             },
-            "required": ["query"]
-        }
+            "required": ["query"],
+        },
     )
 
 
 def create_api_function(
-    name: str = "call_api",
-    description: str = "Make an HTTP API call"
+    name: str = "call_api", description: str = "Make an HTTP API call"
 ) -> FunctionDefinition:
     """Create an API call function definition"""
     return FunctionDefinition(
@@ -380,27 +353,17 @@ def create_api_function(
         parameters={
             "type": "object",
             "properties": {
-                "url": {
-                    "type": "string",
-                    "description": "The URL to call"
-                },
-                "method": {
-                    "type": "string",
-                    "description": "HTTP method (GET, POST, etc.)"
-                },
-                "body": {
-                    "type": "object",
-                    "description": "Request body"
-                }
+                "url": {"type": "string", "description": "The URL to call"},
+                "method": {"type": "string", "description": "HTTP method (GET, POST, etc.)"},
+                "body": {"type": "object", "description": "Request body"},
             },
-            "required": ["url", "method"]
-        }
+            "required": ["url", "method"],
+        },
     )
 
 
 def create_code_function(
-    name: str = "execute_code",
-    description: str = "Execute code in a sandbox"
+    name: str = "execute_code", description: str = "Execute code in a sandbox"
 ) -> FunctionDefinition:
     """Create a code execution function definition"""
     return FunctionDefinition(
@@ -409,15 +372,9 @@ def create_code_function(
         parameters={
             "type": "object",
             "properties": {
-                "code": {
-                    "type": "string",
-                    "description": "The code to execute"
-                },
-                "language": {
-                    "type": "string",
-                    "description": "Programming language"
-                }
+                "code": {"type": "string", "description": "The code to execute"},
+                "language": {"type": "string", "description": "Programming language"},
             },
-            "required": ["code", "language"]
-        }
+            "required": ["code", "language"],
+        },
     )

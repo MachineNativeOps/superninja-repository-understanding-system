@@ -21,7 +21,6 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Iterable, List
 
-
 REPO_ROOT = Path(__file__).resolve().parents[2]
 
 
@@ -35,9 +34,7 @@ class Check:
     def run(self) -> dict:
         matches: List[str] = []
         for pattern in self.patterns:
-            matches.extend(
-                str(p) for p in REPO_ROOT.glob(pattern) if p.exists()
-            )
+            matches.extend(str(p) for p in REPO_ROOT.glob(pattern) if p.exists())
         return {
             "name": self.name,
             "patterns": self.patterns,

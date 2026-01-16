@@ -9,18 +9,18 @@ Manages incident lifecycle with:
 - Event emission
 """
 
+import asyncio
 from datetime import datetime
 from typing import Any, Callable, Dict, List, Optional, Tuple
-import asyncio
 
 from ..models.incidents import (
+    VALID_TRANSITIONS,
     Incident,
     IncidentState,
     IncidentTransition,
-    VALID_TRANSITIONS,
 )
+from .audit_trail import AuditAction, AuditTrail
 from .event_store import EventStore
-from .audit_trail import AuditTrail, AuditAction
 
 
 class TransitionError(Exception):
@@ -324,6 +324,7 @@ class IncidentStateMachine:
                     hook(incident, from_state, to_state)
             except Exception as e:
                 import logging
+
                 logging.getLogger(__name__).warning(f"Post-hook error: {e}")
 
     async def _execute_on_enter(
@@ -341,6 +342,7 @@ class IncidentStateMachine:
                     hook(incident, state)
             except Exception as e:
                 import logging
+
                 logging.getLogger(__name__).warning(f"On-enter hook error: {e}")
 
     async def _execute_on_exit(
@@ -358,6 +360,7 @@ class IncidentStateMachine:
                     hook(incident, state)
             except Exception as e:
                 import logging
+
                 logging.getLogger(__name__).warning(f"On-exit hook error: {e}")
 
     def get_valid_transitions(self, state: IncidentState) -> List[IncidentState]:

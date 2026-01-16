@@ -17,35 +17,38 @@ logger = logging.getLogger(__name__)
 
 class ToolCategory(Enum):
     """Tool category enumeration"""
-    CODE_ANALYSIS = 'code_analysis'
-    SECURITY = 'security'
-    TESTING = 'testing'
-    DOCUMENTATION = 'documentation'
-    PERFORMANCE = 'performance'
-    DEPLOYMENT = 'deployment'
-    MONITORING = 'monitoring'
-    VALIDATION = 'validation'
-    AUTOMATION = 'automation'
-    OTHER = 'other'
+
+    CODE_ANALYSIS = "code_analysis"
+    SECURITY = "security"
+    TESTING = "testing"
+    DOCUMENTATION = "documentation"
+    PERFORMANCE = "performance"
+    DEPLOYMENT = "deployment"
+    MONITORING = "monitoring"
+    VALIDATION = "validation"
+    AUTOMATION = "automation"
+    OTHER = "other"
 
 
 class ToolStatus(Enum):
     """Tool availability status"""
-    AVAILABLE = 'available'
-    DEPRECATED = 'deprecated'
-    DISABLED = 'disabled'
-    EXPERIMENTAL = 'experimental'
+
+    AVAILABLE = "available"
+    DEPRECATED = "deprecated"
+    DISABLED = "disabled"
+    EXPERIMENTAL = "experimental"
 
 
 @dataclass
 class ToolDefinition:
     """Definition of an MCP tool"""
+
     name: str
     description: str
     input_schema: dict[str, Any]
     category: ToolCategory = ToolCategory.OTHER
     status: ToolStatus = ToolStatus.AVAILABLE
-    version: str = '1.0.0'
+    version: str = "1.0.0"
     server_name: str | None = None
     server_id: str | None = None
     output_schema: dict[str, Any] | None = None
@@ -56,24 +59,24 @@ class ToolDefinition:
     def to_dict(self) -> dict[str, Any]:
         """Convert tool definition to dictionary"""
         return {
-            'name': self.name,
-            'description': self.description,
-            'inputSchema': self.input_schema,
-            'outputSchema': self.output_schema,
-            'category': self.category.value,
-            'status': self.status.value,
-            'version': self.version,
-            'server_name': self.server_name,
-            'server_id': self.server_id,
-            'examples': self.examples,
-            'metadata': self.metadata,
-            'created_at': self.created_at.isoformat()
+            "name": self.name,
+            "description": self.description,
+            "inputSchema": self.input_schema,
+            "outputSchema": self.output_schema,
+            "category": self.category.value,
+            "status": self.status.value,
+            "version": self.version,
+            "server_name": self.server_name,
+            "server_id": self.server_id,
+            "examples": self.examples,
+            "metadata": self.metadata,
+            "created_at": self.created_at.isoformat(),
         }
 
     def validate_input(self, arguments: dict[str, Any]) -> dict[str, Any]:
         """
         Validate input arguments against schema
-        
+
         Returns:
             Validation result with 'valid' boolean and optional 'errors' list
         """
@@ -81,13 +84,13 @@ class ToolDefinition:
         schema = self.input_schema
 
         # Check required fields
-        required = schema.get('required', [])
+        required = schema.get("required", [])
         for field_name in required:
             if field_name not in arguments:
                 errors.append(f"Missing required field: {field_name}")
 
         # Validate property types
-        properties = schema.get('properties', {})
+        properties = schema.get("properties", {})
         for key, value in arguments.items():
             if key in properties:
                 prop_schema = properties[key]
@@ -95,27 +98,19 @@ class ToolDefinition:
                 if type_error:
                     errors.append(type_error)
 
-        return {
-            'valid': len(errors) == 0,
-            'errors': errors
-        }
+        return {"valid": len(errors) == 0, "errors": errors}
 
-    def _validate_type(
-        self,
-        field_name: str,
-        value: Any,
-        schema: dict[str, Any]
-    ) -> str | None:
+    def _validate_type(self, field_name: str, value: Any, schema: dict[str, Any]) -> str | None:
         """Validate a single field type"""
-        expected_type = schema.get('type')
+        expected_type = schema.get("type")
 
         type_map = {
-            'string': str,
-            'number': (int, float),
-            'integer': int,
-            'boolean': bool,
-            'array': list,
-            'object': dict
+            "string": str,
+            "number": (int, float),
+            "integer": int,
+            "boolean": bool,
+            "array": list,
+            "object": dict,
         }
 
         if expected_type and expected_type in type_map:
@@ -124,7 +119,7 @@ class ToolDefinition:
                 return f"Field '{field_name}' expected type {expected_type}, got {type(value).__name__}"
 
         # Check enum values
-        if 'enum' in schema and value not in schema['enum']:
+        if "enum" in schema and value not in schema["enum"]:
             return f"Field '{field_name}' must be one of {schema['enum']}"
 
         return None
@@ -133,6 +128,7 @@ class ToolDefinition:
 @dataclass
 class ToolExecutionResult:
     """Result of a tool execution"""
+
     tool_name: str
     success: bool
     result: Any | None = None
@@ -147,23 +143,23 @@ class ToolExecutionResult:
     def to_dict(self) -> dict[str, Any]:
         """Convert result to dictionary"""
         return {
-            'execution_id': self.execution_id,
-            'tool_name': self.tool_name,
-            'success': self.success,
-            'result': self.result,
-            'error': self.error,
-            'error_code': self.error_code,
-            'duration_ms': self.duration_ms,
-            'server_name': self.server_name,
-            'timestamp': self.timestamp.isoformat(),
-            'metadata': self.metadata
+            "execution_id": self.execution_id,
+            "tool_name": self.tool_name,
+            "success": self.success,
+            "result": self.result,
+            "error": self.error,
+            "error_code": self.error_code,
+            "duration_ms": self.duration_ms,
+            "server_name": self.server_name,
+            "timestamp": self.timestamp.isoformat(),
+            "metadata": self.metadata,
         }
 
 
 class ToolRegistry:
     """
     Central registry for MCP tools
-    
+
     Manages tool registration, lookup, validation, and provides
     search and filtering capabilities.
     """
@@ -177,7 +173,7 @@ class ToolRegistry:
     def register(self, tool: ToolDefinition) -> None:
         """
         Register a tool in the registry
-        
+
         Args:
             tool: Tool definition to register
         """
@@ -196,12 +192,12 @@ class ToolRegistry:
             if tool.name not in self._server_index[tool.server_name]:
                 self._server_index[tool.server_name].append(tool.name)
 
-        logger.debug(f'Registered tool: {tool.name}')
+        logger.debug(f"Registered tool: {tool.name}")
 
     def unregister(self, tool_name: str) -> bool:
         """
         Unregister a tool from the registry
-        
+
         Returns:
             True if tool was removed, False if not found
         """
@@ -220,23 +216,20 @@ class ToolRegistry:
                 self._server_index[tool.server_name].remove(tool_name)
 
         # Remove aliases
-        aliases_to_remove = [
-            alias for alias, name in self._aliases.items()
-            if name == tool_name
-        ]
+        aliases_to_remove = [alias for alias, name in self._aliases.items() if name == tool_name]
         for alias in aliases_to_remove:
             del self._aliases[alias]
 
-        logger.debug(f'Unregistered tool: {tool_name}')
+        logger.debug(f"Unregistered tool: {tool_name}")
         return True
 
     def get(self, tool_name: str) -> ToolDefinition | None:
         """
         Get a tool by name
-        
+
         Args:
             tool_name: Tool name or alias
-            
+
         Returns:
             Tool definition or None if not found
         """
@@ -252,7 +245,7 @@ class ToolRegistry:
     def add_alias(self, alias: str, tool_name: str) -> bool:
         """
         Add an alias for a tool
-        
+
         Returns:
             True if alias was added, False if tool doesn't exist
         """
@@ -261,16 +254,13 @@ class ToolRegistry:
         self._aliases[alias] = tool_name
         return True
 
-    def list_all(
-        self,
-        status: ToolStatus | None = None
-    ) -> list[ToolDefinition]:
+    def list_all(self, status: ToolStatus | None = None) -> list[ToolDefinition]:
         """
         List all registered tools
-        
+
         Args:
             status: Optional filter by status
-            
+
         Returns:
             List of tool definitions
         """
@@ -293,16 +283,16 @@ class ToolRegistry:
         self,
         query: str,
         categories: list[ToolCategory] | None = None,
-        status: ToolStatus | None = None
+        status: ToolStatus | None = None,
     ) -> list[ToolDefinition]:
         """
         Search for tools by name or description
-        
+
         Args:
             query: Search query string
             categories: Optional list of categories to filter
             status: Optional status filter
-            
+
         Returns:
             List of matching tools
         """
@@ -317,33 +307,25 @@ class ToolRegistry:
                 continue
 
             # Search in name and description
-            if (query_lower in tool.name.lower() or
-                query_lower in tool.description.lower()):
+            if query_lower in tool.name.lower() or query_lower in tool.description.lower():
                 results.append(tool)
 
         return results
 
-    def validate_arguments(
-        self,
-        tool_name: str,
-        arguments: dict[str, Any]
-    ) -> dict[str, Any]:
+    def validate_arguments(self, tool_name: str, arguments: dict[str, Any]) -> dict[str, Any]:
         """
         Validate arguments for a tool
-        
+
         Args:
             tool_name: Tool name
             arguments: Arguments to validate
-            
+
         Returns:
             Validation result
         """
         tool = self.get(tool_name)
         if not tool:
-            return {
-                'valid': False,
-                'errors': [f'Tool not found: {tool_name}']
-            }
+            return {"valid": False, "errors": [f"Tool not found: {tool_name}"]}
 
         return tool.validate_input(arguments)
 
@@ -359,20 +341,20 @@ class ToolRegistry:
             category_counts[category.value] = len(tools)
 
         return {
-            'total_tools': len(self._tools),
-            'total_servers': len(self._server_index),
-            'total_aliases': len(self._aliases),
-            'status_distribution': status_counts,
-            'category_distribution': category_counts
+            "total_tools": len(self._tools),
+            "total_servers": len(self._server_index),
+            "total_aliases": len(self._aliases),
+            "status_distribution": status_counts,
+            "category_distribution": category_counts,
         }
 
     def export_schema(self) -> dict[str, Any]:
         """Export all tool schemas for documentation"""
         return {
-            'version': '1.0.0',
-            'tools': [tool.to_dict() for tool in self._tools.values()],
-            'categories': [c.value for c in ToolCategory],
-            'statistics': self.get_stats()
+            "version": "1.0.0",
+            "tools": [tool.to_dict() for tool in self._tools.values()],
+            "categories": [c.value for c in ToolCategory],
+            "statistics": self.get_stats(),
         }
 
 
@@ -387,109 +369,102 @@ def get_default_tool_definitions() -> list[ToolDefinition]:
     """Get default tool definitions for SynergyMesh"""
     return [
         ToolDefinition(
-            name='analyze-code',
-            description='Analyze code for patterns, complexity, and quality metrics',
+            name="analyze-code",
+            description="Analyze code for patterns, complexity, and quality metrics",
             input_schema={
-                'type': 'object',
-                'properties': {
-                    'code': {'type': 'string', 'description': 'Source code to analyze'},
-                    'language': {'type': 'string', 'description': 'Programming language'},
-                    'metrics': {
-                        'type': 'array',
-                        'items': {'type': 'string'},
-                        'description': 'Metrics to analyze'
-                    }
+                "type": "object",
+                "properties": {
+                    "code": {"type": "string", "description": "Source code to analyze"},
+                    "language": {"type": "string", "description": "Programming language"},
+                    "metrics": {
+                        "type": "array",
+                        "items": {"type": "string"},
+                        "description": "Metrics to analyze",
+                    },
                 },
-                'required': ['code']
+                "required": ["code"],
             },
             category=ToolCategory.CODE_ANALYSIS,
-            server_name='code-analyzer'
+            server_name="code-analyzer",
         ),
         ToolDefinition(
-            name='scan-vulnerabilities',
-            description='Scan code for security vulnerabilities',
+            name="scan-vulnerabilities",
+            description="Scan code for security vulnerabilities",
             input_schema={
-                'type': 'object',
-                'properties': {
-                    'code': {'type': 'string'},
-                    'severity_threshold': {
-                        'type': 'string',
-                        'enum': ['low', 'medium', 'high', 'critical']
-                    }
+                "type": "object",
+                "properties": {
+                    "code": {"type": "string"},
+                    "severity_threshold": {
+                        "type": "string",
+                        "enum": ["low", "medium", "high", "critical"],
+                    },
                 },
-                'required': ['code']
+                "required": ["code"],
             },
             category=ToolCategory.SECURITY,
-            server_name='security-scanner'
+            server_name="security-scanner",
         ),
         ToolDefinition(
-            name='validate-provenance',
-            description='Validate SLSA provenance data for supply chain security',
+            name="validate-provenance",
+            description="Validate SLSA provenance data for supply chain security",
             input_schema={
-                'type': 'object',
-                'properties': {
-                    'provenance': {'type': 'object'},
-                    'level': {'type': 'string', 'enum': ['1', '2', '3', '4']}
+                "type": "object",
+                "properties": {
+                    "provenance": {"type": "object"},
+                    "level": {"type": "string", "enum": ["1", "2", "3", "4"]},
                 },
-                'required': ['provenance']
+                "required": ["provenance"],
             },
             category=ToolCategory.VALIDATION,
-            server_name='slsa-validator'
+            server_name="slsa-validator",
         ),
         ToolDefinition(
-            name='generate-tests',
-            description='Generate unit tests for code',
+            name="generate-tests",
+            description="Generate unit tests for code",
             input_schema={
-                'type': 'object',
-                'properties': {
-                    'code': {'type': 'string'},
-                    'framework': {
-                        'type': 'string',
-                        'enum': ['jest', 'pytest', 'mocha', 'junit']
-                    },
-                    'coverage_target': {
-                        'type': 'number',
-                        'minimum': 0,
-                        'maximum': 100
-                    }
+                "type": "object",
+                "properties": {
+                    "code": {"type": "string"},
+                    "framework": {"type": "string", "enum": ["jest", "pytest", "mocha", "junit"]},
+                    "coverage_target": {"type": "number", "minimum": 0, "maximum": 100},
                 },
-                'required': ['code']
+                "required": ["code"],
             },
             category=ToolCategory.TESTING,
-            server_name='test-generator'
+            server_name="test-generator",
         ),
         ToolDefinition(
-            name='generate-docs',
-            description='Generate documentation for code',
+            name="generate-docs",
+            description="Generate documentation for code",
             input_schema={
-                'type': 'object',
-                'properties': {
-                    'code': {'type': 'string'},
-                    'format': {
-                        'type': 'string',
-                        'enum': ['markdown', 'jsdoc', 'sphinx', 'openapi']
-                    }
+                "type": "object",
+                "properties": {
+                    "code": {"type": "string"},
+                    "format": {
+                        "type": "string",
+                        "enum": ["markdown", "jsdoc", "sphinx", "openapi"],
+                    },
                 },
-                'required': ['code']
+                "required": ["code"],
             },
             category=ToolCategory.DOCUMENTATION,
-            server_name='doc-generator'
+            server_name="doc-generator",
         ),
         ToolDefinition(
-            name='analyze-performance',
-            description='Analyze code performance characteristics',
+            name="analyze-performance",
+            description="Analyze code performance characteristics",
             input_schema={
-                'type': 'object',
-                'properties': {
-                    'code': {'type': 'string'},
-                    'analysis_type': {
-                        'type': 'string',
-                        'enum': ['complexity', 'memory', 'runtime']
-                    }
+                "type": "object",
+                "properties": {
+                    "code": {"type": "string"},
+                    "analysis_type": {
+                        "type": "string",
+                        "enum": ["complexity", "memory", "runtime"],
+                    },
                 },
-                'required': ['code']
+                "required": ["code"],
             },
             category=ToolCategory.PERFORMANCE,
-            server_name='performance-analyzer'
-        )
+            server_name="performance-analyzer",
+        ),
     ]

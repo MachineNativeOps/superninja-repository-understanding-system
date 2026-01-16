@@ -1,13 +1,17 @@
 """
 Pytest configuration for governance tests
 """
-import pytest
+
 from pathlib import Path
+
+import pytest
+
 
 @pytest.fixture
 def governance_root():
     """Return path to governance root directory"""
     return Path(__file__).parent.parent
+
 
 @pytest.fixture
 def test_yaml_file(tmp_path):

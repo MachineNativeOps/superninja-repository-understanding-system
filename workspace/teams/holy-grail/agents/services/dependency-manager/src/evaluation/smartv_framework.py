@@ -19,6 +19,7 @@ from typing import Any
 
 class EvaluationDimension(Enum):
     """評估維度枚舉"""
+
     SCALABILITY = "scalability"
     MARKET_FIT = "market_fit"
     ACHIEVABILITY = "achievability"
@@ -29,6 +30,7 @@ class EvaluationDimension(Enum):
 
 class ScoreLevel(Enum):
     """評分等級"""
+
     EXCELLENT = "excellent"
     GOOD = "good"
     AVERAGE = "average"
@@ -39,6 +41,7 @@ class ScoreLevel(Enum):
 @dataclass
 class EvaluationCriteria:
     """評估標準"""
+
     name: str
     description: str
     weight: float = 1.0
@@ -49,6 +52,7 @@ class EvaluationCriteria:
 @dataclass
 class DimensionScore:
     """維度評分結果"""
+
     dimension: EvaluationDimension
     score: float
     max_score: float = 10.0
@@ -77,6 +81,7 @@ class DimensionScore:
 @dataclass
 class SMARTVResult:
     """SMART-V 評估結果"""
+
     scores: dict[EvaluationDimension, DimensionScore]
     weights: dict[EvaluationDimension, float]
     weighted_total: float
@@ -103,7 +108,7 @@ class SMARTVResult:
                 }
                 for dim, score in self.scores.items()
             },
-            "overall_recommendations": self.recommendations
+            "overall_recommendations": self.recommendations,
         }
 
     def to_json(self, indent: int = 2) -> str:
@@ -145,7 +150,9 @@ class BaseEvaluator:
 
                 # Collect evidence
                 if score < criterion.threshold:
-                    evidences.append(f"{criterion.name}: {score:.2f} (below threshold {criterion.threshold})")
+                    evidences.append(
+                        f"{criterion.name}: {score:.2f} (below threshold {criterion.threshold})"
+                    )
             except Exception as e:
                 logger.error(f"Error evaluating criterion {criterion.name}: {e}")
                 sub_scores[criterion.name] = 0.0
@@ -158,7 +165,7 @@ class BaseEvaluator:
             score=overall_score,
             max_score=1.0,
             sub_scores=sub_scores,
-            evidences=evidences
+            evidences=evidences,
         )
 
     def _evaluate_criterion(self, criterion: EvaluationCriteria, data: dict[str, Any]) -> float:
@@ -181,8 +188,7 @@ class BaseEvaluator:
         if total_weight == 0:
             return sum(sub_scores.values()) / len(sub_scores)
         weighted_sum = sum(
-            sub_scores.get(c.name, 0) * c.weight
-            for c in self.criteria if c.name in sub_scores
+            sub_scores.get(c.name, 0) * c.weight for c in self.criteria if c.name in sub_scores
         )
         return weighted_sum / total_weight
 
@@ -199,12 +205,17 @@ class BaseEvaluator:
 
 class ScalabilityEvaluator(BaseEvaluator):
     """可擴展性評估器"""
+
     dimension = EvaluationDimension.SCALABILITY
 
     def _get_criteria(self) -> list[EvaluationCriteria]:
         return [
-            EvaluationCriteria(name="architecture_scalability", description="技術架構可擴展性", weight=0.35),
-            EvaluationCriteria(name="user_growth_potential", description="用戶增長潛力", weight=0.30),
+            EvaluationCriteria(
+                name="architecture_scalability", description="技術架構可擴展性", weight=0.35
+            ),
+            EvaluationCriteria(
+                name="user_growth_potential", description="用戶增長潛力", weight=0.30
+            ),
             EvaluationCriteria(name="load_capacity", description="系統負載承受能力", weight=0.20),
             EvaluationCriteria(name="horizontal_scaling", description="水平擴展能力", weight=0.15),
         ]
@@ -220,52 +231,72 @@ class ScalabilityEvaluator(BaseEvaluator):
             dimension=self.dimension,
             score=self._calculate_score(sub_scores),
             details=sub_scores,
-            recommendations=self._generate_recommendations(sub_scores)
+            recommendations=self._generate_recommendations(sub_scores),
         )
 
     def _eval_arch(self, data: dict[str, Any]) -> float:
         score = 5.0
-        if data.get("microservices"): score += 2.0
-        if data.get("containerized"): score += 1.5
-        if data.get("cloud_native"): score += 1.5
+        if data.get("microservices"):
+            score += 2.0
+        if data.get("containerized"):
+            score += 1.5
+        if data.get("cloud_native"):
+            score += 1.5
         return min(score, 10.0)
 
     def _eval_growth(self, data: dict[str, Any]) -> float:
         rate = data.get("growth_rate", 0)
-        if rate >= 100: return 10.0
-        elif rate >= 50: return 8.0
-        elif rate >= 20: return 6.0
-        elif rate >= 10: return 4.0
+        if rate >= 100:
+            return 10.0
+        elif rate >= 50:
+            return 8.0
+        elif rate >= 20:
+            return 6.0
+        elif rate >= 10:
+            return 4.0
         return 2.0
 
     def _eval_load(self, data: dict[str, Any]) -> float:
         current = data.get("current_rps", 0)
         max_rps = data.get("max_rps", 0)
-        if max_rps == 0: return 5.0
+        if max_rps == 0:
+            return 5.0
         util = current / max_rps
-        if util < 0.3: return 10.0
-        elif util < 0.5: return 8.0
-        elif util < 0.7: return 6.0
-        elif util < 0.9: return 4.0
+        if util < 0.3:
+            return 10.0
+        elif util < 0.5:
+            return 8.0
+        elif util < 0.7:
+            return 6.0
+        elif util < 0.9:
+            return 4.0
         return 2.0
 
     def _eval_scale(self, data: dict[str, Any]) -> float:
         score = 4.0
-        if data.get("auto_scaling"): score += 3.0
-        if data.get("load_balancer"): score += 2.0
-        if data.get("stateless"): score += 1.0
+        if data.get("auto_scaling"):
+            score += 3.0
+        if data.get("load_balancer"):
+            score += 2.0
+        if data.get("stateless"):
+            score += 1.0
         return min(score, 10.0)
 
 
 class MarketFitEvaluator(BaseEvaluator):
     """市場適配度評估器"""
+
     dimension = EvaluationDimension.MARKET_FIT
 
     def _get_criteria(self) -> list[EvaluationCriteria]:
         return [
-            EvaluationCriteria(name="user_needs_match", description="目標用戶需求匹配度", weight=0.35),
+            EvaluationCriteria(
+                name="user_needs_match", description="目標用戶需求匹配度", weight=0.35
+            ),
             EvaluationCriteria(name="market_timing", description="市場時機成熟度", weight=0.25),
-            EvaluationCriteria(name="competitive_analysis", description="競爭環境分析", weight=0.25),
+            EvaluationCriteria(
+                name="competitive_analysis", description="競爭環境分析", weight=0.25
+            ),
             EvaluationCriteria(name="market_size", description="市場規模潛力", weight=0.15),
         ]
 
@@ -280,7 +311,7 @@ class MarketFitEvaluator(BaseEvaluator):
             dimension=self.dimension,
             score=self._calculate_score(sub_scores),
             details=sub_scores,
-            recommendations=self._generate_recommendations(sub_scores)
+            recommendations=self._generate_recommendations(sub_scores),
         )
 
     def _eval_timing(self, data: dict[str, Any]) -> float:
@@ -292,28 +323,38 @@ class MarketFitEvaluator(BaseEvaluator):
         competitors = data.get("competitor_count", 0)
         diff = data.get("differentiation_level", "low")
         score = 5.0
-        if competitors == 0: score += 2.0
-        elif competitors <= 3: score += 1.0
-        elif competitors > 10: score -= 1.0
+        if competitors == 0:
+            score += 2.0
+        elif competitors <= 3:
+            score += 1.0
+        elif competitors > 10:
+            score -= 1.0
         diff_bonus = {"high": 3.0, "medium": 1.5, "low": 0}
         return min(max(score + diff_bonus.get(diff, 0), 1.0), 10.0)
 
     def _eval_market(self, data: dict[str, Any]) -> float:
         som = data.get("som", 0)
-        if som >= 1_000_000_000: return 10.0
-        elif som >= 100_000_000: return 8.0
-        elif som >= 10_000_000: return 6.0
-        elif som >= 1_000_000: return 4.0
+        if som >= 1_000_000_000:
+            return 10.0
+        elif som >= 100_000_000:
+            return 8.0
+        elif som >= 10_000_000:
+            return 6.0
+        elif som >= 1_000_000:
+            return 4.0
         return 2.0
 
 
 class AchievabilityEvaluator(BaseEvaluator):
     """可實現性評估器"""
+
     dimension = EvaluationDimension.ACHIEVABILITY
 
     def _get_criteria(self) -> list[EvaluationCriteria]:
         return [
-            EvaluationCriteria(name="team_capability", description="團隊技術能力匹配度", weight=0.35),
+            EvaluationCriteria(
+                name="team_capability", description="團隊技術能力匹配度", weight=0.35
+            ),
             EvaluationCriteria(name="budget_timeline", description="預算與時程合理性", weight=0.30),
             EvaluationCriteria(name="technical_risk", description="技術風險評估", weight=0.20),
             EvaluationCriteria(name="resource_availability", description="資源可用性", weight=0.15),
@@ -330,25 +371,32 @@ class AchievabilityEvaluator(BaseEvaluator):
             dimension=self.dimension,
             score=self._calculate_score(sub_scores),
             details=sub_scores,
-            recommendations=self._generate_recommendations(sub_scores)
+            recommendations=self._generate_recommendations(sub_scores),
         )
 
     def _eval_team(self, data: dict[str, Any]) -> float:
         coverage = data.get("skill_coverage", 0)
         exp = data.get("experience_years", 0)
         score = 3.0 + (coverage / 100) * 4
-        if exp >= 5: score += 3.0
-        elif exp >= 3: score += 2.0
-        elif exp >= 1: score += 1.0
+        if exp >= 5:
+            score += 3.0
+        elif exp >= 3:
+            score += 2.0
+        elif exp >= 1:
+            score += 1.0
         return min(score, 10.0)
 
     def _eval_budget(self, data: dict[str, Any]) -> float:
         score = 4.0
-        if data.get("budget_adequate"): score += 2.0
-        if data.get("timeline_realistic"): score += 2.0
+        if data.get("budget_adequate"):
+            score += 2.0
+        if data.get("timeline_realistic"):
+            score += 2.0
         buffer = data.get("buffer_percentage", 0)
-        if buffer >= 20: score += 2.0
-        elif buffer >= 10: score += 1.0
+        if buffer >= 20:
+            score += 2.0
+        elif buffer >= 10:
+            score += 1.0
         return min(score, 10.0)
 
     def _eval_risk(self, data: dict[str, Any]) -> float:
@@ -361,6 +409,7 @@ class AchievabilityEvaluator(BaseEvaluator):
 
 class ROIEvaluator(BaseEvaluator):
     """投資報酬率評估器"""
+
     dimension = EvaluationDimension.ROI
 
     def _get_criteria(self) -> list[EvaluationCriteria]:
@@ -380,24 +429,36 @@ class ROIEvaluator(BaseEvaluator):
             dimension=self.dimension,
             score=self._calculate_score(sub_scores),
             details=sub_scores,
-            recommendations=self._generate_recommendations(sub_scores)
+            recommendations=self._generate_recommendations(sub_scores),
         )
 
     def _eval_return(self, data: dict[str, Any]) -> float:
         roi = data.get("roi_percentage", 0)
         payback = data.get("payback_months", 36)
-        roi_score = 10.0 if roi >= 300 else 8.0 if roi >= 200 else 6.0 if roi >= 100 else 4.0 if roi >= 50 else 2.0
-        payback_score = 10.0 if payback <= 6 else 8.0 if payback <= 12 else 6.0 if payback <= 24 else 4.0 if payback <= 36 else 2.0
+        roi_score = (
+            10.0
+            if roi >= 300
+            else 8.0 if roi >= 200 else 6.0 if roi >= 100 else 4.0 if roi >= 50 else 2.0
+        )
+        payback_score = (
+            10.0
+            if payback <= 6
+            else 8.0 if payback <= 12 else 6.0 if payback <= 24 else 4.0 if payback <= 36 else 2.0
+        )
         return roi_score * 0.6 + payback_score * 0.4
 
     def _eval_cost(self, data: dict[str, Any]) -> float:
         npv = data.get("npv", 0)
         irr = data.get("irr", 0)
         score = 5.0
-        if npv > 0: score += 2.0
-        if irr > 20: score += 3.0
-        elif irr > 10: score += 2.0
-        elif irr > 0: score += 1.0
+        if npv > 0:
+            score += 2.0
+        if irr > 20:
+            score += 3.0
+        elif irr > 10:
+            score += 2.0
+        elif irr > 0:
+            score += 1.0
         return min(score, 10.0)
 
     def _eval_efficiency(self, data: dict[str, Any]) -> float:
@@ -408,6 +469,7 @@ class ROIEvaluator(BaseEvaluator):
 
 class TechnologyMaturityEvaluator(BaseEvaluator):
     """技術成熟度評估器"""
+
     dimension = EvaluationDimension.TECHNOLOGY_MATURITY
 
     def _get_criteria(self) -> list[EvaluationCriteria]:
@@ -427,13 +489,17 @@ class TechnologyMaturityEvaluator(BaseEvaluator):
             dimension=self.dimension,
             score=self._calculate_score(sub_scores),
             details=sub_scores,
-            recommendations=self._generate_recommendations(sub_scores)
+            recommendations=self._generate_recommendations(sub_scores),
         )
 
     def _eval_stability(self, data: dict[str, Any]) -> float:
         age = data.get("tech_age_years", 0)
         breaking = data.get("breaking_changes_yearly", 5)
-        age_score = 10.0 if age >= 10 else 8.0 if age >= 5 else 6.0 if age >= 3 else 4.0 if age >= 1 else 2.0
+        age_score = (
+            10.0
+            if age >= 10
+            else 8.0 if age >= 5 else 6.0 if age >= 3 else 4.0 if age >= 1 else 2.0
+        )
         return max(age_score - min(breaking * 0.5, 3.0), 1.0)
 
     def _eval_ecosystem(self, data: dict[str, Any]) -> float:
@@ -441,12 +507,18 @@ class TechnologyMaturityEvaluator(BaseEvaluator):
         community = data.get("community_size", 0)
         enterprise = data.get("enterprise_adoption", 0)
         score = 2.0
-        if libs >= 10000: score += 2.5
-        elif libs >= 1000: score += 2.0
-        elif libs >= 100: score += 1.0
-        if community >= 1000000: score += 2.5
-        elif community >= 100000: score += 2.0
-        elif community >= 10000: score += 1.0
+        if libs >= 10000:
+            score += 2.5
+        elif libs >= 1000:
+            score += 2.0
+        elif libs >= 100:
+            score += 1.0
+        if community >= 1000000:
+            score += 2.5
+        elif community >= 100000:
+            score += 2.0
+        elif community >= 10000:
+            score += 1.0
         score += (enterprise / 100) * 3
         return min(score, 10.0)
 
@@ -455,21 +527,29 @@ class TechnologyMaturityEvaluator(BaseEvaluator):
         days = data.get("avg_onboarding_days", 30)
         doc_scores = {"excellent": 4.0, "good": 3.0, "medium": 2.0, "poor": 1.0}
         score = doc_scores.get(doc, 2.0)
-        if days <= 7: score += 6.0
-        elif days <= 14: score += 5.0
-        elif days <= 30: score += 4.0
-        elif days <= 60: score += 2.0
-        else: score += 1.0
+        if days <= 7:
+            score += 6.0
+        elif days <= 14:
+            score += 5.0
+        elif days <= 30:
+            score += 4.0
+        elif days <= 60:
+            score += 2.0
+        else:
+            score += 1.0
         return min(score, 10.0)
 
 
 class ValueCreationEvaluator(BaseEvaluator):
     """價值創造評估器"""
+
     dimension = EvaluationDimension.VALUE_CREATION
 
     def _get_criteria(self) -> list[EvaluationCriteria]:
         return [
-            EvaluationCriteria(name="competitive_advantage", description="長期競爭優勢", weight=0.35),
+            EvaluationCriteria(
+                name="competitive_advantage", description="長期競爭優勢", weight=0.35
+            ),
             EvaluationCriteria(name="brand_value", description="品牌價值提升", weight=0.30),
             EvaluationCriteria(name="innovation_impact", description="創新影響力", weight=0.35),
         ]
@@ -484,7 +564,7 @@ class ValueCreationEvaluator(BaseEvaluator):
             dimension=self.dimension,
             score=self._calculate_score(sub_scores),
             details=sub_scores,
-            recommendations=self._generate_recommendations(sub_scores)
+            recommendations=self._generate_recommendations(sub_scores),
         )
 
     def _eval_advantage(self, data: dict[str, Any]) -> float:
@@ -494,7 +574,8 @@ class ValueCreationEvaluator(BaseEvaluator):
         moat_scores = {"very_high": 4.0, "high": 3.0, "medium": 2.0, "low": 1.0}
         switching_scores = {"very_high": 3.0, "high": 2.5, "medium": 1.5, "low": 0.5}
         score = 2.0 + moat_scores.get(moat, 1.0) + switching_scores.get(switching, 0.5)
-        if network: score += 2.0
+        if network:
+            score += 2.0
         return min(score, 10.0)
 
     def _eval_brand(self, data: dict[str, Any]) -> float:
@@ -502,9 +583,12 @@ class ValueCreationEvaluator(BaseEvaluator):
         loyalty = data.get("customer_loyalty", 0)
         nps = data.get("nps_score", 0)
         score = 2.0 + (recognition / 100) * 3 + (loyalty / 100) * 3
-        if nps >= 50: score += 2.0
-        elif nps >= 20: score += 1.5
-        elif nps >= 0: score += 1.0
+        if nps >= 50:
+            score += 2.0
+        elif nps >= 20:
+            score += 1.5
+        elif nps >= 0:
+            score += 1.0
         return min(score, 10.0)
 
     def _eval_innovation(self, data: dict[str, Any]) -> float:
@@ -512,11 +596,16 @@ class ValueCreationEvaluator(BaseEvaluator):
         industry_first = data.get("industry_first", False)
         leadership = data.get("tech_leadership", False)
         score = 3.0
-        if patents >= 10: score += 2.0
-        elif patents >= 5: score += 1.5
-        elif patents >= 1: score += 1.0
-        if industry_first: score += 2.5
-        if leadership: score += 2.0
+        if patents >= 10:
+            score += 2.0
+        elif patents >= 5:
+            score += 1.5
+        elif patents >= 1:
+            score += 1.0
+        if industry_first:
+            score += 2.5
+        if leadership:
+            score += 2.0
         return min(score, 10.0)
 
 
@@ -541,7 +630,12 @@ class SMARTVFramework:
             EvaluationDimension.VALUE_CREATION: 0.15,
         }
 
-    def evaluate(self, project_name: str, data: dict[str, Any], weights: dict[EvaluationDimension, float] | None = None) -> SMARTVResult:
+    def evaluate(
+        self,
+        project_name: str,
+        data: dict[str, Any],
+        weights: dict[EvaluationDimension, float] | None = None,
+    ) -> SMARTVResult:
         active_weights = weights or self.default_weights
         total = sum(active_weights.values())
         normalized = {k: v / total for k, v in active_weights.items()}
@@ -559,41 +653,64 @@ class SMARTVFramework:
                 recs.extend([f"[{dim.value}] {r}" for r in score.recommendations[:2]])
 
         return SMARTVResult(
-            scores=scores, weights=normalized, weighted_total=weighted_total,
-            overall_grade=grade, recommendations=recs[:10],
-            evaluation_date=datetime.now().isoformat(), project_name=project_name
+            scores=scores,
+            weights=normalized,
+            weighted_total=weighted_total,
+            overall_grade=grade,
+            recommendations=recs[:10],
+            evaluation_date=datetime.now().isoformat(),
+            project_name=project_name,
         )
 
     def _grade(self, score: float) -> str:
-        if score >= 9.0: return "A+"
-        elif score >= 8.5: return "A"
-        elif score >= 8.0: return "A-"
-        elif score >= 7.5: return "B+"
-        elif score >= 7.0: return "B"
-        elif score >= 6.5: return "B-"
-        elif score >= 6.0: return "C+"
-        elif score >= 5.5: return "C"
-        elif score >= 5.0: return "C-"
-        elif score >= 4.0: return "D"
+        if score >= 9.0:
+            return "A+"
+        elif score >= 8.5:
+            return "A"
+        elif score >= 8.0:
+            return "A-"
+        elif score >= 7.5:
+            return "B+"
+        elif score >= 7.0:
+            return "B"
+        elif score >= 6.5:
+            return "B-"
+        elif score >= 6.0:
+            return "C+"
+        elif score >= 5.5:
+            return "C"
+        elif score >= 5.0:
+            return "C-"
+        elif score >= 4.0:
+            return "D"
         return "F"
 
     def get_startup_weights(self) -> dict[EvaluationDimension, float]:
         return {
-            EvaluationDimension.MARKET_FIT: 0.25, EvaluationDimension.ROI: 0.25,
-            EvaluationDimension.ACHIEVABILITY: 0.20, EvaluationDimension.VALUE_CREATION: 0.15,
-            EvaluationDimension.SCALABILITY: 0.10, EvaluationDimension.TECHNOLOGY_MATURITY: 0.05,
+            EvaluationDimension.MARKET_FIT: 0.25,
+            EvaluationDimension.ROI: 0.25,
+            EvaluationDimension.ACHIEVABILITY: 0.20,
+            EvaluationDimension.VALUE_CREATION: 0.15,
+            EvaluationDimension.SCALABILITY: 0.10,
+            EvaluationDimension.TECHNOLOGY_MATURITY: 0.05,
         }
 
     def get_enterprise_weights(self) -> dict[EvaluationDimension, float]:
         return {
-            EvaluationDimension.SCALABILITY: 0.25, EvaluationDimension.TECHNOLOGY_MATURITY: 0.20,
-            EvaluationDimension.VALUE_CREATION: 0.20, EvaluationDimension.ROI: 0.15,
-            EvaluationDimension.MARKET_FIT: 0.15, EvaluationDimension.ACHIEVABILITY: 0.05,
+            EvaluationDimension.SCALABILITY: 0.25,
+            EvaluationDimension.TECHNOLOGY_MATURITY: 0.20,
+            EvaluationDimension.VALUE_CREATION: 0.20,
+            EvaluationDimension.ROI: 0.15,
+            EvaluationDimension.MARKET_FIT: 0.15,
+            EvaluationDimension.ACHIEVABILITY: 0.05,
         }
 
     def get_growth_weights(self) -> dict[EvaluationDimension, float]:
         return {
-            EvaluationDimension.SCALABILITY: 0.20, EvaluationDimension.MARKET_FIT: 0.20,
-            EvaluationDimension.ROI: 0.20, EvaluationDimension.VALUE_CREATION: 0.15,
-            EvaluationDimension.ACHIEVABILITY: 0.15, EvaluationDimension.TECHNOLOGY_MATURITY: 0.10,
+            EvaluationDimension.SCALABILITY: 0.20,
+            EvaluationDimension.MARKET_FIT: 0.20,
+            EvaluationDimension.ROI: 0.20,
+            EvaluationDimension.VALUE_CREATION: 0.15,
+            EvaluationDimension.ACHIEVABILITY: 0.15,
+            EvaluationDimension.TECHNOLOGY_MATURITY: 0.10,
         }

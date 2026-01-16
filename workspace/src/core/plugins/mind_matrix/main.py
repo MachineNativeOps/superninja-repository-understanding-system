@@ -295,7 +295,8 @@ class MindMatrix:
             FileNotFoundError: When config file is not found.
         """
         if config_path is None:
-            # Try to find config relative to current directory or module location
+            # Try to find config relative to current directory or module
+            # location
             possible_paths = [
                 Path("config/topology-mind-matrix.yaml"),
                 Path(__file__).parent.parent.parent / "config" / "topology-mind-matrix.yaml",

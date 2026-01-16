@@ -23,6 +23,7 @@ from typing import Any
 
 class ConnectorType(Enum):
     """連接器類型"""
+
     DATABASE = "database"
     HTTP = "http"
     GRPC = "grpc"
@@ -37,6 +38,7 @@ class ConnectorType(Enum):
 
 class ConnectionStatus(Enum):
     """連接狀態"""
+
     DISCONNECTED = "disconnected"
     CONNECTING = "connecting"
     CONNECTED = "connected"
@@ -125,7 +127,7 @@ class Connector:
 class ConnectorManager:
     """
     連接器管理器 - 管理與外部系統的實際連接
-    
+
     這是執行層的關鍵組件：
     - 沒有連接器，代碼只是理論
     - 連接器提供與真實世界的橋樑
@@ -164,19 +166,16 @@ class ConnectorManager:
         self._factories[ConnectorType.MESSAGE_QUEUE] = self._create_mq_connector
 
     async def create(
-        self,
-        name: str,
-        connector_type: ConnectorType,
-        config: ConnectionConfig | None = None
+        self, name: str, connector_type: ConnectorType, config: ConnectionConfig | None = None
     ) -> Connector:
         """
         創建連接器
-        
+
         Args:
             name: 連接器名稱
             connector_type: 連接器類型
             config: 連接配置
-            
+
         Returns:
             創建的連接器
         """
@@ -211,10 +210,10 @@ class ConnectorManager:
     async def connect(self, name: str) -> bool:
         """
         建立連接
-        
+
         Args:
             name: 連接器名稱
-            
+
         Returns:
             是否成功
         """
@@ -250,10 +249,10 @@ class ConnectorManager:
     async def disconnect(self, name: str) -> bool:
         """
         斷開連接
-        
+
         Args:
             name: 連接器名稱
-            
+
         Returns:
             是否成功
         """
@@ -282,10 +281,10 @@ class ConnectorManager:
     async def reconnect(self, name: str) -> bool:
         """
         重新連接
-        
+
         Args:
             name: 連接器名稱
-            
+
         Returns:
             是否成功
         """
@@ -308,9 +307,7 @@ class ConnectorManager:
                 return True
 
             # 等待重試
-            delay = config.retry_delay_seconds * (
-                config.retry_backoff_multiplier ** attempt
-            )
+            delay = config.retry_delay_seconds * (config.retry_backoff_multiplier**attempt)
             await asyncio.sleep(delay)
 
         return False
@@ -341,18 +338,15 @@ class ConnectorManager:
 
     def get_connected(self) -> list[Connector]:
         """獲取所有已連接的連接器"""
-        return [
-            c for c in self._connectors.values()
-            if c.status == ConnectionStatus.CONNECTED
-        ]
+        return [c for c in self._connectors.values() if c.status == ConnectionStatus.CONNECTED]
 
     async def remove(self, name: str) -> bool:
         """
         移除連接器
-        
+
         Args:
             name: 連接器名稱
-            
+
         Returns:
             是否成功
         """
@@ -377,20 +371,15 @@ class ConnectorManager:
 
         return True
 
-    async def execute(
-        self,
-        name: str,
-        operation: str,
-        params: dict[str, Any]
-    ) -> dict[str, Any]:
+    async def execute(self, name: str, operation: str, params: dict[str, Any]) -> dict[str, Any]:
         """
         通過連接器執行操作
-        
+
         Args:
             name: 連接器名稱
             operation: 操作名稱
             params: 操作參數
-            
+
         Returns:
             執行結果
         """
@@ -425,9 +414,7 @@ class ConnectorManager:
             # 更新平均延遲
             total = connector.total_requests
             current_avg = connector.average_latency_ms
-            connector.average_latency_ms = (
-                (current_avg * (total - 1) + latency_ms) / total
-            )
+            connector.average_latency_ms = (current_avg * (total - 1) + latency_ms) / total
 
             return {
                 "success": True,
@@ -451,10 +438,10 @@ class ConnectorManager:
     async def health_check(self, name: str) -> dict[str, Any]:
         """
         執行健康檢查
-        
+
         Args:
             name: 連接器名稱
-            
+
         Returns:
             健康檢查結果
         """
@@ -475,27 +462,33 @@ class ConnectorManager:
         }
 
         # 檢查連接狀態
-        result["checks"].append({
-            "name": "connection_status",
-            "passed": connector.status == ConnectionStatus.CONNECTED,
-            "message": f"Status: {connector.status.value}",
-        })
+        result["checks"].append(
+            {
+                "name": "connection_status",
+                "passed": connector.status == ConnectionStatus.CONNECTED,
+                "message": f"Status: {connector.status.value}",
+            }
+        )
 
         # 執行自定義健康檢查
         if connector.health_check is not None:
             try:
                 custom_result = await connector.health_check()
-                result["checks"].append({
-                    "name": "custom_health_check",
-                    "passed": custom_result,
-                    "message": "Custom health check",
-                })
+                result["checks"].append(
+                    {
+                        "name": "custom_health_check",
+                        "passed": custom_result,
+                        "message": "Custom health check",
+                    }
+                )
             except Exception as e:
-                result["checks"].append({
-                    "name": "custom_health_check",
-                    "passed": False,
-                    "message": f"Error: {str(e)}",
-                })
+                result["checks"].append(
+                    {
+                        "name": "custom_health_check",
+                        "passed": False,
+                        "message": f"Error: {str(e)}",
+                    }
+                )
 
         # 判斷整體健康狀態
         result["healthy"] = all(check["passed"] for check in result["checks"])
@@ -533,8 +526,9 @@ class ConnectorManager:
         """獲取統計信息"""
 
         total = len(self._connectors)
-        connected = len([c for c in self._connectors.values()
-                        if c.status == ConnectionStatus.CONNECTED])
+        connected = len(
+            [c for c in self._connectors.values() if c.status == ConnectionStatus.CONNECTED]
+        )
         healthy = len([c for c in self._connectors.values() if c.is_healthy])
 
         total_requests = sum(c.total_requests for c in self._connectors.values())
@@ -545,23 +539,15 @@ class ConnectorManager:
             "connected_connectors": connected,
             "healthy_connectors": healthy,
             "disconnected_connectors": total - connected,
-            "connectors_by_type": {
-                t.value: len(names)
-                for t, names in self._type_index.items()
-            },
+            "connectors_by_type": {t.value: len(names) for t, names in self._type_index.items()},
             "total_requests": total_requests,
             "successful_requests": successful_requests,
             "success_rate": (
-                round(successful_requests / total_requests, 4) * 100
-                if total_requests > 0 else 0
+                round(successful_requests / total_requests, 4) * 100 if total_requests > 0 else 0
             ),
         }
 
-    def register_factory(
-        self,
-        connector_type: ConnectorType,
-        factory: Callable
-    ):
+    def register_factory(self, connector_type: ConnectorType, factory: Callable):
         """註冊連接工廠"""
         self._factories[connector_type] = factory
 
@@ -575,10 +561,7 @@ class ConnectorManager:
             self._listeners.remove(listener)
 
     def _notify_listeners(
-        self,
-        event: str,
-        connector: Connector,
-        data: dict[str, Any] | None = None
+        self, event: str, connector: Connector, data: dict[str, Any] | None = None
     ):
         """通知監聽器"""
         for listener in self._listeners:
@@ -587,10 +570,7 @@ class ConnectorManager:
 
     # ============ 默認連接工廠 ============
 
-    async def _create_database_connector(
-        self,
-        config: ConnectionConfig
-    ) -> dict[str, Any]:
+    async def _create_database_connector(self, config: ConnectionConfig) -> dict[str, Any]:
         """創建數據庫連接器"""
         return {
             "type": "database",
@@ -599,10 +579,7 @@ class ConnectorManager:
             "pool_size": config.pool_size,
         }
 
-    async def _create_http_connector(
-        self,
-        config: ConnectionConfig
-    ) -> dict[str, Any]:
+    async def _create_http_connector(self, config: ConnectionConfig) -> dict[str, Any]:
         """創建 HTTP 連接器"""
         return {
             "type": "http",
@@ -610,10 +587,7 @@ class ConnectorManager:
             "timeout": config.read_timeout_seconds,
         }
 
-    async def _create_kubernetes_connector(
-        self,
-        config: ConnectionConfig
-    ) -> dict[str, Any]:
+    async def _create_kubernetes_connector(self, config: ConnectionConfig) -> dict[str, Any]:
         """創建 Kubernetes 連接器"""
         return {
             "type": "kubernetes",
@@ -621,30 +595,21 @@ class ConnectorManager:
             "namespace": config.extra.get("namespace", "default"),
         }
 
-    async def _create_docker_connector(
-        self,
-        config: ConnectionConfig
-    ) -> dict[str, Any]:
+    async def _create_docker_connector(self, config: ConnectionConfig) -> dict[str, Any]:
         """創建 Docker 連接器"""
         return {
             "type": "docker",
             "socket": config.extra.get("socket", "/var/run/docker.sock"),
         }
 
-    async def _create_filesystem_connector(
-        self,
-        config: ConnectionConfig
-    ) -> dict[str, Any]:
+    async def _create_filesystem_connector(self, config: ConnectionConfig) -> dict[str, Any]:
         """創建文件系統連接器"""
         return {
             "type": "filesystem",
             "base_path": config.extra.get("base_path", "/"),
         }
 
-    async def _create_mq_connector(
-        self,
-        config: ConnectionConfig
-    ) -> dict[str, Any]:
+    async def _create_mq_connector(self, config: ConnectionConfig) -> dict[str, Any]:
         """創建消息隊列連接器"""
         return {
             "type": "message_queue",

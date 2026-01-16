@@ -12,16 +12,18 @@ Generates a comprehensive governance matrix showing:
 """
 
 import json
-import yaml
 import sys
-from pathlib import Path
-from typing import Dict, List, Tuple, Any
-from dataclasses import dataclass, asdict
+from dataclasses import asdict, dataclass
 from enum import Enum
+from pathlib import Path
+from typing import Any, Dict, List, Tuple
+
+import yaml
 
 
 class ComplianceStatus(Enum):
     """Compliance status levels"""
+
     COMPLIANT = "✅"
     PARTIAL = "⚠️"
     NON_COMPLIANT = "❌"
@@ -31,6 +33,7 @@ class ComplianceStatus(Enum):
 @dataclass
 class ComplianceResult:
     """Result of a compliance check"""
+
     dimension: str
     meta_domain: str
     status: ComplianceStatus
@@ -200,16 +203,15 @@ class GovernanceMatrixValidator:
         """Format matrix for display"""
         formatted = {}
         for dimension, statuses in self.matrix.items():
-            formatted[dimension] = {
-                meta: status.value for meta, status in statuses.items()
-            }
+            formatted[dimension] = {meta: status.value for meta, status in statuses.items()}
         return formatted
 
     def _calculate_compliance_percentage(self) -> float:
         """Calculate overall compliance percentage"""
         total = len(self.DIMENSIONS) * len(self.META_DOMAINS)
         compliant = sum(
-            1 for dim_statuses in self.matrix.values()
+            1
+            for dim_statuses in self.matrix.values()
             for status in dim_statuses.values()
             if status == ComplianceStatus.COMPLIANT
         )
@@ -221,8 +223,7 @@ class GovernanceMatrixValidator:
 
         for dimension, statuses in self.matrix.items():
             missing = [
-                meta for meta, status in statuses.items()
-                if status != ComplianceStatus.COMPLIANT
+                meta for meta, status in statuses.items() if status != ComplianceStatus.COMPLIANT
             ]
             if missing:
                 gaps[dimension] = missing

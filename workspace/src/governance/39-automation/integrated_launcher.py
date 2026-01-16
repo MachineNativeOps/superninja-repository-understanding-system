@@ -17,13 +17,13 @@ import asyncio
 import logging
 import sys
 from pathlib import Path
-from typing import Dict, Any, Optional, List
+from typing import Any, Dict, List, Optional
 
-from governance_automation_launcher import (
-    GovernanceAutomationLauncher,
-    GovernanceAutomationEngine,
-)
 from coordinator import EngineCoordinator
+from governance_automation_launcher import (
+    GovernanceAutomationEngine,
+    GovernanceAutomationLauncher,
+)
 
 
 class IntegratedGovernanceAutomationLauncher:
@@ -67,9 +67,7 @@ class IntegratedGovernanceAutomationLauncher:
         logger = logging.getLogger("IntegratedGovernanceLauncher")
         if not logger.handlers:
             handler = logging.StreamHandler(sys.stdout)
-            formatter = logging.Formatter(
-                '%(asctime)s - [INTEGRATED] %(levelname)s - %(message)s'
-            )
+            formatter = logging.Formatter("%(asctime)s - [INTEGRATED] %(levelname)s - %(message)s")
             handler.setFormatter(formatter)
             logger.addHandler(handler)
             logger.setLevel(logging.INFO)
@@ -168,6 +166,7 @@ class IntegratedGovernanceAutomationLauncher:
         self.logger.info("🎯 Starting Integrated Automation System")
 
         import time
+
         start_time = time.time()
         iteration = 0
 
@@ -212,9 +211,15 @@ class IntegratedGovernanceAutomationLauncher:
         print("=" * 100)
 
         print("\n📊 Integration Status:")
-        print(f"  Main Launcher:       {'✅ Ready' if self.integration_status['main_launcher'] else '❌ Not Ready'}")
-        print(f"  Coordinator:         {'✅ Ready' if self.integration_status['coordinator'] else '❌ Not Ready'}")
-        print(f"  Existing Launchers:  {'✅ Integrated' if self.integration_status['existing_launchers'] else '⚠️  Optional'}")
+        print(
+            f"  Main Launcher:       {'✅ Ready' if self.integration_status['main_launcher'] else '❌ Not Ready'}"
+        )
+        print(
+            f"  Coordinator:         {'✅ Ready' if self.integration_status['coordinator'] else '❌ Not Ready'}"
+        )
+        print(
+            f"  Existing Launchers:  {'✅ Integrated' if self.integration_status['existing_launchers'] else '⚠️  Optional'}"
+        )
 
         if self.main_launcher:
             main_report = self.main_launcher.get_metrics_report()
@@ -248,12 +253,10 @@ class IntegratedGovernanceAutomationLauncher:
             "timestamp": asyncio.get_event_loop().time(),
             "integration_status": self.integration_status,
             "main_launcher": (
-                self.main_launcher.get_metrics_report()
-                if self.main_launcher else None
+                self.main_launcher.get_metrics_report() if self.main_launcher else None
             ),
             "coordinator": (
-                self.coordinator.get_coordinator_status()
-                if self.coordinator else None
+                self.coordinator.get_coordinator_status() if self.coordinator else None
             ),
             "existing_launchers": self.existing_launchers,
         }
@@ -273,6 +276,7 @@ async def main():
     except Exception as e:
         print(f"❌ Error: {e}")
         import traceback
+
         traceback.print_exc()
         return 1
 

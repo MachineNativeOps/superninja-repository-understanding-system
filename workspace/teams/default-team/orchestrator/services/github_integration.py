@@ -10,13 +10,14 @@ Provides GitHub API integration for:
 - Artifact management
 """
 
-import os
-import json
 import asyncio
-from datetime import datetime
-from typing import Any, Dict, List, Optional
-from enum import Enum
+import json
 import logging
+import os
+from datetime import datetime
+from enum import Enum
+from typing import Any, Dict, List, Optional
+
 import aiohttp
 
 logger = logging.getLogger(__name__)
@@ -119,7 +120,7 @@ class GitHubIntegration:
     ) -> Dict[str, Any]:
         """Create a check run for a commit."""
         endpoint = f"/repos/{self._owner}/{self._repo}/check-runs"
-        
+
         data: Dict[str, Any] = {
             "name": name,
             "head_sha": head_sha,
@@ -155,12 +156,12 @@ class GitHubIntegration:
     ) -> Dict[str, Any]:
         """Update an existing check run."""
         endpoint = f"/repos/{self._owner}/{self._repo}/check-runs/{check_run_id}"
-        
+
         data: Dict[str, Any] = {}
-        
+
         if status:
             data["status"] = status.value
-        
+
         if conclusion:
             data["conclusion"] = conclusion.value
             data["completed_at"] = datetime.utcnow().isoformat() + "Z"
@@ -194,12 +195,12 @@ class GitHubIntegration:
     ) -> Dict[str, Any]:
         """Create a pull request review."""
         endpoint = f"/repos/{self._owner}/{self._repo}/pulls/{pull_number}/reviews"
-        
+
         data: Dict[str, Any] = {
             "body": body,
             "event": event,
         }
-        
+
         if comments:
             data["comments"] = comments
 
@@ -215,13 +216,13 @@ class GitHubIntegration:
     ) -> Dict[str, Any]:
         """Create a deployment."""
         endpoint = f"/repos/{self._owner}/{self._repo}/deployments"
-        
+
         data: Dict[str, Any] = {
             "ref": ref,
             "environment": environment,
             "auto_merge": auto_merge,
         }
-        
+
         if description:
             data["description"] = description
         if required_contexts is not None:
@@ -239,11 +240,11 @@ class GitHubIntegration:
     ) -> Dict[str, Any]:
         """Create a deployment status."""
         endpoint = f"/repos/{self._owner}/{self._repo}/deployments/{deployment_id}/statuses"
-        
+
         data: Dict[str, Any] = {
             "state": state,
         }
-        
+
         if environment_url:
             data["environment_url"] = environment_url
         if log_url:
@@ -262,12 +263,12 @@ class GitHubIntegration:
     ) -> Dict[str, Any]:
         """Create an issue."""
         endpoint = f"/repos/{self._owner}/{self._repo}/issues"
-        
+
         data: Dict[str, Any] = {
             "title": title,
             "body": body,
         }
-        
+
         if labels:
             data["labels"] = labels
         if assignees:
@@ -300,7 +301,7 @@ class GitHubIntegration:
     ) -> Dict[str, Any]:
         """Get workflow runs."""
         endpoint = f"/repos/{self._owner}/{self._repo}/actions/runs"
-        
+
         params = []
         if workflow_id:
             params.append(f"workflow_id={workflow_id}")
@@ -309,7 +310,7 @@ class GitHubIntegration:
         if status:
             params.append(f"status={status}")
         params.append(f"per_page={per_page}")
-        
+
         if params:
             endpoint += "?" + "&".join(params)
 
@@ -323,11 +324,11 @@ class GitHubIntegration:
     ) -> Dict[str, Any]:
         """Trigger a workflow dispatch event."""
         endpoint = f"/repos/{self._owner}/{self._repo}/actions/workflows/{workflow_id}/dispatches"
-        
+
         data: Dict[str, Any] = {
             "ref": ref,
         }
-        
+
         if inputs:
             data["inputs"] = inputs
 
@@ -348,7 +349,7 @@ class GitHubIntegration:
         encoded = base64.b64encode(compressed).decode()
 
         endpoint = f"/repos/{self._owner}/{self._repo}/code-scanning/sarifs"
-        
+
         data = {
             "commit_sha": commit_sha,
             "ref": ref,
@@ -385,9 +386,9 @@ class GitHubEventHandler:
         """Parse GitHub webhook payload into team event."""
         event_type = headers.get("X-GitHub-Event", "unknown")
         action = payload.get("action")
-        
+
         team_event = cls.map_event(event_type, action)
-        
+
         event_data = {
             "event_type": team_event,
             "github_event": event_type,
@@ -397,24 +398,28 @@ class GitHubEventHandler:
         }
 
         if event_type == "push":
-            event_data.update({
-                "ref": payload.get("ref"),
-                "before": payload.get("before"),
-                "after": payload.get("after"),
-                "commits": payload.get("commits", []),
-                "pusher": payload.get("pusher", {}).get("name"),
-            })
+            event_data.update(
+                {
+                    "ref": payload.get("ref"),
+                    "before": payload.get("before"),
+                    "after": payload.get("after"),
+                    "commits": payload.get("commits", []),
+                    "pusher": payload.get("pusher", {}).get("name"),
+                }
+            )
         elif event_type == "pull_request":
             pr = payload.get("pull_request", {})
-            event_data.update({
-                "pull_number": payload.get("number"),
-                "title": pr.get("title"),
-                "body": pr.get("body"),
-                "head_sha": pr.get("head", {}).get("sha"),
-                "base_ref": pr.get("base", {}).get("ref"),
-                "head_ref": pr.get("head", {}).get("ref"),
-                "author": pr.get("user", {}).get("login"),
-                "draft": pr.get("draft", False),
-            })
+            event_data.update(
+                {
+                    "pull_number": payload.get("number"),
+                    "title": pr.get("title"),
+                    "body": pr.get("body"),
+                    "head_sha": pr.get("head", {}).get("sha"),
+                    "base_ref": pr.get("base", {}).get("ref"),
+                    "head_ref": pr.get("head", {}).get("ref"),
+                    "author": pr.get("user", {}).get("login"),
+                    "draft": pr.get("draft", False),
+                }
+            )
 
         return event_data

@@ -17,6 +17,7 @@ from typing import Any, Optional
 
 class RemediationStatus(Enum):
     """Status of a remediation"""
+
     PENDING = "pending"
     IN_PROGRESS = "in_progress"
     VERIFYING = "verifying"
@@ -27,44 +28,47 @@ class RemediationStatus(Enum):
 
 class RemediationType(Enum):
     """Types of remediation actions"""
-    RESTART = "restart"           # Restart service/component
-    SCALE = "scale"               # Scale up/down
-    FAILOVER = "failover"         # Failover to backup
-    ROLLBACK = "rollback"         # Rollback changes
-    CLEAR_CACHE = "clear_cache"   # Clear caches
-    RECONFIGURE = "reconfigure"   # Reconfigure settings
-    NOTIFY = "notify"             # Send notifications
-    CUSTOM = "custom"             # Custom remediation
+
+    RESTART = "restart"  # Restart service/component
+    SCALE = "scale"  # Scale up/down
+    FAILOVER = "failover"  # Failover to backup
+    ROLLBACK = "rollback"  # Rollback changes
+    CLEAR_CACHE = "clear_cache"  # Clear caches
+    RECONFIGURE = "reconfigure"  # Reconfigure settings
+    NOTIFY = "notify"  # Send notifications
+    CUSTOM = "custom"  # Custom remediation
 
 
 @dataclass
 class RemediationAction:
     """A remediation action to execute"""
+
     action_id: str = field(default_factory=lambda: str(uuid.uuid4()))
     name: str = ""
     action_type: RemediationType = RemediationType.CUSTOM
     target: str = ""
     parameters: dict[str, Any] = field(default_factory=dict)
     timeout_seconds: int = 300
-    rollback_action: Optional['RemediationAction'] = None
+    rollback_action: Optional["RemediationAction"] = None
     pre_conditions: list[Callable[[], bool]] = field(default_factory=list)
     post_conditions: list[Callable[[], bool]] = field(default_factory=list)
 
     def to_dict(self) -> dict[str, Any]:
         return {
-            'action_id': self.action_id,
-            'name': self.name,
-            'type': self.action_type.value,
-            'target': self.target,
-            'parameters': self.parameters,
-            'timeout_seconds': self.timeout_seconds,
-            'has_rollback': self.rollback_action is not None
+            "action_id": self.action_id,
+            "name": self.name,
+            "type": self.action_type.value,
+            "target": self.target,
+            "parameters": self.parameters,
+            "timeout_seconds": self.timeout_seconds,
+            "has_rollback": self.rollback_action is not None,
         }
 
 
 @dataclass
 class RemediationPlaybook:
     """A playbook defining remediation steps"""
+
     playbook_id: str = field(default_factory=lambda: str(uuid.uuid4()))
     name: str = ""
     description: str = ""
@@ -87,6 +91,7 @@ class RemediationPlaybook:
 @dataclass
 class RemediationResult:
     """Result of a remediation execution"""
+
     result_id: str = field(default_factory=lambda: str(uuid.uuid4()))
     playbook_id: str = ""
     anomaly_id: str = ""
@@ -100,23 +105,23 @@ class RemediationResult:
 
     def to_dict(self) -> dict[str, Any]:
         return {
-            'result_id': self.result_id,
-            'playbook_id': self.playbook_id,
-            'anomaly_id': self.anomaly_id,
-            'status': self.status.value,
-            'actions_executed': self.actions_executed,
-            'actions_failed': self.actions_failed,
-            'verification_passed': self.verification_passed,
-            'execution_time_ms': self.execution_time_ms,
-            'error_message': self.error_message,
-            'timestamp': self.timestamp.isoformat()
+            "result_id": self.result_id,
+            "playbook_id": self.playbook_id,
+            "anomaly_id": self.anomaly_id,
+            "status": self.status.value,
+            "actions_executed": self.actions_executed,
+            "actions_failed": self.actions_failed,
+            "verification_passed": self.verification_passed,
+            "execution_time_ms": self.execution_time_ms,
+            "error_message": self.error_message,
+            "timestamp": self.timestamp.isoformat(),
         }
 
 
 class RemediationExecutor:
     """
     Remediation Executor
-    
+
     Executes remediation actions safely
     """
 
@@ -133,9 +138,7 @@ class RemediationExecutor:
         self._action_handlers[RemediationType.CUSTOM] = self._handle_custom
 
     def register_handler(
-        self,
-        action_type: RemediationType,
-        handler: Callable[[RemediationAction], bool]
+        self, action_type: RemediationType, handler: Callable[[RemediationAction], bool]
     ) -> None:
         """Register a custom action handler"""
         self._action_handlers[action_type] = handler
@@ -180,10 +183,7 @@ class RemediationExecutor:
 
         try:
             # Execute with timeout
-            result = await asyncio.wait_for(
-                handler(action),
-                timeout=action.timeout_seconds
-            )
+            result = await asyncio.wait_for(handler(action), timeout=action.timeout_seconds)
 
             if result:
                 # Check post-conditions
@@ -201,10 +201,10 @@ class RemediationExecutor:
 class AutoRemediationEngine:
     """
     Auto Remediation Engine (自動修復引擎)
-    
+
     Self-healing capabilities with predefined playbooks
     Zero human intervention
-    
+
     Reference: 4 minutes, zero human involvement - Detect → Diagnose → Fix → Verify → Log [9]
     """
 
@@ -244,22 +244,21 @@ class AutoRemediationEngine:
         return matching
 
     async def execute_playbook(
-        self,
-        playbook: RemediationPlaybook,
-        anomaly_id: str = ""
+        self, playbook: RemediationPlaybook, anomaly_id: str = ""
     ) -> RemediationResult:
         """
         Execute a remediation playbook
-        
+
         Reference: Self-healing infrastructure [9]
         """
         import time
+
         start_time = time.time()
 
         result = RemediationResult(
             playbook_id=playbook.playbook_id,
             anomaly_id=anomaly_id,
-            status=RemediationStatus.IN_PROGRESS
+            status=RemediationStatus.IN_PROGRESS,
         )
 
         if self._dry_run:
@@ -309,14 +308,10 @@ class AutoRemediationEngine:
 
         return result
 
-    async def auto_remediate(
-        self,
-        trigger: str,
-        anomaly_id: str = ""
-    ) -> RemediationResult | None:
+    async def auto_remediate(self, trigger: str, anomaly_id: str = "") -> RemediationResult | None:
         """
         Automatically find and execute matching playbook
-        
+
         The core of self-healing - zero human intervention
         """
         playbooks = self.find_matching_playbooks(trigger)
@@ -332,10 +327,7 @@ class AutoRemediationEngine:
         return self._history.copy()
 
     def create_restart_playbook(
-        self,
-        name: str,
-        target: str,
-        triggers: list[str]
+        self, name: str, target: str, triggers: list[str]
     ) -> RemediationPlaybook:
         """Create a simple restart playbook"""
         playbook = RemediationPlaybook(
@@ -347,19 +339,15 @@ class AutoRemediationEngine:
                     name=f"restart_{target}",
                     action_type=RemediationType.RESTART,
                     target=target,
-                    timeout_seconds=60
+                    timeout_seconds=60,
                 )
-            ]
+            ],
         )
         self.register_playbook(playbook)
         return playbook
 
     def create_scale_playbook(
-        self,
-        name: str,
-        target: str,
-        scale_factor: int,
-        triggers: list[str]
+        self, name: str, target: str, scale_factor: int, triggers: list[str]
     ) -> RemediationPlaybook:
         """Create a scaling playbook"""
         playbook = RemediationPlaybook(
@@ -371,10 +359,10 @@ class AutoRemediationEngine:
                     name=f"scale_{target}",
                     action_type=RemediationType.SCALE,
                     target=target,
-                    parameters={'scale_factor': scale_factor},
-                    timeout_seconds=120
+                    parameters={"scale_factor": scale_factor},
+                    timeout_seconds=120,
                 )
-            ]
+            ],
         )
         self.register_playbook(playbook)
         return playbook

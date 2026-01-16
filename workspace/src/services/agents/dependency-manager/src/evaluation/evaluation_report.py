@@ -14,6 +14,7 @@ from .smartv_framework import EvaluationDimension, SMARTVResult
 @dataclass
 class ReportConfig:
     """報告配置"""
+
     include_details: bool = True
     include_recommendations: bool = True
     include_charts: bool = False
@@ -40,14 +41,21 @@ class EvaluationReportGenerator:
             "roi": "ROI",
             "technology_maturity": "Technology Maturity",
             "value_creation": "Value Creation",
-        }
+        },
     }
 
     GRADE_EMOJIS = {
-        "A+": "🏆", "A": "🥇", "A-": "🥈",
-        "B+": "🥉", "B": "⭐", "B-": "✨",
-        "C+": "📊", "C": "📈", "C-": "📉",
-        "D": "⚠️", "F": "❌"
+        "A+": "🏆",
+        "A": "🥇",
+        "A-": "🥈",
+        "B+": "🥉",
+        "B": "⭐",
+        "B-": "✨",
+        "C+": "📊",
+        "C": "📈",
+        "C-": "📉",
+        "D": "⚠️",
+        "F": "❌",
     }
 
     LEVEL_INDICATORS = {
@@ -55,17 +63,13 @@ class EvaluationReportGenerator:
         "good": "🔵",
         "average": "🟡",
         "below_average": "🟠",
-        "poor": "🔴"
+        "poor": "🔴",
     }
 
     def __init__(self, config: ReportConfig | None = None):
         self.config = config or ReportConfig()
 
-    def generate(
-        self,
-        result: SMARTVResult,
-        format: str | None = None
-    ) -> str:
+    def generate(self, result: SMARTVResult, format: str | None = None) -> str:
         """生成報告"""
         fmt = format or self.config.format
 
@@ -162,7 +166,7 @@ class EvaluationReportGenerator:
             lines.append("```json")
             chart_data = {
                 "labels": [self._get_dimension_name(d.value) for d in result.scores],
-                "values": [s.score for s in result.scores.values()]
+                "values": [s.score for s in result.scores.values()],
             }
             lines.append(json.dumps(chart_data, ensure_ascii=False, indent=2))
             lines.append("```")
@@ -240,12 +244,12 @@ class EvaluationReportGenerator:
     <h1>📊 SMART-V 評估報告</h1>
     <p><strong>專案</strong>: {result.project_name}</p>
     <p><strong>日期</strong>: {result.evaluation_date[:10]}</p>
-    
+
     <div class="grade">
         {self.GRADE_EMOJIS.get(result.overall_grade, '📊')} {result.overall_grade}
         <br><small>({result.weighted_total:.2f} / 10.0)</small>
     </div>
-    
+
     <h2>維度評分</h2>
     <table class="score-table">
         <tr>
@@ -295,10 +299,7 @@ class EvaluationReportGenerator:
 """
         return html
 
-    def generate_comparison_report(
-        self,
-        results: list[SMARTVResult]
-    ) -> str:
+    def generate_comparison_report(self, results: list[SMARTVResult]) -> str:
         """生成多專案比較報告"""
         lines = []
 
@@ -319,7 +320,9 @@ class EvaluationReportGenerator:
 
         for result in sorted(results, key=lambda r: r.weighted_total, reverse=True):
             emoji = self.GRADE_EMOJIS.get(result.overall_grade, "📊")
-            lines.append(f"| {result.project_name} | {result.weighted_total:.2f} | {emoji} {result.overall_grade} |")
+            lines.append(
+                f"| {result.project_name} | {result.weighted_total:.2f} | {emoji} {result.overall_grade} |"
+            )
 
         lines.append("")
 
@@ -350,17 +353,17 @@ class EvaluationReportGenerator:
             lines.append(f"### {result.project_name}")
 
             # 找出最高和最低分維度
-            sorted_dims = sorted(
-                result.scores.items(),
-                key=lambda x: x[1].score,
-                reverse=True
-            )
+            sorted_dims = sorted(result.scores.items(), key=lambda x: x[1].score, reverse=True)
 
             best = sorted_dims[0]
             worst = sorted_dims[-1]
 
-            lines.append(f"- **最強維度**: {self._get_dimension_name(best[0].value)} ({best[1].score:.1f})")
-            lines.append(f"- **待改進維度**: {self._get_dimension_name(worst[0].value)} ({worst[1].score:.1f})")
+            lines.append(
+                f"- **最強維度**: {self._get_dimension_name(best[0].value)} ({best[1].score:.1f})"
+            )
+            lines.append(
+                f"- **待改進維度**: {self._get_dimension_name(worst[0].value)} ({worst[1].score:.1f})"
+            )
             lines.append("")
 
         return "\n".join(lines)
@@ -370,11 +373,7 @@ class EvaluationReportGenerator:
         emoji = self.GRADE_EMOJIS.get(result.overall_grade, "📊")
 
         # 找出優勢和劣勢
-        sorted_dims = sorted(
-            result.scores.items(),
-            key=lambda x: x[1].score,
-            reverse=True
-        )
+        sorted_dims = sorted(result.scores.items(), key=lambda x: x[1].score, reverse=True)
 
         strengths = [d for d in sorted_dims[:2] if d[1].score >= 7]
         weaknesses = [d for d in sorted_dims[-2:] if d[1].score < 6]

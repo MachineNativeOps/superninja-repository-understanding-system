@@ -22,11 +22,12 @@ logger = logging.getLogger(__name__)
 
 class EventStatus(Enum):
     """Event processing status"""
-    RECEIVED = "received"       # Just received, not processed
-    PROCESSING = "processing"   # Currently being processed
-    PROCESSED = "processed"     # Successfully processed
-    FAILED = "failed"          # Processing failed
-    SKIPPED = "skipped"        # Skipped (e.g., duplicate, filtered)
+
+    RECEIVED = "received"  # Just received, not processed
+    PROCESSING = "processing"  # Currently being processed
+    PROCESSED = "processed"  # Successfully processed
+    FAILED = "failed"  # Processing failed
+    SKIPPED = "skipped"  # Skipped (e.g., duplicate, filtered)
 
 
 @dataclass
@@ -37,19 +38,20 @@ class StoredEvent:
     This is the "standardized event" that webhooks are converted to.
     It's the source of truth for all processing.
     """
+
     id: UUID = field(default_factory=uuid4)
 
     # Tenant isolation
     org_id: UUID = field(default_factory=uuid4)
 
     # Event identification
-    event_type: str = ""         # e.g., "pull_request.opened"
-    source: str = ""             # e.g., "github", "gitlab"
-    source_id: str = ""          # Provider's event ID (delivery_id)
+    event_type: str = ""  # e.g., "pull_request.opened"
+    source: str = ""  # e.g., "github", "gitlab"
+    source_id: str = ""  # Provider's event ID (delivery_id)
 
     # Correlation
     correlation_id: UUID | None = None  # Links related events
-    causation_id: UUID | None = None    # Event that caused this one
+    causation_id: UUID | None = None  # Event that caused this one
 
     # Repository context
     repo_id: UUID | None = None
@@ -123,11 +125,17 @@ class StoredEvent:
             ref=data.get("ref"),
             payload=data.get("payload", {}),
             status=EventStatus(data.get("status", "received")),
-            processed_at=datetime.fromisoformat(data["processed_at"]) if data.get("processed_at") else None,
+            processed_at=(
+                datetime.fromisoformat(data["processed_at"]) if data.get("processed_at") else None
+            ),
             process_error=data.get("process_error"),
             retry_count=data.get("retry_count", 0),
             job_ids=[UUID(j) for j in data.get("job_ids", [])],
-            received_at=datetime.fromisoformat(data["received_at"]) if data.get("received_at") else datetime.utcnow(),
+            received_at=(
+                datetime.fromisoformat(data["received_at"])
+                if data.get("received_at")
+                else datetime.utcnow()
+            ),
             schema_version=data.get("schema_version", "1.0"),
             processed_by=data.get("processed_by"),
         )
@@ -136,6 +144,7 @@ class StoredEvent:
 @dataclass
 class EventFilter:
     """Filter for querying events"""
+
     org_id: UUID | None = None
     event_types: list[str] | None = None
     source: str | None = None
@@ -151,32 +160,26 @@ class EventFilter:
 class EventStorage(Protocol):
     """Storage interface for event log"""
 
-    async def save(self, event: StoredEvent) -> StoredEvent:
-        ...
+    async def save(self, event: StoredEvent) -> StoredEvent: ...
 
-    async def get(self, event_id: UUID) -> StoredEvent | None:
-        ...
+    async def get(self, event_id: UUID) -> StoredEvent | None: ...
 
-    async def update(self, event: StoredEvent) -> StoredEvent:
-        ...
+    async def update(self, event: StoredEvent) -> StoredEvent: ...
 
     async def query(
         self,
         filter: EventFilter,
         offset: int = 0,
         limit: int = 100,
-    ) -> list[StoredEvent]:
-        ...
+    ) -> list[StoredEvent]: ...
 
-    async def count(self, filter: EventFilter) -> int:
-        ...
+    async def count(self, filter: EventFilter) -> int: ...
 
 
 class EventPublisher(Protocol):
     """Interface for publishing events to processing queue"""
 
-    async def publish(self, event: StoredEvent) -> None:
-        ...
+    async def publish(self, event: StoredEvent) -> None: ...
 
 
 @dataclass
@@ -527,8 +530,6 @@ class EventLog:
                     pass
                 count += 1
 
-        logger.info(
-            f"Event cleanup: org={org_id} count={count} dry_run={dry_run}"
-        )
+        logger.info(f"Event cleanup: org={org_id} count={count} dry_run={dry_run}")
 
         return count

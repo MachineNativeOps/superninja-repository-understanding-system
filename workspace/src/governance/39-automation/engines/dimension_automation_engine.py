@@ -16,13 +16,14 @@ from dataclasses import dataclass, field
 from datetime import datetime
 from enum import Enum
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Callable
+from typing import Any, Callable, Dict, List, Optional
 
 import yaml
 
 
 class TaskType(Enum):
     """Automation task types for dimensions."""
+
     POLICY_VALIDATION = "policy_validation"
     COMPLIANCE_CHECK = "compliance_check"
     AUDIT_EXECUTION = "audit_execution"
@@ -36,6 +37,7 @@ class TaskType(Enum):
 @dataclass
 class DimensionTask:
     """Task definition for dimension automation."""
+
     task_id: str
     task_type: TaskType
     dimension_id: str
@@ -63,7 +65,7 @@ class DimensionAutomationEngine:
         dimension_id: str,
         dimension_name: str,
         dimension_path: Path,
-        logger: Optional[logging.Logger] = None
+        logger: Optional[logging.Logger] = None,
     ):
         """Initialize dimension automation engine."""
         self.dimension_id = dimension_id
@@ -90,7 +92,7 @@ class DimensionAutomationEngine:
         if not logger.handlers:
             handler = logging.StreamHandler()
             formatter = logging.Formatter(
-                f'%(asctime)s - [{{self.dimension_id}}] %(levelname)s - %(message)s'
+                f"%(asctime)s - [{{self.dimension_id}}] %(levelname)s - %(message)s"
             )
             handler.setFormatter(formatter)
             logger.addHandler(handler)
@@ -99,15 +101,9 @@ class DimensionAutomationEngine:
 
     def _register_default_handlers(self) -> None:
         """Register default task handlers for this dimension."""
-        self.handler_registry[TaskType.POLICY_VALIDATION] = [
-            self._handle_policy_validation
-        ]
-        self.handler_registry[TaskType.COMPLIANCE_CHECK] = [
-            self._handle_compliance_check
-        ]
-        self.handler_registry[TaskType.METRICS_COLLECTION] = [
-            self._handle_metrics_collection
-        ]
+        self.handler_registry[TaskType.POLICY_VALIDATION] = [self._handle_policy_validation]
+        self.handler_registry[TaskType.COMPLIANCE_CHECK] = [self._handle_compliance_check]
+        self.handler_registry[TaskType.METRICS_COLLECTION] = [self._handle_metrics_collection]
 
     async def _handle_policy_validation(self, task: DimensionTask) -> Dict[str, Any]:
         """Handle policy validation task."""
@@ -118,7 +114,7 @@ class DimensionAutomationEngine:
             "status": "success",
             "policies_checked": 5,
             "violations": 0,
-            "timestamp": datetime.now().isoformat()
+            "timestamp": datetime.now().isoformat(),
         }
 
     async def _handle_compliance_check(self, task: DimensionTask) -> Dict[str, Any]:
@@ -130,7 +126,7 @@ class DimensionAutomationEngine:
             "status": "success",
             "standards_checked": 3,
             "compliant": True,
-            "timestamp": datetime.now().isoformat()
+            "timestamp": datetime.now().isoformat(),
         }
 
     async def _handle_metrics_collection(self, task: DimensionTask) -> Dict[str, Any]:
@@ -141,14 +137,10 @@ class DimensionAutomationEngine:
         return {
             "status": "success",
             "metrics_collected": 10,
-            "timestamp": datetime.now().isoformat()
+            "timestamp": datetime.now().isoformat(),
         }
 
-    def register_task_handler(
-        self,
-        task_type: TaskType,
-        handler: Callable
-    ) -> None:
+    def register_task_handler(self, task_type: TaskType, handler: Callable) -> None:
         """Register a custom task handler."""
         if task_type not in self.handler_registry:
             self.handler_registry[task_type] = []
@@ -177,13 +169,15 @@ class DimensionAutomationEngine:
 
             # Record in history
             execution_time = (datetime.now() - start_time).total_seconds()
-            self.execution_history.append({
-                "task_id": task.task_id,
-                "task_type": task.task_type.value,
-                "status": "success",
-                "duration": execution_time,
-                "timestamp": datetime.now().isoformat()
-            })
+            self.execution_history.append(
+                {
+                    "task_id": task.task_id,
+                    "task_type": task.task_type.value,
+                    "status": "success",
+                    "duration": execution_time,
+                    "timestamp": datetime.now().isoformat(),
+                }
+            )
             self.metrics["total_execution_time"] += execution_time
 
             return True
@@ -202,28 +196,22 @@ class DimensionAutomationEngine:
         """Submit a task and execute it immediately."""
         self.task_registry[task.task_id] = task
         await self.execute_task(task)
-        return {
-            "task_id": task.task_id,
-            "status": task.status,
-            "result": task.result
-        }
+        return {"task_id": task.task_id, "status": task.status, "result": task.result}
 
     def get_metrics(self) -> Dict[str, Any]:
         """Get current metrics for this dimension."""
         success_rate = 0.0
         if self.metrics["tasks_executed"] > 0:
-            success_rate = (
-                self.metrics["tasks_succeeded"]
-                / self.metrics["tasks_executed"]
-            )
+            success_rate = self.metrics["tasks_succeeded"] / self.metrics["tasks_executed"]
 
         return {
             **self.metrics,
             "success_rate": success_rate,
             "average_execution_time": (
                 self.metrics["total_execution_time"] / self.metrics["tasks_executed"]
-                if self.metrics["tasks_executed"] > 0 else 0
-            )
+                if self.metrics["tasks_executed"] > 0
+                else 0
+            ),
         }
 
     def get_execution_history(self, limit: int = 10) -> List[Dict[str, Any]]:
@@ -237,14 +225,10 @@ class DimensionAutomationEngine:
 
 
 def create_dimension_engine(
-    dimension_id: str,
-    dimension_name: str,
-    dimension_path: Path
+    dimension_id: str, dimension_name: str, dimension_path: Path
 ) -> DimensionAutomationEngine:
     """Factory function to create a dimension automation engine."""
     engine = DimensionAutomationEngine(
-        dimension_id=dimension_id,
-        dimension_name=dimension_name,
-        dimension_path=dimension_path
+        dimension_id=dimension_id, dimension_name=dimension_name, dimension_path=dimension_path
     )
     return engine

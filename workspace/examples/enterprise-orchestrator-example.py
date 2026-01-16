@@ -15,22 +15,23 @@ import asyncio
 import sys
 from pathlib import Path
 
+from core.orchestrators import (
+    DependencyResolver,
+    EnterpriseSynergyMeshOrchestrator,
+    ResourceQuota,
+    RetryPolicy,
+    TenantTier,
+)
+
 # 添加 src 到路徑
 project_root = Path(__file__).parent.parent
-sys.path.insert(0, str(project_root / 'src'))
-
-from core.orchestrators import (
-    EnterpriseSynergyMeshOrchestrator,
-    DependencyResolver,
-    TenantTier,
-    ResourceQuota,
-    RetryPolicy
-)
+sys.path.insert(0, str(project_root / "src"))
 
 
 # ============================================================================
 # 示例 1: 多租戶設置
 # ============================================================================
+
 
 async def demo_multi_tenancy():
     """演示多租戶支持"""
@@ -41,20 +42,11 @@ async def demo_multi_tenancy():
     orchestrator = EnterpriseSynergyMeshOrchestrator()
 
     # 創建不同等級的租戶
-    tenant1 = orchestrator.create_tenant(
-        "小企業客戶",
-        TenantTier.BASIC
-    )
+    tenant1 = orchestrator.create_tenant("小企業客戶", TenantTier.BASIC)
 
-    tenant2 = orchestrator.create_tenant(
-        "中型企業客戶",
-        TenantTier.PROFESSIONAL
-    )
+    tenant2 = orchestrator.create_tenant("中型企業客戶", TenantTier.PROFESSIONAL)
 
-    tenant3 = orchestrator.create_tenant(
-        "大型企業客戶",
-        TenantTier.ENTERPRISE
-    )
+    tenant3 = orchestrator.create_tenant("大型企業客戶", TenantTier.ENTERPRISE)
 
     # 顯示租戶信息
     for tenant_id in [tenant1, tenant2, tenant3]:
@@ -70,6 +62,7 @@ async def demo_multi_tenancy():
 # ============================================================================
 # 示例 2: 依賴解析和優化
 # ============================================================================
+
 
 async def demo_dependency_resolution():
     """演示智能依賴解析"""
@@ -87,7 +80,7 @@ async def demo_dependency_resolution():
         "deployment": ("agent", 3),
         "python_island": ("island", 1),
         "rust_island": ("island", 1),
-        "orchestrator": ("orchestrator", 4)
+        "orchestrator": ("orchestrator", 4),
     }
 
     for comp_id, (comp_type, priority) in components.items():
@@ -102,7 +95,7 @@ async def demo_dependency_resolution():
         ("orchestrator", "autopilot"),
         ("orchestrator", "deployment"),
         ("orchestrator", "python_island"),
-        ("orchestrator", "rust_island")
+        ("orchestrator", "rust_island"),
     ]
 
     for from_comp, to_comp in dependencies:
@@ -148,6 +141,7 @@ async def demo_dependency_resolution():
 # 示例 3: 容錯和重試機制
 # ============================================================================
 
+
 async def demo_fault_tolerance():
     """演示容錯和重試"""
     print("\n" + "=" * 70)
@@ -169,29 +163,19 @@ async def demo_fault_tolerance():
 
     # 設置重試政策
     orchestrator.retry_policies["test_component"] = RetryPolicy(
-        max_retries=3,
-        initial_delay=0.1,
-        max_delay=1.0
+        max_retries=3, initial_delay=0.1, max_delay=1.0
     )
 
     # 執行會失敗的任務
     print("\n❌ 執行會失敗的任務:")
-    result = await orchestrator.execute_with_retry(
-        failing_task,
-        "test_component",
-        tenant_id
-    )
+    result = await orchestrator.execute_with_retry(failing_task, "test_component", tenant_id)
     print(f"  狀態: {result.status.value}")
     print(f"  重試次數: {result.retry_count}")
     print(f"  執行時間: {result.duration_ms:.0f} ms")
 
     # 執行成功的任務
     print("\n✅ 執行成功的任務:")
-    result = await orchestrator.execute_with_retry(
-        success_task,
-        "success_component",
-        tenant_id
-    )
+    result = await orchestrator.execute_with_retry(success_task, "success_component", tenant_id)
     print(f"  狀態: {result.status.value}")
     print(f"  重試次數: {result.retry_count}")
     print(f"  輸出: {result.output}")
@@ -200,6 +184,7 @@ async def demo_fault_tolerance():
 # ============================================================================
 # 示例 4: 資源管理和監控
 # ============================================================================
+
 
 async def demo_resource_management():
     """演示資源管理"""
@@ -210,15 +195,9 @@ async def demo_resource_management():
     orchestrator = EnterpriseSynergyMeshOrchestrator()
 
     # 創建不同配額的租戶
-    basic_tenant = orchestrator.create_tenant(
-        "基礎計劃客戶",
-        TenantTier.BASIC
-    )
+    basic_tenant = orchestrator.create_tenant("基礎計劃客戶", TenantTier.BASIC)
 
-    enterprise_tenant = orchestrator.create_tenant(
-        "企業計劃客戶",
-        TenantTier.ENTERPRISE
-    )
+    enterprise_tenant = orchestrator.create_tenant("企業計劃客戶", TenantTier.ENTERPRISE)
 
     # 檢查配額
     print("\n📊 基礎計劃配額:")
@@ -236,13 +215,18 @@ async def demo_resource_management():
     print(f"  小時配額: {enterprise_config.quota.max_tasks_per_hour} tasks")
 
     # 檢查資源配額
-    print(f"\n✅ 基礎租戶可並發執行: {orchestrator.check_resource_quota(basic_tenant, 'concurrent')}")
-    print(f"✅ 企業租戶可並發執行: {orchestrator.check_resource_quota(enterprise_tenant, 'concurrent')}")
+    print(
+        f"\n✅ 基礎租戶可並發執行: {orchestrator.check_resource_quota(basic_tenant, 'concurrent')}"
+    )
+    print(
+        f"✅ 企業租戶可並發執行: {orchestrator.check_resource_quota(enterprise_tenant, 'concurrent')}"
+    )
 
 
 # ============================================================================
 # 示例 5: 審計和監控
 # ============================================================================
+
 
 async def demo_audit_and_monitoring():
     """演示審計和監控"""
@@ -288,6 +272,7 @@ async def demo_audit_and_monitoring():
 # 主函數
 # ============================================================================
 
+
 async def main():
     """運行所有示例"""
     print("\n" + "=" * 70)
@@ -309,6 +294,7 @@ async def main():
     except Exception as e:
         print(f"\n❌ 錯誤: {e}")
         import traceback
+
         traceback.print_exc()
 
 

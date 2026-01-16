@@ -15,27 +15,32 @@ Key Components:
 - ArtifactVerifier: Verify artifact integrity
 """
 
-from .provenance_generator import ProvenanceGenerator, Provenance, BuildDefinition, SLSALevel
-from .signature_verifier import SignatureVerifier, SignatureResult, VerificationPolicy, SignatureType
-from .attestation_manager import AttestationManager, Attestation, AttestationType
-from .artifact_verifier import ArtifactVerifier, VerificationResult, ArtifactMetadata
+from .artifact_verifier import ArtifactMetadata, ArtifactVerifier, VerificationResult
+from .attestation_manager import Attestation, AttestationManager, AttestationType
+from .provenance_generator import BuildDefinition, Provenance, ProvenanceGenerator, SLSALevel
+from .signature_verifier import (
+    SignatureResult,
+    SignatureType,
+    SignatureVerifier,
+    VerificationPolicy,
+)
 
 __all__ = [
-    'ProvenanceGenerator',
-    'Provenance',
-    'BuildDefinition',
-    'SLSALevel',
-    'SignatureVerifier',
-    'SignatureResult',
-    'VerificationPolicy',
-    'SignatureType',
-    'AttestationManager',
-    'Attestation',
-    'AttestationType',
-    'ArtifactVerifier',
-    'VerificationResult',
-    'ArtifactMetadata',
+    "ProvenanceGenerator",
+    "Provenance",
+    "BuildDefinition",
+    "SLSALevel",
+    "SignatureVerifier",
+    "SignatureResult",
+    "VerificationPolicy",
+    "SignatureType",
+    "AttestationManager",
+    "Attestation",
+    "AttestationType",
+    "ArtifactVerifier",
+    "VerificationResult",
+    "ArtifactMetadata",
 ]
 
-__version__ = '1.0.0'
-__author__ = 'SynergyMesh Team'
+__version__ = "1.0.0"
+__author__ = "SynergyMesh Team"

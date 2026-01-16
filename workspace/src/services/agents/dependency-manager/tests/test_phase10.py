@@ -8,7 +8,7 @@ import unittest
 from datetime import datetime, timedelta
 
 # 添加模組路徑
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', 'src'))
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "src"))
 
 
 class TestImplementationPlan(unittest.TestCase):
@@ -19,6 +19,7 @@ class TestImplementationPlan(unittest.TestCase):
         from implementation.implementation_plan import (
             ImplementationPlan,
         )
+
         self.assertIsNotNone(ImplementationPlan)
 
     def test_create_plan(self):
@@ -64,7 +65,7 @@ class TestImplementationPlan(unittest.TestCase):
             name="測試任務",
             description="這是一個測試任務",
             priority=TaskPriority.HIGH,
-            estimated_hours=40
+            estimated_hours=40,
         )
 
         self.assertEqual(task.name, "測試任務")
@@ -76,11 +77,7 @@ class TestImplementationPlan(unittest.TestCase):
         from implementation.implementation_plan import Task
 
         task = Task(
-            id="task_1",
-            name="測試任務",
-            description="測試",
-            estimated_hours=40,
-            actual_hours=20
+            id="task_1", name="測試任務", description="測試", estimated_hours=40, actual_hours=20
         )
 
         self.assertEqual(task.progress_percentage(), 50.0)
@@ -94,7 +91,7 @@ class TestImplementationPlan(unittest.TestCase):
             name="里程碑 1",
             description="測試里程碑",
             target_date=datetime.now() + timedelta(days=30),
-            deliverables=["交付物 1", "交付物 2"]
+            deliverables=["交付物 1", "交付物 2"],
         )
 
         self.assertEqual(milestone.name, "里程碑 1")
@@ -133,6 +130,7 @@ class TestSuccessMetrics(unittest.TestCase):
         from implementation.success_metrics import (
             SuccessMetricsTracker,
         )
+
         self.assertIsNotNone(SuccessMetricsTracker)
 
     def test_create_tracker(self):
@@ -173,18 +171,10 @@ class TestSuccessMetrics(unittest.TestCase):
 
         tracker = SuccessMetricsTracker()
 
-        result = tracker.record_value(
-            MetricCategory.TECHNICAL,
-            "code_quality",
-            85.0,
-            "測試記錄"
-        )
+        result = tracker.record_value(MetricCategory.TECHNICAL, "code_quality", 85.0, "測試記錄")
 
         self.assertTrue(result)
-        self.assertEqual(
-            tracker.technical_metrics["code_quality"].current_value(),
-            85.0
-        )
+        self.assertEqual(tracker.technical_metrics["code_quality"].current_value(), 85.0)
 
     def test_metric_status(self):
         """測試指標狀態"""
@@ -198,7 +188,7 @@ class TestSuccessMetrics(unittest.TestCase):
             target_value=80,
             warning_threshold=60,
             critical_threshold=40,
-            higher_is_better=True
+            higher_is_better=True,
         )
 
         # 添加達標值
@@ -214,7 +204,7 @@ class TestSuccessMetrics(unittest.TestCase):
             target_value=80,
             warning_threshold=60,
             critical_threshold=40,
-            higher_is_better=True
+            higher_is_better=True,
         )
         metric2.add_data_point(65)
         self.assertEqual(metric2.get_status(), MetricStatus.WARNING)
@@ -254,6 +244,7 @@ class TestActionGuide(unittest.TestCase):
         from implementation.action_guide import (
             ActionGuide,
         )
+
         self.assertIsNotNone(ActionGuide)
 
     def test_create_guide(self):
@@ -273,12 +264,12 @@ class TestActionGuide(unittest.TestCase):
 
         self.assertEqual(len(guide.SUCCESS_KEYS), 5)
 
-        key_ids = [k['id'] for k in guide.SUCCESS_KEYS]
-        self.assertIn('understanding', key_ids)
-        self.assertIn('quantitative', key_ids)
-        self.assertIn('combination', key_ids)
-        self.assertIn('agility', key_ids)
-        self.assertIn('risk_control', key_ids)
+        key_ids = [k["id"] for k in guide.SUCCESS_KEYS]
+        self.assertIn("understanding", key_ids)
+        self.assertIn("quantitative", key_ids)
+        self.assertIn("combination", key_ids)
+        self.assertIn("agility", key_ids)
+        self.assertIn("risk_control", key_ids)
 
     def test_strategy_evaluator(self):
         """測試策略評估器"""
@@ -287,11 +278,11 @@ class TestActionGuide(unittest.TestCase):
         evaluator = StrategyEvaluator()
 
         # 評估各標準
-        evaluator.evaluate_criterion('understanding', 8.0, "良好理解")
-        evaluator.evaluate_criterion('quantitative', 7.0, "有量化評估")
-        evaluator.evaluate_criterion('combination', 9.0, "優秀組合策略")
-        evaluator.evaluate_criterion('agility', 6.0, "需要加強敏捷性")
-        evaluator.evaluate_criterion('risk_control', 7.5, "風險管控良好")
+        evaluator.evaluate_criterion("understanding", 8.0, "良好理解")
+        evaluator.evaluate_criterion("quantitative", 7.0, "有量化評估")
+        evaluator.evaluate_criterion("combination", 9.0, "優秀組合策略")
+        evaluator.evaluate_criterion("agility", 6.0, "需要加強敏捷性")
+        evaluator.evaluate_criterion("risk_control", 7.5, "風險管控良好")
 
         # 計算總分
         overall = evaluator.calculate_overall_score()
@@ -299,7 +290,7 @@ class TestActionGuide(unittest.TestCase):
 
         # 獲取等級
         grade = evaluator.get_grade()
-        self.assertIn(grade, ['A', 'B', 'C', 'D', 'F'])
+        self.assertIn(grade, ["A", "B", "C", "D", "F"])
 
     def test_action_item_creation(self):
         """測試行動項目創建"""
@@ -310,7 +301,7 @@ class TestActionGuide(unittest.TestCase):
             title="測試行動",
             description="這是一個測試行動項目",
             priority=ActionPriority.HIGH,
-            estimated_effort="2 週"
+            estimated_effort="2 週",
         )
 
         self.assertEqual(action.title, "測試行動")
@@ -329,7 +320,7 @@ class TestActionGuide(unittest.TestCase):
             rationale="測試原因",
             expected_impact="提升效率 20%",
             effort_level="medium",
-            priority=ActionPriority.HIGH
+            priority=ActionPriority.HIGH,
         )
 
         self.assertEqual(rec.title, "測試建議")
@@ -367,9 +358,9 @@ class TestActionGuide(unittest.TestCase):
         guide = ActionGuide()
         data = guide.to_dict()
 
-        self.assertIn('success_keys', data)
-        self.assertIn('recommendations', data)
-        self.assertIn('strategy_evaluation', data)
+        self.assertIn("success_keys", data)
+        self.assertIn("recommendations", data)
+        self.assertIn("strategy_evaluation", data)
 
 
 class TestIntegration(unittest.TestCase):
@@ -392,8 +383,8 @@ class TestIntegration(unittest.TestCase):
 
         # 3. 生成行動指南
         guide = ActionGuide()
-        guide.evaluator.evaluate_criterion('understanding', 8.0)
-        guide.evaluator.evaluate_criterion('quantitative', 7.5)
+        guide.evaluator.evaluate_criterion("understanding", 8.0)
+        guide.evaluator.evaluate_criterion("quantitative", 7.5)
 
         # 4. 驗證整合
         self.assertGreater(plan.overall_progress(), -1)  # 進度 >= 0
@@ -410,5 +401,5 @@ class TestIntegration(unittest.TestCase):
         self.assertIn("總結與行動指南", action_report)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()

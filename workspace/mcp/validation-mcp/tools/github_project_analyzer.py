@@ -16,8 +16,8 @@ from __future__ import annotations
 
 import argparse
 import json
-import os
 import logging
+import os
 from dataclasses import dataclass
 from datetime import datetime, timezone
 from pathlib import Path
@@ -113,27 +113,35 @@ class GitHubProjectAnalyzer:
             # Count file types
             results["python_files"] = len(list(local_path.rglob("*.py")))
             results["typescript_files"] = len(list(local_path.rglob("*.ts")))
-            results["yaml_configs"] = len(list(local_path.rglob("*.yaml"))) + len(list(local_path.rglob("*.yml")))
+            results["yaml_configs"] = len(list(local_path.rglob("*.yaml"))) + len(
+                list(local_path.rglob("*.yml"))
+            )
 
-            # Scan for merge conflict markers using Python (safer than subprocess)
+            # Scan for merge conflict markers using Python (safer than
+            # subprocess)
             results["merge_conflicts"] = self._scan_for_conflicts(local_path / "workspace")
 
             # Scan governance scripts
             governance_scripts_path = local_path / "workspace" / "src" / "governance" / "scripts"
             if governance_scripts_path.exists():
-                results["governance_scripts"] = [f.name for f in governance_scripts_path.glob("*.py")]
+                results["governance_scripts"] = [
+                    f.name for f in governance_scripts_path.glob("*.py")
+                ]
 
             # Scan workflows
             workflows_path = local_path / ".github" / "workflows"
             if workflows_path.exists():
-                results["workflows"] = [f.name for f in workflows_path.glob("*.yml")] + \
-                                      [f.name for f in workflows_path.glob("*.yaml")]
+                results["workflows"] = [f.name for f in workflows_path.glob("*.yml")] + [
+                    f.name for f in workflows_path.glob("*.yaml")
+                ]
 
             # Load pipeline config
-            pipeline_path = local_path / "workspace" / "mcp" / "pipelines" / "unified-pipeline-config.yaml"
+            pipeline_path = (
+                local_path / "workspace" / "mcp" / "pipelines" / "unified-pipeline-config.yaml"
+            )
             if pipeline_path.exists() and yaml:
                 try:
-                    with open(pipeline_path, 'r', encoding='utf-8') as f:
+                    with open(pipeline_path, "r", encoding="utf-8") as f:
                         results["pipeline_config"] = yaml.safe_load(f)
                 except Exception as e:
                     logger.warning("Failed to load pipeline config: %s", e)
@@ -168,38 +176,46 @@ class GitHubProjectAnalyzer:
 
     def _scan_for_conflicts(self, search_path: Path) -> List[str]:
         """Scan for merge conflict markers using Python (safer than subprocess).
-        
+
         Args:
             search_path: Directory path to search for conflict markers.
-            
+
         Returns:
             List of relative file paths containing conflict markers.
         """
         conflict_files = []
         conflict_marker = "<<<<<<<".encode()
-        
+
         # File extensions that are likely to have conflicts
-        text_extensions = {'.md', '.yaml', '.yml', '.py', '.ts', '.js', '.json', '.txt', '.sh'}
+        text_extensions = {".md", ".yaml", ".yml", ".py", ".ts", ".js", ".json", ".txt", ".sh"}
         # Patterns to skip (binary files, specific directories)
-        skip_patterns = {'node_modules', '.git', '__pycache__', 'dist', 'build', 'supply-chain', 'governance-execution'}
-        
+        skip_patterns = {
+            "node_modules",
+            ".git",
+            "__pycache__",
+            "dist",
+            "build",
+            "supply-chain",
+            "governance-execution",
+        }
+
         if not search_path.exists():
             return conflict_files
-            
+
         try:
-            for file_path in search_path.rglob('*'):
+            for file_path in search_path.rglob("*"):
                 # Skip directories and binary files
                 if file_path.is_dir():
                     continue
-                    
+
                 # Skip files in excluded directories
                 if any(skip in str(file_path) for skip in skip_patterns):
                     continue
-                    
+
                 # Only check text files
                 if file_path.suffix.lower() not in text_extensions:
                     continue
-                    
+
                 try:
                     # Read file in binary mode to avoid encoding issues
                     content = file_path.read_bytes()
@@ -210,10 +226,10 @@ class GitHubProjectAnalyzer:
                 except (IOError, OSError):
                     # Skip files that can't be read
                     continue
-                    
+
         except Exception as e:
             logger.warning("Error scanning for conflicts: %s", e)
-            
+
         return conflict_files
 
     def _get_metadata(self) -> Dict[str, Any]:
@@ -243,17 +259,37 @@ class GitHubProjectAnalyzer:
         return {
             "core_patterns": [
                 {
-                    "pattern": "MCP-Based Tool Integration" if mcp_servers else "Microservices Architecture",
-                    "rationale": "Model Context Protocol for LLM tool endpoints" if mcp_servers else "分散式系統設計，支持獨立部署和擴展",
-                    "advantages": ["標準化工具接口", "LLM 可調用", "跨平台協調"] if mcp_servers else ["高可用性", "獨立擴展", "技術棧靈活"],
-                    "implementation": f"workspace/src/mcp-servers/ ({len(mcp_servers)} servers)" if mcp_servers else "Kubernetes-based service mesh",
+                    "pattern": (
+                        "MCP-Based Tool Integration"
+                        if mcp_servers
+                        else "Microservices Architecture"
+                    ),
+                    "rationale": (
+                        "Model Context Protocol for LLM tool endpoints"
+                        if mcp_servers
+                        else "分散式系統設計，支持獨立部署和擴展"
+                    ),
+                    "advantages": (
+                        ["標準化工具接口", "LLM 可調用", "跨平台協調"]
+                        if mcp_servers
+                        else ["高可用性", "獨立擴展", "技術棧靈活"]
+                    ),
+                    "implementation": (
+                        f"workspace/src/mcp-servers/ ({len(mcp_servers)} servers)"
+                        if mcp_servers
+                        else "Kubernetes-based service mesh"
+                    ),
                     "actual_servers": mcp_servers[:5] if mcp_servers else [],
                 },
                 {
                     "pattern": "Event-Driven Design",
                     "rationale": "實現鬆耦合和異步處理",
                     "advantages": ["高吞吐量", "彈性伸縮", "故障隔離"],
-                    "implementation": "unified-pipeline-config.yaml + governance validators" if self._local_scan_results else "Kafka + RabbitMQ message brokers",
+                    "implementation": (
+                        "unified-pipeline-config.yaml + governance validators"
+                        if self._local_scan_results
+                        else "Kafka + RabbitMQ message brokers"
+                    ),
                 },
             ],
             "tech_stack": self._get_actual_tech_stack(),
@@ -269,13 +305,21 @@ class GitHubProjectAnalyzer:
                 "shared": {"dependencies": [], "dependents": ["core", "mcp-servers", "services"]},
             },
             "scalability_considerations": [
-                "Parallel agent execution (64-256 agents)" if self._local_scan_results else "Horizontal scaling supported through Kubernetes",
+                (
+                    "Parallel agent execution (64-256 agents)"
+                    if self._local_scan_results
+                    else "Horizontal scaling supported through Kubernetes"
+                ),
                 "Auto-scaling based on CPU/latency/queue depth",
                 "Event-driven architecture for instant response",
                 "Load balancing with service mesh",
             ],
             "maintainability_aspects": [
-                "Governance validation scripts" if self._local_scan_results else "Comprehensive documentation",
+                (
+                    "Governance validation scripts"
+                    if self._local_scan_results
+                    else "Comprehensive documentation"
+                ),
                 "Automated testing pipeline",
                 "Bilingual documentation (Chinese/English)",
             ],
@@ -309,41 +353,46 @@ class GitHubProjectAnalyzer:
         """分析當前能力 - Enhanced with local scan data"""
         stats = self._get_repo_stats()
 
-        # Placeholder performance metrics; replace with observability data when available.
-        performance_metrics = {
-            "latency": {
-                "current": "15ms", "p95": "15ms", "target": "<20ms", "status": "met"
-            },
-            "throughput": {
-                "current": "50k rpm", "target": "100k rpm", "status": "partial"
-            },
-            "availability": {
-                "current": "99.95%", "target": "99.99%", "status": "met"
-            },
-            "error_rate": {
-                "current": "0.1%", "target": "<0.05%", "status": "needs_improvement"
-            },
-        } if self.config.include_metrics else {}
+        # Placeholder performance metrics; replace with observability data when
+        # available.
+        performance_metrics = (
+            {
+                "latency": {"current": "15ms", "p95": "15ms", "target": "<20ms", "status": "met"},
+                "throughput": {"current": "50k rpm", "target": "100k rpm", "status": "partial"},
+                "availability": {"current": "99.95%", "target": "99.99%", "status": "met"},
+                "error_rate": {
+                    "current": "0.1%",
+                    "target": "<0.05%",
+                    "status": "needs_improvement",
+                },
+            }
+            if self.config.include_metrics
+            else {}
+        )
         # Build features from local scan if available
         features = []
         if self._local_scan_results:
             mcp_servers = self._local_scan_results.get("mcp_servers", [])
             for server in mcp_servers[:6]:  # Top 6 MCP servers
-                features.append({
-                    "name": server.replace(".js", "").replace("-", " ").title(),
-                    "status": "production",
-                    "maturity": "high",
-                    "description": f"MCP server: {server}",
-                })
+                features.append(
+                    {
+                        "name": server.replace(".js", "").replace("-", " ").title(),
+                        "status": "production",
+                        "maturity": "high",
+                        "description": f"MCP server: {server}",
+                    }
+                )
 
             governance_scripts = self._local_scan_results.get("governance_scripts", [])
             for script in governance_scripts[:3]:
-                features.append({
-                    "name": script.replace(".py", "").replace("-", " ").title(),
-                    "status": "implemented",
-                    "maturity": "high",
-                    "description": f"Governance validator: {script}",
-                })
+                features.append(
+                    {
+                        "name": script.replace(".py", "").replace("-", " ").title(),
+                        "status": "implemented",
+                        "maturity": "high",
+                        "description": f"Governance validator: {script}",
+                    }
+                )
 
         # Fallback to template features if no local scan
         if not features:
@@ -379,8 +428,16 @@ class GitHubProjectAnalyzer:
             },
             "local_stats": local_stats,
             "competitive_advantages": [
-                "INSTANT execution (<3min full stack deployment)" if self._local_scan_results else "Full quantum computing stack integration",
-                "Zero human intervention (autonomous operation)" if self._local_scan_results else "Enterprise-grade security compliance",
+                (
+                    "INSTANT execution (<3min full stack deployment)"
+                    if self._local_scan_results
+                    else "Full quantum computing stack integration"
+                ),
+                (
+                    "Zero human intervention (autonomous operation)"
+                    if self._local_scan_results
+                    else "Enterprise-grade security compliance"
+                ),
                 "MCP protocol integration for LLM tools",
                 "Comprehensive governance validation",
             ],
@@ -391,7 +448,11 @@ class GitHubProjectAnalyzer:
         if not self._local_scan_results or not self._local_scan_results.get("pipeline_config"):
             return {
                 "latency": {"current": "N/A", "target": "<=100ms (instant)", "status": "unknown"},
-                "throughput": {"current": "N/A", "target": "256 parallel agents", "status": "unknown"},
+                "throughput": {
+                    "current": "N/A",
+                    "target": "256 parallel agents",
+                    "status": "unknown",
+                },
                 "availability": {"current": "N/A", "target": "99.99%", "status": "unknown"},
             }
 
@@ -404,22 +465,22 @@ class GitHubProjectAnalyzer:
             "instant_latency": {
                 "current": f"{thresholds.get('instant', 'N/A')}ms",
                 "target": "<=100ms",
-                "status": "configured"
+                "status": "configured",
             },
             "max_stage_latency": {
                 "current": f"{thresholds.get('maxStage', 'N/A')}ms",
                 "target": "<=30s",
-                "status": "configured"
+                "status": "configured",
             },
             "max_total_latency": {
                 "current": f"{thresholds.get('maxTotal', 'N/A')}ms",
                 "target": "<=3min",
-                "status": "configured"
+                "status": "configured",
             },
             "parallelism": {
                 "current": f"{scheduling.get('minParallelAgents', 'N/A')}-{scheduling.get('maxParallelAgents', 'N/A')} agents",
                 "target": "64-256 agents",
-                "status": "configured"
+                "status": "configured",
             },
         }
 
@@ -446,33 +507,36 @@ class GitHubProjectAnalyzer:
         if self._local_scan_results:
             conflicts = self._local_scan_results.get("merge_conflicts", [])
             if conflicts:
-                high_priority.append({
-                    "task": "清除 merge 衝突標記",
-                    "priority": "critical",
-                    "estimated_effort": "≤2 小時",
-                    "dependencies": [],
-                    "impact": "High - 恢復文檔可讀性",
-                    "affected_files": conflicts[:5],  # Show first 5
-                    "total_files": len(conflicts),
-                })
+                high_priority.append(
+                    {
+                        "task": "清除 merge 衝突標記",
+                        "priority": "critical",
+                        "estimated_effort": "≤2 小時",
+                        "dependencies": [],
+                        "impact": "High - 恢復文檔可讀性",
+                        "affected_files": conflicts[:5],  # Show first 5
+                        "total_files": len(conflicts),
+                    }
+                )
 
             # Check governance validation status from pipeline config
             pipeline_config = self._local_scan_results.get("pipeline_config")
             if pipeline_config:
                 gov_validation = pipeline_config.get("spec", {}).get("governanceValidation", [])
                 planned_validators = [
-                    v for v in gov_validation
-                    if v.get("implementationStatus") == "planned"
+                    v for v in gov_validation if v.get("implementationStatus") == "planned"
                 ]
                 if planned_validators:
-                    high_priority.append({
-                        "task": "落地治理驗證腳本",
-                        "priority": "high",
-                        "estimated_effort": "3-5 天",
-                        "dependencies": ["governance framework"],
-                        "impact": "High - 啟用自動合規驗證",
-                        "planned_validators": [v.get("validator") for v in planned_validators],
-                    })
+                    high_priority.append(
+                        {
+                            "task": "落地治理驗證腳本",
+                            "priority": "high",
+                            "estimated_effort": "3-5 天",
+                            "dependencies": ["governance framework"],
+                            "impact": "High - 啟用自動合規驗證",
+                            "planned_validators": [v.get("validator") for v in planned_validators],
+                        }
+                    )
 
         # Default high priority tasks if no local scan or no issues found
         if not high_priority:
@@ -516,14 +580,16 @@ class GitHubProjectAnalyzer:
         if self._local_scan_results:
             conflicts = self._local_scan_results.get("merge_conflicts", [])
             if conflicts:
-                known_issues.append({
-                    "issue": f"Merge 衝突標記 ({len(conflicts)} 個文件)",
-                    "severity": "high",
-                    "affected_components": ["documentation", "configuration"],
-                    "workaround": "手動解決衝突或使用 git mergetool",
-                    "fix_priority": "critical",
-                    "affected_files": conflicts[:3],
-                })
+                known_issues.append(
+                    {
+                        "issue": f"Merge 衝突標記 ({len(conflicts)} 個文件)",
+                        "severity": "high",
+                        "affected_components": ["documentation", "configuration"],
+                        "workaround": "手動解決衝突或使用 git mergetool",
+                        "fix_priority": "critical",
+                        "affected_files": conflicts[:3],
+                    }
+                )
 
         # Default issues if no local scan
         if not known_issues:
@@ -578,8 +644,10 @@ class GitHubProjectAnalyzer:
             "testing_strategy": {
                 "test_levels": ["unit", "integration", "e2e", "performance"],
                 "coverage": {
-                    "unit": "75%", "integration": "60%",
-                    "e2e": "45%", "performance": "30%",
+                    "unit": "75%",
+                    "integration": "60%",
+                    "e2e": "45%",
+                    "performance": "30%",
                 },
                 "governance_test_levels": ["unit", "integration", "validation"],
                 "governance_coverage": {
@@ -594,7 +662,11 @@ class GitHubProjectAnalyzer:
             "ci_cd_pipeline": {
                 "stages": ["validation", "build", "test", "deploy"],
                 "tools": ["GitHub Actions"],
-                "workflows": self._local_scan_results.get("workflows", [])[:5] if self._local_scan_results else [],
+                "workflows": (
+                    self._local_scan_results.get("workflows", [])[:5]
+                    if self._local_scan_results
+                    else []
+                ),
                 "deployment_strategy": "INSTANT execution",
                 "improvement_suggestions": [
                     "Add success rate dashboards",
@@ -602,8 +674,16 @@ class GitHubProjectAnalyzer:
                 ],
             },
             "mcp_integration": {
-                "servers": self._local_scan_results.get("mcp_servers", []) if self._local_scan_results else [],
-                "governance_validators": self._local_scan_results.get("governance_scripts", []) if self._local_scan_results else [],
+                "servers": (
+                    self._local_scan_results.get("mcp_servers", [])
+                    if self._local_scan_results
+                    else []
+                ),
+                "governance_validators": (
+                    self._local_scan_results.get("governance_scripts", [])
+                    if self._local_scan_results
+                    else []
+                ),
                 "integration_status": "production",
             },
             "community_health": self._get_community_metrics(),
@@ -618,7 +698,7 @@ class GitHubProjectAnalyzer:
     def _get_community_metrics(self) -> Dict[str, Any]:
         """Get community and contributor metrics."""
         stats = self._get_repo_stats()
-        
+
         return {
             "contributors": stats.get("network_count", "N/A"),
             "watchers": stats.get("subscribers_count", "N/A"),
@@ -633,7 +713,7 @@ class GitHubProjectAnalyzer:
         """Count npm package.json files in local scan."""
         if not self._local_scan_results or not self.config.local_path:
             return 0
-        
+
         local_path = Path(self.config.local_path)
         try:
             return len(list(local_path.rglob("package.json")))
@@ -644,7 +724,7 @@ class GitHubProjectAnalyzer:
         """Count Python requirements files in local scan."""
         if not self._local_scan_results or not self.config.local_path:
             return 0
-        
+
         local_path = Path(self.config.local_path)
         try:
             return len(list(local_path.rglob("requirements*.txt")))
@@ -787,7 +867,7 @@ namespace-mcp-cli prompt fix --input=inconsistent_prompt.md --output=fixed_promp
 ### 📝 正確的統一格式
 ```markdown
 **當前架構狀態**: `v2.0.0-UNIFIED | STABLE | HIGH_PERFORMANCE`
-**升級準備狀態**: `READY_FOR_EVOLUTION | QUANTUM_OPTIMIZED`  
+**升級準備狀態**: `READY_FOR_EVOLUTION | QUANTUM_OPTIMIZED`
 **演化潛力**: `INFINITE_DIMENSIONS | EXPONENTIAL_GROWTH`
 **安全保障**: `PROVABLY_SAFE | VALUE_ALIGNED | ETHICALLY_GOVERNED`
 **未來軌跡**: `AUTONOMOUS_EVOLUTION | SINGULARITY_BOUND`
@@ -862,7 +942,7 @@ namespace-mcp-cli prompt fix --input=inconsistent_prompt.md --output=fixed_promp
                 current_value = data["p95"]
             status = data.get("status", "")
             status_emoji = "✅" if status == "met" else "⚠️" if status == "partial" else "❌"
-            target_val = data.get('target', '')
+            target_val = data.get("target", "")
             result += f"| {metric} | {current_value or ''} | {target_val} | {status_emoji} |\n"
         return result
 
@@ -937,7 +1017,9 @@ namespace-mcp-cli prompt fix --input=inconsistent_prompt.md --output=fixed_promp
 
 
 def _parse_args() -> argparse.Namespace:
-    parser = argparse.ArgumentParser(description="namespace-mcp GitHub Project Deep Analyzer v2.1.0")
+    parser = argparse.ArgumentParser(
+        description="namespace-mcp GitHub Project Deep Analyzer v2.1.0"
+    )
     parser.add_argument(
         "--owner",
         default=os.environ.get("GITHUB_REPO_OWNER"),
@@ -961,8 +1043,7 @@ def _parse_args() -> argparse.Namespace:
     args = parser.parse_args()
     if not args.owner or not args.repo:
         parser.error(
-            "Repository owner and name are required via --owner/--repo "
-            "or environment variables."
+            "Repository owner and name are required via --owner/--repo " "or environment variables."
         )
     return args
 
@@ -977,7 +1058,7 @@ def main() -> None:
         repo_name=args.repo,
         output_format=args.output,
         token=args.token,
-        local_path=getattr(args, 'local_path', None),
+        local_path=getattr(args, "local_path", None),
     )
     analyzer = GitHubProjectAnalyzer(config)
     analysis = analyzer.analyze_project()

@@ -5,33 +5,30 @@
 
 import os
 import sys
-from typing import List, Dict
+from typing import Dict, List
 
 # 外部依賴
 import requests
 from flask import Flask, jsonify
+from models import User
 
 # 內部導入
 from utils import helper
-from models import User
 
 
 class DataProcessor:
     """數據處理器類"""
-    
+
     MAX_SIZE = 1000
-    
+
     def __init__(self):
         self.data = []
-    
+
     def process_data(self, input_data: List[str]) -> Dict:
         """處理數據"""
-        result = {
-            'processed': len(input_data),
-            'status': 'success'
-        }
+        result = {"processed": len(input_data), "status": "success"}
         return result
-    
+
     def fetch_remote_data(self, url: str) -> Dict:
         """獲取遠程數據"""
         response = requests.get(url)
@@ -41,7 +38,7 @@ class DataProcessor:
 def main():
     """主函數"""
     processor = DataProcessor()
-    data = ['item1', 'item2', 'item3']
+    data = ["item1", "item2", "item3"]
     result = processor.process_data(data)
     print(f"處理結果: {result}")
 

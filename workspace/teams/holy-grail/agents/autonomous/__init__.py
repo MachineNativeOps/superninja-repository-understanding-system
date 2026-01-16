@@ -11,11 +11,11 @@ __author__ = "SLASolve Team"
 
 # Handle both package and standalone imports
 try:
-    from .pipeline_service import pipeline_service, PipelineService
+    from .pipeline_service import PipelineService, pipeline_service
 except ImportError:
     # When running standalone (e.g., in tests), use absolute imports
     try:
-        from pipeline_service import pipeline_service, PipelineService
+        from pipeline_service import PipelineService, pipeline_service
     except ImportError:
         # Module not available in this context
         pipeline_service = None
@@ -25,6 +25,7 @@ except ImportError:
 import importlib.util
 import sys
 from pathlib import Path
+
 
 def _import_kebab_module(module_alias: str, file_name: str, legacy_alias: str | None = None):
     """
@@ -78,8 +79,9 @@ def _import_kebab_module(module_alias: str, file_name: str, legacy_alias: str | 
         return module
     return None
 
+
 # Import base agent components
-_base_agent = _import_kebab_module('base_agent', 'base-agent.py', legacy_alias='agents.base_agent')
+_base_agent = _import_kebab_module("base_agent", "base-agent.py", legacy_alias="agents.base_agent")
 if _base_agent:
     BaseAgent = _base_agent.BaseAgent
     AgentStatus = _base_agent.AgentStatus
@@ -90,19 +92,27 @@ else:
     AgentColors = None
 
 # Import coordinator agent
-_coordinator_agent = _import_kebab_module('coordinator_agent', 'coordinator-agent.py', legacy_alias='agents.coordinator_agent')
+_coordinator_agent = _import_kebab_module(
+    "coordinator_agent", "coordinator-agent.py", legacy_alias="agents.coordinator_agent"
+)
 CoordinatorAgent = _coordinator_agent.CoordinatorAgent if _coordinator_agent else None
 
 # Import autopilot agent
-_autopilot_agent = _import_kebab_module('autopilot_agent', 'autopilot-agent.py', legacy_alias='agents.autopilot_agent')
+_autopilot_agent = _import_kebab_module(
+    "autopilot_agent", "autopilot-agent.py", legacy_alias="agents.autopilot_agent"
+)
 AutopilotAgent = _autopilot_agent.AutopilotAgent if _autopilot_agent else None
 
 # Import deployment agent
-_deployment_agent = _import_kebab_module('deployment_agent', 'deployment-agent.py', legacy_alias='agents.deployment_agent')
+_deployment_agent = _import_kebab_module(
+    "deployment_agent", "deployment-agent.py", legacy_alias="agents.deployment_agent"
+)
 DeploymentAgent = _deployment_agent.DeploymentAgent if _deployment_agent else None
 
 # Import utils
-_agent_utils = _import_kebab_module('agent_utils', 'agent-utils.py', legacy_alias='agents.agent_utils')
+_agent_utils = _import_kebab_module(
+    "agent_utils", "agent-utils.py", legacy_alias="agents.agent_utils"
+)
 if _agent_utils:
     print_color = _agent_utils.print_color
     print_info = _agent_utils.print_info

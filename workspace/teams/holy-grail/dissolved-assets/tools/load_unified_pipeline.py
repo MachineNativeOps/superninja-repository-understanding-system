@@ -11,6 +11,7 @@ Artifacts:
 - Schema:   00-namespaces/namespaces-mcp/schemas/unified-pipeline.schema.json
 - TS types: 00-namespaces/namespaces-mcp/types/unifiedPipeline.ts
 """
+
 from __future__ import annotations
 
 import json
@@ -44,17 +45,18 @@ class InstantExecutionStandards:
       backward compatibility.
     """
 
-    MAX_LATENCY_INSTANT = 100       # ms
-    MAX_LATENCY_FAST = 500          # ms
-    MAX_LATENCY_STANDARD = 5000     # ms
-    MAX_STAGE_LATENCY = 30000       # ms
-    MAX_TOTAL_LATENCY = 180000      # ms (3 minutes)
+    MAX_LATENCY_INSTANT = 100  # ms
+    MAX_LATENCY_FAST = 500  # ms
+    MAX_LATENCY_STANDARD = 5000  # ms
+    MAX_STAGE_LATENCY = 30000  # ms
+    MAX_TOTAL_LATENCY = 180000  # ms (3 minutes)
     MIN_PARALLEL_AGENTS = 64
-    MAX_PARALLEL_AGENTS = 256       # Runtime max for INSTANT mode (schema allows 1024)
+    # Runtime max for INSTANT mode (schema allows 1024)
+    MAX_PARALLEL_AGENTS = 256
     HUMAN_INTERVENTION = 0
-    SUCCESS_RATE_FEATURE = 95       # %
-    SUCCESS_RATE_FIX = 90           # %
-    SUCCESS_RATE_OPTIMIZE = 85      # %
+    SUCCESS_RATE_FEATURE = 95  # %
+    SUCCESS_RATE_FIX = 90  # %
+    SUCCESS_RATE_OPTIMIZE = 85  # %
 
 
 AGENT_TYPES = [
@@ -344,14 +346,16 @@ def _parse_instant_pipelines(spec: Dict[str, Any]) -> Optional[List[InstantPipel
             _safe_construct(InstantPipelineStage, s, "instantPipelines[*].stages[*]")
             for s in ip.get("stages", [])
         ]
-        result.append(InstantPipeline(
-            name=ip["name"],
-            description=ip.get("description"),
-            totalLatencyTarget=ip["totalLatencyTarget"],
-            humanIntervention=ip["humanIntervention"],
-            successRateTarget=ip["successRateTarget"],
-            stages=stages,
-        ))
+        result.append(
+            InstantPipeline(
+                name=ip["name"],
+                description=ip.get("description"),
+                totalLatencyTarget=ip["totalLatencyTarget"],
+                humanIntervention=ip["humanIntervention"],
+                successRateTarget=ip["successRateTarget"],
+                stages=stages,
+            )
+        )
     return result
 
 
@@ -399,8 +403,7 @@ def _parse_governance_validation(spec: Dict[str, Any]) -> Optional[List[Governan
         return None
 
     return [
-        _safe_construct(GovernanceValidationRule, g, "governanceValidation[*]")
-        for g in gv_data
+        _safe_construct(GovernanceValidationRule, g, "governanceValidation[*]") for g in gv_data
     ]
 
 
@@ -413,7 +416,9 @@ def _parse_metadata(data: Dict[str, Any]) -> PipelineMetadata:
 
     annotations = None
     if "annotations" in meta_data:
-        annotations = _safe_construct(PipelineAnnotations, meta_data["annotations"], "metadata.annotations")
+        annotations = _safe_construct(
+            PipelineAnnotations, meta_data["annotations"], "metadata.annotations"
+        )
 
     return PipelineMetadata(
         name=meta_data["name"],
@@ -430,7 +435,9 @@ def _parse_input_unification(spec: Dict[str, Any]) -> InputUnification:
 
     event_driven = None
     if "eventDriven" in iu_data:
-        event_driven = _safe_construct(EventDrivenConfig, iu_data["eventDriven"], "inputUnification.eventDriven")
+        event_driven = _safe_construct(
+            EventDrivenConfig, iu_data["eventDriven"], "inputUnification.eventDriven"
+        )
 
     return InputUnification(
         protocols=iu_data["protocols"],
@@ -441,7 +448,9 @@ def _parse_input_unification(spec: Dict[str, Any]) -> InputUnification:
     )
 
 
-def _parse_core_scheduling(spec: Dict[str, Any], auto_scaling: Optional[AutoScalingConfig]) -> CoreScheduling:
+def _parse_core_scheduling(
+    spec: Dict[str, Any], auto_scaling: Optional[AutoScalingConfig]
+) -> CoreScheduling:
     """Parse core scheduling configuration from spec data."""
     cs_data = spec["coreScheduling"]
     return CoreScheduling(
@@ -462,7 +471,9 @@ def _parse_mcp_integration(spec: Dict[str, Any]) -> McpIntegration:
     adapters_data = mcp_data.get("toolAdapters", [])
     if not isinstance(adapters_data, list):
         raise ValueError("spec.mcpIntegration.toolAdapters must be a list")
-    adapters = [_safe_construct(ToolAdapter, t, "mcpIntegration.toolAdapters[*]") for t in adapters_data]
+    adapters = [
+        _safe_construct(ToolAdapter, t, "mcpIntegration.toolAdapters[*]") for t in adapters_data
+    ]
 
     return McpIntegration(
         serverRef=mcp_data["serverRef"],
@@ -506,7 +517,8 @@ def load_manifest(path: Path = MANIFEST_PATH) -> UnifiedPipelineManifest:
     auto_scaling = _parse_auto_scaling(spec)
     latency_thresholds = (
         _safe_construct(LatencyThresholds, spec["latencyThresholds"], "latencyThresholds")
-        if "latencyThresholds" in spec else None
+        if "latencyThresholds" in spec
+        else None
     )
 
     return UnifiedPipelineManifest(
@@ -639,7 +651,11 @@ def validate_parallelism(manifest: UnifiedPipelineManifest) -> bool:
     standards = InstantExecutionStandards
 
     # Validate maxParallelAgents is within allowed INSTANT range
-    if not (standards.MIN_PARALLEL_AGENTS <= scheduling.maxParallelAgents <= standards.MAX_PARALLEL_AGENTS):
+    if not (
+        standards.MIN_PARALLEL_AGENTS
+        <= scheduling.maxParallelAgents
+        <= standards.MAX_PARALLEL_AGENTS
+    ):
         return False
 
     # Validate minParallelAgents in INSTANT mode (if configured)

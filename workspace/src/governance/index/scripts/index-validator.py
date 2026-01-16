@@ -22,18 +22,19 @@ Exit Codes:
     2 - Critical errors (file not found, parse errors)
 """
 
+import argparse
 import json
 import sys
-import argparse
-from pathlib import Path
-from typing import Dict, List, Set, Tuple, Optional
 from collections import defaultdict
 from dataclasses import dataclass, field
+from pathlib import Path
+from typing import Dict, List, Optional, Set, Tuple
 
 
 @dataclass
 class ValidationResult:
     """Result of a validation check."""
+
     check: str
     passed: bool
     message: str
@@ -44,6 +45,7 @@ class ValidationResult:
 @dataclass
 class ValidationReport:
     """Complete validation report."""
+
     results: List[ValidationResult] = field(default_factory=list)
     errors: int = 0
     warnings: int = 0
@@ -95,29 +97,35 @@ class GovernanceIndexValidator:
 
         for name, path in self.index_files.items():
             try:
-                with open(path, 'r', encoding='utf-8') as f:
+                with open(path, "r", encoding="utf-8") as f:
                     self.data[name] = json.load(f)
-                self.report.add(ValidationResult(
-                    check=f"load_{name}",
-                    passed=True,
-                    message=f"Successfully loaded {path.name}",
-                    severity="info"
-                ))
+                self.report.add(
+                    ValidationResult(
+                        check=f"load_{name}",
+                        passed=True,
+                        message=f"Successfully loaded {path.name}",
+                        severity="info",
+                    )
+                )
             except FileNotFoundError:
-                self.report.add(ValidationResult(
-                    check=f"load_{name}",
-                    passed=False,
-                    message=f"Index file not found: {path}",
-                    severity="error"
-                ))
+                self.report.add(
+                    ValidationResult(
+                        check=f"load_{name}",
+                        passed=False,
+                        message=f"Index file not found: {path}",
+                        severity="error",
+                    )
+                )
                 all_loaded = False
             except json.JSONDecodeError as e:
-                self.report.add(ValidationResult(
-                    check=f"load_{name}",
-                    passed=False,
-                    message=f"JSON parse error in {path.name}: {e}",
-                    severity="error"
-                ))
+                self.report.add(
+                    ValidationResult(
+                        check=f"load_{name}",
+                        passed=False,
+                        message=f"JSON parse error in {path.name}: {e}",
+                        severity="error",
+                    )
+                )
                 all_loaded = False
 
         return all_loaded
@@ -129,7 +137,7 @@ class GovernanceIndexValidator:
                 check="dag_circular",
                 passed=False,
                 message="Cannot validate DAG - dimensions.json not loaded",
-                severity="error"
+                severity="error",
             )
 
         dimensions = self.data["dimensions"].get("dimensions", [])
@@ -150,14 +158,14 @@ class GovernanceIndexValidator:
                 passed=False,
                 message=f"Circular dependencies detected: {len(cycles)} cycle(s) found",
                 severity="error",
-                details=[f"Cycle: {' -> '.join(cycle)}" for cycle in cycles]
+                details=[f"Cycle: {' -> '.join(cycle)}" for cycle in cycles],
             )
 
         return ValidationResult(
             check="dag_circular",
             passed=True,
             message="No circular dependencies found in DAG",
-            severity="info"
+            severity="info",
         )
 
     def _find_cycles(self, graph: Dict[str, List[str]]) -> List[List[str]]:
@@ -200,7 +208,7 @@ class GovernanceIndexValidator:
                 check="dag_missing",
                 passed=False,
                 message="Cannot validate dependencies - dimensions.json not loaded",
-                severity="error"
+                severity="error",
             )
 
         dimensions = self.data["dimensions"].get("dimensions", [])
@@ -221,14 +229,14 @@ class GovernanceIndexValidator:
                 passed=False,
                 message=f"Found {len(missing)} missing dependencies",
                 severity="error",
-                details=missing
+                details=missing,
             )
 
         return ValidationResult(
             check="dag_missing",
             passed=True,
             message="All dependencies reference valid dimensions",
-            severity="info"
+            severity="info",
         )
 
     def validate_orphan_nodes(self) -> ValidationResult:
@@ -238,7 +246,7 @@ class GovernanceIndexValidator:
                 check="dag_orphans",
                 passed=False,
                 message="Cannot validate orphans - dimensions.json not loaded",
-                severity="error"
+                severity="error",
             )
 
         dimensions = self.data["dimensions"].get("dimensions", [])
@@ -273,14 +281,11 @@ class GovernanceIndexValidator:
                 passed=True,  # Orphans are warnings, not errors
                 message=f"Found {len(true_orphans)} orphan dimensions (isolated)",
                 severity="warning",
-                details=list(true_orphans)
+                details=list(true_orphans),
             )
 
         return ValidationResult(
-            check="dag_orphans",
-            passed=True,
-            message="No orphan dimensions found",
-            severity="info"
+            check="dag_orphans", passed=True, message="No orphan dimensions found", severity="info"
         )
 
     def validate_execution_order(self) -> ValidationResult:
@@ -290,7 +295,7 @@ class GovernanceIndexValidator:
                 check="execution_order",
                 passed=False,
                 message="Cannot validate execution order - dimensions.json not loaded",
-                severity="error"
+                severity="error",
             )
 
         dimensions = self.data["dimensions"].get("dimensions", [])
@@ -316,14 +321,14 @@ class GovernanceIndexValidator:
                 passed=False,
                 message="Execution order has dependency issues",
                 severity="error",
-                details=issues
+                details=issues,
             )
 
         return ValidationResult(
             check="execution_order",
             passed=True,
             message="Execution order respects dependencies",
-            severity="info"
+            severity="info",
         )
 
     def validate_compliance_mapping(self) -> ValidationResult:
@@ -333,7 +338,7 @@ class GovernanceIndexValidator:
                 check="compliance_mapping",
                 passed=False,
                 message="Cannot validate compliance - required files not loaded",
-                severity="error"
+                severity="error",
             )
 
         dimensions = self.data["dimensions"].get("dimensions", [])
@@ -355,14 +360,14 @@ class GovernanceIndexValidator:
                 passed=True,  # Warning only
                 message=f"Found {len(issues)} compliance mapping issues",
                 severity="warning",
-                details=issues
+                details=issues,
             )
 
         return ValidationResult(
             check="compliance_mapping",
             passed=True,
             message="All compliance mappings reference valid dimensions",
-            severity="info"
+            severity="info",
         )
 
     def validate_events_agents(self) -> ValidationResult:
@@ -372,7 +377,7 @@ class GovernanceIndexValidator:
                 check="events_agents",
                 passed=False,
                 message="Cannot validate events - events.json not loaded",
-                severity="error"
+                severity="error",
             )
 
         events = self.data["events"]
@@ -396,14 +401,14 @@ class GovernanceIndexValidator:
                 passed=False,
                 message=f"Found {len(issues)} event configuration issues",
                 severity="error",
-                details=issues
+                details=issues,
             )
 
         return ValidationResult(
             check="events_agents",
             passed=True,
             message="Event configurations are valid",
-            severity="info"
+            severity="info",
         )
 
     def validate_vectors_coverage(self) -> ValidationResult:
@@ -413,12 +418,13 @@ class GovernanceIndexValidator:
                 check="vectors_coverage",
                 passed=False,
                 message="Cannot validate vectors - required files not loaded",
-                severity="error"
+                severity="error",
             )
 
         dim_data = self.data["dimensions"].get("dimensions", [])
         required_dims = {
-            dim.get("id") for dim in dim_data
+            dim.get("id")
+            for dim in dim_data
             if dim.get("execution") == "required" and dim.get("status") in ["production", "active"]
         }
 
@@ -433,14 +439,14 @@ class GovernanceIndexValidator:
                 passed=True,  # Warning only
                 message=f"Found {len(missing)} required dimensions without vectors",
                 severity="warning",
-                details=list(missing)
+                details=list(missing),
             )
 
         return ValidationResult(
             check="vectors_coverage",
             passed=True,
             message="All required dimensions have vectors",
-            severity="info"
+            severity="info",
         )
 
     def validate_index_registry(self) -> ValidationResult:
@@ -450,11 +456,19 @@ class GovernanceIndexValidator:
                 check="index_registry",
                 passed=False,
                 message="Cannot validate registry - governance-index.json not loaded",
-                severity="error"
+                severity="error",
             )
 
         registry = self.data["root"].get("index_registry", {})
-        expected_indexes = ["dimensions", "shared", "compliance", "events", "tech_debt", "vectors", "observability"]
+        expected_indexes = [
+            "dimensions",
+            "shared",
+            "compliance",
+            "events",
+            "tech_debt",
+            "vectors",
+            "observability",
+        ]
 
         missing = []
         for idx in expected_indexes:
@@ -467,14 +481,14 @@ class GovernanceIndexValidator:
                 passed=False,
                 message=f"Root index missing references to: {missing}",
                 severity="error",
-                details=missing
+                details=missing,
             )
 
         return ValidationResult(
             check="index_registry",
             passed=True,
             message="Root index references all sub-indexes",
-            severity="info"
+            severity="info",
         )
 
     def validate_all(self) -> ValidationReport:
@@ -539,15 +553,14 @@ class GovernanceIndexValidator:
 def main():
     parser = argparse.ArgumentParser(
         description="Validate the Governance Index",
-        formatter_class=argparse.RawDescriptionHelpFormatter
+        formatter_class=argparse.RawDescriptionHelpFormatter,
     )
 
-    parser.add_argument("--verbose", "-v", action="store_true",
-                        help="Show detailed validation results")
-    parser.add_argument("--index-path", type=Path,
-                        help="Path to index directory")
-    parser.add_argument("--json", action="store_true",
-                        help="Output results as JSON")
+    parser.add_argument(
+        "--verbose", "-v", action="store_true", help="Show detailed validation results"
+    )
+    parser.add_argument("--index-path", type=Path, help="Path to index directory")
+    parser.add_argument("--json", action="store_true", help="Output results as JSON")
 
     args = parser.parse_args()
 
@@ -561,17 +574,22 @@ def main():
                 "passed": r.passed,
                 "message": r.message,
                 "severity": r.severity,
-                "details": r.details
+                "details": r.details,
             }
             for r in report.results
         ]
-        print(json.dumps({
-            "valid": report.is_valid(),
-            "errors": report.errors,
-            "warnings": report.warnings,
-            "passed": report.passed,
-            "results": results
-        }, indent=2))
+        print(
+            json.dumps(
+                {
+                    "valid": report.is_valid(),
+                    "errors": report.errors,
+                    "warnings": report.warnings,
+                    "passed": report.passed,
+                    "results": results,
+                },
+                indent=2,
+            )
+        )
     else:
         validator.print_summary()
 

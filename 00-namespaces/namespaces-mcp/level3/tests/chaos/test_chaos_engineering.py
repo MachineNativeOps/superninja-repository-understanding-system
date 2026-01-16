@@ -4,41 +4,46 @@ MCP Level 3 - Chaos Engineering Tests
 Tests system resilience under failure conditions.
 """
 
-import pytest
 import asyncio
-import aiohttp
-import time
 import random
-from typing import List, Dict, Any
+import time
+from typing import Any, Dict, List
+
+import aiohttp
+import pytest
 
 
 class ChaosScenario:
     """Base class for chaos engineering scenarios"""
-    
+
     @staticmethod
     async def inject_latency(service: str, latency_ms: int, duration_seconds: int):
         """Inject artificial latency into a service"""
         # This would use a chaos engineering tool like Chaos Mesh or Litmus
-        print(f"Injecting {latency_ms}ms latency into {service} for {duration_seconds}s")
+        print(
+            f"Injecting {latency_ms}ms latency into {service} for {duration_seconds}s"
+        )
         await asyncio.sleep(duration_seconds)
-    
+
     @staticmethod
     async def kill_pod(service: str):
         """Kill a service pod"""
         print(f"Killing pod for {service}")
         # kubectl delete pod -l app={service} --force
-    
+
     @staticmethod
     async def partition_network(service_a: str, service_b: str, duration_seconds: int):
         """Create network partition between two services"""
-        print(f"Creating network partition between {service_a} and {service_b} for {duration_seconds}s")
+        print(
+            f"Creating network partition between {service_a} and {service_b} for {duration_seconds}s"
+        )
         await asyncio.sleep(duration_seconds)
-    
+
     @staticmethod
     async def fill_disk(service: str, percentage: int):
         """Fill disk to specified percentage"""
         print(f"Filling disk for {service} to {percentage}%")
-    
+
     @staticmethod
     async def exhaust_memory(service: str, percentage: int):
         """Consume memory up to specified percentage"""
@@ -47,7 +52,7 @@ class ChaosScenario:
 
 class TestServiceFailure:
     """Test system behavior when services fail"""
-    
+
     @pytest.mark.asyncio
     @pytest.mark.chaos
     async def test_rag_engine_failure_recovery(self):
@@ -55,34 +60,33 @@ class TestServiceFailure:
         async with aiohttp.ClientSession() as session:
             # Step 1: Verify RAG engine is working
             async with session.post(
-                "http://rag-engine:8080/api/v1/query",
-                json={"query": "test"}
+                "http://rag-engine:8080/api/v1/query", json={"query": "test"}
             ) as response:
                 assert response.status == 200
-            
+
             # Step 2: Kill RAG engine pod
             await ChaosScenario.kill_pod("rag-engine")
-            
+
             # Step 3: Wait for Kubernetes to restart pod
             await asyncio.sleep(10)
-            
+
             # Step 4: Verify service recovers
             max_retries = 30
             for i in range(max_retries):
                 try:
                     async with session.get(
                         "http://rag-engine:8080/health",
-                        timeout=aiohttp.ClientTimeout(total=5)
+                        timeout=aiohttp.ClientTimeout(total=5),
                     ) as response:
                         if response.status == 200:
                             print("RAG engine recovered successfully")
                             return
-                except:
+                except BaseException:
                     pass
                 await asyncio.sleep(2)
-            
+
             pytest.fail("RAG engine failed to recover")
-    
+
     @pytest.mark.asyncio
     @pytest.mark.chaos
     async def test_dag_engine_failure_workflow_continuity(self):
@@ -94,31 +98,30 @@ class TestServiceFailure:
                 "tasks": [
                     {"id": f"task_{i}", "type": "process", "config": {"duration": 10}}
                     for i in range(10)
-                ]
+                ],
             }
-            
+
             async with session.post(
-                "http://dag-engine:8080/api/v1/workflows",
-                json=workflow
+                "http://dag-engine:8080/api/v1/workflows", json=workflow
             ) as response:
                 workflow_id = (await response.json())["workflow_id"]
-            
+
             # Step 2: Wait for some tasks to complete
             await asyncio.sleep(30)
-            
+
             # Step 3: Kill DAG engine
             await ChaosScenario.kill_pod("dag-engine")
-            
+
             # Step 4: Wait for recovery
             await asyncio.sleep(20)
-            
+
             # Step 5: Verify workflow continues
             async with session.get(
                 f"http://dag-engine:8080/api/v1/workflows/{workflow_id}"
             ) as response:
                 assert response.status == 200
                 status = await response.json()
-                
+
                 # Workflow should resume from last checkpoint
                 assert status["state"] in ["running", "completed"]
                 print(f"Workflow state after recovery: {status['state']}")
@@ -126,7 +129,7 @@ class TestServiceFailure:
 
 class TestNetworkFailure:
     """Test system behavior under network failures"""
-    
+
     @pytest.mark.asyncio
     @pytest.mark.chaos
     async def test_network_partition_rag_taxonomy(self):
@@ -134,30 +137,24 @@ class TestNetworkFailure:
         async with aiohttp.ClientSession() as session:
             # Step 1: Create network partition
             await ChaosScenario.partition_network(
-                "rag-engine",
-                "taxonomy-engine",
-                duration_seconds=60
+                "rag-engine", "taxonomy-engine", duration_seconds=60
             )
-            
+
             # Step 2: Submit query that requires Taxonomy
-            query = {
-                "query": "test query",
-                "use_entity_extraction": True
-            }
-            
+            query = {"query": "test query", "use_entity_extraction": True}
+
             async with session.post(
-                "http://rag-engine:8080/api/v1/query",
-                json=query
+                "http://rag-engine:8080/api/v1/query", json=query
             ) as response:
                 # RAG should gracefully degrade
                 assert response.status in [200, 503]
-                
+
                 if response.status == 200:
                     result = await response.json()
                     # Should work but without entity extraction
                     assert "answer" in result
                     print("RAG engine gracefully degraded without Taxonomy")
-    
+
     @pytest.mark.asyncio
     @pytest.mark.chaos
     async def test_database_connection_failure(self):
@@ -165,7 +162,7 @@ class TestNetworkFailure:
         async with aiohttp.ClientSession() as session:
             # Simulate database connection pool exhaustion
             # This would be done by creating many connections
-            
+
             # Verify circuit breaker activates
             errors = 0
             for i in range(20):
@@ -173,13 +170,13 @@ class TestNetworkFailure:
                     async with session.post(
                         "http://dag-engine:8080/api/v1/workflows",
                         json={"name": f"test_{i}", "tasks": []},
-                        timeout=aiohttp.ClientTimeout(total=5)
+                        timeout=aiohttp.ClientTimeout(total=5),
                     ) as response:
                         if response.status >= 500:
                             errors += 1
-                except:
+                except BaseException:
                     errors += 1
-            
+
             # Circuit breaker should prevent cascading failures
             assert errors < 20, "Circuit breaker should have activated"
             print(f"Circuit breaker activated after {errors} errors")
@@ -187,7 +184,7 @@ class TestNetworkFailure:
 
 class TestResourceExhaustion:
     """Test system behavior under resource exhaustion"""
-    
+
     @pytest.mark.asyncio
     @pytest.mark.chaos
     async def test_memory_exhaustion(self):
@@ -195,29 +192,29 @@ class TestResourceExhaustion:
         async with aiohttp.ClientSession() as session:
             # Step 1: Exhaust memory on Execution engine
             await ChaosScenario.exhaust_memory("execution-engine", 90)
-            
+
             # Step 2: Submit tasks
             tasks_submitted = 0
             tasks_failed = 0
-            
+
             for i in range(50):
                 try:
                     async with session.post(
                         "http://execution-engine:8080/api/v1/tasks",
                         json={"type": "compute", "config": {}},
-                        timeout=aiohttp.ClientTimeout(total=10)
+                        timeout=aiohttp.ClientTimeout(total=10),
                     ) as response:
                         if response.status == 200:
                             tasks_submitted += 1
                         else:
                             tasks_failed += 1
-                except:
+                except BaseException:
                     tasks_failed += 1
-            
+
             # System should reject new tasks gracefully
             assert tasks_failed > 0, "System should reject tasks under memory pressure"
             print(f"Submitted: {tasks_submitted}, Failed: {tasks_failed}")
-    
+
     @pytest.mark.asyncio
     @pytest.mark.chaos
     async def test_disk_full(self):
@@ -225,17 +222,16 @@ class TestResourceExhaustion:
         async with aiohttp.ClientSession() as session:
             # Step 1: Fill disk on Artifact Registry
             await ChaosScenario.fill_disk("registry", 95)
-            
+
             # Step 2: Try to upload artifact
             artifact = {
                 "name": "test_artifact",
                 "type": "data",
-                "content": "x" * (10 * 1024 * 1024)  # 10MB
+                "content": "x" * (10 * 1024 * 1024),  # 10MB
             }
-            
+
             async with session.post(
-                "http://registry:8080/api/v1/artifacts",
-                json=artifact
+                "http://registry:8080/api/v1/artifacts", json=artifact
             ) as response:
                 # Should fail gracefully with appropriate error
                 assert response.status in [507, 500]  # Insufficient Storage
@@ -246,7 +242,7 @@ class TestResourceExhaustion:
 
 class TestCascadingFailure:
     """Test system resilience to cascading failures"""
-    
+
     @pytest.mark.asyncio
     @pytest.mark.chaos
     async def test_cascading_failure_prevention(self):
@@ -254,28 +250,27 @@ class TestCascadingFailure:
         async with aiohttp.ClientSession() as session:
             # Step 1: Kill Vector DB (critical dependency)
             await ChaosScenario.kill_pod("vector-db")
-            
+
             # Step 2: Verify RAG engine fails gracefully
             async with session.post(
-                "http://rag-engine:8080/api/v1/query",
-                json={"query": "test"}
+                "http://rag-engine:8080/api/v1/query", json={"query": "test"}
             ) as response:
                 # Should return error but not crash
                 assert response.status in [500, 503]
-            
+
             # Step 3: Verify other engines still work
             # DAG engine should be unaffected
             async with session.post(
                 "http://dag-engine:8080/api/v1/workflows",
-                json={"name": "test", "tasks": []}
+                json={"name": "test", "tasks": []},
             ) as response:
                 assert response.status == 201
                 print("DAG engine unaffected by Vector DB failure")
-            
+
             # Governance should still work
             async with session.post(
                 "http://governance-engine:8080/api/v1/auth/verify",
-                json={"token": "test", "resource": "test", "action": "read"}
+                json={"token": "test", "resource": "test", "action": "read"},
             ) as response:
                 assert response.status == 200
                 print("Governance engine unaffected by Vector DB failure")
@@ -283,7 +278,7 @@ class TestCascadingFailure:
 
 class TestLatencyInjection:
     """Test system behavior under high latency"""
-    
+
     @pytest.mark.asyncio
     @pytest.mark.chaos
     async def test_high_latency_tolerance(self):
@@ -291,22 +286,22 @@ class TestLatencyInjection:
         async with aiohttp.ClientSession() as session:
             # Step 1: Inject 500ms latency into Taxonomy engine
             await ChaosScenario.inject_latency("taxonomy-engine", 500, 60)
-            
+
             # Step 2: Submit RAG queries
             start_time = time.time()
-            
+
             async with session.post(
                 "http://rag-engine:8080/api/v1/query",
                 json={"query": "test", "use_entity_extraction": True},
-                timeout=aiohttp.ClientTimeout(total=10)
+                timeout=aiohttp.ClientTimeout(total=10),
             ) as response:
                 latency = (time.time() - start_time) * 1000
-                
+
                 # Should complete but with increased latency
                 assert response.status == 200
                 assert latency > 500, "Should reflect injected latency"
                 print(f"Query completed with {latency:.2f}ms latency")
-    
+
     @pytest.mark.asyncio
     @pytest.mark.chaos
     async def test_timeout_handling(self):
@@ -314,15 +309,18 @@ class TestLatencyInjection:
         async with aiohttp.ClientSession() as session:
             # Inject very high latency (5 seconds)
             await ChaosScenario.inject_latency("execution-engine", 5000, 60)
-            
+
             # Submit task with timeout
             start_time = time.time()
-            
+
             try:
                 async with session.post(
                     "http://dag-engine:8080/api/v1/workflows",
-                    json={"name": "test", "tasks": [{"id": "task1", "type": "process"}]},
-                    timeout=aiohttp.ClientTimeout(total=3)
+                    json={
+                        "name": "test",
+                        "tasks": [{"id": "task1", "type": "process"}],
+                    },
+                    timeout=aiohttp.ClientTimeout(total=3),
                 ) as response:
                     await response.read()
             except asyncio.TimeoutError:
@@ -333,7 +331,7 @@ class TestLatencyInjection:
 
 class TestDataCorruption:
     """Test system behavior with corrupted data"""
-    
+
     @pytest.mark.asyncio
     @pytest.mark.chaos
     async def test_corrupted_artifact_handling(self):
@@ -344,18 +342,19 @@ class TestDataCorruption:
                 "name": "corrupted_artifact",
                 "type": "data",
                 "content": "corrupted_base64_data!!!",
-                "checksum": "invalid_checksum"
+                "checksum": "invalid_checksum",
             }
-            
+
             async with session.post(
-                "http://registry:8080/api/v1/artifacts",
-                json=artifact
+                "http://registry:8080/api/v1/artifacts", json=artifact
             ) as response:
                 # Should detect corruption
                 assert response.status in [400, 422]
                 error = await response.json()
-                assert "checksum" in error.get("message", "").lower() or \
-                       "corrupt" in error.get("message", "").lower()
+                assert (
+                    "checksum" in error.get("message", "").lower()
+                    or "corrupt" in error.get("message", "").lower()
+                )
                 print("Registry correctly rejected corrupted artifact")
 
 
@@ -371,19 +370,19 @@ def event_loop():
 @pytest.fixture(scope="session", autouse=True)
 async def chaos_test_setup():
     """Setup chaos testing environment"""
-    print("\n" + "="*60)
+    print("\n" + "=" * 60)
     print("Setting up Chaos Engineering Test Environment")
-    print("="*60)
-    
+    print("=" * 60)
+
     # Verify chaos engineering tools are available
     # (Chaos Mesh, Litmus, or similar)
-    
+
     yield
-    
+
     # Cleanup after chaos tests
-    print("\n" + "="*60)
+    print("\n" + "=" * 60)
     print("Cleaning up Chaos Engineering Test Environment")
-    print("="*60)
+    print("=" * 60)
 
 
 if __name__ == "__main__":

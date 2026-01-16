@@ -3,44 +3,6 @@ Phase 9 單元測試
 Cross-platform Integration & Risk Management Tests
 """
 
-import os
-import sys
-import unittest
-
-# 添加路徑
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', 'src'))
-
-from crossplatform.arvr_integration import (
-    ARVRIntegration,
-    HardwareRequirement,
-    ImmersiveExperience,
-    InteractionMode,
-    MetaversePlatform,
-    MixedReality,
-    XRType,
-)
-from crossplatform.emergency_response import (
-    EmergencyResponse,
-    PlanType,
-    TriggerCategory,
-)
-from crossplatform.iot_integration import (
-    DeviceInterconnection,
-    EdgeComputing,
-    EdgeComputingType,
-    Industry40,
-    Industry40Component,
-    IoTIntegration,
-    IoTProtocol,
-)
-from crossplatform.risk_assessment import RiskAssessment, RiskCategory, RiskType
-from crossplatform.tech_stack_matrix import (
-    BackendArch,
-    DataProcessing,
-    DeploymentStrategy,
-    FrontendTech,
-    TechStackMatrix,
-)
 from crossplatform.web3_integration import (
     BlockchainType,
     ConsensusType,
@@ -50,6 +12,43 @@ from crossplatform.web3_integration import (
     SmartContractDev,
     Web3Integration,
 )
+from crossplatform.tech_stack_matrix import (
+    BackendArch,
+    DataProcessing,
+    DeploymentStrategy,
+    FrontendTech,
+    TechStackMatrix,
+)
+from crossplatform.risk_assessment import RiskAssessment, RiskCategory, RiskType
+from crossplatform.iot_integration import (
+    DeviceInterconnection,
+    EdgeComputing,
+    EdgeComputingType,
+    Industry40,
+    Industry40Component,
+    IoTIntegration,
+    IoTProtocol,
+)
+from crossplatform.emergency_response import (
+    EmergencyResponse,
+    PlanType,
+    TriggerCategory,
+)
+from crossplatform.arvr_integration import (
+    ARVRIntegration,
+    HardwareRequirement,
+    ImmersiveExperience,
+    InteractionMode,
+    MetaversePlatform,
+    MixedReality,
+    XRType,
+)
+import os
+import sys
+import unittest
+
+# 添加路徑
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "src"))
 
 
 class TestWeb3Integration(unittest.TestCase):
@@ -68,7 +67,7 @@ class TestWeb3Integration(unittest.TestCase):
             decentralization_level=8,
             gas_optimization_needed=True,
             smart_contract_complexity="medium",
-            estimated_tps_requirement=50
+            estimated_tps_requirement=50,
         )
 
         result = self.integration.assess_dapp(assessment)
@@ -85,7 +84,7 @@ class TestWeb3Integration(unittest.TestCase):
             marketplace_strategy="hybrid",
             royalty_percentage=5.0,
             minting_approach="lazy",
-            storage_type="ipfs"
+            storage_type="ipfs",
         )
 
         result = self.integration.evaluate_nft_strategy(strategy)
@@ -99,7 +98,7 @@ class TestWeb3Integration(unittest.TestCase):
             contract_type="defi",
             programming_language="solidity",
             security_audit_required=True,
-            upgrade_pattern="proxy"
+            upgrade_pattern="proxy",
         )
 
         result = self.integration.evaluate_smart_contract(contract)
@@ -120,14 +119,14 @@ class TestWeb3Integration(unittest.TestCase):
             decentralization_level=7,
             gas_optimization_needed=False,
             smart_contract_complexity="low",
-            estimated_tps_requirement=100
+            estimated_tps_requirement=100,
         )
         self.integration.assess_dapp(assessment)
 
         report = self.integration.generate_web3_report()
 
-        self.assertIn('summary', report)
-        self.assertIn('dapp_assessments', report)
+        self.assertIn("summary", report)
+        self.assertIn("dapp_assessments", report)
 
 
 class TestIoTIntegration(unittest.TestCase):
@@ -143,7 +142,7 @@ class TestIoTIntegration(unittest.TestCase):
             latency_requirement_ms=20,
             bandwidth_requirement_mbps=100,
             local_processing_percentage=70,
-            data_privacy_requirement="high"
+            data_privacy_requirement="high",
         )
 
         result = self.integration.assess_edge_computing(edge)
@@ -159,7 +158,7 @@ class TestIoTIntegration(unittest.TestCase):
             device_count=5000,
             message_frequency_hz=10,
             security_level="standard",
-            scalability_requirement="high"
+            scalability_requirement="high",
         )
 
         result = self.integration.evaluate_device_interconnection(device)
@@ -174,7 +173,7 @@ class TestIoTIntegration(unittest.TestCase):
             component=Industry40Component.PREDICTIVE_MAINTENANCE,
             automation_level=4,
             data_integration_scope="departmental",
-            roi_target_months=18
+            roi_target_months=18,
         )
 
         result = self.integration.plan_industry40(plan)
@@ -190,14 +189,14 @@ class TestIoTIntegration(unittest.TestCase):
             latency_requirement_ms=100,
             bandwidth_requirement_mbps=50,
             local_processing_percentage=30,
-            data_privacy_requirement="low"
+            data_privacy_requirement="low",
         )
         self.integration.assess_edge_computing(edge)
 
         report = self.integration.generate_iot_report()
 
-        self.assertIn('summary', report)
-        self.assertIn('edge_computing_assessments', report)
+        self.assertIn("summary", report)
+        self.assertIn("edge_computing_assessments", report)
 
 
 class TestARVRIntegration(unittest.TestCase):
@@ -214,7 +213,7 @@ class TestARVRIntegration(unittest.TestCase):
             target_fov=100,
             target_fps=90,
             interaction_modes=[InteractionMode.CONTROLLER, InteractionMode.HAND_TRACKING],
-            use_case="Training Simulation"
+            use_case="Training Simulation",
         )
 
         result = self.integration.evaluate_immersive_experience(experience)
@@ -230,12 +229,12 @@ class TestARVRIntegration(unittest.TestCase):
             occlusion_handling="advanced",
             lighting_estimation=True,
             persistent_anchors=True,
-            multi_user_support=True
+            multi_user_support=True,
         )
 
         result = self.integration.evaluate_mixed_reality(mr)
 
-        self.assertIn(result.complexity_level, ['low', 'medium', 'high', 'very_high'])
+        self.assertIn(result.complexity_level, ["low", "medium", "high", "very_high"])
         self.assertIsNotNone(result.recommended_sdk)
         self.assertIsInstance(result.integration_considerations, list)
 
@@ -244,9 +243,9 @@ class TestARVRIntegration(unittest.TestCase):
         platform = MetaversePlatform(
             identity_system="decentralized",
             economy_model="token_based",
-            social_features=['voice_chat', 'avatar', 'events'],
+            social_features=["voice_chat", "avatar", "events"],
             world_persistence=True,
-            user_generated_content=True
+            user_generated_content=True,
         )
 
         result = self.integration.plan_metaverse_platform(platform)
@@ -263,14 +262,14 @@ class TestARVRIntegration(unittest.TestCase):
             target_fov=60,
             target_fps=60,
             interaction_modes=[InteractionMode.GESTURE],
-            use_case="Retail AR"
+            use_case="Retail AR",
         )
         self.integration.evaluate_immersive_experience(experience)
 
         report = self.integration.generate_arvr_report()
 
-        self.assertIn('summary', report)
-        self.assertIn('immersive_experiences', report)
+        self.assertIn("summary", report)
+        self.assertIn("immersive_experiences", report)
 
 
 class TestTechStackMatrix(unittest.TestCase):
@@ -285,7 +284,7 @@ class TestTechStackMatrix(unittest.TestCase):
             frontend=FrontendTech.REACT,
             backend=BackendArch.MICROSERVICES,
             data_processing=DataProcessing.REALTIME,
-            deployment=DeploymentStrategy.CLOUD_NATIVE
+            deployment=DeploymentStrategy.CLOUD_NATIVE,
         )
 
         self.assertGreater(result.compatibility_score, 0)
@@ -296,10 +295,7 @@ class TestTechStackMatrix(unittest.TestCase):
     def test_optimal_stack_recommendation(self):
         """測試最佳技術棧推薦"""
         result = self.matrix.recommend_optimal_stack(
-            project_type='startup',
-            team_size=8,
-            scalability_need='high',
-            budget_level='medium'
+            project_type="startup", team_size=8, scalability_need="high", budget_level="medium"
         )
 
         self.assertIsNotNone(result.frontend)
@@ -309,19 +305,23 @@ class TestTechStackMatrix(unittest.TestCase):
     def test_stack_comparison(self):
         """測試技術棧比較"""
         stack1 = self.matrix.evaluate_stack(
-            FrontendTech.REACT, BackendArch.MICROSERVICES,
-            DataProcessing.STREAMING, DeploymentStrategy.CLOUD_NATIVE
+            FrontendTech.REACT,
+            BackendArch.MICROSERVICES,
+            DataProcessing.STREAMING,
+            DeploymentStrategy.CLOUD_NATIVE,
         )
         stack2 = self.matrix.evaluate_stack(
-            FrontendTech.VUE, BackendArch.MONOLITH,
-            DataProcessing.BATCH, DeploymentStrategy.ON_PREMISE
+            FrontendTech.VUE,
+            BackendArch.MONOLITH,
+            DataProcessing.BATCH,
+            DeploymentStrategy.ON_PREMISE,
         )
 
         comparison = self.matrix.compare_stacks([stack1, stack2])
 
-        self.assertIn('stacks', comparison)
-        self.assertIn('best_compatibility', comparison)
-        self.assertIn('comparison_matrix', comparison)
+        self.assertIn("stacks", comparison)
+        self.assertIn("best_compatibility", comparison)
+        self.assertIn("comparison_matrix", comparison)
 
 
 class TestRiskAssessment(unittest.TestCase):
@@ -338,7 +338,7 @@ class TestRiskAssessment(unittest.TestCase):
             description="過度依賴特定技術棧",
             probability=7,
             impact=8,
-            owner="技術主管"
+            owner="技術主管",
         )
 
         self.assertIsNotNone(risk.risk_id)
@@ -354,39 +354,33 @@ class TestRiskAssessment(unittest.TestCase):
         self.assertEqual(high_risk.category, RiskCategory.HIGH)
 
         # 中風險
-        medium_risk = self.assessment.add_risk(
-            RiskType.MARKET_ACCEPTANCE, "中風險", "測試", 5, 6
-        )
+        medium_risk = self.assessment.add_risk(RiskType.MARKET_ACCEPTANCE, "中風險", "測試", 5, 6)
         self.assertEqual(medium_risk.category, RiskCategory.MEDIUM)
 
         # 低風險
-        low_risk = self.assessment.add_risk(
-            RiskType.TECHNICAL_DEBT, "低風險", "測試", 3, 4
-        )
+        low_risk = self.assessment.add_risk(RiskType.TECHNICAL_DEBT, "低風險", "測試", 3, 4)
         self.assertEqual(low_risk.category, RiskCategory.LOW)
 
     def test_project_risk_assessment(self):
         """測試項目風險評估"""
         risks = self.assessment.assess_project_risks(
-            technology_stack=['React', 'Node.js', 'MongoDB', 'Redis', 'Kafka', 'K8s'],
-            team_experience='medium',
-            market_maturity='emerging',
-            regulatory_requirements=['GDPR', 'SOC2']
+            technology_stack=["React", "Node.js", "MongoDB", "Redis", "Kafka", "K8s"],
+            team_experience="medium",
+            market_maturity="emerging",
+            regulatory_requirements=["GDPR", "SOC2"],
         )
 
         self.assertGreater(len(risks), 0)
 
     def test_risk_report(self):
         """測試風險報告"""
-        self.assessment.add_risk(
-            RiskType.VENDOR_LOCK_IN, "供應商鎖定", "測試", 6, 7
-        )
+        self.assessment.add_risk(RiskType.VENDOR_LOCK_IN, "供應商鎖定", "測試", 6, 7)
 
-        markdown_report = self.assessment.generate_risk_report('markdown')
-        text_report = self.assessment.generate_risk_report('text')
+        markdown_report = self.assessment.generate_risk_report("markdown")
+        text_report = self.assessment.generate_risk_report("text")
 
-        self.assertIn('風險評估報告', markdown_report)
-        self.assertIn('風險評估報告', text_report)
+        self.assertIn("風險評估報告", markdown_report)
+        self.assertIn("風險評估報告", text_report)
 
 
 class TestEmergencyResponse(unittest.TestCase):
@@ -415,9 +409,9 @@ class TestEmergencyResponse(unittest.TestCase):
     def test_trigger_evaluation(self):
         """測試觸發條件評估"""
         metrics = {
-            'market_decline': 25,  # 超過 20% 閾值
-            'tech_disruption': 0,
-            'competitor_threat': 0
+            "market_decline": 25,  # 超過 20% 閾值
+            "tech_disruption": 0,
+            "competitor_threat": 0,
         }
 
         triggered = self.response.evaluate_triggers(metrics)
@@ -428,26 +422,12 @@ class TestEmergencyResponse(unittest.TestCase):
     def test_plan_recommendation(self):
         """測試預案推薦"""
         # 正常情況
-        normal_metrics = {
-            'market_decline': 5,
-            'tech_disruption': 0,
-            'resource_reduction': 10
-        }
-        self.assertEqual(
-            self.response.recommend_plan(normal_metrics),
-            PlanType.PLAN_A
-        )
+        normal_metrics = {"market_decline": 5, "tech_disruption": 0, "resource_reduction": 10}
+        self.assertEqual(self.response.recommend_plan(normal_metrics), PlanType.PLAN_A)
 
         # 需要調整
-        adjust_metrics = {
-            'market_decline': 25,
-            'tech_disruption': 0,
-            'resource_reduction': 10
-        }
-        self.assertEqual(
-            self.response.recommend_plan(adjust_metrics),
-            PlanType.PLAN_B
-        )
+        adjust_metrics = {"market_decline": 25, "tech_disruption": 0, "resource_reduction": 10}
+        self.assertEqual(self.response.recommend_plan(adjust_metrics), PlanType.PLAN_B)
 
     def test_add_custom_trigger(self):
         """測試添加自定義觸發條件"""
@@ -456,27 +436,27 @@ class TestEmergencyResponse(unittest.TestCase):
             name="用戶流失",
             description="月活躍用戶下降超過閾值",
             threshold=15,
-            target_plan=PlanType.PLAN_B
+            target_plan=PlanType.PLAN_B,
         )
 
         self.assertIn(trigger.trigger_id, self.response.triggers)
 
     def test_response_report(self):
         """測試應急響應報告"""
-        markdown_report = self.response.generate_response_report('markdown')
-        text_report = self.response.generate_response_report('text')
+        markdown_report = self.response.generate_response_report("markdown")
+        text_report = self.response.generate_response_report("text")
 
-        self.assertIn('應急預案系統報告', markdown_report)
-        self.assertIn('應急預案系統報告', text_report)
+        self.assertIn("應急預案系統報告", markdown_report)
+        self.assertIn("應急預案系統報告", text_report)
 
     def test_to_dict(self):
         """測試轉換為字典"""
         result = self.response.to_dict()
 
-        self.assertIn('active_plan', result)
-        self.assertIn('plans', result)
-        self.assertIn('triggers', result)
+        self.assertIn("active_plan", result)
+        self.assertIn("plans", result)
+        self.assertIn("triggers", result)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()

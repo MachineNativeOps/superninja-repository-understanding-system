@@ -17,6 +17,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent.parent))
 
 class AgentStatus:
     """代理狀態"""
+
     INITIALIZED = "initialized"
     RUNNING = "running"
     PAUSED = "paused"
@@ -26,13 +27,14 @@ class AgentStatus:
 
 class Colors:
     """終端機顏色輸出"""
-    RED = '\033[0;31m'
-    GREEN = '\033[0;32m'
-    YELLOW = '\033[1;33m'
-    BLUE = '\033[0;34m'
-    PURPLE = '\033[0;35m'
-    CYAN = '\033[0;36m'
-    NC = '\033[0m'
+
+    RED = "\033[0;31m"
+    GREEN = "\033[0;32m"
+    YELLOW = "\033[1;33m"
+    BLUE = "\033[0;34m"
+    PURPLE = "\033[0;35m"
+    CYAN = "\033[0;36m"
+    NC = "\033[0m"
 
 
 class BaseAgent(ABC):
@@ -60,9 +62,9 @@ class BaseAgent(ABC):
         """尋找專案根目錄"""
         current = Path(__file__).resolve().parent
         while current != current.parent:
-            if (current / 'agent-config.yml').exists():
+            if (current / "agent-config.yml").exists():
                 return current
-            if (current / 'package.json').exists():
+            if (current / "package.json").exists():
                 return current
             current = current.parent
         return Path.cwd()
@@ -103,7 +105,8 @@ class BaseAgent(ABC):
             except (ImportError, ValueError):
                 # 如果相對導入失敗，使用絕對路徑導入
                 import sys
-                sys.path.insert(0, str(self.project_root / 'src/autonomous/agents'))
+
+                sys.path.insert(0, str(self.project_root / "src/autonomous/agents"))
                 from config import AgentConfig
 
             agent_config = AgentConfig.load()

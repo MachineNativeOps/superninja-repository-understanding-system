@@ -37,6 +37,7 @@ except ImportError:
 @dataclass
 class FixAction:
     """修復動作"""
+
     id: str
     action_type: str
     source_file: str
@@ -51,6 +52,7 @@ class FixAction:
 @dataclass
 class FixResult:
     """修復結果"""
+
     timestamp: str
     target_path: str
     total_actions: int
@@ -74,7 +76,7 @@ class PathFixer:
 
     def _build_file_index(self):
         """建立檔案索引"""
-        for file_path in self.target_path.rglob('*'):
+        for file_path in self.target_path.rglob("*"):
             if file_path.is_file():
                 self.file_index[file_path.name] = file_path
                 self.file_index[file_path.stem] = file_path
@@ -102,23 +104,23 @@ class PathFixer:
             failed_actions=failed,
             skipped_actions=skipped,
             actions=self.actions,
-            summary=self._generate_summary(applied, failed, skipped)
+            summary=self._generate_summary(applied, failed, skipped),
         )
 
     def _find_broken_markdown_links(self):
         """找出並建議修復斷開的 Markdown 連結"""
-        for md_file in self.target_path.rglob('*.md'):
+        for md_file in self.target_path.rglob("*.md"):
             try:
-                content = md_file.read_text(encoding='utf-8')
+                content = md_file.read_text(encoding="utf-8")
                 rel_path = str(md_file.relative_to(self.target_path))
 
-                for match in re.finditer(r'\[([^\]]+)\]\(([^)]+)\)', content):
+                for match in re.finditer(r"\[([^\]]+)\]\(([^)]+)\)", content):
                     link_text = match.group(1)
-                    link_href = match.group(2).split('#')[0]
-                    anchor = match.group(2)[len(link_href):] if '#' in match.group(2) else ''
-                    line_num = content[:match.start()].count('\n') + 1
+                    link_href = match.group(2).split("#")[0]
+                    anchor = match.group(2)[len(link_href) :] if "#" in match.group(2) else ""
+                    line_num = content[: match.start()].count("\n") + 1
 
-                    if link_href.startswith(('http://', 'https://', 'mailto:', '#')):
+                    if link_href.startswith(("http://", "https://", "mailto:", "#")):
                         continue
 
                     if link_href:
@@ -126,15 +128,17 @@ class PathFixer:
                         if not resolved.exists():
                             suggested = self._suggest_fix(link_href, md_file.parent)
                             if suggested:
-                                self.actions.append(FixAction(
-                                    id=f"fix_link_{md_file.stem}_{line_num}",
-                                    action_type="update_link",
-                                    source_file=rel_path,
-                                    description=f"更新斷開連結: [{link_text}]",
-                                    old_value=link_href,
-                                    new_value=suggested + anchor,
-                                    line_number=line_num
-                                ))
+                                self.actions.append(
+                                    FixAction(
+                                        id=f"fix_link_{md_file.stem}_{line_num}",
+                                        action_type="update_link",
+                                        source_file=rel_path,
+                                        description=f"更新斷開連結: [{link_text}]",
+                                        old_value=link_href,
+                                        new_value=suggested + anchor,
+                                        line_number=line_num,
+                                    )
+                                )
 
             except Exception:
                 pass
@@ -144,43 +148,49 @@ class PathFixer:
         if yaml is None:
             return
 
-        for yaml_file in self.target_path.rglob('*.yaml'):
+        for yaml_file in self.target_path.rglob("*.yaml"):
             try:
-                content = yaml_file.read_text(encoding='utf-8')
+                content = yaml_file.read_text(encoding="utf-8")
                 data = yaml.safe_load(content)
                 self._scan_yaml_for_fixes(data, yaml_file, content)
             except Exception:
                 pass
 
-        for yml_file in self.target_path.rglob('*.yml'):
+        for yml_file in self.target_path.rglob("*.yml"):
             try:
-                content = yml_file.read_text(encoding='utf-8')
+                content = yml_file.read_text(encoding="utf-8")
                 data = yaml.safe_load(content)
                 self._scan_yaml_for_fixes(data, yml_file, content)
             except Exception:
                 pass
 
-    def _scan_yaml_for_fixes(self, data: Any, yaml_file: Path, content: str, key_path: str = ''):
+    def _scan_yaml_for_fixes(self, data: Any, yaml_file: Path, content: str, key_path: str = ""):
         """遞迴掃描 YAML 中需要修復的路徑"""
         if isinstance(data, dict):
             for key, value in data.items():
                 new_path = f"{key_path}.{key}" if key_path else key
 
-                if key.endswith(('_path', '_file', 'path', 'file')) and isinstance(value, str):
-                    if value and value != "_pending" and not value.startswith(('http://', 'https://')):
+                if key.endswith(("_path", "_file", "path", "file")) and isinstance(value, str):
+                    if (
+                        value
+                        and value != "_pending"
+                        and not value.startswith(("http://", "https://"))
+                    ):
                         full_path = self.target_path / value
                         if not full_path.exists():
                             suggested = self._suggest_fix(value, yaml_file.parent)
                             if suggested:
                                 rel_path = str(yaml_file.relative_to(self.target_path))
-                                self.actions.append(FixAction(
-                                    id=f"fix_yaml_{yaml_file.stem}_{key}",
-                                    action_type="update_yaml_ref",
-                                    source_file=rel_path,
-                                    description=f"更新 YAML 路徑引用: {new_path}",
-                                    old_value=value,
-                                    new_value=suggested
-                                ))
+                                self.actions.append(
+                                    FixAction(
+                                        id=f"fix_yaml_{yaml_file.stem}_{key}",
+                                        action_type="update_yaml_ref",
+                                        source_file=rel_path,
+                                        description=f"更新 YAML 路徑引用: {new_path}",
+                                        old_value=value,
+                                        new_value=suggested,
+                                    )
+                                )
 
                 self._scan_yaml_for_fixes(value, yaml_file, content, new_path)
 
@@ -190,29 +200,31 @@ class PathFixer:
 
     def _find_naming_issues(self):
         """找出命名問題並建議修復"""
-        snake_case_pattern = re.compile(r'^[a-z][a-z0-9]*(_[a-z0-9]+)*$')
-        exceptions = {'README', 'LICENSE', 'CHANGELOG', 'TODO', 'INDEX'}
+        snake_case_pattern = re.compile(r"^[a-z][a-z0-9]*(_[a-z0-9]+)*$")
+        exceptions = {"README", "LICENSE", "CHANGELOG", "TODO", "INDEX"}
 
-        for file_path in self.target_path.rglob('*'):
-            if file_path.is_file() and not file_path.name.startswith('.'):
+        for file_path in self.target_path.rglob("*"):
+            if file_path.is_file() and not file_path.name.startswith("."):
                 stem = file_path.stem
                 if stem.upper() in exceptions:
                     continue
 
                 if not snake_case_pattern.match(stem):
-                    if re.search(r'[A-Z]', stem) or '-' in stem:
+                    if re.search(r"[A-Z]", stem) or "-" in stem:
                         new_name = self._to_snake_case(stem) + file_path.suffix
                         rel_path = str(file_path.relative_to(self.target_path))
 
                         if new_name != file_path.name:
-                            self.actions.append(FixAction(
-                                id=f"rename_{stem}",
-                                action_type="rename_file",
-                                source_file=rel_path,
-                                description=f"重命名為 snake_case",
-                                old_value=file_path.name,
-                                new_value=new_name
-                            ))
+                            self.actions.append(
+                                FixAction(
+                                    id=f"rename_{stem}",
+                                    action_type="rename_file",
+                                    source_file=rel_path,
+                                    description=f"重命名為 snake_case",
+                                    old_value=file_path.name,
+                                    new_value=new_name,
+                                )
+                            )
 
     def _suggest_fix(self, broken_path: str, source_dir: Path) -> Optional[str]:
         """嘗試建議修復路徑"""
@@ -223,7 +235,7 @@ class PathFixer:
             found = self.file_index[target_name]
             try:
                 rel = os.path.relpath(found, source_dir)
-                return rel.replace('\\', '/')
+                return rel.replace("\\", "/")
             except ValueError:
                 return None
 
@@ -232,7 +244,7 @@ class PathFixer:
             found = self.file_index[stem]
             try:
                 rel = os.path.relpath(found, source_dir)
-                return rel.replace('\\', '/')
+                return rel.replace("\\", "/")
             except ValueError:
                 return None
 
@@ -241,7 +253,7 @@ class PathFixer:
             found = self.file_index[snake_stem]
             try:
                 rel = os.path.relpath(found, source_dir)
-                return rel.replace('\\', '/')
+                return rel.replace("\\", "/")
             except ValueError:
                 return None
 
@@ -249,7 +261,7 @@ class PathFixer:
             if name.lower() == target_name.lower():
                 try:
                     rel = os.path.relpath(path, source_dir)
-                    return rel.replace('\\', '/')
+                    return rel.replace("\\", "/")
                 except ValueError:
                     pass
 
@@ -257,10 +269,10 @@ class PathFixer:
 
     def _to_snake_case(self, name: str) -> str:
         """轉換為 snake_case"""
-        new_name = re.sub(r'([A-Z]+)([A-Z][a-z])', r'\1_\2', name)
-        new_name = re.sub(r'([a-z\d])([A-Z])', r'\1_\2', new_name)
-        new_name = new_name.replace('-', '_')
-        new_name = re.sub(r'_+', '_', new_name)
+        new_name = re.sub(r"([A-Z]+)([A-Z][a-z])", r"\1_\2", name)
+        new_name = re.sub(r"([a-z\d])([A-Z])", r"\1_\2", new_name)
+        new_name = new_name.replace("-", "_")
+        new_name = re.sub(r"_+", "_", new_name)
         return new_name.lower()
 
     def _apply_fixes(self):
@@ -281,15 +293,15 @@ class PathFixer:
         file_path = self.target_path / action.source_file
 
         if self.backup:
-            shutil.copy2(file_path, str(file_path) + '.bak')
+            shutil.copy2(file_path, str(file_path) + ".bak")
 
-        content = file_path.read_text(encoding='utf-8')
+        content = file_path.read_text(encoding="utf-8")
         old_pattern = re.escape(f"]({action.old_value})")
         new_value = f"]({action.new_value})"
         new_content = re.sub(old_pattern, new_value, content, count=1)
 
         if content != new_content:
-            file_path.write_text(new_content, encoding='utf-8')
+            file_path.write_text(new_content, encoding="utf-8")
             action.applied = True
 
     def _apply_yaml_fix(self, action: FixAction):
@@ -297,13 +309,13 @@ class PathFixer:
         file_path = self.target_path / action.source_file
 
         if self.backup:
-            shutil.copy2(file_path, str(file_path) + '.bak')
+            shutil.copy2(file_path, str(file_path) + ".bak")
 
-        content = file_path.read_text(encoding='utf-8')
+        content = file_path.read_text(encoding="utf-8")
         new_content = content.replace(action.old_value, action.new_value, 1)
 
         if content != new_content:
-            file_path.write_text(new_content, encoding='utf-8')
+            file_path.write_text(new_content, encoding="utf-8")
             action.applied = True
 
     def _apply_rename(self, action: FixAction):
@@ -316,7 +328,7 @@ class PathFixer:
             return
 
         if self.backup:
-            shutil.copy2(file_path, str(file_path) + '.bak')
+            shutil.copy2(file_path, str(file_path) + ".bak")
 
         file_path.rename(new_path)
         action.applied = True
@@ -334,13 +346,13 @@ class PathFixer:
 
 
 def main():
-    parser = argparse.ArgumentParser(description='路徑修復器 - 自動修復路徑問題')
-    parser.add_argument('--target', '-t', default='.', help='目標目錄')
-    parser.add_argument('--dry-run', '-n', action='store_true', help='乾運行模式 (只分析不修改)')
-    parser.add_argument('--fix', action='store_true', help='套用修復')
-    parser.add_argument('--backup', '-b', action='store_true', help='修復前備份')
-    parser.add_argument('--report', '-r', help='輸出報告檔案')
-    parser.add_argument('--quiet', '-q', action='store_true', help='安靜模式')
+    parser = argparse.ArgumentParser(description="路徑修復器 - 自動修復路徑問題")
+    parser.add_argument("--target", "-t", default=".", help="目標目錄")
+    parser.add_argument("--dry-run", "-n", action="store_true", help="乾運行模式 (只分析不修改)")
+    parser.add_argument("--fix", action="store_true", help="套用修復")
+    parser.add_argument("--backup", "-b", action="store_true", help="修復前備份")
+    parser.add_argument("--report", "-r", help="輸出報告檔案")
+    parser.add_argument("--quiet", "-q", action="store_true", help="安靜模式")
     args = parser.parse_args()
 
     dry_run = not args.fix
@@ -382,18 +394,18 @@ def main():
 
     if args.report:
         output_data = {
-            'timestamp': result.timestamp,
-            'target_path': result.target_path,
-            'dry_run': dry_run,
-            'total_actions': result.total_actions,
-            'applied_actions': result.applied_actions,
-            'failed_actions': result.failed_actions,
-            'skipped_actions': result.skipped_actions,
-            'summary': result.summary,
-            'actions': [asdict(a) for a in result.actions]
+            "timestamp": result.timestamp,
+            "target_path": result.target_path,
+            "dry_run": dry_run,
+            "total_actions": result.total_actions,
+            "applied_actions": result.applied_actions,
+            "failed_actions": result.failed_actions,
+            "skipped_actions": result.skipped_actions,
+            "summary": result.summary,
+            "actions": [asdict(a) for a in result.actions],
         }
 
-        with open(args.report, 'w', encoding='utf-8') as f:
+        with open(args.report, "w", encoding="utf-8") as f:
             json.dump(output_data, f, indent=2, ensure_ascii=False)
         print(f"\n💾 報告已儲存至: {args.report}")
 
@@ -403,5 +415,5 @@ def main():
     sys.exit(0)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

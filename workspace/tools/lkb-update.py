@@ -51,10 +51,10 @@ def update_knowledge_health_report(event: str, description: str, metrics: dict[s
     """更新知識庫健康報告"""
     report_path = "docs/knowledge-health-report.yaml"
     now = datetime.datetime.utcnow().isoformat() + "Z"
-    
+
     # 載入現有報告
     report = load_yaml(report_path)
-    
+
     # 初始化結構
     if "knowledge_events" not in report:
         report["knowledge_events"] = []
@@ -62,24 +62,24 @@ def update_knowledge_health_report(event: str, description: str, metrics: dict[s
         report["last_updated"] = now
     if "health_metrics" not in report:
         report["health_metrics"] = {}
-    
+
     # 新增事件
     knowledge_event = {
         "timestamp": now,
         "event": event,
         "description": description,
     }
-    
+
     if metrics:
         knowledge_event["metrics"] = metrics
-    
+
     report["knowledge_events"].append(knowledge_event)
     report["last_updated"] = now
-    
+
     # 保留最近 100 個事件
     if len(report["knowledge_events"]) > 100:
         report["knowledge_events"] = report["knowledge_events"][-100:]
-    
+
     # 儲存報告
     save_yaml(report_path, report)
     console.print(f"[green]✓ Updated knowledge health report: {report_path}[/green]")
@@ -89,10 +89,10 @@ def update_knowledge_graph(event: str, nodes: list[dict[str, Any]] = None):
     """更新知識圖譜"""
     graph_path = "docs/knowledge-graph.yaml"
     now = datetime.datetime.utcnow().isoformat() + "Z"
-    
+
     # 載入現有圖譜
     graph = load_yaml(graph_path)
-    
+
     # 初始化結構
     if "metadata" not in graph:
         graph["metadata"] = {}
@@ -100,17 +100,19 @@ def update_knowledge_graph(event: str, nodes: list[dict[str, Any]] = None):
         graph["events"] = []
     if "nodes" not in graph:
         graph["nodes"] = []
-    
+
     # 更新 metadata
     graph["metadata"]["last_updated"] = now
     graph["metadata"]["last_event"] = event
-    
+
     # 新增事件
-    graph["events"].append({
-        "timestamp": now,
-        "event": event,
-    })
-    
+    graph["events"].append(
+        {
+            "timestamp": now,
+            "event": event,
+        }
+    )
+
     # 新增或更新節點
     if nodes:
         for new_node in nodes:
@@ -120,7 +122,7 @@ def update_knowledge_graph(event: str, nodes: list[dict[str, Any]] = None):
                 if node.get("id") == new_node.get("id"):
                     existing = i
                     break
-            
+
             if existing is not None:
                 # 更新現有節點
                 graph["nodes"][existing].update(new_node)
@@ -129,11 +131,11 @@ def update_knowledge_graph(event: str, nodes: list[dict[str, Any]] = None):
                 # 新增新節點
                 new_node["created_at"] = now
                 graph["nodes"].append(new_node)
-    
+
     # 保留最近 50 個事件
     if len(graph["events"]) > 50:
         graph["events"] = graph["events"][-50:]
-    
+
     # 儲存圖譜
     save_yaml(graph_path, graph)
     console.print(f"[green]✓ Updated knowledge graph: {graph_path}[/green]")
@@ -143,7 +145,7 @@ def update_knowledge_health_md(summary: str, metrics: dict[str, Any] = None):
     """更新知識庫健康 Markdown 文檔"""
     md_path = "docs/KNOWLEDGE_HEALTH.md"
     now = datetime.datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S UTC")
-    
+
     content = f"""# Knowledge Health Report
 
 **Last Updated**: {now}
@@ -153,13 +155,13 @@ def update_knowledge_health_md(summary: str, metrics: dict[str, Any] = None):
 {summary}
 
 """
-    
+
     if metrics:
         content += "## Metrics\n\n"
         for key, value in metrics.items():
             content += f"- **{key}**: {value}\n"
         content += "\n"
-    
+
     content += """## Recent Updates
 
 This document is automatically updated by the Living Knowledge Base system when:
@@ -183,26 +185,28 @@ For detailed event history, see `docs/knowledge-health-report.yaml`.
 
 For knowledge graph visualization, see `docs/knowledge-graph.yaml`.
 """
-    
+
     os.makedirs(os.path.dirname(md_path), exist_ok=True)
     with open(md_path, "w", encoding="utf-8") as f:
         f.write(content)
-    
+
     console.print(f"[green]✓ Updated knowledge health markdown: {md_path}[/green]")
 
 
 def main():
     parser = argparse.ArgumentParser(description="Update Living Knowledge Base after Auto-Fix")
-    parser.add_argument("--event", required=True, help="Event type (e.g., 'auto-fix', 'manual-fix')")
+    parser.add_argument(
+        "--event", required=True, help="Event type (e.g., 'auto-fix', 'manual-fix')"
+    )
     parser.add_argument("--description", required=True, help="Event description")
     parser.add_argument("--violations-fixed", type=int, help="Number of violations fixed")
     parser.add_argument("--health-score", type=float, help="Current health score (0-100)")
     parser.add_argument("--files-changed", type=int, help="Number of files changed")
-    
+
     args = parser.parse_args()
-    
+
     console.print("[cyan]📚 Updating Living Knowledge Base...[/cyan]")
-    
+
     # 準備 metrics
     metrics = {}
     if args.violations_fixed is not None:
@@ -211,22 +215,24 @@ def main():
         metrics["health_score"] = args.health_score
     if args.files_changed is not None:
         metrics["files_changed"] = args.files_changed
-    
+
     # 更新知識庫健康報告
     update_knowledge_health_report(args.event, args.description, metrics if metrics else None)
-    
+
     # 準備知識圖譜節點
-    nodes = [{
-        "id": f"event-{args.event}-{datetime.datetime.utcnow().timestamp()}",
-        "type": "event",
-        "event_type": args.event,
-        "description": args.description,
-        "metrics": metrics if metrics else {}
-    }]
-    
+    nodes = [
+        {
+            "id": f"event-{args.event}-{datetime.datetime.utcnow().timestamp()}",
+            "type": "event",
+            "event_type": args.event,
+            "description": args.description,
+            "metrics": metrics if metrics else {},
+        }
+    ]
+
     # 更新知識圖譜
     update_knowledge_graph(args.event, nodes)
-    
+
     # 更新 Markdown 文檔
     summary = f"{args.description}\n\n"
     if metrics:
@@ -239,9 +245,9 @@ def main():
         if args.health_score:
             impact_items.append(f"Health score: {args.health_score:.1f}/100")
         summary += ", ".join(impact_items)
-    
+
     update_knowledge_health_md(summary, metrics if metrics else None)
-    
+
     console.print("[green]✅ Living Knowledge Base updated successfully![/green]")
 
 

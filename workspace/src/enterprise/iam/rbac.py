@@ -24,29 +24,19 @@ logger = logging.getLogger(__name__)
 class MembershipRepository(Protocol):
     """Repository interface for membership data"""
 
-    async def get_membership(
-        self, org_id: UUID, user_id: UUID
-    ) -> Membership | None:
-        ...
+    async def get_membership(self, org_id: UUID, user_id: UUID) -> Membership | None: ...
 
-    async def list_memberships_for_user(
-        self, user_id: UUID
-    ) -> list[Membership]:
-        ...
+    async def list_memberships_for_user(self, user_id: UUID) -> list[Membership]: ...
 
     async def list_memberships_for_org(
         self, org_id: UUID, offset: int = 0, limit: int = 100
-    ) -> list[Membership]:
-        ...
+    ) -> list[Membership]: ...
 
-    async def save_membership(self, membership: Membership) -> Membership:
-        ...
+    async def save_membership(self, membership: Membership) -> Membership: ...
 
-    async def delete_membership(self, org_id: UUID, user_id: UUID) -> bool:
-        ...
+    async def delete_membership(self, org_id: UUID, user_id: UUID) -> bool: ...
 
-    async def count_memberships(self, org_id: UUID) -> int:
-        ...
+    async def count_memberships(self, org_id: UUID) -> int: ...
 
 
 class AuditLogger(Protocol):
@@ -60,13 +50,13 @@ class AuditLogger(Protocol):
         resource_type: str,
         resource_id: str,
         details: dict[str, Any],
-    ) -> None:
-        ...
+    ) -> None: ...
 
 
 @dataclass
 class PermissionDeniedError(Exception):
     """Raised when permission check fails"""
+
     org_id: UUID
     user_id: UUID
     required_permission: Permission
@@ -170,16 +160,12 @@ class RBACManager:
 
         return True
 
-    async def get_user_role(
-        self, org_id: UUID, user_id: UUID
-    ) -> Role | None:
+    async def get_user_role(self, org_id: UUID, user_id: UUID) -> Role | None:
         """Get user's role in an organization"""
         membership = await self.membership_repository.get_membership(org_id, user_id)
         return membership.role if membership and membership.is_active else None
 
-    async def get_user_permissions(
-        self, org_id: UUID, user_id: UUID
-    ) -> set[Permission]:
+    async def get_user_permissions(self, org_id: UUID, user_id: UUID) -> set[Permission]:
         """Get all permissions a user has in an organization"""
         role = await self.get_user_role(org_id, user_id)
         if not role:
@@ -377,9 +363,7 @@ class RBACManager:
             all_memberships = await self.membership_repository.list_memberships_for_org(org_id)
             owner_count = sum(1 for m in all_memberships if m.role == Role.OWNER and m.is_active)
             if owner_count <= 1:
-                raise ValueError(
-                    "Cannot leave: you are the last owner. Transfer ownership first."
-                )
+                raise ValueError("Cannot leave: you are the last owner. Transfer ownership first.")
 
         result = await self.membership_repository.delete_membership(org_id, user_id)
 
@@ -436,11 +420,14 @@ class RBACManager:
             async def update_policy(org_id, user_id, policy_data):
                 ...
         """
+
         def decorator(func):
             async def wrapper(org_id: UUID, user_id: UUID, *args, **kwargs):
                 await self.check_permission(org_id, user_id, permission)
                 return await func(org_id, user_id, *args, **kwargs)
+
             return wrapper
+
         return decorator
 
     # ------------------------------------------------------------------
@@ -475,6 +462,7 @@ class PermissionContext:
 
     Use this to pass permission info through the request lifecycle.
     """
+
     org_id: UUID
     user_id: UUID
     role: Role
@@ -502,9 +490,7 @@ class PermissionContext:
         """Create a permission context from a request"""
         role = await rbac_manager.get_user_role(org_id, user_id)
         if not role:
-            raise PermissionDeniedError(
-                org_id, user_id, Permission.ORG_READ
-            )
+            raise PermissionDeniedError(org_id, user_id, Permission.ORG_READ)
 
         permissions = await rbac_manager.get_user_permissions(org_id, user_id)
 

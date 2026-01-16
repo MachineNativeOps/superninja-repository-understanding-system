@@ -6,20 +6,23 @@ Implements DNS TXT record verification for domain namespaces
 as specified in the team identity registry.
 """
 
-import os
-import json
-import time
 import hashlib
+import json
+import os
 import secrets
-import dns.resolver
-import dns.exception
-from datetime import datetime, timedelta
-from typing import Dict, Optional, Tuple, List
+import time
 from dataclasses import dataclass
+from datetime import datetime, timedelta
+from typing import Dict, List, Optional, Tuple
+
+import dns.exception
+import dns.resolver
+
 
 @dataclass
 class DNSVerificationResult:
     """Result of DNS namespace verification"""
+
     success: bool
     namespace: str
     domain: str
@@ -30,14 +33,15 @@ class DNSVerificationResult:
     txt_records: List[str]
     error_message: Optional[str] = None
 
+
 class DnsTxtVerifier:
     """DNS TXT verification system for MCP namespaces"""
-    
+
     def __init__(self):
         self.verification_timeout = 3600  # 1 hour
         self.validity_period = timedelta(days=365)  # 1 year
         self.txt_record_prefix = "mcp-registry-verification"
-        
+
     def extract_domain_from_namespace(self, namespace: str) -> Optional[str]:
         """Extract domain from namespace"""
         # Handle com.company, org.organization, net.domain formats
@@ -48,13 +52,13 @@ class DnsTxtVerifier:
         elif namespace.startswith("net."):
             return namespace[4:]  # Remove "net."
         return None
-    
+
     def generate_verification_token(self, domain: str) -> str:
         """Generate a unique verification token for the domain"""
         timestamp = str(int(time.time()))
         data = f"{domain}:{timestamp}:{secrets.token_hex(16)}"
         return hashlib.sha256(data.encode()).hexdigest()
-    
+
     def get_txt_records(self, domain: str) -> Tuple[bool, List[str], Optional[str]]:
         """Retrieve TXT records for a domain"""
         try:
@@ -62,13 +66,13 @@ class DnsTxtVerifier:
             resolver = dns.resolver.Resolver()
             resolver.timeout = 10
             resolver.lifetime = 10
-            
+
             # Query TXT records
-            answers = resolver.resolve(domain, 'TXT')
+            answers = resolver.resolve(domain, "TXT")
             txt_records = [str(rdata).strip('"') for rdata in answers]
-            
+
             return True, txt_records, None
-            
+
         except dns.resolver.NXDOMAIN:
             return False, [], f"Domain {domain} does not exist"
         except dns.resolver.NoAnswer:
@@ -77,29 +81,39 @@ class DnsTxtVerifier:
             return False, [], f"DNS query timeout for {domain}"
         except Exception as e:
             return False, [], f"DNS query failed: {str(e)}"
-    
-    def verify_txt_record(self, domain: str, expected_token: str) -> Tuple[bool, List[str], Optional[str]]:
+
+    def verify_txt_record(
+        self, domain: str, expected_token: str
+    ) -> Tuple[bool, List[str], Optional[str]]:
         """Verify that the domain has the expected TXT record"""
         success, txt_records, error = self.get_txt_records(domain)
-        
+
         if not success:
             return False, [], error
-        
+
         # Look for the verification record
         expected_record = f"{self.txt_record_prefix}={expected_token}"
-        
+
         for record in txt_records:
-            if record == expected_record or record.startswith(f"{self.txt_record_prefix}="):
+            if record == expected_record or record.startswith(
+                f"{self.txt_record_prefix}="
+            ):
                 # Extract token from record
                 actual_token = record.split("=", 1)[1] if "=" in record else ""
                 if actual_token == expected_token:
                     return True, txt_records, None
-        
-        return False, txt_records, f"Verification TXT record not found. Expected: {expected_record}"
-    
-    def verify_namespace(self, namespace: str, verification_token: str) -> DNSVerificationResult:
+
+        return (
+            False,
+            txt_records,
+            f"Verification TXT record not found. Expected: {expected_record}",
+        )
+
+    def verify_namespace(
+        self, namespace: str, verification_token: str
+    ) -> DNSVerificationResult:
         """Verify a namespace using DNS TXT record"""
-        
+
         # Extract domain from namespace
         domain = self.extract_domain_from_namespace(namespace)
         if not domain:
@@ -112,9 +126,9 @@ class DnsTxtVerifier:
                 expires_at="",
                 verification_token=verification_token,
                 txt_records=[],
-                error_message="Invalid namespace format for DNS TXT verification"
+                error_message="Invalid namespace format for DNS TXT verification",
             )
-        
+
         # First get existing TXT records
         success, txt_records, error = self.get_txt_records(domain)
         if not success:
@@ -127,12 +141,14 @@ class DnsTxtVerifier:
                 expires_at="",
                 verification_token=verification_token,
                 txt_records=[],
-                error_message=error
+                error_message=error,
             )
-        
+
         # Verify the specific token
-        token_success, final_txt_records, token_error = self.verify_txt_record(domain, verification_token)
-        
+        token_success, final_txt_records, token_error = self.verify_txt_record(
+            domain, verification_token
+        )
+
         if not token_success:
             return DNSVerificationResult(
                 success=False,
@@ -143,13 +159,13 @@ class DnsTxtVerifier:
                 expires_at="",
                 verification_token=verification_token,
                 txt_records=final_txt_records,
-                error_message=token_error
+                error_message=token_error,
             )
-        
+
         # Create verification result
         now = datetime.utcnow()
         expires_at = now + self.validity_period
-        
+
         return DNSVerificationResult(
             success=True,
             namespace=namespace,
@@ -158,18 +174,18 @@ class DnsTxtVerifier:
             verified_at=now.isoformat() + "Z",
             expires_at=expires_at.isoformat() + "Z",
             verification_token=verification_token,
-            txt_records=final_txt_records
+            txt_records=final_txt_records,
         )
-    
+
     def generate_verification_instructions(self, namespace: str) -> Dict:
         """Generate instructions for DNS TXT verification"""
         domain = self.extract_domain_from_namespace(namespace)
         if not domain:
             return {"error": "Invalid namespace format"}
-        
+
         verification_token = self.generate_verification_token(domain)
         txt_record = f"{self.txt_record_prefix}={verification_token}"
-        
+
         return {
             "namespace": namespace,
             "domain": domain,
@@ -181,28 +197,29 @@ class DnsTxtVerifier:
                 "step3": f"Record name: {domain}",
                 "step4": f"Record value: {txt_record}",
                 "step5": f"Wait for DNS propagation (usually 5-60 minutes)",
-                "step6": f"Run verification with: python dns-txt-verifier.py {namespace} {verification_token}"
+                "step6": f"Run verification with: python dns-txt-verifier.py {namespace} {verification_token}",
             },
             "dns_commands": {
                 "bind": f'TXT "{domain}" "{txt_record}"',
-                "route53": f'aws route53 change-resource-record-sets --hosted-zone-id YOUR_ZONE_ID --change-batch file://change.json',
+                "route53": f"aws route53 change-resource-record-sets --hosted-zone-id YOUR_ZONE_ID --change-batch file://change.json",
                 "cloudflare": "Use Cloudflare DNS management to add TXT record",
-                "google": "Use Google Cloud DNS to add TXT record"
-            }
+                "google": "Use Google Cloud DNS to add TXT record",
+            },
         }
+
 
 # CLI Interface for testing
 if __name__ == "__main__":
     import sys
-    
+
     if len(sys.argv) < 2:
         print("Usage:")
         print("  python dns-txt-verifier.py <namespace> <verification-token>")
         print("  python dns-txt-verifier.py <namespace> --instructions")
         sys.exit(1)
-    
+
     namespace = sys.argv[1]
-    
+
     if len(sys.argv) == 3 and sys.argv[2] == "--instructions":
         verifier = DnsTxtVerifier()
         instructions = verifier.generate_verification_instructions(namespace)
@@ -211,7 +228,7 @@ if __name__ == "__main__":
         verification_token = sys.argv[2]
         verifier = DnsTxtVerifier()
         result = verifier.verify_namespace(namespace, verification_token)
-        
+
         print(f"Namespace: {result.namespace}")
         print(f"Domain: {result.domain}")
         print(f"Success: {result.success}")
@@ -222,7 +239,7 @@ if __name__ == "__main__":
         print(f"TXT Records Found: {len(result.txt_records)}")
         for record in result.txt_records:
             print(f"  - {record}")
-        
+
         if result.error_message:
             print(f"Error: {result.error_message}")
     else:

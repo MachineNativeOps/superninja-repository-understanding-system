@@ -15,6 +15,7 @@ from typing import Any
 
 class PatternType(Enum):
     """Types of learned patterns"""
+
     ANOMALY = "anomaly"
     INCIDENT = "incident"
     REMEDIATION = "remediation"
@@ -24,6 +25,7 @@ class PatternType(Enum):
 
 class LearningSource(Enum):
     """Sources of learning"""
+
     MONITORING = "monitoring"
     DIAGNOSIS = "diagnosis"
     REMEDIATION = "remediation"
@@ -34,6 +36,7 @@ class LearningSource(Enum):
 @dataclass
 class IncidentPattern:
     """A learned incident pattern"""
+
     pattern_id: str = field(default_factory=lambda: str(uuid.uuid4()))
     pattern_type: PatternType = PatternType.INCIDENT
     description: str = ""
@@ -69,21 +72,22 @@ class IncidentPattern:
 
     def to_dict(self) -> dict[str, Any]:
         return {
-            'pattern_id': self.pattern_id,
-            'type': self.pattern_type.value,
-            'description': self.description,
-            'conditions': self.conditions,
-            'frequency': self.frequency,
-            'last_seen': self.last_seen.isoformat(),
-            'first_seen': self.first_seen.isoformat(),
-            'success_rate': self.get_success_rate(),
-            'tags': self.tags
+            "pattern_id": self.pattern_id,
+            "type": self.pattern_type.value,
+            "description": self.description,
+            "conditions": self.conditions,
+            "frequency": self.frequency,
+            "last_seen": self.last_seen.isoformat(),
+            "first_seen": self.first_seen.isoformat(),
+            "success_rate": self.get_success_rate(),
+            "tags": self.tags,
         }
 
 
 @dataclass
 class LearningOutcome:
     """Outcome of a learning process"""
+
     outcome_id: str = field(default_factory=lambda: str(uuid.uuid4()))
     source: LearningSource = LearningSource.MONITORING
     description: str = ""
@@ -95,21 +99,21 @@ class LearningOutcome:
 
     def to_dict(self) -> dict[str, Any]:
         return {
-            'outcome_id': self.outcome_id,
-            'source': self.source.value,
-            'description': self.description,
-            'patterns_identified': self.patterns_identified,
-            'patterns_updated': self.patterns_updated,
-            'insights': self.insights,
-            'recommendations': self.recommendations,
-            'timestamp': self.timestamp.isoformat()
+            "outcome_id": self.outcome_id,
+            "source": self.source.value,
+            "description": self.description,
+            "patterns_identified": self.patterns_identified,
+            "patterns_updated": self.patterns_updated,
+            "insights": self.insights,
+            "recommendations": self.recommendations,
+            "timestamp": self.timestamp.isoformat(),
         }
 
 
 class PatternLearner:
     """
     Pattern Learner
-    
+
     Identifies and learns patterns from incidents
     """
 
@@ -118,9 +122,7 @@ class PatternLearner:
         self._similarity_threshold = similarity_threshold
 
     def _calculate_similarity(
-        self,
-        conditions1: list[dict[str, Any]],
-        conditions2: list[dict[str, Any]]
+        self, conditions1: list[dict[str, Any]], conditions2: list[dict[str, Any]]
     ) -> float:
         """Calculate similarity between two sets of conditions"""
         if not conditions1 or not conditions2:
@@ -146,10 +148,7 @@ class PatternLearner:
 
         return intersection / union if union > 0 else 0.0
 
-    def find_similar_pattern(
-        self,
-        conditions: list[dict[str, Any]]
-    ) -> IncidentPattern | None:
+    def find_similar_pattern(self, conditions: list[dict[str, Any]]) -> IncidentPattern | None:
         """Find a similar existing pattern"""
         best_match = None
         best_similarity = 0.0
@@ -167,7 +166,7 @@ class PatternLearner:
         conditions: list[dict[str, Any]],
         pattern_type: PatternType = PatternType.INCIDENT,
         description: str = "",
-        tags: list[str] | None = None
+        tags: list[str] | None = None,
     ) -> IncidentPattern:
         """Learn from conditions - create new pattern or update existing"""
         existing = self.find_similar_pattern(conditions)
@@ -181,7 +180,7 @@ class PatternLearner:
             pattern_type=pattern_type,
             description=description,
             conditions=conditions,
-            tags=tags or []
+            tags=tags or [],
         )
         self._patterns[pattern.pattern_id] = pattern
         return pattern
@@ -198,7 +197,7 @@ class PatternLearner:
 class EffectivenessTracker:
     """
     Effectiveness Tracker
-    
+
     Tracks effectiveness of remediations and generates insights
     """
 
@@ -212,49 +211,49 @@ class EffectivenessTracker:
         playbook_id: str,
         success: bool,
         execution_time_ms: int,
-        anomaly_resolved: bool
+        anomaly_resolved: bool,
     ) -> None:
         """Record a remediation outcome"""
         self._remediation_outcomes[remediation_id] = {
-            'playbook_id': playbook_id,
-            'success': success,
-            'execution_time_ms': execution_time_ms,
-            'anomaly_resolved': anomaly_resolved,
-            'timestamp': datetime.now()
+            "playbook_id": playbook_id,
+            "success": success,
+            "execution_time_ms": execution_time_ms,
+            "anomaly_resolved": anomaly_resolved,
+            "timestamp": datetime.now(),
         }
 
         # Update playbook stats
         if playbook_id not in self._playbook_stats:
             self._playbook_stats[playbook_id] = {
-                'total': 0,
-                'success': 0,
-                'resolved': 0,
-                'total_time_ms': 0
+                "total": 0,
+                "success": 0,
+                "resolved": 0,
+                "total_time_ms": 0,
             }
 
         stats = self._playbook_stats[playbook_id]
-        stats['total'] += 1
+        stats["total"] += 1
         if success:
-            stats['success'] += 1
+            stats["success"] += 1
         if anomaly_resolved:
-            stats['resolved'] += 1
-        stats['total_time_ms'] += execution_time_ms
+            stats["resolved"] += 1
+        stats["total_time_ms"] += execution_time_ms
 
     def get_playbook_effectiveness(self, playbook_id: str) -> dict[str, Any]:
         """Get effectiveness stats for a playbook"""
         stats = self._playbook_stats.get(playbook_id, {})
         if not stats:
-            return {'effectiveness': 0.0, 'resolution_rate': 0.0}
+            return {"effectiveness": 0.0, "resolution_rate": 0.0}
 
-        total = stats.get('total', 0)
+        total = stats.get("total", 0)
         if total == 0:
-            return {'effectiveness': 0.0, 'resolution_rate': 0.0}
+            return {"effectiveness": 0.0, "resolution_rate": 0.0}
 
         return {
-            'effectiveness': stats.get('success', 0) / total,
-            'resolution_rate': stats.get('resolved', 0) / total,
-            'avg_time_ms': stats.get('total_time_ms', 0) / total,
-            'total_executions': total
+            "effectiveness": stats.get("success", 0) / total,
+            "resolution_rate": stats.get("resolved", 0) / total,
+            "avg_time_ms": stats.get("total_time_ms", 0) / total,
+            "total_executions": total,
         }
 
     def get_insights(self) -> list[str]:
@@ -262,12 +261,12 @@ class EffectivenessTracker:
         insights = []
 
         for playbook_id, stats in self._playbook_stats.items():
-            total = stats.get('total', 0)
+            total = stats.get("total", 0)
             if total < 3:
                 continue
 
-            effectiveness = stats.get('success', 0) / total
-            resolution_rate = stats.get('resolved', 0) / total
+            effectiveness = stats.get("success", 0) / total
+            resolution_rate = stats.get("resolved", 0) / total
 
             if effectiveness < 0.5:
                 insights.append(
@@ -287,9 +286,9 @@ class EffectivenessTracker:
 class SelfLearningEngine:
     """
     Self Learning Engine (自我學習引擎)
-    
+
     Continuous improvement from incidents and events
-    
+
     Reference: AI-driven infrastructure learns from each incident [5]
     """
 
@@ -307,17 +306,14 @@ class SelfLearningEngine:
         return self._effectiveness_tracker
 
     def learn_from_incident(
-        self,
-        conditions: list[dict[str, Any]],
-        description: str = "",
-        tags: list[str] | None = None
+        self, conditions: list[dict[str, Any]], description: str = "", tags: list[str] | None = None
     ) -> IncidentPattern:
         """Learn from an incident"""
         return self._pattern_learner.learn(
             conditions=conditions,
             pattern_type=PatternType.INCIDENT,
             description=description,
-            tags=tags
+            tags=tags,
         )
 
     def record_remediation_outcome(
@@ -327,7 +323,7 @@ class SelfLearningEngine:
         success: bool,
         execution_time_ms: int,
         anomaly_resolved: bool,
-        pattern_id: str | None = None
+        pattern_id: str | None = None,
     ) -> None:
         """Record outcome of a remediation"""
         self._effectiveness_tracker.record_outcome(
@@ -335,7 +331,7 @@ class SelfLearningEngine:
             playbook_id=playbook_id,
             success=success,
             execution_time_ms=execution_time_ms,
-            anomaly_resolved=anomaly_resolved
+            anomaly_resolved=anomaly_resolved,
         )
 
         # Update pattern if provided
@@ -352,8 +348,7 @@ class SelfLearningEngine:
     def analyze_and_learn(self) -> LearningOutcome:
         """Analyze data and generate learning outcomes"""
         outcome = LearningOutcome(
-            source=LearningSource.MONITORING,
-            description="Periodic analysis of monitoring data"
+            source=LearningSource.MONITORING, description="Periodic analysis of monitoring data"
         )
 
         # Count patterns
@@ -386,10 +381,7 @@ class SelfLearningEngine:
 
         return outcome
 
-    def get_recommended_playbook(
-        self,
-        conditions: list[dict[str, Any]]
-    ) -> str | None:
+    def get_recommended_playbook(self, conditions: list[dict[str, Any]]) -> str | None:
         """Get recommended playbook based on learned patterns"""
         pattern = self._pattern_learner.find_similar_pattern(conditions)
 
@@ -404,9 +396,9 @@ class SelfLearningEngine:
         patterns = self._pattern_learner.get_patterns()
 
         return {
-            'total_patterns': len(patterns),
-            'frequent_patterns': len(self._pattern_learner.get_frequent_patterns()),
-            'total_learning_outcomes': len(self._learning_outcomes),
-            'insights': self._effectiveness_tracker.get_insights(),
-            'timestamp': datetime.now().isoformat()
+            "total_patterns": len(patterns),
+            "frequent_patterns": len(self._pattern_learner.get_frequent_patterns()),
+            "total_learning_outcomes": len(self._learning_outcomes),
+            "insights": self._effectiveness_tracker.get_insights(),
+            "timestamp": datetime.now().isoformat(),
         }

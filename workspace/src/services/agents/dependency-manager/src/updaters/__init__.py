@@ -5,6 +5,4 @@
 
 from .auto_updater import AutoUpdater
 
-__all__ = [
-    "AutoUpdater"
-]
+__all__ = ["AutoUpdater"]

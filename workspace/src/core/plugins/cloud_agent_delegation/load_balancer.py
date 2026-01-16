@@ -19,24 +19,27 @@ logger = logging.getLogger(__name__)
 
 class BalancingStrategy(Enum):
     """Load balancing strategies"""
-    ROUND_ROBIN = 'round-robin'
-    WEIGHTED_ROUND_ROBIN = 'weighted-round-robin'
-    LEAST_CONNECTIONS = 'least-connections'
-    RANDOM = 'random'
-    WEIGHTED_RANDOM = 'weighted-random'
+
+    ROUND_ROBIN = "round-robin"
+    WEIGHTED_ROUND_ROBIN = "weighted-round-robin"
+    LEAST_CONNECTIONS = "least-connections"
+    RANDOM = "random"
+    WEIGHTED_RANDOM = "weighted-random"
 
 
 class HealthStatus(Enum):
     """Health status of a provider"""
-    HEALTHY = 'healthy'
-    UNHEALTHY = 'unhealthy'
-    DEGRADED = 'degraded'
-    UNKNOWN = 'unknown'
+
+    HEALTHY = "healthy"
+    UNHEALTHY = "unhealthy"
+    DEGRADED = "degraded"
+    UNKNOWN = "unknown"
 
 
 @dataclass
 class ProviderHealth:
     """Health information for a provider"""
+
     provider: str
     status: HealthStatus
     last_check: datetime
@@ -50,15 +53,15 @@ class ProviderHealth:
     def to_dict(self) -> dict[str, Any]:
         """Convert to dictionary"""
         return {
-            'provider': self.provider,
-            'status': self.status.value,
-            'lastCheck': self.last_check.isoformat(),
-            'consecutiveFailures': self.consecutive_failures,
-            'consecutiveSuccesses': self.consecutive_successes,
-            'latencyMs': self.latency_ms,
-            'activeConnections': self.active_connections,
-            'errorRate': self.error_rate,
-            'metadata': self.metadata
+            "provider": self.provider,
+            "status": self.status.value,
+            "lastCheck": self.last_check.isoformat(),
+            "consecutiveFailures": self.consecutive_failures,
+            "consecutiveSuccesses": self.consecutive_successes,
+            "latencyMs": self.latency_ms,
+            "activeConnections": self.active_connections,
+            "errorRate": self.error_rate,
+            "metadata": self.metadata,
         }
 
     @property
@@ -70,6 +73,7 @@ class ProviderHealth:
 @dataclass
 class BalancerConfig:
     """Configuration for the load balancer"""
+
     strategy: BalancingStrategy = BalancingStrategy.WEIGHTED_ROUND_ROBIN
     weights: dict[str, int] = field(default_factory=dict)
     health_check_interval: int = 30  # seconds
@@ -83,22 +87,22 @@ class BalancerConfig:
     def to_dict(self) -> dict[str, Any]:
         """Convert to dictionary"""
         return {
-            'strategy': self.strategy.value,
-            'weights': self.weights,
-            'healthCheckInterval': self.health_check_interval,
-            'healthCheckTimeout': self.health_check_timeout,
-            'unhealthyThreshold': self.unhealthy_threshold,
-            'healthyThreshold': self.healthy_threshold,
-            'failoverEnabled': self.failover_enabled,
-            'maxRetries': self.max_retries,
-            'retryDelay': self.retry_delay
+            "strategy": self.strategy.value,
+            "weights": self.weights,
+            "healthCheckInterval": self.health_check_interval,
+            "healthCheckTimeout": self.health_check_timeout,
+            "unhealthyThreshold": self.unhealthy_threshold,
+            "healthyThreshold": self.healthy_threshold,
+            "failoverEnabled": self.failover_enabled,
+            "maxRetries": self.max_retries,
+            "retryDelay": self.retry_delay,
         }
 
 
 class LoadBalancer:
     """
     Load balancer for cloud providers
-    
+
     Distributes tasks across multiple providers using
     configurable strategies and health monitoring.
     """
@@ -106,7 +110,7 @@ class LoadBalancer:
     def __init__(self, config: BalancerConfig | None = None):
         """
         Initialize the load balancer
-        
+
         Args:
             config: Balancer configuration
         """
@@ -129,7 +133,7 @@ class LoadBalancer:
         self._rebuild_weighted_list()
         self._health_check_task = asyncio.create_task(self._health_check_loop())
 
-        logger.info('LoadBalancer started')
+        logger.info("LoadBalancer started")
 
     async def stop(self) -> None:
         """Stop the load balancer"""
@@ -140,17 +144,12 @@ class LoadBalancer:
             with contextlib.suppress(asyncio.CancelledError):
                 await self._health_check_task
 
-        logger.info('LoadBalancer stopped')
+        logger.info("LoadBalancer stopped")
 
-    def register_provider(
-        self,
-        name: str,
-        provider: Any,
-        weight: int = 1
-    ) -> None:
+    def register_provider(self, name: str, provider: Any, weight: int = 1) -> None:
         """
         Register a provider with the load balancer
-        
+
         Args:
             name: Provider name
             provider: Provider instance
@@ -162,13 +161,11 @@ class LoadBalancer:
 
         # Initialize health status
         self._health[name] = ProviderHealth(
-            provider=name,
-            status=HealthStatus.UNKNOWN,
-            last_check=datetime.now(UTC)
+            provider=name, status=HealthStatus.UNKNOWN, last_check=datetime.now(UTC)
         )
 
         self._rebuild_weighted_list()
-        logger.info(f'Registered provider: {name} (weight: {weight})')
+        logger.info(f"Registered provider: {name} (weight: {weight})")
 
     def unregister_provider(self, name: str) -> bool:
         """Unregister a provider"""
@@ -181,20 +178,20 @@ class LoadBalancer:
         self._connection_counts.pop(name, None)
 
         self._rebuild_weighted_list()
-        logger.info(f'Unregistered provider: {name}')
+        logger.info(f"Unregistered provider: {name}")
         return True
 
     async def select_provider(self) -> str | None:
         """
         Select a provider based on the balancing strategy
-        
+
         Returns:
             Selected provider name or None if none available
         """
         healthy_providers = self._get_healthy_providers()
 
         if not healthy_providers:
-            logger.warning('No healthy providers available')
+            logger.warning("No healthy providers available")
             return None
 
         strategy = self.config.strategy
@@ -224,10 +221,7 @@ class LoadBalancer:
         """Get health status of a provider"""
         return self._health.get(name)
 
-    def list_providers(
-        self,
-        healthy_only: bool = False
-    ) -> list[str]:
+    def list_providers(self, healthy_only: bool = False) -> list[str]:
         """List all registered providers"""
         if healthy_only:
             return self._get_healthy_providers()
@@ -252,15 +246,10 @@ class LoadBalancer:
         if name in self._connection_counts:
             self._connection_counts[name] = max(0, self._connection_counts[name] - 1)
 
-    def update_health(
-        self,
-        name: str,
-        healthy: bool,
-        latency_ms: float = 0.0
-    ) -> None:
+    def update_health(self, name: str, healthy: bool, latency_ms: float = 0.0) -> None:
         """
         Update health status of a provider
-        
+
         Args:
             name: Provider name
             healthy: Whether the health check passed
@@ -297,27 +286,24 @@ class LoadBalancer:
         provider_stats = {}
         for name, health in self._health.items():
             provider_stats[name] = {
-                'status': health.status.value,
-                'connections': self._connection_counts.get(name, 0),
-                'weight': self.config.weights.get(name, 1),
-                'latency_ms': health.latency_ms,
-                'error_rate': health.error_rate
+                "status": health.status.value,
+                "connections": self._connection_counts.get(name, 0),
+                "weight": self.config.weights.get(name, 1),
+                "latency_ms": health.latency_ms,
+                "error_rate": health.error_rate,
             }
 
         return {
-            'strategy': self.config.strategy.value,
-            'total_providers': len(self._providers),
-            'healthy_providers': healthy_count,
-            'total_connections': total_connections,
-            'providers': provider_stats
+            "strategy": self.config.strategy.value,
+            "total_providers": len(self._providers),
+            "healthy_providers": healthy_count,
+            "total_connections": total_connections,
+            "providers": provider_stats,
         }
 
     def _get_healthy_providers(self) -> list[str]:
         """Get list of healthy provider names"""
-        return [
-            name for name, health in self._health.items()
-            if health.is_healthy
-        ]
+        return [name for name, health in self._health.items() if health.is_healthy]
 
     def _select_round_robin(self, providers: list[str]) -> str:
         """Select using round-robin strategy"""
@@ -345,10 +331,7 @@ class LoadBalancer:
         if not providers:
             return None
 
-        return min(
-            providers,
-            key=lambda p: self._connection_counts.get(p, 0)
-        )
+        return min(providers, key=lambda p: self._connection_counts.get(p, 0))
 
     def _select_weighted_random(self, providers: list[str]) -> str:
         """Select using weighted random strategy"""
@@ -389,12 +372,11 @@ class LoadBalancer:
                         start = datetime.now(UTC)
 
                         # Perform health check
-                        if hasattr(provider, 'health_check'):
+                        if hasattr(provider, "health_check"):
                             result = await asyncio.wait_for(
-                                provider.health_check(),
-                                timeout=self.config.health_check_timeout
+                                provider.health_check(), timeout=self.config.health_check_timeout
                             )
-                            healthy = result.get('healthy', True)
+                            healthy = result.get("healthy", True)
                         else:
                             # Simulate health check
                             await asyncio.sleep(0.05)
@@ -408,19 +390,18 @@ class LoadBalancer:
                     except TimeoutError:
                         self.update_health(name, False, self.config.health_check_timeout * 1000)
                     except Exception as e:
-                        logger.error(f'Health check failed for {name}: {e}')
+                        logger.error(f"Health check failed for {name}: {e}")
                         self.update_health(name, False)
 
             except asyncio.CancelledError:
                 break
             except Exception as e:
-                logger.error(f'Health check loop error: {e}')
+                logger.error(f"Health check loop error: {e}")
 
 
 # Factory functions
 def create_load_balancer(
-    strategy: BalancingStrategy = BalancingStrategy.WEIGHTED_ROUND_ROBIN,
-    **kwargs
+    strategy: BalancingStrategy = BalancingStrategy.WEIGHTED_ROUND_ROBIN, **kwargs
 ) -> LoadBalancer:
     """Create a new LoadBalancer instance"""
     config = BalancerConfig(strategy=strategy, **kwargs)
@@ -435,8 +416,4 @@ def create_balancer_config(**kwargs) -> BalancerConfig:
 # Default weights from cloud-agent-delegation.yml
 def get_default_weights() -> dict[str, int]:
     """Get default provider weights"""
-    return {
-        'aws': 40,
-        'gcp': 35,
-        'azure': 25
-    }
+    return {"aws": 40, "gcp": 35, "azure": 25}

@@ -342,8 +342,10 @@ class ConsentManager:
 
     def __init__(self) -> None:
         self.consents: dict[str, ConsentRecord] = {}
-        self.user_consents: dict[str, list[str]] = {}  # user_id -> [consent_ids]
-        self.purpose_consents: dict[str, list[str]] = {}  # purpose -> [consent_ids]
+        # user_id -> [consent_ids]
+        self.user_consents: dict[str, list[str]] = {}
+        # purpose -> [consent_ids]
+        self.purpose_consents: dict[str, list[str]] = {}
 
     def _generate_consent_id(self, user_id: str, purpose: str) -> str:
         """生成同意 ID"""

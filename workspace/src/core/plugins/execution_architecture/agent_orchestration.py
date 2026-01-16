@@ -15,6 +15,7 @@ from typing import Any
 
 class StepStatus(Enum):
     """Status of an execution step"""
+
     PENDING = "pending"
     RUNNING = "running"
     COMPLETED = "completed"
@@ -25,6 +26,7 @@ class StepStatus(Enum):
 
 class TaskPriority(Enum):
     """Priority levels for tasks"""
+
     CRITICAL = 1
     HIGH = 2
     MEDIUM = 3
@@ -34,6 +36,7 @@ class TaskPriority(Enum):
 @dataclass
 class ExecutionStep:
     """A single step in the execution plan"""
+
     step_id: str = field(default_factory=lambda: str(uuid.uuid4()))
     name: str = ""
     description: str = ""
@@ -57,6 +60,7 @@ class ExecutionStep:
 @dataclass
 class ExecutionPlan:
     """A complete execution plan"""
+
     plan_id: str = field(default_factory=lambda: str(uuid.uuid4()))
     name: str = ""
     description: str = ""
@@ -99,12 +103,9 @@ class ExecutionContext:
     def set(self, key: str, value: Any) -> None:
         """Set a context variable"""
         self._variables[key] = value
-        self._history.append({
-            "action": "set",
-            "key": key,
-            "value": value,
-            "timestamp": datetime.now().isoformat()
-        })
+        self._history.append(
+            {"action": "set", "key": key, "value": value, "timestamp": datetime.now().isoformat()}
+        )
 
     def get(self, key: str, default: Any = None) -> Any:
         """Get a context variable"""
@@ -118,11 +119,9 @@ class ExecutionContext:
         """Delete a context variable"""
         if key in self._variables:
             del self._variables[key]
-            self._history.append({
-                "action": "delete",
-                "key": key,
-                "timestamp": datetime.now().isoformat()
-            })
+            self._history.append(
+                {"action": "delete", "key": key, "timestamp": datetime.now().isoformat()}
+            )
 
     def has(self, key: str) -> bool:
         """Check if a variable exists"""
@@ -164,7 +163,7 @@ class ExecutionContext:
             "context_id": self.context_id,
             "variables": self._variables,
             "metadata": self._metadata,
-            "created_at": self.created_at.isoformat()
+            "created_at": self.created_at.isoformat(),
         }
 
 
@@ -172,7 +171,7 @@ class TaskPlanner:
     """
     任務規劃器
     Breaks complex tasks into executable steps
-    
+
     Reference: Task planning and decomposition for AI agents
     """
 
@@ -180,11 +179,7 @@ class TaskPlanner:
         self._templates: dict[str, list[dict[str, Any]]] = {}
         self._plans: dict[str, ExecutionPlan] = {}
 
-    def register_template(
-        self,
-        template_name: str,
-        steps: list[dict[str, Any]]
-    ) -> None:
+    def register_template(self, template_name: str, steps: list[dict[str, Any]]) -> None:
         """Register a plan template"""
         self._templates[template_name] = steps
 
@@ -193,7 +188,7 @@ class TaskPlanner:
         name: str,
         description: str = "",
         steps: list[dict[str, Any]] | None = None,
-        from_template: str | None = None
+        from_template: str | None = None,
     ) -> ExecutionPlan:
         """Create an execution plan"""
         plan_steps = []
@@ -209,24 +204,16 @@ class TaskPlanner:
                 description=step_def.get("description", ""),
                 tool_name=step_def.get("tool_name"),
                 params=step_def.get("params", {}),
-                dependencies=step_def.get("dependencies", [])
+                dependencies=step_def.get("dependencies", []),
             )
             plan_steps.append(step)
 
-        plan = ExecutionPlan(
-            name=name,
-            description=description,
-            steps=plan_steps
-        )
+        plan = ExecutionPlan(name=name, description=description, steps=plan_steps)
 
         self._plans[plan.plan_id] = plan
         return plan
 
-    def decompose_task(
-        self,
-        task_description: str,
-        available_tools: list[str]
-    ) -> ExecutionPlan:
+    def decompose_task(self, task_description: str, available_tools: list[str]) -> ExecutionPlan:
         """
         Decompose a task description into executable steps
         Uses heuristics to break down complex tasks
@@ -239,53 +226,61 @@ class TaskPlanner:
         # Analyze task and create steps
         if "database" in task_lower or "query" in task_lower or "sql" in task_lower:
             if "database" in available_tools:
-                steps.append({
-                    "name": "Database Operation",
-                    "description": "Execute database operation",
-                    "tool_name": "database",
-                    "params": {"task": task_description}
-                })
+                steps.append(
+                    {
+                        "name": "Database Operation",
+                        "description": "Execute database operation",
+                        "tool_name": "database",
+                        "params": {"task": task_description},
+                    }
+                )
 
         if "api" in task_lower or "http" in task_lower or "request" in task_lower:
             if "api" in available_tools:
-                steps.append({
-                    "name": "API Call",
-                    "description": "Make API request",
-                    "tool_name": "api",
-                    "params": {"task": task_description}
-                })
+                steps.append(
+                    {
+                        "name": "API Call",
+                        "description": "Make API request",
+                        "tool_name": "api",
+                        "params": {"task": task_description},
+                    }
+                )
 
         if "deploy" in task_lower or "release" in task_lower:
             if "deployment" in available_tools:
-                steps.append({
-                    "name": "Deployment",
-                    "description": "Deploy application",
-                    "tool_name": "deployment",
-                    "params": {"task": task_description}
-                })
+                steps.append(
+                    {
+                        "name": "Deployment",
+                        "description": "Deploy application",
+                        "tool_name": "deployment",
+                        "params": {"task": task_description},
+                    }
+                )
 
         if "code" in task_lower or "script" in task_lower or "execute" in task_lower:
             if "code" in available_tools:
-                steps.append({
-                    "name": "Code Execution",
-                    "description": "Execute code",
-                    "tool_name": "code",
-                    "params": {"task": task_description}
-                })
+                steps.append(
+                    {
+                        "name": "Code Execution",
+                        "description": "Execute code",
+                        "tool_name": "code",
+                        "params": {"task": task_description},
+                    }
+                )
 
         # Default step if no specific tools matched
         if not steps:
-            steps.append({
-                "name": "General Task",
-                "description": task_description,
-                "tool_name": available_tools[0] if available_tools else None,
-                "params": {"task": task_description}
-            })
+            steps.append(
+                {
+                    "name": "General Task",
+                    "description": task_description,
+                    "tool_name": available_tools[0] if available_tools else None,
+                    "params": {"task": task_description},
+                }
+            )
 
         return self.create_plan(
-            name=f"Plan for: {task_description[:50]}...",
-            description=task_description,
-            steps=steps
+            name=f"Plan for: {task_description[:50]}...", description=task_description, steps=steps
         )
 
     def get_plan(self, plan_id: str) -> ExecutionPlan | None:
@@ -300,6 +295,7 @@ class TaskPlanner:
 @dataclass
 class OrchestratorConfig:
     """Configuration for agent orchestrator"""
+
     max_concurrent_agents: int = 5
     default_timeout: float = 300.0
     auto_retry: bool = True
@@ -310,7 +306,7 @@ class AgentOrchestrator:
     """
     代理編排器
     Manages dynamic agent creation and coordination
-    
+
     Reference: Dynamic agent orchestration patterns
     """
 
@@ -326,7 +322,7 @@ class AgentOrchestrator:
         agent_id: str,
         agent_type: str,
         capabilities: list[str],
-        config: dict[str, Any] | None = None
+        config: dict[str, Any] | None = None,
     ) -> dict[str, Any]:
         """Create a new agent dynamically"""
         agent = {
@@ -335,7 +331,7 @@ class AgentOrchestrator:
             "capabilities": capabilities,
             "config": config or {},
             "status": "ready",
-            "created_at": datetime.now().isoformat()
+            "created_at": datetime.now().isoformat(),
         }
         self._agents[agent_id] = agent
         return agent
@@ -369,7 +365,7 @@ class AgentOrchestrator:
         self,
         plan: ExecutionPlan,
         context: ExecutionContext | None = None,
-        tool_executor: Any = None
+        tool_executor: Any = None,
     ) -> dict[str, Any]:
         """Execute a complete plan"""
         if context is None:
@@ -400,7 +396,7 @@ class AgentOrchestrator:
                 try:
                     if step.tool_name and tool_executor:
                         result = await tool_executor.execute(step.tool_name, step.params)
-                        step.result = result.output if hasattr(result, 'output') else result
+                        step.result = result.output if hasattr(result, "output") else result
                     else:
                         step.result = f"Executed {step.name} (simulated)"
 
@@ -412,14 +408,16 @@ class AgentOrchestrator:
                     step.error = str(e)
 
                 step.completed_at = datetime.now()
-                results.append({
-                    "step_id": step.step_id,
-                    "name": step.name,
-                    "status": step.status.value,
-                    "result": step.result,
-                    "error": step.error,
-                    "duration_ms": step.duration_ms
-                })
+                results.append(
+                    {
+                        "step_id": step.step_id,
+                        "name": step.name,
+                        "status": step.status.value,
+                        "result": step.result,
+                        "error": step.error,
+                        "duration_ms": step.duration_ms,
+                    }
+                )
 
         plan.status = "completed"
 
@@ -427,14 +425,11 @@ class AgentOrchestrator:
             "plan_id": plan.plan_id,
             "status": plan.status,
             "results": results,
-            "context": context.to_dict()
+            "context": context.to_dict(),
         }
 
     async def orchestrate_task(
-        self,
-        task_description: str,
-        available_tools: list[str],
-        tool_executor: Any = None
+        self, task_description: str, available_tools: list[str], tool_executor: Any = None
     ) -> dict[str, Any]:
         """
         High-level task orchestration

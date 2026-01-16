@@ -13,10 +13,24 @@ from .tech_stack_matrix import StackRecommendation, TechStackMatrix
 from .web3_integration import DAppAssessment, NFTStrategy, SmartContractDev, Web3Integration
 
 __all__ = [
-    'Web3Integration', 'DAppAssessment', 'NFTStrategy', 'SmartContractDev',
-    'IoTIntegration', 'EdgeComputing', 'DeviceInterconnection', 'Industry40',
-    'ARVRIntegration', 'ImmersiveExperience', 'MixedReality', 'MetaversePlatform',
-    'TechStackMatrix', 'StackRecommendation',
-    'RiskAssessment', 'RiskCategory', 'MitigationStrategy',
-    'EmergencyResponse', 'PlanType', 'TriggerCondition'
+    "Web3Integration",
+    "DAppAssessment",
+    "NFTStrategy",
+    "SmartContractDev",
+    "IoTIntegration",
+    "EdgeComputing",
+    "DeviceInterconnection",
+    "Industry40",
+    "ARVRIntegration",
+    "ImmersiveExperience",
+    "MixedReality",
+    "MetaversePlatform",
+    "TechStackMatrix",
+    "StackRecommendation",
+    "RiskAssessment",
+    "RiskCategory",
+    "MitigationStrategy",
+    "EmergencyResponse",
+    "PlanType",
+    "TriggerCondition",
 ]

@@ -1,2 +1,1 @@
 """Use cases (application-specific business logic)."""
-

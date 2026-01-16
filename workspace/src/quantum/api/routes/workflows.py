@@ -1,16 +1,17 @@
 """
 Workflow management API endpoints.
 """
-from fastapi import APIRouter, HTTPException, Depends
-from typing import List, Optional
-from pydantic import BaseModel, Field, validator
 
-from backend.python.use_cases.workflow_use_cases import WorkflowUseCases
-from backend.python.repositories.workflow_repository import WorkflowRepository
-from backend.python.executors.task_executor import TaskExecutor
-from backend.python.workflow.scheduler import WorkflowScheduler
+from typing import List, Optional
+
+from backend.python.core.exceptions import ValidationError, WorkflowError
 from backend.python.core.logging_config import get_logger
-from backend.python.core.exceptions import WorkflowError, ValidationError
+from backend.python.executors.task_executor import TaskExecutor
+from backend.python.repositories.workflow_repository import WorkflowRepository
+from backend.python.use_cases.workflow_use_cases import WorkflowUseCases
+from backend.python.workflow.scheduler import WorkflowScheduler
+from fastapi import APIRouter, Depends, HTTPException
+from pydantic import BaseModel, Field, validator
 
 router = APIRouter()
 logger = get_logger(__name__)
@@ -19,24 +20,28 @@ logger = get_logger(__name__)
 # Pydantic models for request/response
 class TaskConfig(BaseModel):
     """Task configuration model."""
+
     type: str = Field(..., description="Task type: 'classical' or 'quantum'")
     config: dict = Field(..., description="Task configuration dictionary")
-    dependencies: List[int] = Field(default_factory=list, description="List of task IDs this task depends on")
-    
-    @validator('type')
+    dependencies: List[int] = Field(
+        default_factory=list, description="List of task IDs this task depends on"
+    )
+
+    @validator("type")
     def validate_task_type(cls, v):
         """Validate task type."""
-        if v not in ['classical', 'quantum']:
+        if v not in ["classical", "quantum"]:
             raise ValueError("Task type must be 'classical' or 'quantum'")
         return v
 
 
 class CreateWorkflowRequest(BaseModel):
     """Request model for creating a workflow."""
+
     name: str = Field(..., min_length=1, max_length=200, description="Workflow name")
     tasks: List[TaskConfig] = Field(..., min_items=1, description="List of tasks")
-    
-    @validator('name')
+
+    @validator("name")
     def validate_name(cls, v):
         """Validate workflow name."""
         if not v or not v.strip():
@@ -46,6 +51,7 @@ class CreateWorkflowRequest(BaseModel):
 
 class WorkflowResponse(BaseModel):
     """Response model for workflow operations."""
+
     workflow_id: int
     name: str
     status: str
@@ -57,6 +63,7 @@ class WorkflowResponse(BaseModel):
 
 class WorkflowDetailResponse(BaseModel):
     """Detailed workflow response."""
+
     workflow_id: int
     name: str
     status: str
@@ -68,6 +75,7 @@ class WorkflowDetailResponse(BaseModel):
 
 class ExecuteWorkflowResponse(BaseModel):
     """Response model for workflow execution."""
+
     workflow_id: int
     name: str
     status: str
@@ -85,30 +93,29 @@ def get_workflow_use_cases() -> WorkflowUseCases:
 
 @router.post("", response_model=WorkflowResponse, status_code=201)
 async def create_workflow(
-    request: CreateWorkflowRequest,
-    use_cases: WorkflowUseCases = Depends(get_workflow_use_cases)
+    request: CreateWorkflowRequest, use_cases: WorkflowUseCases = Depends(get_workflow_use_cases)
 ):
     """
     Create a new workflow.
-    
+
     Args:
         request: Workflow creation request
         use_cases: Workflow use cases instance
-        
+
     Returns:
         Created workflow information
     """
     try:
         # Convert Pydantic models to dictionaries
         tasks = [task.dict() for task in request.tasks]
-        
+
         workflow_id = use_cases.create_workflow(request.name, tasks)
-        
+
         # Get workflow details
         workflow_status = use_cases.get_workflow_status(workflow_id)
         if not workflow_status:
             raise HTTPException(status_code=404, detail="Workflow not found after creation")
-        
+
         return WorkflowResponse(
             workflow_id=workflow_status["workflow_id"],
             name=workflow_status["name"],
@@ -116,7 +123,7 @@ async def create_workflow(
             created_at=workflow_status.get("created_at"),
             started_at=workflow_status.get("started_at"),
             completed_at=workflow_status.get("completed_at"),
-            task_count=workflow_status["task_count"]
+            task_count=workflow_status["task_count"],
         )
     except ValidationError as e:
         raise HTTPException(status_code=400, detail=str(e))
@@ -129,18 +136,16 @@ async def create_workflow(
 
 @router.get("", response_model=List[WorkflowResponse])
 async def list_workflows(
-    limit: int = 100,
-    offset: int = 0,
-    use_cases: WorkflowUseCases = Depends(get_workflow_use_cases)
+    limit: int = 100, offset: int = 0, use_cases: WorkflowUseCases = Depends(get_workflow_use_cases)
 ):
     """
     List workflows with pagination.
-    
+
     Args:
         limit: Maximum number of workflows to return
         offset: Number of workflows to skip
         use_cases: Workflow use cases instance
-        
+
     Returns:
         List of workflows
     """
@@ -154,7 +159,7 @@ async def list_workflows(
                 created_at=w.get("created_at"),
                 started_at=None,
                 completed_at=None,
-                task_count=w["task_count"]
+                task_count=w["task_count"],
             )
             for w in workflows
         ]
@@ -165,16 +170,15 @@ async def list_workflows(
 
 @router.get("/{workflow_id}", response_model=WorkflowDetailResponse)
 async def get_workflow(
-    workflow_id: int,
-    use_cases: WorkflowUseCases = Depends(get_workflow_use_cases)
+    workflow_id: int, use_cases: WorkflowUseCases = Depends(get_workflow_use_cases)
 ):
     """
     Get workflow details by ID.
-    
+
     Args:
         workflow_id: Workflow ID
         use_cases: Workflow use cases instance
-        
+
     Returns:
         Workflow details
     """
@@ -182,7 +186,7 @@ async def get_workflow(
         workflow_status = use_cases.get_workflow_status(workflow_id)
         if not workflow_status:
             raise HTTPException(status_code=404, detail=f"Workflow {workflow_id} not found")
-        
+
         return WorkflowDetailResponse(
             workflow_id=workflow_status["workflow_id"],
             name=workflow_status["name"],
@@ -190,7 +194,7 @@ async def get_workflow(
             created_at=workflow_status.get("created_at"),
             started_at=workflow_status.get("started_at"),
             completed_at=workflow_status.get("completed_at"),
-            tasks=workflow_status.get("tasks", [])
+            tasks=workflow_status.get("tasks", []),
         )
     except HTTPException:
         raise
@@ -201,31 +205,29 @@ async def get_workflow(
 
 @router.post("/{workflow_id}/execute", response_model=ExecuteWorkflowResponse)
 async def execute_workflow(
-    workflow_id: int,
-    use_cases: WorkflowUseCases = Depends(get_workflow_use_cases)
+    workflow_id: int, use_cases: WorkflowUseCases = Depends(get_workflow_use_cases)
 ):
     """
     Execute a workflow.
-    
+
     Args:
         workflow_id: Workflow ID to execute
         use_cases: Workflow use cases instance
-        
+
     Returns:
         Workflow execution results
     """
     try:
         result = use_cases.execute_workflow(workflow_id)
-        
+
         return ExecuteWorkflowResponse(
             workflow_id=result["workflow_id"],
             name=result["name"],
             status=result["status"],
-            results=result["results"]
+            results=result["results"],
         )
     except WorkflowError as e:
         raise HTTPException(status_code=400, detail=str(e))
     except Exception as e:
         logger.error(f"Error executing workflow {workflow_id}: {str(e)}", exc_info=True)
         raise HTTPException(status_code=500, detail="Internal server error")
-

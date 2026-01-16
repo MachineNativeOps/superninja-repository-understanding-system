@@ -3,12 +3,13 @@
 Setup script for MachineNativeOps Auto-Monitor
 """
 
-from setuptools import setup, find_packages
 from pathlib import Path
+
+from setuptools import find_packages, setup
 
 # Read README
 readme_file = Path(__file__).parent / "README.md"
-long_description = readme_file.read_text(encoding='utf-8') if readme_file.exists() else ""
+long_description = readme_file.read_text(encoding="utf-8") if readme_file.exists() else ""
 
 setup(
     name="machinenativenops-auto-monitor",
@@ -24,21 +25,17 @@ setup(
         "Source": "https://github.com/MachineNativeOps/machine-native-ops-aaps",
         "Tracker": "https://github.com/MachineNativeOps/machine-native-ops-aaps/issues",
     },
-    
     # Package configuration
     package_dir={"": "src"},
     packages=find_packages(where="src"),
-    
     # Python version requirement
     python_requires=">=3.8",
-    
     # Dependencies
     install_requires=[
         "psutil>=5.9.0",
         "requests>=2.28.0",
         "PyYAML>=6.0",
     ],
-    
     # Optional dependencies
     extras_require={
         "dev": [
@@ -49,14 +46,12 @@ setup(
             "mypy>=1.0.0",
         ],
     },
-    
     # Entry points
     entry_points={
         "console_scripts": [
             "machinenativenops-auto-monitor=machinenativenops_auto_monitor.__main__:main",
         ],
     },
-    
     # Classification
     classifiers=[
         "Development Status :: 4 - Beta",
@@ -71,10 +66,8 @@ setup(
         "Programming Language :: Python :: 3.11",
         "Operating System :: OS Independent",
     ],
-    
     # Keywords
     keywords="monitoring observability metrics alerts machinenativeops autonomous",
-    
     # Include package data
     include_package_data=True,
     zip_safe=False,

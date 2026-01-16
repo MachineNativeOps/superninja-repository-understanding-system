@@ -16,6 +16,7 @@ from typing import Any
 
 class PolicySeverity(Enum):
     """策略嚴重性等級"""
+
     LOW = "low"
     MEDIUM = "medium"
     HIGH = "high"
@@ -24,25 +25,28 @@ class PolicySeverity(Enum):
 
 class PolicyCategory(Enum):
     """策略類別"""
-    SECURITY = "security"           # 安全相關
-    COMPLIANCE = "compliance"       # 合規相關
-    QUALITY = "quality"             # 質量相關
-    PERFORMANCE = "performance"     # 性能相關
-    GOVERNANCE = "governance"       # 治理相關
-    OPERATIONAL = "operational"     # 操作相關
+
+    SECURITY = "security"  # 安全相關
+    COMPLIANCE = "compliance"  # 合規相關
+    QUALITY = "quality"  # 質量相關
+    PERFORMANCE = "performance"  # 性能相關
+    GOVERNANCE = "governance"  # 治理相關
+    OPERATIONAL = "operational"  # 操作相關
 
 
 class PolicyAction(Enum):
     """策略違規後的動作"""
-    BLOCK = "block"         # 阻止部署
-    WARN = "warn"           # 發出警告
-    AUDIT = "audit"         # 記錄審計
-    NOTIFY = "notify"       # 發送通知
+
+    BLOCK = "block"  # 阻止部署
+    WARN = "warn"  # 發出警告
+    AUDIT = "audit"  # 記錄審計
+    NOTIFY = "notify"  # 發送通知
 
 
 @dataclass
 class PolicyViolation:
     """策略違規記錄"""
+
     rule_id: str
     rule_name: str
     severity: PolicySeverity
@@ -57,16 +61,16 @@ class PolicyViolation:
     def to_dict(self) -> dict[str, Any]:
         """Convert to dictionary"""
         return {
-            'rule_id': self.rule_id,
-            'rule_name': self.rule_name,
-            'severity': self.severity.value,
-            'category': self.category.value,
-            'message': self.message,
-            'path': self.path,
-            'actual_value': self.actual_value,
-            'expected_value': self.expected_value,
-            'remediation': self.remediation,
-            'detected_at': self.detected_at.isoformat(),
+            "rule_id": self.rule_id,
+            "rule_name": self.rule_name,
+            "severity": self.severity.value,
+            "category": self.category.value,
+            "message": self.message,
+            "path": self.path,
+            "actual_value": self.actual_value,
+            "expected_value": self.expected_value,
+            "remediation": self.remediation,
+            "detected_at": self.detected_at.isoformat(),
         }
 
 
@@ -74,9 +78,10 @@ class PolicyViolation:
 class PolicyRule:
     """
     策略規則定義
-    
+
     定義單個安全/合規策略規則。
     """
+
     id: str
     name: str
     description: str
@@ -102,11 +107,11 @@ class PolicyRule:
     def evaluate(self, data: Any, context: dict[str, Any] | None = None) -> PolicyViolation | None:
         """
         評估數據是否符合策略
-        
+
         Args:
             data: 待評估的數據
             context: 額外的上下文信息
-        
+
         Returns:
             PolicyViolation if rule is violated, None otherwise
         """
@@ -152,28 +157,28 @@ class PolicyRule:
 
         actual = self._get_value_by_path(data, path)
 
-        if operator == 'exists':
+        if operator == "exists":
             return actual is not None
-        elif operator == 'not_exists':
+        elif operator == "not_exists":
             return actual is None
-        elif operator == 'equals' and value:
+        elif operator == "equals" and value:
             return str(actual) == value
-        elif operator == 'not_equals' and value:
+        elif operator == "not_equals" and value:
             return str(actual) != value
-        elif operator == 'contains' and value:
+        elif operator == "contains" and value:
             return value in str(actual)
-        elif operator == 'matches' and value:
+        elif operator == "matches" and value:
             return bool(re.match(value, str(actual)))
-        elif operator == 'greater_than' and value:
+        elif operator == "greater_than" and value:
             return float(actual) > float(value) if actual else False
-        elif operator == 'less_than' and value:
+        elif operator == "less_than" and value:
             return float(actual) < float(value) if actual else False
 
         return True
 
     def _get_value_by_path(self, data: Any, path: str) -> Any:
         """根據路徑獲取值"""
-        parts = path.split('.')
+        parts = path.split(".")
         current = data
 
         for part in parts:
@@ -190,22 +195,23 @@ class PolicyRule:
     def to_dict(self) -> dict[str, Any]:
         """Convert to dictionary"""
         return {
-            'id': self.id,
-            'name': self.name,
-            'description': self.description,
-            'severity': self.severity.value,
-            'category': self.category.value,
-            'action': self.action.value,
-            'enabled': self.enabled,
-            'tags': self.tags,
-            'remediation': self.remediation,
-            'documentation_url': self.documentation_url,
+            "id": self.id,
+            "name": self.name,
+            "description": self.description,
+            "severity": self.severity.value,
+            "category": self.category.value,
+            "action": self.action.value,
+            "enabled": self.enabled,
+            "tags": self.tags,
+            "remediation": self.remediation,
+            "documentation_url": self.documentation_url,
         }
 
 
 @dataclass
 class PolicyEvaluationResult:
     """策略評估結果"""
+
     passed: bool
     violations: list[PolicyViolation] = field(default_factory=list)
     warnings: list[PolicyViolation] = field(default_factory=list)
@@ -231,24 +237,24 @@ class PolicyEvaluationResult:
     def to_dict(self) -> dict[str, Any]:
         """Convert to dictionary"""
         return {
-            'passed': self.passed,
-            'violations': [v.to_dict() for v in self.violations],
-            'warnings': [w.to_dict() for w in self.warnings],
-            'evaluated_rules': self.evaluated_rules,
-            'passed_rules': self.passed_rules,
-            'critical_count': self.critical_count,
-            'high_count': self.high_count,
-            'should_block': self.should_block,
-            'evaluated_at': self.evaluated_at.isoformat(),
+            "passed": self.passed,
+            "violations": [v.to_dict() for v in self.violations],
+            "warnings": [w.to_dict() for w in self.warnings],
+            "evaluated_rules": self.evaluated_rules,
+            "passed_rules": self.passed_rules,
+            "critical_count": self.critical_count,
+            "high_count": self.high_count,
+            "should_block": self.should_block,
+            "evaluated_at": self.evaluated_at.isoformat(),
         }
 
 
 class PolicyGate:
     """
     策略閘門
-    
+
     管理和執行所有安全策略規則。
-    
+
     參考：DevSecOps 最佳實踐 [3] [5]
     """
 
@@ -297,16 +303,17 @@ class PolicyGate:
         """檢查是否有例外"""
         return module_id in self._exceptions.get(rule_id, [])
 
-    def evaluate(self, data: Any, module_id: str | None = None,
-                 context: dict[str, Any] | None = None) -> PolicyEvaluationResult:
+    def evaluate(
+        self, data: Any, module_id: str | None = None, context: dict[str, Any] | None = None
+    ) -> PolicyEvaluationResult:
         """
         評估數據是否符合所有策略
-        
+
         Args:
             data: 待評估的數據
             module_id: 模組 ID（用於檢查例外）
             context: 額外的上下文信息
-        
+
         Returns:
             PolicyEvaluationResult: 評估結果
         """
@@ -328,15 +335,20 @@ class PolicyGate:
                 if rule.action == PolicyAction.BLOCK:
                     result.violations.append(violation)
                     result.passed = False
-                elif rule.action == PolicyAction.WARN or rule.action == PolicyAction.AUDIT or rule.action == PolicyAction.NOTIFY:
+                elif (
+                    rule.action == PolicyAction.WARN
+                    or rule.action == PolicyAction.AUDIT
+                    or rule.action == PolicyAction.NOTIFY
+                ):
                     result.warnings.append(violation)
             else:
                 result.passed_rules += 1
 
         return result
 
-    def evaluate_by_category(self, data: Any, category: PolicyCategory,
-                            module_id: str | None = None) -> PolicyEvaluationResult:
+    def evaluate_by_category(
+        self, data: Any, category: PolicyCategory, module_id: str | None = None
+    ) -> PolicyEvaluationResult:
         """按類別評估策略"""
         result = PolicyEvaluationResult(passed=True)
 
@@ -361,8 +373,9 @@ class PolicyGate:
 
         return result
 
-    def get_rules(self, category: PolicyCategory | None = None,
-                 severity: PolicySeverity | None = None) -> list[PolicyRule]:
+    def get_rules(
+        self, category: PolicyCategory | None = None, severity: PolicySeverity | None = None
+    ) -> list[PolicyRule]:
         """獲取策略規則列表"""
         rules = list(self._rules.values())
 
@@ -400,10 +413,15 @@ class PolicyGate:
                 severity=PolicySeverity.HIGH,
                 category=PolicyCategory.SECURITY,
                 action=PolicyAction.BLOCK,
-                validator=lambda data: all(
-                    url.startswith('https://')
-                    for url in data.get('endpoints', []) if isinstance(url, str)
-                ) if isinstance(data, dict) else True,
+                validator=lambda data: (
+                    all(
+                        url.startswith("https://")
+                        for url in data.get("endpoints", [])
+                        if isinstance(url, str)
+                    )
+                    if isinstance(data, dict)
+                    else True
+                ),
                 remediation="Change all HTTP URLs to HTTPS",
             ),
             PolicyRule(

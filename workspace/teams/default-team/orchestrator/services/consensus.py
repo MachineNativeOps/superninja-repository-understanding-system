@@ -10,21 +10,21 @@ Implements multi-agent consensus mechanism with:
 """
 
 import asyncio
+import uuid
 from datetime import datetime, timedelta
 from typing import Any, Callable, Dict, List, Optional
-import uuid
 
 from ..models.consensus import (
-    Vote,
-    VoteType,
+    DEFAULT_AGENT_WEIGHTS,
+    AgentWeight,
     ConsensusRequest,
     ConsensusResult,
     ConsensusState,
-    AgentWeight,
-    DEFAULT_AGENT_WEIGHTS,
+    Vote,
+    VoteType,
 )
+from .audit_trail import AuditAction, AuditTrail
 from .event_store import EventStore
-from .audit_trail import AuditTrail, AuditAction
 
 
 class ConsensusManager:
@@ -76,20 +76,19 @@ class ConsensusManager:
         # Determine voters from agent weights if not specified
         if required_voters is None:
             required_voters = [
-                agent_id for agent_id, weight in self._agent_weights.items()
-                if weight.required
+                agent_id for agent_id, weight in self._agent_weights.items() if weight.required
             ]
 
         if optional_voters is None:
             optional_voters = [
-                agent_id for agent_id, weight in self._agent_weights.items()
+                agent_id
+                for agent_id, weight in self._agent_weights.items()
                 if not weight.required and agent_id not in required_voters
             ]
 
         # Determine veto agents
         veto_agents = [
-            agent_id for agent_id, weight in self._agent_weights.items()
-            if weight.has_veto
+            agent_id for agent_id, weight in self._agent_weights.items() if weight.has_veto
         ]
 
         request = ConsensusRequest(
@@ -178,8 +177,7 @@ class ConsensusManager:
 
             # Get agent weight
             agent_weight = self._agent_weights.get(
-                agent_id,
-                AgentWeight(agent_id=agent_id, weight=1.0)
+                agent_id, AgentWeight(agent_id=agent_id, weight=1.0)
             )
 
             vote = Vote(
@@ -299,7 +297,9 @@ class ConsensusManager:
         weighted_approval = approve_weight / total_weight if total_weight > 0 else 0
 
         # Collect conditions
-        conditions = [v.conditions for v in votes if v.conditions and v.vote_type == VoteType.APPROVE]
+        conditions = [
+            v.conditions for v in votes if v.conditions and v.vote_type == VoteType.APPROVE
+        ]
 
         result = ConsensusResult(
             consensus_id=request.consensus_id,
@@ -370,6 +370,7 @@ class ConsensusManager:
                     callback(request, result)
             except Exception as e:
                 import logging
+
                 logging.getLogger(__name__).warning(f"Consensus callback error: {e}")
 
     def on_consensus(self, callback: Callable) -> None:
@@ -394,10 +395,7 @@ class ConsensusManager:
     async def get_pending_requests(self) -> List[ConsensusRequest]:
         """Get all pending consensus requests."""
         async with self._lock:
-            return [
-                r for r in self._requests.values()
-                if r.consensus_id not in self._results
-            ]
+            return [r for r in self._requests.values() if r.consensus_id not in self._results]
 
     async def get_statistics(self) -> Dict[str, Any]:
         """Get consensus statistics."""
@@ -416,7 +414,9 @@ class ConsensusManager:
             "rejected": rejected,
             "vetoed": vetoed,
             "expired": expired,
-            "approval_rate": approved / (approved + rejected) * 100 if (approved + rejected) > 0 else 0,
+            "approval_rate": (
+                approved / (approved + rejected) * 100 if (approved + rejected) > 0 else 0
+            ),
         }
 
     def __len__(self) -> int:

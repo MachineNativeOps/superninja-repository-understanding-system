@@ -145,8 +145,7 @@ class AppendOnlyLogClient:
                 "metadata": {
                     **metadata,
                     "source": metadata.get("source", "unknown"),
-                    "actor": metadata.get("actor")
-                    or os.environ.get("USER", "system"),
+                    "actor": metadata.get("actor") or os.environ.get("USER", "system"),
                     "environment": metadata.get("environment")
                     or os.environ.get("NODE_ENV", "production"),
                     "commit_sha": metadata.get("commit_sha")
@@ -281,8 +280,7 @@ class AppendOnlyLogClient:
             events = [
                 e
                 for e in events
-                if datetime.fromisoformat(e["timestamp"].replace("Z", "+00:00"))
-                >= since_dt
+                if datetime.fromisoformat(e["timestamp"].replace("Z", "+00:00")) >= since_dt
             ]
 
         if until:
@@ -290,15 +288,12 @@ class AppendOnlyLogClient:
             events = [
                 e
                 for e in events
-                if datetime.fromisoformat(e["timestamp"].replace("Z", "+00:00"))
-                <= until_dt
+                if datetime.fromisoformat(e["timestamp"].replace("Z", "+00:00")) <= until_dt
             ]
 
         return events
 
-    def generate_report(
-        self, include_events: bool = False, **filter_kwargs
-    ) -> Dict[str, Any]:
+    def generate_report(self, include_events: bool = False, **filter_kwargs) -> Dict[str, Any]:
         """
         生成審計報告
 

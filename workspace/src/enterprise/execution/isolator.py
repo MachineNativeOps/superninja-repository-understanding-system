@@ -23,17 +23,19 @@ logger = logging.getLogger(__name__)
 
 class IsolationLevel(Enum):
     """Isolation levels for execution environments"""
-    STANDARD = "standard"       # Container with standard restrictions
-    HIGH = "high"              # Additional network isolation
-    MAXIMUM = "maximum"        # Completely air-gapped
+
+    STANDARD = "standard"  # Container with standard restrictions
+    HIGH = "high"  # Additional network isolation
+    MAXIMUM = "maximum"  # Completely air-gapped
 
 
 class NetworkPolicy(Enum):
     """Network egress policies"""
-    DENY_ALL = "deny_all"                 # No network access
-    ALLOW_INTERNAL = "allow_internal"     # Only internal services
-    ALLOW_SPECIFIC = "allow_specific"     # Allowlist specific domains
-    ALLOW_ALL = "allow_all"              # Unrestricted (dangerous!)
+
+    DENY_ALL = "deny_all"  # No network access
+    ALLOW_INTERNAL = "allow_internal"  # Only internal services
+    ALLOW_SPECIFIC = "allow_specific"  # Allowlist specific domains
+    ALLOW_ALL = "allow_all"  # Unrestricted (dangerous!)
 
 
 @dataclass
@@ -43,6 +45,7 @@ class IsolationPolicy:
 
     Defines how strictly to isolate the execution environment.
     """
+
     # Isolation level
     level: IsolationLevel = IsolationLevel.STANDARD
 
@@ -51,19 +54,19 @@ class IsolationPolicy:
     allowed_egress: list[str] = field(default_factory=list)  # Allowlist if ALLOW_SPECIFIC
 
     # Resource limits
-    cpu_limit: str = "1"                    # CPU cores (e.g., "0.5", "1", "2")
-    memory_limit: str = "512Mi"             # Memory limit
-    ephemeral_storage_limit: str = "1Gi"    # Disk space
+    cpu_limit: str = "1"  # CPU cores (e.g., "0.5", "1", "2")
+    memory_limit: str = "512Mi"  # Memory limit
+    ephemeral_storage_limit: str = "1Gi"  # Disk space
 
     # Timeouts
-    execution_timeout_seconds: int = 300    # Max execution time
-    setup_timeout_seconds: int = 60         # Container startup timeout
+    execution_timeout_seconds: int = 300  # Max execution time
+    setup_timeout_seconds: int = 60  # Container startup timeout
 
     # Capabilities
-    drop_all_capabilities: bool = True      # Drop Linux capabilities
-    read_only_root_fs: bool = True         # Read-only filesystem
-    run_as_non_root: bool = True           # Run as non-root user
-    user_id: int = 1000                    # UID to run as
+    drop_all_capabilities: bool = True  # Drop Linux capabilities
+    read_only_root_fs: bool = True  # Read-only filesystem
+    run_as_non_root: bool = True  # Run as non-root user
+    user_id: int = 1000  # UID to run as
 
     # Filesystem
     allowed_volume_mounts: list[str] = field(default_factory=list)
@@ -81,6 +84,7 @@ class ExecutionSpec:
 
     Defines what to run and how.
     """
+
     id: UUID = field(default_factory=uuid4)
 
     # Tenant isolation
@@ -88,7 +92,7 @@ class ExecutionSpec:
     run_id: UUID | None = None
 
     # Container image
-    image: str = ""                         # Worker image to use
+    image: str = ""  # Worker image to use
     image_pull_secret: str | None = None
 
     # Command
@@ -101,8 +105,8 @@ class ExecutionSpec:
     secret_refs: list[str] = field(default_factory=list)  # Secrets to inject
 
     # Input
-    input_source: str = ""                  # Git URL or artifact location
-    input_ref: str = ""                     # Git ref or version
+    input_source: str = ""  # Git URL or artifact location
+    input_ref: str = ""  # Git ref or version
 
     # Policy
     isolation_policy: IsolationPolicy = field(default_factory=IsolationPolicy)
@@ -116,6 +120,7 @@ class ExecutionResult:
     """
     Result of an isolated execution
     """
+
     id: UUID = field(default_factory=uuid4)
     spec_id: UUID = field(default_factory=uuid4)
 
@@ -297,9 +302,7 @@ class ExecutionIsolator:
         finally:
             result.completed_at = datetime.utcnow()
             if result.started_at:
-                result.duration_seconds = (
-                    result.completed_at - result.started_at
-                ).total_seconds()
+                result.duration_seconds = (result.completed_at - result.started_at).total_seconds()
 
         logger.info(
             f"Execution completed: spec={spec.id} "
@@ -349,8 +352,7 @@ class ExecutionIsolator:
         finally:
             # Always cleanup
             if container_id and (
-                self.cleanup_on_complete
-                or (not result.success and self.cleanup_on_failure)
+                self.cleanup_on_complete or (not result.success and self.cleanup_on_failure)
             ):
                 try:
                     await self.container_runtime.destroy_container(container_id)
@@ -443,22 +445,21 @@ class ExecutionIsolator:
         }
 
         # Environment variables
-        env = [
-            {"name": k, "value": v}
-            for k, v in spec.env_vars.items()
-        ]
+        env = [{"name": k, "value": v} for k, v in spec.env_vars.items()]
 
         # Add secret references
         for secret_ref in spec.secret_refs:
-            env.append({
-                "name": secret_ref.upper(),
-                "valueFrom": {
-                    "secretKeyRef": {
-                        "name": secret_ref,
-                        "key": "value",
+            env.append(
+                {
+                    "name": secret_ref.upper(),
+                    "valueFrom": {
+                        "secretKeyRef": {
+                            "name": secret_ref,
+                            "key": "value",
+                        },
                     },
-                },
-            })
+                }
+            )
 
         # Build job spec
         job_spec = {
@@ -490,27 +491,29 @@ class ExecutionIsolator:
                             "runAsNonRoot": policy.run_as_non_root,
                             "fsGroup": policy.user_id,
                         },
-                        "containers": [{
-                            "name": "worker",
-                            "image": spec.image or self.default_image,
-                            "imagePullPolicy": self.image_pull_policy,
-                            "command": spec.command if spec.command else None,
-                            "args": spec.args if spec.args else None,
-                            "workingDir": spec.working_dir,
-                            "env": env,
-                            "resources": resources,
-                            "securityContext": security_context,
-                            "volumeMounts": [
-                                {
-                                    "name": "workspace",
-                                    "mountPath": "/workspace",
-                                },
-                                {
-                                    "name": "tmp",
-                                    "mountPath": "/tmp",
-                                },
-                            ],
-                        }],
+                        "containers": [
+                            {
+                                "name": "worker",
+                                "image": spec.image or self.default_image,
+                                "imagePullPolicy": self.image_pull_policy,
+                                "command": spec.command if spec.command else None,
+                                "args": spec.args if spec.args else None,
+                                "workingDir": spec.working_dir,
+                                "env": env,
+                                "resources": resources,
+                                "securityContext": security_context,
+                                "volumeMounts": [
+                                    {
+                                        "name": "workspace",
+                                        "mountPath": "/workspace",
+                                    },
+                                    {
+                                        "name": "tmp",
+                                        "mountPath": "/tmp",
+                                    },
+                                ],
+                            }
+                        ],
                         "volumes": [
                             {
                                 "name": "workspace",
@@ -574,15 +577,15 @@ class ExecutionIsolator:
             egress_rules = []
             for domain in policy.allowed_egress:
                 # In practice, you'd resolve domains or use external DNS
-                egress_rules.append({
-                    "to": [{"ipBlock": {"cidr": domain}}]
-                    if "/" in domain
-                    else [],
-                    "ports": [
-                        {"protocol": "TCP", "port": 443},
-                        {"protocol": "TCP", "port": 80},
-                    ],
-                })
+                egress_rules.append(
+                    {
+                        "to": [{"ipBlock": {"cidr": domain}}] if "/" in domain else [],
+                        "ports": [
+                            {"protocol": "TCP", "port": 443},
+                            {"protocol": "TCP", "port": 80},
+                        ],
+                    }
+                )
 
             return {
                 "apiVersion": "networking.k8s.io/v1",

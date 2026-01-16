@@ -21,14 +21,13 @@ import json
 import logging
 import sys
 import time
-from dataclasses import dataclass, field, asdict
+from dataclasses import asdict, dataclass, field
 from datetime import datetime
 from enum import Enum
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Tuple
 
 import yaml
-
 
 # ════════════════════════════════════════════════════════════════════════════
 # 📋 Enumerations and Constants
@@ -37,6 +36,7 @@ import yaml
 
 class EngineStatus(Enum):
     """Engine operational status enumeration."""
+
     IDLE = "idle"
     INITIALIZING = "initializing"
     RUNNING = "running"
@@ -47,6 +47,7 @@ class EngineStatus(Enum):
 
 class HealthLevel(Enum):
     """Health level classification."""
+
     EXCELLENT = "excellent"
     GOOD = "good"
     FAIR = "fair"
@@ -62,6 +63,7 @@ class HealthLevel(Enum):
 @dataclass
 class EngineMetrics:
     """Metrics for automation engines."""
+
     engine_id: str
     status: EngineStatus
     health_level: HealthLevel
@@ -77,14 +79,15 @@ class EngineMetrics:
     def to_dict(self) -> Dict[str, Any]:
         """Convert metrics to dictionary."""
         data = asdict(self)
-        data['status'] = self.status.value
-        data['health_level'] = self.health_level.value
+        data["status"] = self.status.value
+        data["health_level"] = self.health_level.value
         return data
 
 
 @dataclass
 class AutomationTask:
     """Automation task definition."""
+
     task_id: str
     engine_id: str
     task_type: str
@@ -100,6 +103,7 @@ class AutomationTask:
 @dataclass
 class EngineConfig:
     """Configuration for individual automation engines."""
+
     engine_id: str
     dimension_name: str
     dimension_path: str
@@ -131,9 +135,7 @@ class GovernanceAutomationEngine:
         self.status = EngineStatus.IDLE
         self.health_level = HealthLevel.GOOD
         self.metrics = EngineMetrics(
-            engine_id=config.engine_id,
-            status=self.status,
-            health_level=self.health_level
+            engine_id=config.engine_id, status=self.status, health_level=self.health_level
         )
         self.task_queue: List[AutomationTask] = []
         self.running_tasks: Dict[str, AutomationTask] = {}
@@ -200,9 +202,8 @@ class GovernanceAutomationEngine:
         # Update metrics
         if self.metrics.executed_tasks > 0:
             self.metrics.success_rate = (
-                (self.metrics.executed_tasks - self.metrics.failed_tasks)
-                / self.metrics.executed_tasks
-            )
+                self.metrics.executed_tasks - self.metrics.failed_tasks
+            ) / self.metrics.executed_tasks
         self.metrics.uptime_seconds = time.time() - self.start_time
 
         return processed
@@ -262,9 +263,7 @@ class GovernanceAutomationLauncher:
         logger = logging.getLogger("GovernanceAutomation")
         if not logger.handlers:
             handler = logging.StreamHandler(sys.stdout)
-            formatter = logging.Formatter(
-                '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
-            )
+            formatter = logging.Formatter("%(asctime)s - %(name)s - %(levelname)s - %(message)s")
             handler.setFormatter(formatter)
             logger.addHandler(handler)
             logger.setLevel(logging.INFO)
@@ -296,7 +295,7 @@ class GovernanceAutomationLauncher:
                 engine_id=engine_id,
                 dimension_name=dimension_name,
                 dimension_path=str(dimension_path),
-                enabled=True
+                enabled=True,
             )
             configs.append(config)
 
@@ -385,12 +384,13 @@ class GovernanceAutomationLauncher:
         report = {
             "timestamp": datetime.now().isoformat(),
             "total_engines": len(self.engines),
-            "active_engines": sum(1 for e in self.engines.values() if e.status == EngineStatus.RUNNING),
+            "active_engines": sum(
+                1 for e in self.engines.values() if e.status == EngineStatus.RUNNING
+            ),
             "global_metrics": self.global_metrics,
             "engines": {
-                engine_id: engine.metrics.to_dict()
-                for engine_id, engine in self.engines.items()
-            }
+                engine_id: engine.metrics.to_dict() for engine_id, engine in self.engines.items()
+            },
         }
         return report
 
@@ -411,7 +411,7 @@ class GovernanceAutomationLauncher:
         print(f"  {'Engine ID':<30} | {'Status':<12} | {'Health':<10} | Tasks")
         print(f"  {'-' * 80}")
 
-        for engine_id, metrics in report['engines'].items():
+        for engine_id, metrics in report["engines"].items():
             print(
                 f"  {engine_id:<30} | "
                 f"{metrics['status']:<12} | "
@@ -426,9 +426,7 @@ class GovernanceAutomationLauncher:
         self.logger.info("🛑 Initiating graceful shutdown...")
         self.is_running = False
 
-        shutdown_tasks = [
-            engine.shutdown() for engine in self.engines.values()
-        ]
+        shutdown_tasks = [engine.shutdown() for engine in self.engines.values()]
         await asyncio.gather(*shutdown_tasks)
 
         self.print_status_report()

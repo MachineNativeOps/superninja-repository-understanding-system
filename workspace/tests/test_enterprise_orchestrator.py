@@ -10,30 +10,31 @@ Enterprise SynergyMesh Orchestrator 单元测试
 - 审计日志
 """
 
-import pytest
+from core.orchestrators import (
+    ComponentType,
+    DependencyResolver,
+    EnterpriseSynergyMeshOrchestrator,
+    ExecutionStatus,
+    ResourceQuota,
+    RetryPolicy,
+    TenantTier,
+)
 import asyncio
+import sys
 from datetime import datetime
 from pathlib import Path
-import sys
+
+import pytest
 
 # 添加 src 到路径
 project_root = Path(__file__).parent.parent
-sys.path.insert(0, str(project_root / 'src'))
-
-from core.orchestrators import (
-    EnterpriseSynergyMeshOrchestrator,
-    DependencyResolver,
-    TenantTier,
-    ResourceQuota,
-    RetryPolicy,
-    ExecutionStatus,
-    ComponentType
-)
+sys.path.insert(0, str(project_root / "src"))
 
 
 # ============================================================================
 # 多租户测试
 # ============================================================================
+
 
 class TestMultiTenancy:
     """多租户功能测试"""
@@ -109,6 +110,7 @@ class TestMultiTenancy:
 # ============================================================================
 # 依赖管理测试
 # ============================================================================
+
 
 class TestDependencyResolver:
     """依赖解析功能测试"""
@@ -257,6 +259,7 @@ class TestDependencyResolver:
 # 容错和重试测试
 # ============================================================================
 
+
 class TestFaultTolerance:
     """容错和重试测试"""
 
@@ -269,12 +272,7 @@ class TestFaultTolerance:
 
     def test_exponential_backoff(self):
         """测试指数退避"""
-        policy = RetryPolicy(
-            max_retries=3,
-            initial_delay=1.0,
-            max_delay=10.0,
-            exponential_base=2.0
-        )
+        policy = RetryPolicy(max_retries=3, initial_delay=1.0, max_delay=10.0, exponential_base=2.0)
 
         delay_1 = policy.get_delay(0)
         delay_2 = policy.get_delay(1)
@@ -287,11 +285,7 @@ class TestFaultTolerance:
 
     def test_max_delay_limit(self):
         """测试最大延迟限制"""
-        policy = RetryPolicy(
-            initial_delay=1.0,
-            max_delay=5.0,
-            exponential_base=10.0
-        )
+        policy = RetryPolicy(initial_delay=1.0, max_delay=5.0, exponential_base=10.0)
 
         delay = policy.get_delay(5)
         assert delay <= 5.0
@@ -309,11 +303,7 @@ class TestFaultTolerance:
             call_count += 1
             return {"success": True}
 
-        result = await orch.execute_with_retry(
-            success_task,
-            "test_comp",
-            tenant_id
-        )
+        result = await orch.execute_with_retry(success_task, "test_comp", tenant_id)
 
         assert result.status.value == "success"
         assert call_count == 1
@@ -334,12 +324,7 @@ class TestFaultTolerance:
                 raise RuntimeError("Temporary failure")
             return {"success": True}
 
-        result = await orch.execute_with_retry(
-            flaky_task,
-            "test_comp",
-            tenant_id,
-            max_retries=3
-        )
+        result = await orch.execute_with_retry(flaky_task, "test_comp", tenant_id, max_retries=3)
 
         assert result.status.value == "success"
         assert call_count == 3
@@ -358,12 +343,7 @@ class TestFaultTolerance:
             call_count += 1
             raise RuntimeError("Permanent failure")
 
-        result = await orch.execute_with_retry(
-            always_fails,
-            "test_comp",
-            tenant_id,
-            max_retries=2
-        )
+        result = await orch.execute_with_retry(always_fails, "test_comp", tenant_id, max_retries=2)
 
         assert result.status.value == "failed"
         assert call_count == 3  # 1 initial + 2 retries
@@ -374,15 +354,13 @@ class TestFaultTolerance:
 # 资源管理测试
 # ============================================================================
 
+
 class TestResourceManagement:
     """资源管理和配额测试"""
 
     def test_quota_basic_tier(self):
         """测试基础等级配额"""
-        quota = ResourceQuota(
-            max_concurrent_tasks=5,
-            max_memory_mb=512
-        )
+        quota = ResourceQuota(max_concurrent_tasks=5, max_memory_mb=512)
 
         assert quota.max_concurrent_tasks == 5
         assert quota.max_memory_mb == 512
@@ -423,6 +401,7 @@ class TestResourceManagement:
 # ============================================================================
 # 审计日志测试
 # ============================================================================
+
 
 class TestAuditLogging:
     """审计日志功能测试"""
@@ -467,6 +446,7 @@ class TestAuditLogging:
 # 监控和指标测试
 # ============================================================================
 
+
 class TestMonitoring:
     """监控和指标测试"""
 
@@ -493,6 +473,7 @@ class TestMonitoring:
 # ============================================================================
 # 集成测试
 # ============================================================================
+
 
 class TestIntegration:
     """集成测试"""

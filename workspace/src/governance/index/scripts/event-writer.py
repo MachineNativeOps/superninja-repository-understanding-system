@@ -16,14 +16,14 @@ Usage:
 This is a PRODUCTION tool, not a future feature.
 """
 
-import json
-import hashlib
 import argparse
+import hashlib
+import json
+import sys
+import uuid
 from datetime import datetime, timedelta
 from pathlib import Path
-from typing import Dict, List, Any, Optional
-import uuid
-import sys
+from typing import Any, Dict, List, Optional
 
 
 class EventWriter:
@@ -48,14 +48,14 @@ class EventWriter:
     def _load_json(self, path: Path) -> Dict:
         """Load JSON file."""
         try:
-            with open(path, 'r', encoding='utf-8') as f:
+            with open(path, "r", encoding="utf-8") as f:
                 return json.load(f)
         except FileNotFoundError:
             return {}
 
     def _save_json(self, path: Path, data: Dict):
         """Save JSON file with proper formatting."""
-        with open(path, 'w', encoding='utf-8') as f:
+        with open(path, "w", encoding="utf-8") as f:
             json.dump(data, f, indent=2, ensure_ascii=False)
 
     def generate_event_id(self) -> str:
@@ -66,20 +66,24 @@ class EventWriter:
 
     def generate_embedding(self, text: str, dimension: int = 384) -> List[float]:
         """Generate deterministic embedding for event."""
-        text_bytes = text.encode('utf-8')
+        text_bytes = text.encode("utf-8")
         embeddings = []
         for i in range(dimension):
-            hash_input = text_bytes + i.to_bytes(2, 'big')
+            hash_input = text_bytes + i.to_bytes(2, "big")
             hash_value = hashlib.sha256(hash_input).digest()
-            int_value = int.from_bytes(hash_value[:4], 'big')
+            int_value = int.from_bytes(hash_value[:4], "big")
             float_value = (int_value / (2**32)) * 2 - 1
             embeddings.append(round(float_value, 6))
         norm = sum(x**2 for x in embeddings) ** 0.5
         return [round(x / norm, 6) for x in embeddings]
 
-    def write_event(self, event_type: str, data: Dict,
-                    causal_parent: Optional[str] = None,
-                    source: str = "agent") -> str:
+    def write_event(
+        self,
+        event_type: str,
+        data: Dict,
+        causal_parent: Optional[str] = None,
+        source: str = "agent",
+    ) -> str:
         """
         Write a new event to the current session.
 
@@ -102,7 +106,7 @@ class EventWriter:
             "source": source,
             "data": data,
             "causal_parent": causal_parent,
-            "status": "completed"
+            "status": "completed",
         }
 
         # Load current session
@@ -119,18 +123,18 @@ class EventWriter:
         if "context" not in session:
             session["context"] = {"causal_chain": []}
         if causal_parent:
-            session["context"]["causal_chain"].append({
-                "parent": causal_parent,
-                "child": event_id,
-                "type": event_type
-            })
+            session["context"]["causal_chain"].append(
+                {"parent": causal_parent, "child": event_id, "type": event_type}
+            )
 
         # Save session
         self._save_json(self.session_path, session)
 
         # Update registry
         registry = self._load_json(self.registry_path)
-        registry["statistics"]["total_events"] = registry.get("statistics", {}).get("total_events", 0) + 1
+        registry["statistics"]["total_events"] = (
+            registry.get("statistics", {}).get("total_events", 0) + 1
+        )
         registry["statistics"]["last_event_id"] = event_id
         registry["statistics"]["last_update"] = timestamp
         self._save_json(self.registry_path, registry)
@@ -153,7 +157,7 @@ class EventWriter:
             "event_id": event["id"],
             "type": event["type"],
             "timestamp": event["timestamp"],
-            "embedding": embedding
+            "embedding": embedding,
         }
 
         if "active_vectors" not in vector_data:
@@ -203,10 +207,10 @@ class EventWriter:
             "event_count": len(to_compress),
             "date_range": {
                 "start": to_compress[0]["timestamp"] if to_compress else None,
-                "end": to_compress[-1]["timestamp"] if to_compress else None
+                "end": to_compress[-1]["timestamp"] if to_compress else None,
             },
             "summary": event_summary,
-            "events": to_compress
+            "events": to_compress,
         }
 
         # Save compressed file
@@ -216,7 +220,9 @@ class EventWriter:
         # Update session with only kept events
         session["events"] = to_keep
         session["event_count"] = len(to_keep)
-        session["context"]["compressed_files"] = session.get("context", {}).get("compressed_files", [])
+        session["context"]["compressed_files"] = session.get("context", {}).get(
+            "compressed_files", []
+        )
         session["context"]["compressed_files"].append(compressed_file)
         self._save_json(self.session_path, session)
 
@@ -224,11 +230,13 @@ class EventWriter:
         registry = self._load_json(self.registry_path)
         if "files" not in registry:
             registry["files"] = []
-        registry["files"].append({
-            "file": compressed_file,
-            "count": len(to_compress),
-            "compressed_at": datetime.utcnow().isoformat() + "Z"
-        })
+        registry["files"].append(
+            {
+                "file": compressed_file,
+                "count": len(to_compress),
+                "compressed_at": datetime.utcnow().isoformat() + "Z",
+            }
+        )
         registry["statistics"]["total_files"] = len(registry["files"])
         self._save_json(self.registry_path, registry)
 
@@ -236,7 +244,8 @@ class EventWriter:
         vector_data = self._load_json(self.vector_path)
         compressed_event_ids = {e["id"] for e in to_compress}
         vector_data["active_vectors"] = [
-            v for v in vector_data.get("active_vectors", [])
+            v
+            for v in vector_data.get("active_vectors", [])
             if v["event_id"] not in compressed_event_ids
         ]
 
@@ -245,7 +254,7 @@ class EventWriter:
         compressed_vector = {
             "file": compressed_file,
             "event_count": len(to_compress),
-            "embedding": self.generate_embedding(summary_text)
+            "embedding": self.generate_embedding(summary_text),
         }
         if "compressed_events" not in vector_data:
             vector_data["compressed_events"] = []
@@ -276,12 +285,14 @@ class EventWriter:
         results = []
         for vector in vector_data.get("active_vectors", []):
             similarity = self._cosine_similarity(query_embedding, vector["embedding"])
-            results.append({
-                "event_id": vector["event_id"],
-                "type": vector["type"],
-                "timestamp": vector["timestamp"],
-                "similarity": similarity
-            })
+            results.append(
+                {
+                    "event_id": vector["event_id"],
+                    "type": vector["type"],
+                    "timestamp": vector["timestamp"],
+                    "similarity": similarity,
+                }
+            )
 
         # Sort by similarity
         results.sort(key=lambda x: x["similarity"], reverse=True)
@@ -291,10 +302,7 @@ class EventWriter:
         enriched_results = []
         for r in results[:top_k]:
             if r["event_id"] in events_map:
-                enriched_results.append({
-                    **r,
-                    "data": events_map[r["event_id"]].get("data", {})
-                })
+                enriched_results.append({**r, "data": events_map[r["event_id"]].get("data", {})})
             else:
                 enriched_results.append(r)
 
@@ -347,7 +355,7 @@ class EventWriter:
             "causal_chain": session.get("context", {}).get("causal_chain", []),
             "event_count": session.get("event_count", 0),
             "registry_status": registry.get("metadata", {}).get("status"),
-            "vector_count": vectors.get("statistics", {}).get("total_vectors", 0)
+            "vector_count": vectors.get("statistics", {}).get("total_vectors", 0),
         }
 
         print(f"\n✓ Bootstrap complete!")
@@ -377,7 +385,7 @@ class EventWriter:
             "type": loop_type,
             "start_event": start_event_id,
             "end_event": end_event_id,
-            "closed_at": datetime.utcnow().isoformat() + "Z"
+            "closed_at": datetime.utcnow().isoformat() + "Z",
         }
 
         if "closed_loops" not in session:
@@ -392,7 +400,7 @@ class EventWriter:
 def main():
     parser = argparse.ArgumentParser(
         description="Event Writer for Governance Index",
-        formatter_class=argparse.RawDescriptionHelpFormatter
+        formatter_class=argparse.RawDescriptionHelpFormatter,
     )
     subparsers = parser.add_subparsers(dest="command", help="Commands")
 
@@ -405,8 +413,9 @@ def main():
 
     # Compress command
     compress_parser = subparsers.add_parser("compress", help="Compress old events")
-    compress_parser.add_argument("--threshold", "-t", type=int, default=100,
-                                  help="Compression threshold")
+    compress_parser.add_argument(
+        "--threshold", "-t", type=int, default=100, help="Compression threshold"
+    )
 
     # Query command
     query_parser = subparsers.add_parser("query", help="Query events")

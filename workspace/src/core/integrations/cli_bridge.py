@@ -176,8 +176,7 @@ class CLIBridge:
         # Validate operation
         if operation not in self._allowed_operations:
             raise ValueError(
-                f"Operation '{operation}' not allowed. "
-                f"Allowed: {self._allowed_operations}"
+                f"Operation '{operation}' not allowed. " f"Allowed: {self._allowed_operations}"
             )
 
         # Create task
@@ -196,8 +195,7 @@ class CLIBridge:
             task.error = f"Safety check failed: {safety_result.violations}"
             self._task_history.append(task)
             raise PermissionError(
-                f"Safety check failed for task {task.task_id}: "
-                f"{safety_result.violations}"
+                f"Safety check failed for task {task.task_id}: " f"{safety_result.violations}"
             )
 
         # Check if approval required
@@ -463,9 +461,7 @@ class CLIBridge:
             "completed_at": task.completed_at.isoformat() if task.completed_at else None,
             "status": task.status.value,
             "result_summary": (
-                task.result.get("output")
-                if isinstance(task.result, dict)
-                else None
+                task.result.get("output") if isinstance(task.result, dict) else None
             ),
         }
 

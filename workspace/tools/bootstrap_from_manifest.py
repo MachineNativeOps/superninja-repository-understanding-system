@@ -72,7 +72,8 @@ class BootstrapContext:
                 # YAML automatically parses octal literals like 0755 as decimal integers (493).
                 # When converted to string, we get "493" which cannot be parsed as octal.
                 # We use a simple heuristic: if the string starts with "0" and has more digits,
-                # treat as octal; otherwise treat as decimal (the YAML-parsed form).
+                # treat as octal; otherwise treat as decimal (the YAML-parsed
+                # form).
                 if mode.startswith("0") and len(mode) > 1:
                     # Explicit octal format like "0755"
                     target.chmod(int(mode, 8))
@@ -85,13 +86,13 @@ class BootstrapContext:
 
     def run_shell(self, script: str) -> None:
         """Execute shell script with proper security considerations.
-        
+
         Security Controls:
         - Input Source: YAML manifest should be version-controlled and code-reviewed
         - File Permissions: Manifest file should have restricted write permissions
         - Validation: Consider verifying manifest signature or checksum before execution
         - Execution Context: Runs in subprocess with cwd restricted to repo_root
-        
+
         Note: This uses shell=True for compatibility with multi-line shell scripts
         from YAML configuration. For untrusted input, use subprocess with shell=False
         and shlex.split() for proper argument parsing.
@@ -120,7 +121,8 @@ class BootstrapContext:
                         Path(tmp_path).unlink()
                     except OSError:
                         # Best-effort cleanup: ignore errors if file was already deleted
-                        # or if we lack permissions (e.g., concurrent deletion, unmounted fs)
+                        # or if we lack permissions (e.g., concurrent deletion,
+                        # unmounted fs)
                         pass
             self.log("[shell] executed block")
         else:

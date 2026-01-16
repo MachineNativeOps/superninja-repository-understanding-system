@@ -10,25 +10,27 @@ Provides structured training and skill development for AI agents including:
 參考：AI 代理需要根本不同的訓練方法 [3]
 """
 
-from dataclasses import dataclass, field
-from enum import Enum
-from typing import Dict, List, Optional, Any, Callable
-from datetime import datetime
-import uuid
 import asyncio
+import uuid
+from dataclasses import dataclass, field
+from datetime import datetime
+from enum import Enum
+from typing import Any, Callable, Dict, List, Optional
 
 
 class SkillLevel(Enum):
     """Skill proficiency levels."""
-    NOVICE = "novice"           # 新手 - Basic awareness
-    BEGINNER = "beginner"       # 初學者 - Can perform with guidance
+
+    NOVICE = "novice"  # 新手 - Basic awareness
+    BEGINNER = "beginner"  # 初學者 - Can perform with guidance
     INTERMEDIATE = "intermediate"  # 中級 - Can perform independently
-    ADVANCED = "advanced"       # 高級 - Can handle complex scenarios
-    EXPERT = "expert"           # 專家 - Can teach others and innovate
+    ADVANCED = "advanced"  # 高級 - Can handle complex scenarios
+    EXPERT = "expert"  # 專家 - Can teach others and innovate
 
 
 class SkillCategory(Enum):
     """Skill categories for organization."""
+
     TECHNICAL = "technical"
     PROBLEM_SOLVING = "problem_solving"
     DECISION_MAKING = "decision_making"
@@ -40,24 +42,25 @@ class SkillCategory(Enum):
 class Skill:
     """
     Defines a learnable skill with progression criteria.
-    
+
     技能定義：可學習的技能及其進階標準
     """
+
     id: str
     name: str
     category: SkillCategory
     description: str
-    
+
     # Progression criteria for each level
     level_criteria: Dict[SkillLevel, List[str]] = field(default_factory=dict)
-    
+
     # Prerequisites
     prerequisites: List[str] = field(default_factory=list)
-    
+
     # Associated knowledge
     related_concepts: List[str] = field(default_factory=list)
     related_practices: List[str] = field(default_factory=list)
-    
+
     # Metadata
     difficulty: str = "intermediate"
     estimated_learning_hours: int = 10
@@ -68,26 +71,27 @@ class Skill:
 class TrainingModule:
     """
     A training module containing learning content and exercises.
-    
+
     訓練模組：包含學習內容和練習的模組
     """
+
     id: str
     name: str
     skill_id: str
     target_level: SkillLevel
-    
+
     # Content
     learning_objectives: List[str] = field(default_factory=list)
     theory_content: str = ""
     examples: List[Dict[str, Any]] = field(default_factory=list)
-    
+
     # Exercises
     exercises: List[Dict[str, Any]] = field(default_factory=list)
-    
+
     # Assessment
     assessment_criteria: List[str] = field(default_factory=list)
     passing_score: float = 0.7
-    
+
     # Metadata
     duration_minutes: int = 60
     prerequisites_modules: List[str] = field(default_factory=list)
@@ -97,26 +101,27 @@ class TrainingModule:
 class TrainingSession:
     """
     A training session instance for an AI agent.
-    
+
     訓練課程：AI 智能體的訓練課程實例
     """
+
     id: str
     agent_id: str
     module_id: str
-    
+
     # Progress
     status: str = "not_started"  # not_started, in_progress, completed, failed
     progress_percentage: float = 0.0
     current_exercise: int = 0
-    
+
     # Results
     exercise_results: List[Dict[str, Any]] = field(default_factory=list)
     assessment_score: Optional[float] = None
-    
+
     # Timing
     started_at: Optional[datetime] = None
     completed_at: Optional[datetime] = None
-    
+
     # Feedback
     feedback: List[str] = field(default_factory=list)
 
@@ -125,27 +130,28 @@ class TrainingSession:
 class SkillAssessment:
     """
     Assessment result for a skill.
-    
+
     技能評估：技能評估結果
     """
+
     id: str
     agent_id: str
     skill_id: str
-    
+
     # Assessment details
     assessed_level: SkillLevel = SkillLevel.NOVICE
     score: float = 0.0
     confidence: float = 0.0
-    
+
     # Evidence
     evidence: List[str] = field(default_factory=list)
     strengths: List[str] = field(default_factory=list)
     areas_for_improvement: List[str] = field(default_factory=list)
-    
+
     # Recommendations
     recommended_modules: List[str] = field(default_factory=list)
     next_level_requirements: List[str] = field(default_factory=list)
-    
+
     # Metadata
     assessed_at: datetime = field(default_factory=datetime.now)
 
@@ -154,22 +160,23 @@ class SkillAssessment:
 class LearningPath:
     """
     A structured learning path for skill development.
-    
+
     學習路徑：技能發展的結構化學習路徑
     """
+
     id: str
     name: str
     description: str
     target_role: str  # e.g., "database_expert", "security_specialist"
-    
+
     # Path structure
     skills: List[str] = field(default_factory=list)
     modules: List[str] = field(default_factory=list)
     milestones: List[Dict[str, Any]] = field(default_factory=list)
-    
+
     # Progression
     estimated_duration_hours: int = 40
-    
+
     # Metadata
     difficulty: str = "intermediate"
     prerequisites: List[str] = field(default_factory=list)
@@ -178,38 +185,39 @@ class LearningPath:
 class SkillsTrainingSystem:
     """
     Comprehensive Skills Training System for AI Agents.
-    
+
     AI 技能訓練系統：教導 AI 如何執行任務和做決策
-    
+
     核心功能：
     1. 技能定義與管理 - Skill definition and management
     2. 訓練模組執行 - Training module execution
     3. 技能評估 - Skill assessment
     4. 學習路徑規劃 - Learning path planning
     5. 進度追蹤 - Progress tracking
-    
+
     參考：AI 代理需要根本不同的訓練數據 - 不是教模式識別，而是教如何執行任務 [3]
     """
-    
+
     def __init__(self):
         self.skills: Dict[str, Skill] = {}
         self.modules: Dict[str, TrainingModule] = {}
         self.sessions: Dict[str, TrainingSession] = {}
         self.assessments: Dict[str, List[SkillAssessment]] = {}
         self.learning_paths: Dict[str, LearningPath] = {}
-        self.agent_skills: Dict[str, Dict[str, SkillLevel]] = {}  # agent_id -> skill_id -> level
-        
+        # agent_id -> skill_id -> level
+        self.agent_skills: Dict[str, Dict[str, SkillLevel]] = {}
+
         # Exercise handlers
         self._exercise_handlers: Dict[str, Callable] = {}
-        
+
         # Initialize built-in skills and modules
         self._initialize_core_skills()
         self._initialize_training_modules()
         self._initialize_learning_paths()
-    
+
     def _initialize_core_skills(self) -> None:
         """Initialize core skills for AI agents."""
-        
+
         # Database Query Optimization Skill
         db_optimization = Skill(
             id="skill_db_optimization",
@@ -248,7 +256,7 @@ class SkillsTrainingSystem:
             tags=["database", "performance", "optimization"],
         )
         self.skills[db_optimization.id] = db_optimization
-        
+
         # Secure Coding Skill
         secure_coding = Skill(
             id="skill_secure_coding",
@@ -287,7 +295,7 @@ class SkillsTrainingSystem:
             tags=["security", "coding", "best_practices"],
         )
         self.skills[secure_coding.id] = secure_coding
-        
+
         # Problem Analysis Skill
         problem_analysis = Skill(
             id="skill_problem_analysis",
@@ -324,7 +332,7 @@ class SkillsTrainingSystem:
             tags=["problem_solving", "debugging", "analysis"],
         )
         self.skills[problem_analysis.id] = problem_analysis
-        
+
         # Decision Making Skill
         decision_making = Skill(
             id="skill_decision_making",
@@ -361,10 +369,10 @@ class SkillsTrainingSystem:
             tags=["decision_making", "strategy", "trade_offs"],
         )
         self.skills[decision_making.id] = decision_making
-    
+
     def _initialize_training_modules(self) -> None:
         """Initialize training modules."""
-        
+
         # Database Optimization Module - Beginner
         db_module_beginner = TrainingModule(
             id="module_db_opt_beginner",
@@ -440,7 +448,7 @@ EXPLAIN SELECT * FROM users WHERE email = 'user@example.com';
             duration_minutes=90,
         )
         self.modules[db_module_beginner.id] = db_module_beginner
-        
+
         # Database Optimization Module - Intermediate
         db_module_intermediate = TrainingModule(
             id="module_db_opt_intermediate",
@@ -475,9 +483,9 @@ for user in users:
 
 ### 遊標分頁
 ```sql
-SELECT * FROM products 
-WHERE id > :last_id 
-ORDER BY id 
+SELECT * FROM products
+WHERE id > :last_id
+ORDER BY id
 LIMIT 20;
 ```
 """,
@@ -505,7 +513,7 @@ for user in users:
             prerequisites_modules=["module_db_opt_beginner"],
         )
         self.modules[db_module_intermediate.id] = db_module_intermediate
-        
+
         # Secure Coding Module - Beginner
         security_module_beginner = TrainingModule(
             id="module_security_beginner",
@@ -588,10 +596,10 @@ def login(email, password):
             duration_minutes=90,
         )
         self.modules[security_module_beginner.id] = security_module_beginner
-    
+
     def _initialize_learning_paths(self) -> None:
         """Initialize learning paths."""
-        
+
         # Database Expert Path
         db_expert_path = LearningPath(
             id="path_database_expert",
@@ -621,7 +629,7 @@ def login(email, password):
             difficulty="intermediate",
         )
         self.learning_paths[db_expert_path.id] = db_expert_path
-        
+
         # Security Specialist Path
         security_path = LearningPath(
             id="path_security_specialist",
@@ -645,25 +653,25 @@ def login(email, password):
             difficulty="intermediate",
         )
         self.learning_paths[security_path.id] = security_path
-    
+
     # Training Methods
-    
+
     def start_training_session(self, agent_id: str, module_id: str) -> TrainingSession:
         """
         Start a new training session for an agent.
-        
+
         開始訓練課程
         """
         if module_id not in self.modules:
             raise ValueError(f"Module not found: {module_id}")
-        
+
         module = self.modules[module_id]
-        
+
         # Check prerequisites
         for prereq_id in module.prerequisites_modules:
             if not self._has_completed_module(agent_id, prereq_id):
                 raise ValueError(f"Prerequisite not completed: {prereq_id}")
-        
+
         session_id = f"session_{uuid.uuid4().hex[:8]}"
         session = TrainingSession(
             id=session_id,
@@ -672,80 +680,81 @@ def login(email, password):
             status="in_progress",
             started_at=datetime.now(),
         )
-        
+
         self.sessions[session_id] = session
         return session
-    
+
     def _has_completed_module(self, agent_id: str, module_id: str) -> bool:
         """Check if an agent has completed a module."""
         for session in self.sessions.values():
-            if (session.agent_id == agent_id and 
-                session.module_id == module_id and 
-                session.status == "completed"):
+            if (
+                session.agent_id == agent_id
+                and session.module_id == module_id
+                and session.status == "completed"
+            ):
                 return True
         return False
-    
+
     async def submit_exercise_answer(
-        self, 
-        session_id: str, 
-        exercise_id: str, 
-        answer: str
+        self, session_id: str, exercise_id: str, answer: str
     ) -> Dict[str, Any]:
         """
         Submit an answer for an exercise.
-        
+
         提交練習答案
         """
         if session_id not in self.sessions:
             raise ValueError(f"Session not found: {session_id}")
-        
+
         session = self.sessions[session_id]
         module = self.modules[session.module_id]
-        
+
         # Find the exercise
         exercise = None
         for ex in module.exercises:
             if ex["id"] == exercise_id:
                 exercise = ex
                 break
-        
+
         if not exercise:
             raise ValueError(f"Exercise not found: {exercise_id}")
-        
+
         # Evaluate the answer
         result = self._evaluate_answer(answer, exercise)
-        
-        session.exercise_results.append({
-            "exercise_id": exercise_id,
-            "answer": answer,
-            "result": result,
-            "timestamp": datetime.now().isoformat(),
-        })
-        
+
+        session.exercise_results.append(
+            {
+                "exercise_id": exercise_id,
+                "answer": answer,
+                "result": result,
+                "timestamp": datetime.now().isoformat(),
+            }
+        )
+
         # Update progress
         total_exercises = len(module.exercises)
         completed_exercises = len(session.exercise_results)
         session.progress_percentage = (completed_exercises / total_exercises) * 100
         session.current_exercise = completed_exercises
-        
+
         return result
-    
+
     def _evaluate_answer(self, answer: str, exercise: Dict[str, Any]) -> Dict[str, Any]:
         """Evaluate an exercise answer."""
         expected = exercise.get("expected_answer", "")
         exercise_type = exercise.get("type", "")
-        
+
         # Simple evaluation (in real system, this would be more sophisticated)
         answer_lower = answer.lower().strip()
         expected_lower = expected.lower().strip()
-        
+
         # Check for key concepts
         key_concepts = self._extract_key_concepts(expected_lower)
         matched_concepts = sum(1 for concept in key_concepts if concept in answer_lower)
-        
+
         score = matched_concepts / len(key_concepts) if key_concepts else 0.0
         is_correct = score >= 0.7
-        
+
         feedback = []
         if is_correct:
             feedback.append("答案正確！展示了對概念的良好理解。")
@@ -754,44 +763,55 @@ def login(email, password):
             for concept in key_concepts:
                 if concept not in answer_lower:
                     feedback.append(f"建議包含：{concept}")
-        
+
         return {
             "is_correct": is_correct,
             "score": score,
             "feedback": feedback,
             "hints": exercise.get("hints", []) if not is_correct else [],
         }
-    
+
     def _extract_key_concepts(self, text: str) -> List[str]:
         """Extract key concepts from expected answer."""
         # Simple keyword extraction
         keywords = [
-            "index", "索引", "join", "eager", "loading", "預加載",
-            "transaction", "事務", "bcrypt", "hash", "哈希",
-            "parameterized", "參數化", "n+1",
+            "index",
+            "索引",
+            "join",
+            "eager",
+            "loading",
+            "預加載",
+            "transaction",
+            "事務",
+            "bcrypt",
+            "hash",
+            "哈希",
+            "parameterized",
+            "參數化",
+            "n+1",
         ]
         return [k for k in keywords if k in text]
-    
+
     def complete_session(self, session_id: str) -> SkillAssessment:
         """
         Complete a training session and assess skill level.
-        
+
         完成訓練課程並評估技能等級
         """
         if session_id not in self.sessions:
             raise ValueError(f"Session not found: {session_id}")
-        
+
         session = self.sessions[session_id]
         module = self.modules[session.module_id]
-        
+
         # Calculate overall score
         total_score = 0.0
         for result in session.exercise_results:
             total_score += result["result"]["score"]
-        
+
         avg_score = total_score / len(session.exercise_results) if session.exercise_results else 0.0
         session.assessment_score = avg_score
-        
+
         # Determine if passed
         if avg_score >= module.passing_score:
             session.status = "completed"
@@ -802,47 +822,50 @@ def login(email, password):
             self.agent_skills[session.agent_id][skill_id] = module.target_level
         else:
             session.status = "failed"
-        
+
         session.completed_at = datetime.now()
-        
+
         # Create assessment
         assessment = SkillAssessment(
             id=f"assess_{uuid.uuid4().hex[:8]}",
             agent_id=session.agent_id,
             skill_id=module.skill_id,
-            assessed_level=module.target_level if session.status == "completed" else SkillLevel.NOVICE,
+            assessed_level=(
+                module.target_level if session.status == "completed" else SkillLevel.NOVICE
+            ),
             score=avg_score,
             confidence=0.8 if len(session.exercise_results) >= 3 else 0.5,
             evidence=[f"完成練習 {len(session.exercise_results)} 個"],
             strengths=[],
             areas_for_improvement=self._identify_improvement_areas(session),
         )
-        
+
         # Store assessment
         if session.agent_id not in self.assessments:
             self.assessments[session.agent_id] = []
         self.assessments[session.agent_id].append(assessment)
-        
+
         return assessment
-    
+
     def _identify_improvement_areas(self, session: TrainingSession) -> List[str]:
         """Identify areas needing improvement based on session results."""
         areas = []
         for result in session.exercise_results:
             if not result["result"]["is_correct"]:
-                areas.extend(result["result"]["feedback"][1:])  # Skip the first "needs improvement" message
+                # Skip the first "needs improvement" message
+                areas.extend(result["result"]["feedback"][1:])
         return areas[:5]  # Limit to top 5
-    
+
     def get_agent_skill_level(self, agent_id: str, skill_id: str) -> SkillLevel:
         """Get an agent's current skill level."""
         if agent_id in self.agent_skills:
             return self.agent_skills[agent_id].get(skill_id, SkillLevel.NOVICE)
         return SkillLevel.NOVICE
-    
+
     def get_recommended_modules(self, agent_id: str, skill_id: str) -> List[TrainingModule]:
         """Get recommended training modules for an agent."""
         current_level = self.get_agent_skill_level(agent_id, skill_id)
-        
+
         # Find modules at or above current level
         recommended = []
         for module in self.modules.values():
@@ -851,26 +874,26 @@ def login(email, password):
                 level_order = list(SkillLevel)
                 current_idx = level_order.index(current_level)
                 module_idx = level_order.index(module.target_level)
-                
+
                 if module_idx == current_idx + 1:  # Next level
                     recommended.append(module)
-        
+
         return recommended
-    
+
     def get_learning_path_progress(self, agent_id: str, path_id: str) -> Dict[str, Any]:
         """Get an agent's progress on a learning path."""
         if path_id not in self.learning_paths:
             raise ValueError(f"Learning path not found: {path_id}")
-        
+
         path = self.learning_paths[path_id]
-        
+
         completed_modules = []
         for module_id in path.modules:
             if self._has_completed_module(agent_id, module_id):
                 completed_modules.append(module_id)
-        
+
         progress = len(completed_modules) / len(path.modules) * 100 if path.modules else 0
-        
+
         return {
             "path_id": path_id,
             "path_name": path.name,
@@ -880,14 +903,14 @@ def login(email, password):
             "next_module": self._get_next_module(agent_id, path),
             "milestones_achieved": self._get_achieved_milestones(agent_id, path),
         }
-    
+
     def _get_next_module(self, agent_id: str, path: LearningPath) -> Optional[str]:
         """Get the next module to complete in a path."""
         for module_id in path.modules:
             if not self._has_completed_module(agent_id, module_id):
                 return module_id
         return None
-    
+
     def _get_achieved_milestones(self, agent_id: str, path: LearningPath) -> List[str]:
         """Get milestones achieved by an agent."""
         achieved = []
@@ -896,19 +919,19 @@ def login(email, password):
             if all(self._has_completed_module(agent_id, req) for req in requirements):
                 achieved.append(milestone["name"])
         return achieved
-    
+
     def get_skill(self, skill_id: str) -> Optional[Skill]:
         """Get a skill definition."""
         return self.skills.get(skill_id)
-    
+
     def get_module(self, module_id: str) -> Optional[TrainingModule]:
         """Get a training module."""
         return self.modules.get(module_id)
-    
+
     def get_learning_path(self, path_id: str) -> Optional[LearningPath]:
         """Get a learning path."""
         return self.learning_paths.get(path_id)
-    
+
     def get_stats(self) -> Dict[str, int]:
         """Get training system statistics."""
         return {

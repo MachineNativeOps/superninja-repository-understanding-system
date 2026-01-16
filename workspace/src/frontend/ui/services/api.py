@@ -9,47 +9,51 @@
 """
 
 import logging
-from typing import Dict, List, Any, Optional
 from datetime import datetime
+from typing import Any, Dict, List, Optional
 
-from fastapi import FastAPI, HTTPException, BackgroundTasks, Query
+from fastapi import BackgroundTasks, FastAPI, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware
+
 # from fastapi.responses import JSONResponse
 from pydantic import BaseModel, Field
 
 from .code_analyzer import (
-    CodeAnalysisEngine,
-    AnalysisStrategy,
     AnalysisResult,
+    AnalysisStrategy,
+    CodeAnalysisEngine,
     CodeIssue,
+    IssueType,
     SeverityLevel,
-    IssueType
 )
 
 # ============================================================================
 # API 數據模型
 # ============================================================================
 
+
 class AnalysisRequest(BaseModel):
     """分析請求"""
+
     repository: str = Field(..., description="代碼庫路徑或 URL")
     commit_hash: str = Field(..., description="提交哈希")
     branch: str = Field(default="main", description="分支名稱")
     strategy: str = Field(default="STANDARD", description="分析策略")
-    
+
     class Config:
         schema_extra = {
             "example": {
                 "repository": "https://github.com/example/repo",
                 "commit_hash": "abc123",
                 "branch": "main",
-                "strategy": "STANDARD"
+                "strategy": "STANDARD",
             }
         }
 
 
 class AnalysisResponse(BaseModel):
     """分析回應"""
+
     analysis_id: str
     status: str
     message: str
@@ -58,6 +62,7 @@ class AnalysisResponse(BaseModel):
 
 class HealthResponse(BaseModel):
     """健康檢查回應"""
+
     status: str
     timestamp: str
     version: str
@@ -96,13 +101,14 @@ analysis_tasks: Dict[str, Dict[str, Any]] = {}
 # 啟動和關閉事件
 # ============================================================================
 
+
 @app.on_event("startup")
 async def startup_event():
     """應用啟動事件"""
     global analysis_engine
     config = {
-        'max_workers': 4,
-        'cache_enabled': True,
+        "max_workers": 4,
+        "cache_enabled": True,
     }
     analysis_engine = CodeAnalysisEngine(config)
     logging.info("Code Analysis Engine initialized")
@@ -118,14 +124,11 @@ async def shutdown_event():
 # API 端點
 # ============================================================================
 
+
 @app.get("/", response_model=Dict[str, str])
 async def root():
     """根端點"""
-    return {
-        "service": "SLASolve Code Analysis API",
-        "version": "2.0.0",
-        "docs": "/api/docs"
-    }
+    return {"service": "SLASolve Code Analysis API", "version": "2.0.0", "docs": "/api/docs"}
 
 
 @app.get("/healthz", response_model=HealthResponse)
@@ -135,18 +138,15 @@ async def health_check():
         status="healthy",
         timestamp=datetime.utcnow().isoformat(),
         version="2.0.0",
-        uptime=0.0  # 實際應計算真實運行時間
+        uptime=0.0,  # 實際應計算真實運行時間
     )
 
 
 @app.post("/api/v1/analyze", response_model=AnalysisResponse)
-async def analyze_code(
-    request: AnalysisRequest,
-    background_tasks: BackgroundTasks
-):
+async def analyze_code(request: AnalysisRequest, background_tasks: BackgroundTasks):
     """
     提交代碼分析任務
-    
+
     - **repository**: 代碼庫路徑或 URL
     - **commit_hash**: 提交哈希
     - **branch**: 分支名稱（默認 main）
@@ -154,40 +154,35 @@ async def analyze_code(
     """
     if not analysis_engine:
         raise HTTPException(status_code=503, detail="Analysis engine not initialized")
-    
+
     # 驗證策略
     try:
         strategy = AnalysisStrategy[request.strategy.upper()]
     except KeyError:
         raise HTTPException(
             status_code=400,
-            detail=f"Invalid strategy. Must be one of: {[s.value for s in AnalysisStrategy]}"
+            detail=f"Invalid strategy. Must be one of: {[s.value for s in AnalysisStrategy]}",
         )
-    
+
     # 生成分析 ID
     import uuid
+
     analysis_id = str(uuid.uuid4())
-    
+
     # 記錄任務
     analysis_tasks[analysis_id] = {
         "status": "pending",
         "request": request.dict(),
-        "created_at": datetime.utcnow().isoformat()
+        "created_at": datetime.utcnow().isoformat(),
     }
-    
+
     # 在背景執行分析
     background_tasks.add_task(
-        run_analysis,
-        analysis_id,
-        request.repository,
-        request.commit_hash,
-        strategy
+        run_analysis, analysis_id, request.repository, request.commit_hash, strategy
     )
-    
+
     return AnalysisResponse(
-        analysis_id=analysis_id,
-        status="pending",
-        message="Analysis task submitted successfully"
+        analysis_id=analysis_id, status="pending", message="Analysis task submitted successfully"
     )
 
 
@@ -195,44 +190,43 @@ async def analyze_code(
 async def get_analysis_result(analysis_id: str):
     """
     獲取分析結果
-    
+
     - **analysis_id**: 分析任務 ID
     """
     if analysis_id not in analysis_tasks:
         raise HTTPException(status_code=404, detail="Analysis not found")
-    
+
     task = analysis_tasks[analysis_id]
-    
+
     return AnalysisResponse(
         analysis_id=analysis_id,
         status=task["status"],
         message=task.get("message", ""),
-        result=task.get("result")
+        result=task.get("result"),
     )
 
 
 @app.get("/api/v1/analyze", response_model=List[Dict[str, Any]])
 async def list_analyses(
-    limit: int = Query(default=10, le=100),
-    offset: int = Query(default=0, ge=0)
+    limit: int = Query(default=10, le=100), offset: int = Query(default=0, ge=0)
 ):
     """
     列出分析任務
-    
+
     - **limit**: 返回數量限制（最大 100）
     - **offset**: 偏移量
     """
     tasks = list(analysis_tasks.items())
     tasks.sort(key=lambda x: x[1].get("created_at", ""), reverse=True)
-    
-    paginated = tasks[offset:offset + limit]
-    
+
+    paginated = tasks[offset : offset + limit]
+
     return [
         {
             "analysis_id": task_id,
             "status": task["status"],
             "created_at": task.get("created_at"),
-            "repository": task["request"].get("repository")
+            "repository": task["request"].get("repository"),
         }
         for task_id, task in paginated
     ]
@@ -242,14 +236,14 @@ async def list_analyses(
 async def delete_analysis(analysis_id: str):
     """
     刪除分析結果
-    
+
     - **analysis_id**: 分析任務 ID
     """
     if analysis_id not in analysis_tasks:
         raise HTTPException(status_code=404, detail="Analysis not found")
-    
+
     del analysis_tasks[analysis_id]
-    
+
     return {"message": "Analysis deleted successfully"}
 
 
@@ -258,9 +252,9 @@ async def get_metrics():
     """獲取引擎指標"""
     if not analysis_engine:
         raise HTTPException(status_code=503, detail="Analysis engine not initialized")
-    
+
     metrics = analysis_engine.get_metrics()
-    
+
     return {
         "engine_metrics": metrics,
         "task_stats": {
@@ -269,7 +263,7 @@ async def get_metrics():
             "running": sum(1 for t in analysis_tasks.values() if t["status"] == "running"),
             "completed": sum(1 for t in analysis_tasks.values() if t["status"] == "completed"),
             "failed": sum(1 for t in analysis_tasks.values() if t["status"] == "failed"),
-        }
+        },
     }
 
 
@@ -277,25 +271,21 @@ async def get_metrics():
 # 背景任務
 # ============================================================================
 
+
 async def run_analysis(
-    analysis_id: str,
-    repository: str,
-    commit_hash: str,
-    strategy: AnalysisStrategy
+    analysis_id: str, repository: str, commit_hash: str, strategy: AnalysisStrategy
 ):
     """執行分析任務"""
     try:
         # 更新狀態為運行中
         analysis_tasks[analysis_id]["status"] = "running"
         analysis_tasks[analysis_id]["started_at"] = datetime.utcnow().isoformat()
-        
+
         # 執行分析
         result = await analysis_engine.analyze_repository(
-            repo_path=repository,
-            commit_hash=commit_hash,
-            strategy=strategy
+            repo_path=repository, commit_hash=commit_hash, strategy=strategy
         )
-        
+
         # 轉換結果為可序列化格式
         result_dict = {
             "id": result.id,
@@ -326,15 +316,15 @@ async def run_analysis(
                 }
                 for issue in result.issues[:100]  # 限制返回數量
             ],
-            "metrics": result.metrics.to_dict()
+            "metrics": result.metrics.to_dict(),
         }
-        
+
         # 更新狀態為完成
         analysis_tasks[analysis_id]["status"] = "completed"
         analysis_tasks[analysis_id]["result"] = result_dict
         analysis_tasks[analysis_id]["completed_at"] = datetime.utcnow().isoformat()
         analysis_tasks[analysis_id]["message"] = "Analysis completed successfully"
-        
+
     except Exception as e:
         # 更新狀態為失敗
         analysis_tasks[analysis_id]["status"] = "failed"
@@ -350,10 +340,5 @@ async def run_analysis(
 
 if __name__ == "__main__":
     import uvicorn
-    
-    uvicorn.run(
-        app,
-        host="0.0.0.0",
-        port=8000,
-        log_level="info"
-    )
+
+    uvicorn.run(app, host="0.0.0.0", port=8000, log_level="info")

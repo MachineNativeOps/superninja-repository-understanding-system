@@ -16,27 +16,28 @@
 - 內存開銷: < 5%
 """
 
+from core.orchestrators import (
+    DependencyResolver,
+    EnterpriseSynergyMeshOrchestrator,
+    RetryPolicy,
+    TenantTier,
+)
 import asyncio
 import sys
 import time
-import pytest
 from pathlib import Path
+
+import pytest
 
 # 添加 src 到路徑
 project_root = Path(__file__).parent.parent
-sys.path.insert(0, str(project_root / 'src'))
-
-from core.orchestrators import (
-    EnterpriseSynergyMeshOrchestrator,
-    DependencyResolver,
-    TenantTier,
-    RetryPolicy
-)
+sys.path.insert(0, str(project_root / "src"))
 
 
 # ============================================================================
 # 執行時間基準測試
 # ============================================================================
+
 
 class TestExecutionTimeBenchmark:
     """執行時間性能測試"""
@@ -108,9 +109,16 @@ class TestExecutionTimeBenchmark:
 
         # 創建微服務架構的依賴圖
         services = [
-            "database", "cache", "auth", "api-gateway",
-            "user-service", "product-service", "order-service",
-            "notification-service", "analytics", "monitoring"
+            "database",
+            "cache",
+            "auth",
+            "api-gateway",
+            "user-service",
+            "product-service",
+            "order-service",
+            "notification-service",
+            "analytics",
+            "monitoring",
         ]
 
         for service in services:
@@ -136,7 +144,7 @@ class TestExecutionTimeBenchmark:
             ("api-gateway", "order-service"),
             ("analytics", "database"),
             ("monitoring", "api-gateway"),
-            ("monitoring", "order-service")
+            ("monitoring", "order-service"),
         ]
 
         for from_svc, to_svc in dependencies:
@@ -156,6 +164,7 @@ class TestExecutionTimeBenchmark:
 # 吞吐量測試
 # ============================================================================
 
+
 class TestThroughputBenchmark:
     """吞吐量性能測試"""
 
@@ -173,11 +182,7 @@ class TestThroughputBenchmark:
 
         # 執行 100 個任務
         for i in range(100):
-            result = await orch.execute_with_retry(
-                fast_task,
-                f"task_{i}",
-                tenant_id
-            )
+            result = await orch.execute_with_retry(fast_task, f"task_{i}", tenant_id)
             if result.status.value == "success":
                 execution_count += 1
 
@@ -214,11 +219,7 @@ class TestThroughputBenchmark:
         # 每個租戶執行 20 個任務
         for tenant_id in tenants:
             for i in range(20):
-                result = await orch.execute_with_retry(
-                    quick_task,
-                    f"task_{i}",
-                    tenant_id
-                )
+                result = await orch.execute_with_retry(quick_task, f"task_{i}", tenant_id)
                 if result.status.value == "success":
                     total_executions += 1
 
@@ -236,6 +237,7 @@ class TestThroughputBenchmark:
 # ============================================================================
 # 內存使用基準
 # ============================================================================
+
 
 class TestMemoryBenchmark:
     """內存使用性能測試"""
@@ -298,6 +300,7 @@ class TestMemoryBenchmark:
 # 重試性能開銷測試
 # ============================================================================
 
+
 class TestRetryPerformanceOverhead:
     """重試機制的性能開銷測試"""
 
@@ -312,11 +315,7 @@ class TestRetryPerformanceOverhead:
 
         # 測量執行時間
         start = time.time()
-        result = await orch.execute_with_retry(
-            success_task,
-            "test_task",
-            tenant_id
-        )
+        result = await orch.execute_with_retry(success_task, "test_task", tenant_id)
         elapsed = time.time() - start
 
         # 驗證執行成功
@@ -343,12 +342,7 @@ class TestRetryPerformanceOverhead:
 
         # 測量重試時間
         start = time.time()
-        result = await orch.execute_with_retry(
-            flaky_task,
-            "flaky_task",
-            tenant_id,
-            max_retries=2
-        )
+        result = await orch.execute_with_retry(flaky_task, "flaky_task", tenant_id, max_retries=2)
         elapsed = time.time() - start
 
         # 驗證執行成功，且包含指數退避延遲
@@ -362,6 +356,7 @@ class TestRetryPerformanceOverhead:
 # ============================================================================
 # 並行化加速測試
 # ============================================================================
+
 
 class TestParallelizationSpeedup:
     """並行化的加速效果測試"""
@@ -433,6 +428,7 @@ class TestParallelizationSpeedup:
 # ============================================================================
 # 依賴解析性能測試
 # ============================================================================
+
 
 class TestDependencyResolutionPerformance:
     """依賴解析的性能測試"""
@@ -519,6 +515,7 @@ class TestDependencyResolutionPerformance:
 # 綜合性能測試
 # ============================================================================
 
+
 class TestComprehensivePerformance:
     """綜合性能測試"""
 
@@ -558,11 +555,7 @@ class TestComprehensivePerformance:
             return {"success": True}
 
         for tenant_id in tenants:
-            result = await orch.execute_with_retry(
-                test_task,
-                "perf_test",
-                tenant_id
-            )
+            result = await orch.execute_with_retry(test_task, "perf_test", tenant_id)
 
         elapsed = time.time() - start
 

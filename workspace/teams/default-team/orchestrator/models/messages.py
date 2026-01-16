@@ -8,11 +8,12 @@ Defines all message-related data structures including:
 - Validation logic
 """
 
+import uuid
 from datetime import datetime
 from enum import Enum
 from typing import Any, Dict, List, Optional
+
 from pydantic import BaseModel, Field, field_validator
-import uuid
 
 
 class MessageType(str, Enum):
@@ -46,6 +47,7 @@ class MessageType(str, Enum):
 
 class Urgency(str, Enum):
     """Priority levels for messages and incidents."""
+
     P1 = "P1"  # Critical - Immediate action required
     P2 = "P2"  # High - Action within hours
     P3 = "P3"  # Medium - Action within days
@@ -59,13 +61,15 @@ class MessageMetadata(BaseModel):
     span_id: str = Field(default_factory=lambda: str(uuid.uuid4()), description="Span ID")
     timestamp: str = Field(
         default_factory=lambda: datetime.now().isoformat(),
-        description="Message timestamp in ISO 8601 format"
+        description="Message timestamp in ISO 8601 format",
     )
     source_agent: str = Field(..., description="Name of the sending agent")
     target_agent: str = Field(..., description="Name of the receiving agent")
     message_type: MessageType = Field(..., description="Type of message")
     schema_version: str = Field(default="v1.0.0", description="Schema version")
-    idempotency_key: Optional[str] = Field(default=None, description="Key for idempotent processing")
+    idempotency_key: Optional[str] = Field(
+        default=None, description="Key for idempotent processing"
+    )
     signature: Optional[str] = Field(default=None, description="Ed25519 signature for verification")
     correlation_id: Optional[str] = Field(default=None, description="ID linking related messages")
     reply_to: Optional[str] = Field(default=None, description="Agent to reply to")
@@ -90,8 +94,12 @@ class MessageContext(BaseModel):
     namespace: str = Field(..., description="Kubernetes namespace")
     cluster: str = Field(..., description="Cluster identifier")
     urgency: Optional[Urgency] = Field(default=Urgency.P3, description="Message urgency")
-    constraints_ref: Optional[str] = Field(default=None, description="Reference to policy constraints")
-    environment: Optional[str] = Field(default="production", description="Environment (prod/staging/dev)")
+    constraints_ref: Optional[str] = Field(
+        default=None, description="Reference to policy constraints"
+    )
+    environment: Optional[str] = Field(
+        default="production", description="Environment (prod/staging/dev)"
+    )
     region: Optional[str] = Field(default=None, description="Geographic region")
     tags: Optional[Dict[str, str]] = Field(default=None, description="Additional context tags")
 
@@ -172,12 +180,12 @@ class MessageResponse(BaseModel):
     status: str = Field(..., description="Processing status (success/error)")
     trace_id: str = Field(..., description="Trace ID from request")
     timestamp: str = Field(
-        default_factory=lambda: datetime.now().isoformat(),
-        description="Response timestamp"
+        default_factory=lambda: datetime.now().isoformat(), description="Response timestamp"
     )
     processing_result: Optional[Dict[str, Any]] = Field(
-        default=None,
-        description="Processing result details"
+        default=None, description="Processing result details"
     )
     error: Optional[str] = Field(default=None, description="Error message if failed")
-    error_code: Optional[str] = Field(default=None, description="Error code for programmatic handling")
+    error_code: Optional[str] = Field(
+        default=None, description="Error code for programmatic handling"
+    )

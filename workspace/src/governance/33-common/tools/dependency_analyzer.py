@@ -12,18 +12,20 @@ Detects:
 - Bottlenecks and critical paths
 """
 
-import yaml
 import json
 import sys
-from pathlib import Path
-from typing import Dict, List, Set, Tuple, Any
 from collections import defaultdict, deque
 from dataclasses import dataclass
+from pathlib import Path
+from typing import Any, Dict, List, Set, Tuple
+
+import yaml
 
 
 @dataclass
 class DependencyInfo:
     """Information about a governance entity's dependencies"""
+
     name: str
     dependencies: List[str]
     dependents: List[str]
@@ -55,13 +57,49 @@ class DependencyAnalyzer:
     # 9 Meta-Governance Domains
     META_DOMAINS = {
         "architecture-governance": ["identity-tenancy-governance", "security-governance", "common"],
-        "api-governance": ["docs-governance", "security-governance", "architecture-governance", "common"],
-        "data-governance": ["identity-tenancy-governance", "security-governance", "compliance-governance", "common"],
-        "testing-governance": ["architecture-governance", "api-governance", "data-governance", "security-governance", "common"],
-        "identity-tenancy-governance": ["security-governance", "data-governance", "audit-governance", "common"],
-        "performance-reliability-governance": ["architecture-governance", "security-governance", "performance-governance", "common"],
-        "cost-management-governance": ["data-governance", "architecture-governance", "performance-reliability-governance", "common"],
-        "docs-governance": ["api-governance", "architecture-governance", "data-governance", "common"],
+        "api-governance": [
+            "docs-governance",
+            "security-governance",
+            "architecture-governance",
+            "common",
+        ],
+        "data-governance": [
+            "identity-tenancy-governance",
+            "security-governance",
+            "compliance-governance",
+            "common",
+        ],
+        "testing-governance": [
+            "architecture-governance",
+            "api-governance",
+            "data-governance",
+            "security-governance",
+            "common",
+        ],
+        "identity-tenancy-governance": [
+            "security-governance",
+            "data-governance",
+            "audit-governance",
+            "common",
+        ],
+        "performance-reliability-governance": [
+            "architecture-governance",
+            "security-governance",
+            "performance-governance",
+            "common",
+        ],
+        "cost-management-governance": [
+            "data-governance",
+            "architecture-governance",
+            "performance-reliability-governance",
+            "common",
+        ],
+        "docs-governance": [
+            "api-governance",
+            "architecture-governance",
+            "data-governance",
+            "common",
+        ],
         "common": [],
     }
 
@@ -110,7 +148,7 @@ class DependencyAnalyzer:
                 dependencies=valid_deps,
                 dependents=[],
                 initialization_order=0,
-                is_circular=False
+                is_circular=False,
             )
 
         # Build reverse dependencies (dependents)
@@ -180,7 +218,9 @@ class DependencyAnalyzer:
             if len(info.dependents) > 2:
                 critical.append(entity)
 
-        return sorted(critical, key=lambda e: len(self.dependency_graph[e].dependents), reverse=True)
+        return sorted(
+            critical, key=lambda e: len(self.dependency_graph[e].dependents), reverse=True
+        )
 
     def _get_initialization_order(self) -> Dict[int, List[str]]:
         """Get initialization order grouped by level"""

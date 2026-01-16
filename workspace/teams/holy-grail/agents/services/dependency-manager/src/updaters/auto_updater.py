@@ -18,7 +18,7 @@ logger = logging.getLogger(__name__)
 class UpdateConfig:
     """
     更新配置
-    
+
     Attributes:
         patch_policy: Patch 版本更新策略
         minor_policy: Minor 版本更新策略
@@ -26,6 +26,7 @@ class UpdateConfig:
         security_auto_update: 是否自動更新安全修復
         dry_run: 是否為演練模式（不實際執行更新）
     """
+
     patch_policy: UpdatePolicy = UpdatePolicy.AUTO
     minor_policy: UpdatePolicy = UpdatePolicy.PR
     major_policy: UpdatePolicy = UpdatePolicy.MANUAL
@@ -36,6 +37,7 @@ class UpdateConfig:
 @dataclass
 class VersionParts:
     """版本號組成部分"""
+
     major: int = 0
     minor: int = 0
     patch: int = 0
@@ -51,14 +53,14 @@ class VersionParts:
 class AutoUpdater:
     """
     自動更新器
-    
+
     根據配置的策略自動更新依賴項
     """
 
     def __init__(self, config: UpdateConfig | None = None):
         """
         初始化自動更新器
-        
+
         Args:
             config: 更新配置
         """
@@ -66,17 +68,15 @@ class AutoUpdater:
         logger.info("自動更新器初始化完成")
 
     async def update(
-        self,
-        dependencies: list[Dependency],
-        security_fixes: list[str] | None = None
+        self, dependencies: list[Dependency], security_fixes: list[str] | None = None
     ) -> UpdateResult:
         """
         更新依賴項
-        
+
         Args:
             dependencies: 待更新的依賴項列表
             security_fixes: 需要安全修復的套件名稱列表
-            
+
         Returns:
             更新結果
         """
@@ -109,24 +109,19 @@ class AutoUpdater:
 
         return result
 
-    def _create_update(
-        self,
-        dep: Dependency,
-        is_security_fix: bool
-    ) -> Update:
+    def _create_update(self, dep: Dependency, is_security_fix: bool) -> Update:
         """
         創建更新對象
-        
+
         Args:
             dep: 依賴項
             is_security_fix: 是否為安全修復
-            
+
         Returns:
             更新對象
         """
         update_type = self._classify_update(
-            dep.current_version,
-            dep.latest_version or dep.current_version
+            dep.current_version, dep.latest_version or dep.current_version
         )
 
         policy = self._get_policy(update_type, is_security_fix)
@@ -138,17 +133,17 @@ class AutoUpdater:
             update_type=update_type,
             policy=policy,
             is_security_fix=is_security_fix,
-            breaking_changes=(update_type == UpdateType.MAJOR)
+            breaking_changes=(update_type == UpdateType.MAJOR),
         )
 
     def _classify_update(self, current: str, latest: str) -> UpdateType:
         """
         分類更新類型
-        
+
         Args:
             current: 當前版本
             latest: 最新版本
-            
+
         Returns:
             更新類型
         """
@@ -167,56 +162,49 @@ class AutoUpdater:
     def _parse_version(self, version: str) -> VersionParts:
         """
         解析版本號
-        
+
         支援標準 SemVer 格式: major.minor.patch[-prerelease]
-        
+
         Args:
             version: 版本字符串
-            
+
         Returns:
             版本部分
         """
         # 移除 v 前綴
-        if version.startswith('v'):
+        if version.startswith("v"):
             version = version[1:]
 
         # 匹配 SemVer 格式
-        match = re.match(
-            r'^(\d+)\.(\d+)\.(\d+)(?:-(.+))?$',
-            version
-        )
+        match = re.match(r"^(\d+)\.(\d+)\.(\d+)(?:-(.+))?$", version)
 
         if match:
             return VersionParts(
                 major=int(match.group(1)),
                 minor=int(match.group(2)),
                 patch=int(match.group(3)),
-                prerelease=match.group(4)
+                prerelease=match.group(4),
             )
 
         # 嘗試簡化格式
-        parts = version.split('.')
+        parts = version.split(".")
         try:
             return VersionParts(
                 major=int(parts[0]) if len(parts) > 0 else 0,
                 minor=int(parts[1]) if len(parts) > 1 else 0,
-                patch=int(parts[2].split('-')[0]) if len(parts) > 2 else 0
+                patch=int(parts[2].split("-")[0]) if len(parts) > 2 else 0,
             )
         except (ValueError, IndexError):
             return VersionParts()
 
-    def _get_policy(
-        self,
-        update_type: UpdateType,
-        is_security_fix: bool
-    ) -> UpdatePolicy:
+    def _get_policy(self, update_type: UpdateType, is_security_fix: bool) -> UpdatePolicy:
         """
         獲取更新策略
-        
+
         Args:
             update_type: 更新類型
             is_security_fix: 是否為安全修復
-            
+
         Returns:
             更新策略
         """
@@ -237,10 +225,10 @@ class AutoUpdater:
     def _should_update(self, update: Update) -> bool:
         """
         判斷是否應該執行更新
-        
+
         Args:
             update: 更新對象
-            
+
         Returns:
             是否應該更新
         """
@@ -257,18 +245,14 @@ class AutoUpdater:
 
         return True
 
-    async def _execute_update(
-        self,
-        update: Update,
-        ecosystem: Ecosystem
-    ) -> Update:
+    async def _execute_update(self, update: Update, ecosystem: Ecosystem) -> Update:
         """
         執行更新
-        
+
         Args:
             update: 更新對象
             ecosystem: 生態系統
-            
+
         Returns:
             更新後的對象
         """
@@ -303,12 +287,12 @@ class AutoUpdater:
     async def _update_npm(self, update: Update) -> bool:
         """
         執行 NPM 更新
-        
+
         實際實現需要執行: npm install {package}@{version}
-        
+
         Args:
             update: 更新對象
-            
+
         Returns:
             是否成功
         """
@@ -319,12 +303,12 @@ class AutoUpdater:
     async def _update_pip(self, update: Update) -> bool:
         """
         執行 pip 更新
-        
+
         實際實現需要執行: pip install {package}=={version}
-        
+
         Args:
             update: 更新對象
-            
+
         Returns:
             是否成功
         """
@@ -335,10 +319,10 @@ class AutoUpdater:
     async def rollback(self, update: Update) -> bool:
         """
         回滾更新
-        
+
         Args:
             update: 要回滾的更新
-            
+
         Returns:
             是否成功
         """

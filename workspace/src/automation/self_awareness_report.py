@@ -85,13 +85,13 @@ def _summarize_sections(sections: dict[str, str]) -> SectionSummary:
 
 def _validate_command(command: str) -> bool:
     """Validate that a command is safe to execute.
-    
+
     Args:
         command: The command string to validate
-        
+
     Returns:
         True if the command passes basic safety checks
-        
+
     Raises:
         ValueError: If the command contains dangerous patterns
     """
@@ -99,7 +99,7 @@ def _validate_command(command: str) -> bool:
     dangerous_patterns = [
         r";\s*\w+",  # Command chaining with semicolon
         r"&&",  # AND command chaining
-        r"\|\|",  # OR command chaining  
+        r"\|\|",  # OR command chaining
         r"\|\s*sh\s*",  # Piping to shell
         r"\|\s*bash\s*",  # Piping to bash
         r"\$\(.*\)",  # Command substitution
@@ -112,14 +112,14 @@ def _validate_command(command: str) -> bool:
         r">\s*/etc/",  # Writing to /etc
         r"chmod\s+777",  # Overly permissive chmod
     ]
-    
+
     for pattern in dangerous_patterns:
         if re.search(pattern, command, re.IGNORECASE):
             raise ValueError(
                 f"Command contains potentially dangerous pattern matching '{pattern}'. "
                 "Command rejected for security reasons."
             )
-    
+
     return True
 
 
@@ -127,21 +127,21 @@ def _run_command_summary(
     label: str, command: str | None, cwd: Path, max_lines: int
 ) -> AutomationResult | None:
     """Execute a command and capture its output summary.
-    
+
     Security Note: Commands are validated for dangerous patterns before execution.
     Commands are parsed with shlex.split() and executed with shell=False for security.
     The --allow-unsafe-shell flag is required to execute user-provided commands.
     Always review automation commands carefully before execution.
-    
+
     Args:
         label: Human-readable label for the command
         command: The command to execute (None returns None)
         cwd: Working directory for command execution
         max_lines: Maximum number of output lines to capture
-        
+
     Returns:
         AutomationResult with command output, or None if command is None
-        
+
     Raises:
         ValueError: If the command fails validation checks or has invalid syntax
     """
@@ -162,15 +162,15 @@ def _run_command_summary(
                 command=command,
                 exit_code=-1,
                 success=False,
-                output_tail=["Command string is empty or invalid."]
+                output_tail=["Command string is empty or invalid."],
             )
         result = subprocess.run(
             cmd_args,
             shell=False,
             capture_output=True,
             text=True,
-            cwd=cwd,         # Path object accepted in Python 3.6+
-            timeout=COMMAND_TIMEOUT
+            cwd=cwd,  # Path object accepted in Python 3.6+
+            timeout=COMMAND_TIMEOUT,
         )
     except ValueError as e:
         # Handle shlex.split() errors (e.g., unclosed quotes)
@@ -180,7 +180,7 @@ def _run_command_summary(
             command=command,
             exit_code=-1,
             success=False,
-            output_tail=["Invalid command syntax. Check for unclosed quotes or escape characters."]
+            output_tail=["Invalid command syntax. Check for unclosed quotes or escape characters."],
         )
     except subprocess.TimeoutExpired as e:
         # Handle timeout: return a special AutomationResult
@@ -189,7 +189,7 @@ def _run_command_summary(
             command=command,
             exit_code=-1,
             success=False,
-            output_tail=[f"Command timed out after {e.timeout} seconds."]
+            output_tail=[f"Command timed out after {e.timeout} seconds."],
         )
     except (OSError, subprocess.SubprocessError) as e:
         # Handle subprocess-related errors (file not found, permission denied, etc.)
@@ -200,7 +200,7 @@ def _run_command_summary(
             command=command,
             exit_code=-1,
             success=False,
-            output_tail=[f"Command execution failed: {error_type}"]
+            output_tail=[f"Command execution failed: {error_type}"],
         )
     except Exception as e:
         # Catch-all for unexpected errors - log minimal information
@@ -209,7 +209,7 @@ def _run_command_summary(
             command=command,
             exit_code=-1,
             success=False,
-            output_tail=["Command execution failed: Unexpected error"]
+            output_tail=["Command execution failed: Unexpected error"],
         )
 
     joined_lines = [
@@ -350,7 +350,7 @@ def main() -> None:
         ("Lint", args.lint_cmd),
         ("Tests", args.test_cmd),
     ]
-    
+
     # Validate automation commands if provided
     if args.automation_cmd:
         if not args.allow_unsafe_shell:

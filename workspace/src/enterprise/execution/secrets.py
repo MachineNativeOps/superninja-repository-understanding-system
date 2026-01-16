@@ -22,6 +22,7 @@ logger = logging.getLogger(__name__)
 
 class SecretType(Enum):
     """Types of secrets"""
+
     WEBHOOK_SECRET = "webhook_secret"
     PROVIDER_TOKEN = "provider_token"
     API_KEY = "api_key"
@@ -35,10 +36,11 @@ class SecretType(Enum):
 
 class SecretScope(Enum):
     """Scope of secret access"""
-    ORGANIZATION = "organization"    # Available to entire org
-    PROJECT = "project"             # Available to specific project
-    REPOSITORY = "repository"       # Available to specific repo
-    SYSTEM = "system"               # System-level (not tenant-specific)
+
+    ORGANIZATION = "organization"  # Available to entire org
+    PROJECT = "project"  # Available to specific project
+    REPOSITORY = "repository"  # Available to specific repo
+    SYSTEM = "system"  # System-level (not tenant-specific)
 
 
 @dataclass
@@ -49,6 +51,7 @@ class Secret:
     NOTE: The actual secret value is never stored in this object.
     Only the encrypted version is stored in the backend.
     """
+
     id: UUID = field(default_factory=uuid4)
 
     # Identity
@@ -192,8 +195,7 @@ class AuditLogger(Protocol):
         resource_type: str,
         resource_id: str,
         details: dict[str, Any],
-    ) -> None:
-        ...
+    ) -> None: ...
 
 
 @dataclass
@@ -217,10 +219,12 @@ class SecretsManager:
     provider_key_id: str = "alias/mno-provider-secrets"
 
     # Encryption context template
-    _encryption_context_template: dict[str, str] = field(default_factory=lambda: {
-        "service": "machinenativeops",
-        "purpose": "secrets",
-    })
+    _encryption_context_template: dict[str, str] = field(
+        default_factory=lambda: {
+            "service": "machinenativeops",
+            "purpose": "secrets",
+        }
+    )
 
     # ------------------------------------------------------------------
     # Secret Creation
@@ -304,10 +308,7 @@ class SecretsManager:
                 },
             )
 
-        logger.info(
-            f"Secret created: name={name} type={secret_type.value} "
-            f"scope={scope.value}"
-        )
+        logger.info(f"Secret created: name={name} type={secret_type.value} " f"scope={scope.value}")
 
         return secret
 
@@ -380,9 +381,7 @@ class SecretsManager:
         accessed_by: UUID | None = None,
     ) -> str | None:
         """Get secret value by name and scope"""
-        result = await self.storage.get_by_name(
-            name, scope, org_id, project_id, repo_id
-        )
+        result = await self.storage.get_by_name(name, scope, org_id, project_id, repo_id)
         if not result:
             return None
 
@@ -514,10 +513,7 @@ class SecretsManager:
         all_secrets = await self.storage.list(org_id)
         cutoff = datetime.utcnow() + timedelta(days=within_days)
 
-        return [
-            s for s in all_secrets
-            if s.expires_at and s.expires_at < cutoff
-        ]
+        return [s for s in all_secrets if s.expires_at and s.expires_at < cutoff]
 
     # ------------------------------------------------------------------
     # Private Methods
@@ -549,6 +545,7 @@ class SecretsManager:
 # ------------------------------------------------------------------
 # Convenience Functions
 # ------------------------------------------------------------------
+
 
 async def get_webhook_secret(
     secrets_manager: SecretsManager,

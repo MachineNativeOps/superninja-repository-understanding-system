@@ -15,8 +15,8 @@ import asyncio
 import sys
 from pathlib import Path
 
-from governance_automation_launcher import GovernanceAutomationLauncher
 from coordinator import EngineCoordinator
+from governance_automation_launcher import GovernanceAutomationLauncher
 from integrated_launcher import IntegratedGovernanceAutomationLauncher
 
 
@@ -98,7 +98,7 @@ async def test_inter_engine_communication():
         source_engine="engine_1",
         target_engine="engine_2",
         message_type="test_message",
-        payload={"test": "data"}
+        payload={"test": "data"},
     )
 
     # Process messages
@@ -164,6 +164,7 @@ async def main():
         except Exception as e:
             print(f"\n❌ Test '{test_name}' failed with error: {e}")
             import traceback
+
             traceback.print_exc()
             results.append((test_name, False))
 

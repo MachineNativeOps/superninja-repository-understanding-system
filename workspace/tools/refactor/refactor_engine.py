@@ -15,17 +15,18 @@ Version: 1.0.0
 """
 
 import argparse
-import yaml
 import json
 import os
-import sys
 import re
 import shutil
-from pathlib import Path
-from datetime import datetime
-from typing import Dict, List, Optional, Tuple, Any
+import sys
 from collections import defaultdict
-from dataclasses import dataclass, field, asdict
+from dataclasses import asdict, dataclass, field
+from datetime import datetime
+from pathlib import Path
+from typing import Any, Dict, List, Optional, Tuple
+
+import yaml
 
 # ============================================================================
 # 常數定義
@@ -55,9 +56,11 @@ CATEGORY_INCONSISTENCY = "inconsistency"
 # 資料結構
 # ============================================================================
 
+
 @dataclass
 class Problem:
     """識別的問題"""
+
     id: str
     title: str
     description: str
@@ -67,9 +70,11 @@ class Problem:
     affected_files: List[str] = field(default_factory=list)
     suggested_action: str = ""
 
+
 @dataclass
 class Phase:
     """執行階段"""
+
     id: int
     name: str
     priority: str  # P1, P2, P3
@@ -77,9 +82,11 @@ class Phase:
     steps: List[Dict] = field(default_factory=list)
     validation: Dict = field(default_factory=dict)
 
+
 @dataclass
 class AnalysisResult:
     """分析結果"""
+
     timestamp: str
     target_path: str
     overview: Dict
@@ -87,18 +94,22 @@ class AnalysisResult:
     structure: Dict
     recommendations: List[Dict]
 
+
 @dataclass
 class ExecutionPlan:
     """執行計畫"""
+
     metadata: Dict
     analysis_summary: Dict
     phases: List[Phase]
     validation_plan: Dict
     rollback_plan: Dict
 
+
 # ============================================================================
 # 配置載入
 # ============================================================================
+
 
 def load_config(config_path: Path) -> Dict:
     """載入配置檔案"""
@@ -106,8 +117,9 @@ def load_config(config_path: Path) -> Dict:
         print(f"⚠️ 配置檔案不存在: {config_path}")
         return {}
 
-    with open(config_path, 'r', encoding='utf-8') as f:
+    with open(config_path, "r", encoding="utf-8") as f:
         return yaml.safe_load(f)
+
 
 def load_all_configs() -> Dict[str, Dict]:
     """載入所有配置"""
@@ -117,9 +129,11 @@ def load_all_configs() -> Dict[str, Dict]:
         "integration": load_config(INTEGRATION_CONFIG_PATH),
     }
 
+
 # ============================================================================
 # 目錄分析器
 # ============================================================================
+
 
 class DirectoryAnalyzer:
     """目錄分析器 - 深度分析目錄結構與問題"""
@@ -203,7 +217,7 @@ class DirectoryAnalyzer:
             try:
                 size = f.stat().st_size
                 sized_files.append({"path": str(f.relative_to(self.target)), "size": size})
-            except:
+            except BaseException:
                 pass
         return sorted(sized_files, key=lambda x: -x["size"])[:n]
 
@@ -224,75 +238,92 @@ class DirectoryAnalyzer:
         if scattered:
             for group_name, files in scattered.items():
                 if len(files) > 1:
-                    problems.append(Problem(
-                        id=f"scatter_{group_name}",
-                        title=f"{group_name} 相關檔案分散",
-                        description=f"發現 {len(files)} 個 {group_name} 相關檔案散落在不同位置",
-                        severity=SEVERITY_HIGH,
-                        category=CATEGORY_SCATTERING,
-                        impact="降低維護效率，增加理解難度，可能導致更新遺漏",
-                        affected_files=files,
-                        suggested_action=f"建立 {group_name}/ 子目錄統一管理",
-                    ))
+                    problems.append(
+                        Problem(
+                            id=f"scatter_{group_name}",
+                            title=f"{group_name} 相關檔案分散",
+                            description=f"發現 {len(files)} 個 {group_name} 相關檔案散落在不同位置",
+                            severity=SEVERITY_HIGH,
+                            category=CATEGORY_SCATTERING,
+                            impact="降低維護效率，增加理解難度，可能導致更新遺漏",
+                            affected_files=files,
+                            suggested_action=f"建立 {group_name}/ 子目錄統一管理",
+                        )
+                    )
 
         # 問題2: 根層級檔案過多
         root_files = self._detect_root_level_bloat()
         if len(root_files) > 10:
-            problems.append(Problem(
-                id="root_bloat",
-                title="根層級檔案過多",
-                description=f"根目錄有 {len(root_files)} 個檔案，超過建議的 10 個上限",
-                severity=SEVERITY_MEDIUM,
-                category=CATEGORY_STRUCTURE,
-                impact="目錄結構不清晰，難以快速定位檔案",
-                affected_files=root_files,
-                suggested_action="建立 reports/ 或 generated/ 子目錄分類存放",
-            ))
+            problems.append(
+                Problem(
+                    id="root_bloat",
+                    title="根層級檔案過多",
+                    description=f"根目錄有 {len(root_files)} 個檔案，超過建議的 10 個上限",
+                    severity=SEVERITY_MEDIUM,
+                    category=CATEGORY_STRUCTURE,
+                    impact="目錄結構不清晰，難以快速定位檔案",
+                    affected_files=root_files,
+                    suggested_action="建立 reports/ 或 generated/ 子目錄分類存放",
+                )
+            )
 
         # 問題3: 命名不一致
         naming_issues = self._detect_naming_inconsistencies()
         if naming_issues:
-            problems.append(Problem(
-                id="naming_inconsistent",
-                title="命名風格不一致",
-                description=f"發現 {len(naming_issues)} 種不同的命名風格混用",
-                severity=SEVERITY_LOW,
-                category=CATEGORY_NAMING,
-                impact="降低可讀性，增加認知負擔",
-                affected_files=[f["file"] for f in naming_issues],
-                suggested_action="統一採用單一命名風格 (建議: snake_case)",
-            ))
+            problems.append(
+                Problem(
+                    id="naming_inconsistent",
+                    title="命名風格不一致",
+                    description=f"發現 {len(naming_issues)} 種不同的命名風格混用",
+                    severity=SEVERITY_LOW,
+                    category=CATEGORY_NAMING,
+                    impact="降低可讀性，增加認知負擔",
+                    affected_files=[f["file"] for f in naming_issues],
+                    suggested_action="統一採用單一命名風格 (建議: snake_case)",
+                )
+            )
 
         # 問題4: _legacy_scratch 混亂
         scratch_issues = self._detect_scratch_disorganization()
         if scratch_issues:
-            problems.append(Problem(
-                id="scratch_disorg",
-                title="_legacy_scratch 內容混亂",
-                description=f"暫存區包含 {scratch_issues['count']} 個未分類的混合檔案",
-                severity=SEVERITY_HIGH,
-                category=CATEGORY_DISORGANIZATION,
-                impact="無法有效追蹤舊資產狀態，阻礙整合進度",
-                affected_files=scratch_issues.get("files", []),
-                suggested_action="建立子目錄 (intake/, processing/, analyzed/) 分階段管理",
-            ))
+            problems.append(
+                Problem(
+                    id="scratch_disorg",
+                    title="_legacy_scratch 內容混亂",
+                    description=f"暫存區包含 {scratch_issues['count']} 個未分類的混合檔案",
+                    severity=SEVERITY_HIGH,
+                    category=CATEGORY_DISORGANIZATION,
+                    impact="無法有效追蹤舊資產狀態，阻礙整合進度",
+                    affected_files=scratch_issues.get("files", []),
+                    suggested_action="建立子目錄 (intake/, processing/, analyzed/) 分階段管理",
+                )
+            )
 
         # 問題5: 缺少索引同步
         index_issues = self._detect_index_sync_issues()
         if index_issues:
-            problems.append(Problem(
-                id="index_out_of_sync",
-                title="索引與實際結構不同步",
-                description=f"發現 {len(index_issues)} 處索引與實際不符",
-                severity=SEVERITY_MEDIUM,
-                category=CATEGORY_INCONSISTENCY,
-                impact="導致自動化工具失效，增加手動維護成本",
-                affected_files=index_issues,
-                suggested_action="執行索引更新腳本同步所有索引",
-            ))
+            problems.append(
+                Problem(
+                    id="index_out_of_sync",
+                    title="索引與實際結構不同步",
+                    description=f"發現 {len(index_issues)} 處索引與實際不符",
+                    severity=SEVERITY_MEDIUM,
+                    category=CATEGORY_INCONSISTENCY,
+                    impact="導致自動化工具失效，增加手動維護成本",
+                    affected_files=index_issues,
+                    suggested_action="執行索引更新腳本同步所有索引",
+                )
+            )
 
-        return sorted(problems, key=lambda p:
-            {SEVERITY_CRITICAL: 0, SEVERITY_HIGH: 1, SEVERITY_MEDIUM: 2, SEVERITY_LOW: 3}.get(p.severity, 4))
+        return sorted(
+            problems,
+            key=lambda p: {
+                SEVERITY_CRITICAL: 0,
+                SEVERITY_HIGH: 1,
+                SEVERITY_MEDIUM: 2,
+                SEVERITY_LOW: 3,
+            }.get(p.severity, 4),
+        )
 
     def _detect_scattered_files(self) -> Dict[str, List[str]]:
         """檢測分散的相關檔案"""
@@ -326,8 +357,11 @@ class DirectoryAnalyzer:
 
     def _detect_root_level_bloat(self) -> List[str]:
         """檢測根層級過多檔案"""
-        return [str(f.relative_to(self.target)) for f in self.files_cache
-                if f.is_file() and f.parent == self.target]
+        return [
+            str(f.relative_to(self.target))
+            for f in self.files_cache
+            if f.is_file() and f.parent == self.target
+        ]
 
     def _detect_naming_inconsistencies(self) -> List[Dict]:
         """檢測命名不一致"""
@@ -348,10 +382,12 @@ class DirectoryAnalyzer:
                         matched_patterns.append(pattern_name)
 
                 if len(matched_patterns) > 1:
-                    issues.append({
-                        "file": str(file.relative_to(self.target)),
-                        "patterns": matched_patterns,
-                    })
+                    issues.append(
+                        {
+                            "file": str(file.relative_to(self.target)),
+                            "patterns": matched_patterns,
+                        }
+                    )
 
         return issues
 
@@ -365,8 +401,11 @@ class DirectoryAnalyzer:
         file_list = [str(f.relative_to(self.target)) for f in files if f.is_file()]
 
         # 檢查是否有子目錄結構
-        has_structure = any(d.is_dir() and d.parent == scratch_path
-                           for d in files if d.name in ["intake", "processing", "analyzed"])
+        has_structure = any(
+            d.is_dir() and d.parent == scratch_path
+            for d in files
+            if d.name in ["intake", "processing", "analyzed"]
+        )
 
         if not has_structure and len(file_list) > 5:
             return {"count": len(file_list), "files": file_list}
@@ -381,7 +420,7 @@ class DirectoryAnalyzer:
         index_yaml = self.target / "03_refactor" / "index.yaml"
         if index_yaml.exists():
             try:
-                with open(index_yaml, 'r', encoding='utf-8') as f:
+                with open(index_yaml, "r", encoding="utf-8") as f:
                     index_data = yaml.safe_load(f)
 
                 # 驗證索引中的檔案是否存在
@@ -407,6 +446,7 @@ class DirectoryAnalyzer:
 
     def _build_tree(self, max_depth: int = 3) -> Dict:
         """建立目錄樹"""
+
         def build_subtree(path: Path, current_depth: int) -> Dict:
             if current_depth > max_depth:
                 return {"...": "truncated"}
@@ -444,19 +484,23 @@ class DirectoryAnalyzer:
             domain_path = self.target / dir_name
             if domain_path.exists():
                 file_count = len(list(domain_path.rglob("*")))
-                domains.append({
-                    "name": domain_name,
-                    "path": dir_name,
-                    "exists": True,
-                    "file_count": file_count,
-                })
+                domains.append(
+                    {
+                        "name": domain_name,
+                        "path": dir_name,
+                        "exists": True,
+                        "file_count": file_count,
+                    }
+                )
             else:
-                domains.append({
-                    "name": domain_name,
-                    "path": dir_name,
-                    "exists": False,
-                    "file_count": 0,
-                })
+                domains.append(
+                    {
+                        "name": domain_name,
+                        "path": dir_name,
+                        "exists": False,
+                        "file_count": 0,
+                    }
+                )
 
         return domains
 
@@ -468,12 +512,12 @@ class DirectoryAnalyzer:
         for file in self.files_cache:
             if file.is_file() and file.suffix in [".md", ".yaml", ".yml"]:
                 try:
-                    content = file.read_text(encoding='utf-8')
+                    content = file.read_text(encoding="utf-8")
                     # 尋找相對路徑引用
-                    for match in re.finditer(r'\[.*?\]\((\.\.?/[^)]+)\)', content):
+                    for match in re.finditer(r"\[.*?\]\((\.\.?/[^)]+)\)", content):
                         ref = match.group(1)
                         references[str(file.relative_to(self.target))].append(ref)
-                except:
+                except BaseException:
                     pass
 
         return {"references": dict(references)}
@@ -485,7 +529,9 @@ class DirectoryAnalyzer:
         for problem in problems:
             rec = {
                 "problem_id": problem.id,
-                "priority": "P1" if problem.severity in [SEVERITY_CRITICAL, SEVERITY_HIGH] else "P2",
+                "priority": (
+                    "P1" if problem.severity in [SEVERITY_CRITICAL, SEVERITY_HIGH] else "P2"
+                ),
                 "action": problem.suggested_action,
                 "effort": "low" if problem.category == CATEGORY_NAMING else "medium",
             }
@@ -493,9 +539,11 @@ class DirectoryAnalyzer:
 
         return recommendations
 
+
 # ============================================================================
 # 計畫生成器
 # ============================================================================
+
 
 class PlanGenerator:
     """執行計畫生成器"""
@@ -523,10 +571,12 @@ class PlanGenerator:
             analysis_summary={
                 "total_files": self.analysis.overview["total_files"],
                 "problems_count": len(self.analysis.problems),
-                "critical_problems": len([p for p in self.analysis.problems
-                                         if p.severity == SEVERITY_CRITICAL]),
-                "high_problems": len([p for p in self.analysis.problems
-                                     if p.severity == SEVERITY_HIGH]),
+                "critical_problems": len(
+                    [p for p in self.analysis.problems if p.severity == SEVERITY_CRITICAL]
+                ),
+                "high_problems": len(
+                    [p for p in self.analysis.problems if p.severity == SEVERITY_HIGH]
+                ),
             },
             phases=phases,
             validation_plan=self._generate_validation_plan(),
@@ -558,21 +608,25 @@ class PlanGenerator:
         phase1_steps = []
         for problem in self.analysis.problems:
             if problem.category == CATEGORY_SCATTERING:
-                phase1_steps.append({
-                    "operation": "create_directory",
-                    "target": problem.id.replace("scatter_", "") + "/",
-                    "reason": problem.suggested_action,
-                })
+                phase1_steps.append(
+                    {
+                        "operation": "create_directory",
+                        "target": problem.id.replace("scatter_", "") + "/",
+                        "reason": problem.suggested_action,
+                    }
+                )
 
         if phase1_steps:
-            phases.append(Phase(
-                id=1,
-                name="建立基礎目錄結構",
-                priority="P1",
-                description="創建缺失的功能域子目錄",
-                steps=phase1_steps,
-                validation={"check": "directories_exist"},
-            ))
+            phases.append(
+                Phase(
+                    id=1,
+                    name="建立基礎目錄結構",
+                    priority="P1",
+                    description="創建缺失的功能域子目錄",
+                    steps=phase1_steps,
+                    validation={"check": "directories_exist"},
+                )
+            )
 
         # Phase 2: 移動分散檔案
         phase2_steps = []
@@ -580,32 +634,38 @@ class PlanGenerator:
             if problem.category == CATEGORY_SCATTERING:
                 target_dir = problem.id.replace("scatter_", "") + "/"
                 for file in problem.affected_files:
-                    phase2_steps.append({
-                        "operation": "move_file",
-                        "source": file,
-                        "target": target_dir + Path(file).name,
-                        "update_references": True,
-                    })
+                    phase2_steps.append(
+                        {
+                            "operation": "move_file",
+                            "source": file,
+                            "target": target_dir + Path(file).name,
+                            "update_references": True,
+                        }
+                    )
 
         if phase2_steps:
-            phases.append(Phase(
-                id=2,
-                name="整合分散檔案",
-                priority="P1",
-                description="將分散的相關檔案移動到對應子目錄",
-                steps=phase2_steps,
-                validation={"check": "files_moved"},
-            ))
+            phases.append(
+                Phase(
+                    id=2,
+                    name="整合分散檔案",
+                    priority="P1",
+                    description="將分散的相關檔案移動到對應子目錄",
+                    steps=phase2_steps,
+                    validation={"check": "files_moved"},
+                )
+            )
 
         # Phase 3: 更新引用
-        phases.append(Phase(
-            id=3,
-            name="更新檔案引用",
-            priority="P1",
-            description="更新所有受影響的引用路徑",
-            steps=[{"operation": "update_references", "scope": "all"}],
-            validation={"check": "references_valid"},
-        ))
+        phases.append(
+            Phase(
+                id=3,
+                name="更新檔案引用",
+                priority="P1",
+                description="更新所有受影響的引用路徑",
+                steps=[{"operation": "update_references", "scope": "all"}],
+                validation={"check": "references_valid"},
+            )
+        )
 
         return phases
 
@@ -616,19 +676,27 @@ class PlanGenerator:
         # Phase 4: 整理暫存區
         for problem in self.analysis.problems:
             if problem.id == "scratch_disorg":
-                phases.append(Phase(
-                    id=4,
-                    name="整理暫存區結構",
-                    priority="P2",
-                    description="建立 _legacy_scratch 子目錄結構",
-                    steps=[
-                        {"operation": "create_directory", "target": "_legacy_scratch/intake/"},
-                        {"operation": "create_directory", "target": "_legacy_scratch/processing/"},
-                        {"operation": "create_directory", "target": "_legacy_scratch/analyzed/"},
-                        {"operation": "create_directory", "target": "_legacy_scratch/archive/"},
-                    ],
-                    validation={"check": "scratch_structure"},
-                ))
+                phases.append(
+                    Phase(
+                        id=4,
+                        name="整理暫存區結構",
+                        priority="P2",
+                        description="建立 _legacy_scratch 子目錄結構",
+                        steps=[
+                            {"operation": "create_directory", "target": "_legacy_scratch/intake/"},
+                            {
+                                "operation": "create_directory",
+                                "target": "_legacy_scratch/processing/",
+                            },
+                            {
+                                "operation": "create_directory",
+                                "target": "_legacy_scratch/analyzed/",
+                            },
+                            {"operation": "create_directory", "target": "_legacy_scratch/archive/"},
+                        ],
+                        validation={"check": "scratch_structure"},
+                    )
+                )
                 break
 
         # Phase 5: 分類根層級檔案
@@ -637,42 +705,53 @@ class PlanGenerator:
                 steps = []
                 for file in problem.affected_files:
                     if file.endswith("_report.md") or file.endswith("_analysis.md"):
-                        steps.append({
-                            "operation": "move_file",
-                            "source": file,
-                            "target": f"reports/{Path(file).name}",
-                        })
+                        steps.append(
+                            {
+                                "operation": "move_file",
+                                "source": file,
+                                "target": f"reports/{Path(file).name}",
+                            }
+                        )
                     elif file.endswith("__playbook.md"):
-                        steps.append({
-                            "operation": "move_file",
-                            "source": file,
-                            "target": f"generated/{Path(file).name}",
-                        })
+                        steps.append(
+                            {
+                                "operation": "move_file",
+                                "source": file,
+                                "target": f"generated/{Path(file).name}",
+                            }
+                        )
 
                 if steps:
-                    phases.append(Phase(
-                        id=5,
-                        name="分類根層級檔案",
-                        priority="P2",
-                        description="將報告與生成的劇本移至對應子目錄",
-                        steps=steps,
-                        validation={"check": "root_cleaned"},
-                    ))
+                    phases.append(
+                        Phase(
+                            id=5,
+                            name="分類根層級檔案",
+                            priority="P2",
+                            description="將報告與生成的劇本移至對應子目錄",
+                            steps=steps,
+                            validation={"check": "root_cleaned"},
+                        )
+                    )
                 break
 
         # Phase 6: 同步索引
-        phases.append(Phase(
-            id=6,
-            name="同步所有索引",
-            priority="P2",
-            description="更新並驗證所有索引檔案",
-            steps=[
-                {"operation": "update_index", "target": "03_refactor/index.yaml"},
-                {"operation": "update_index", "target": "03_refactor/INDEX.md"},
-                {"operation": "update_index", "target": "01_deconstruction/legacy_assets_index.yaml"},
-            ],
-            validation={"check": "indexes_synced"},
-        ))
+        phases.append(
+            Phase(
+                id=6,
+                name="同步所有索引",
+                priority="P2",
+                description="更新並驗證所有索引檔案",
+                steps=[
+                    {"operation": "update_index", "target": "03_refactor/index.yaml"},
+                    {"operation": "update_index", "target": "03_refactor/INDEX.md"},
+                    {
+                        "operation": "update_index",
+                        "target": "01_deconstruction/legacy_assets_index.yaml",
+                    },
+                ],
+                validation={"check": "indexes_synced"},
+            )
+        )
 
         return phases
 
@@ -683,45 +762,54 @@ class PlanGenerator:
         # Phase 7: 命名標準化
         for problem in self.analysis.problems:
             if problem.category == CATEGORY_NAMING:
-                phases.append(Phase(
-                    id=7,
-                    name="標準化命名風格",
-                    priority="P3",
-                    description="統一採用 snake_case 命名",
-                    steps=[{
-                        "operation": "rename_file",
-                        "source": f["file"] if isinstance(f, dict) else f,
-                        "pattern": "to_snake_case",
-                    } for f in problem.affected_files[:10]],  # 限制數量
-                    validation={"check": "naming_consistent"},
-                ))
+                phases.append(
+                    Phase(
+                        id=7,
+                        name="標準化命名風格",
+                        priority="P3",
+                        description="統一採用 snake_case 命名",
+                        steps=[
+                            {
+                                "operation": "rename_file",
+                                "source": f["file"] if isinstance(f, dict) else f,
+                                "pattern": "to_snake_case",
+                            }
+                            for f in problem.affected_files[:10]
+                        ],  # 限制數量
+                        validation={"check": "naming_consistent"},
+                    )
+                )
                 break
 
         # Phase 8: 生成文件圖譜
-        phases.append(Phase(
-            id=8,
-            name="生成結構文件",
-            priority="P3",
-            description="生成目錄結構圖與依賴關係圖",
-            steps=[
-                {"operation": "generate_diagram", "type": "directory_tree"},
-                {"operation": "generate_diagram", "type": "dependency_graph"},
-            ],
-            validation={"check": "diagrams_generated"},
-        ))
+        phases.append(
+            Phase(
+                id=8,
+                name="生成結構文件",
+                priority="P3",
+                description="生成目錄結構圖與依賴關係圖",
+                steps=[
+                    {"operation": "generate_diagram", "type": "directory_tree"},
+                    {"operation": "generate_diagram", "type": "dependency_graph"},
+                ],
+                validation={"check": "diagrams_generated"},
+            )
+        )
 
         # Phase 9: 最終驗證
-        phases.append(Phase(
-            id=9,
-            name="最終驗證與清理",
-            priority="P3",
-            description="執行完整驗證並清理暫存檔案",
-            steps=[
-                {"operation": "validate", "scope": "full"},
-                {"operation": "cleanup", "target": "temp_files"},
-            ],
-            validation={"check": "all_passed"},
-        ))
+        phases.append(
+            Phase(
+                id=9,
+                name="最終驗證與清理",
+                priority="P3",
+                description="執行完整驗證並清理暫存檔案",
+                steps=[
+                    {"operation": "validate", "scope": "full"},
+                    {"operation": "cleanup", "target": "temp_files"},
+                ],
+                validation={"check": "all_passed"},
+            )
+        )
 
         return phases
 
@@ -751,9 +839,11 @@ class PlanGenerator:
             "checkpoints": [],
         }
 
+
 # ============================================================================
 # 執行器
 # ============================================================================
+
 
 class Executor:
     """重構執行器"""
@@ -764,7 +854,9 @@ class Executor:
         self.dry_run = dry_run
         self.configs = load_all_configs()
         self.executed_steps = []
-        self.backup_dir = self.target / ".refactor_backup" / datetime.now().strftime("%Y%m%d_%H%M%S")
+        self.backup_dir = (
+            self.target / ".refactor_backup" / datetime.now().strftime("%Y%m%d_%H%M%S")
+        )
 
     def execute(self, phase_filter: Optional[int] = None) -> Dict:
         """執行計畫"""
@@ -816,7 +908,7 @@ class Executor:
                 rel_path = file.relative_to(self.target)
                 manifest["files"].append(str(rel_path))
 
-        with open(self.backup_dir / "manifest.yaml", 'w', encoding='utf-8') as f:
+        with open(self.backup_dir / "manifest.yaml", "w", encoding="utf-8") as f:
             yaml.dump(manifest, f, allow_unicode=True)
 
     def _execute_phase(self, phase: Phase) -> Dict:
@@ -828,27 +920,33 @@ class Executor:
 
             if self.dry_run:
                 print(f"{step_desc} → 模擬完成")
-                result["executed"].append({
-                    "phase": phase.id,
-                    "step": step,
-                    "status": "simulated",
-                })
+                result["executed"].append(
+                    {
+                        "phase": phase.id,
+                        "step": step,
+                        "status": "simulated",
+                    }
+                )
             else:
                 try:
                     self._execute_step(step)
                     print(f"{step_desc} → ✓")
-                    result["executed"].append({
-                        "phase": phase.id,
-                        "step": step,
-                        "status": "completed",
-                    })
+                    result["executed"].append(
+                        {
+                            "phase": phase.id,
+                            "step": step,
+                            "status": "completed",
+                        }
+                    )
                 except Exception as e:
                     print(f"{step_desc} → ✗ {e}")
-                    result["failed"].append({
-                        "phase": phase.id,
-                        "step": step,
-                        "error": str(e),
-                    })
+                    result["failed"].append(
+                        {
+                            "phase": phase.id,
+                            "step": step,
+                            "error": str(e),
+                        }
+                    )
 
         return result
 
@@ -894,12 +992,12 @@ class Executor:
     def _to_snake_case(self, name: str) -> str:
         """轉換為 snake_case"""
         # 處理 camelCase
-        name = re.sub(r'([A-Z]+)([A-Z][a-z])', r'\1_\2', name)
-        name = re.sub(r'([a-z\d])([A-Z])', r'\1_\2', name)
+        name = re.sub(r"([A-Z]+)([A-Z][a-z])", r"\1_\2", name)
+        name = re.sub(r"([a-z\d])([A-Z])", r"\1_\2", name)
         # 處理連字符
-        name = name.replace('-', '_')
+        name = name.replace("-", "_")
         # 處理多個下劃線
-        name = re.sub(r'_+', '_', name)
+        name = re.sub(r"_+", "_", name)
         return name.lower()
 
     def _update_all_references(self):
@@ -931,7 +1029,7 @@ class Executor:
                 continue
 
             try:
-                content = file_path.read_text(encoding='utf-8')
+                content = file_path.read_text(encoding="utf-8")
                 updated_content = content
                 has_changes = False
 
@@ -946,7 +1044,7 @@ class Executor:
                         (f"]({old_rel})", f"]({new_rel})"),
                         (f"](./{old_rel})", f"](./{new_rel})"),
                         (f"](../{old_rel})", f"](../{new_rel})"),
-                        (f': {old_rel}', f': {new_rel}'),  # YAML 路徑
+                        (f": {old_rel}", f": {new_rel}"),  # YAML 路徑
                         (f'"{old_rel}"', f'"{new_rel}"'),  # 引號包圍
                     ]
 
@@ -957,7 +1055,7 @@ class Executor:
 
                 # 如果有變更，寫回文件
                 if has_changes:
-                    file_path.write_text(updated_content, encoding='utf-8')
+                    file_path.write_text(updated_content, encoding="utf-8")
                     updated_count += 1
 
             except Exception as e:
@@ -965,9 +1063,11 @@ class Executor:
 
         print(f"    ✓ 已更新 {updated_count} 個文件的引用")
 
+
 # ============================================================================
 # 驗證器
 # ============================================================================
+
 
 class Validator:
     """結構驗證器"""
@@ -1030,14 +1130,14 @@ class Validator:
 
         for file in self.target.rglob("*.md"):
             try:
-                content = file.read_text(encoding='utf-8')
-                for match in re.finditer(r'\[.*?\]\(([^)]+)\)', content):
+                content = file.read_text(encoding="utf-8")
+                for match in re.finditer(r"\[.*?\]\(([^)]+)\)", content):
                     ref = match.group(1)
-                    if ref.startswith(('./', '../')) and not ref.startswith('http'):
+                    if ref.startswith(("./", "../")) and not ref.startswith("http"):
                         ref_path = file.parent / ref
                         if not ref_path.exists():
                             errors.append(f"{file.relative_to(self.target)}: 斷開的引用 {ref}")
-            except:
+            except BaseException:
                 pass
 
         return {
@@ -1053,7 +1153,7 @@ class Validator:
         for file in self.target.rglob("*"):
             if file.is_file():
                 name = file.stem
-                if re.search(r'[A-Z]', name) and '_' in name:
+                if re.search(r"[A-Z]", name) and "_" in name:
                     warnings.append(f"混合命名風格: {file.relative_to(self.target)}")
 
         return {
@@ -1062,9 +1162,11 @@ class Validator:
             "warnings": warnings[:10],
         }
 
+
 # ============================================================================
 # 報告生成器
 # ============================================================================
+
 
 class ReportGenerator:
     """分析報告生成器"""
@@ -1092,7 +1194,7 @@ class ReportGenerator:
 
         # 檔案類型
         lines.append("\n### 檔案類型分佈")
-        for ext, count in list(self.analysis.overview['file_types'].items())[:5]:
+        for ext, count in list(self.analysis.overview["file_types"].items())[:5]:
             lines.append(f"- `{ext}`: {count} 個")
 
         # 識別的問題
@@ -1113,7 +1215,9 @@ class ReportGenerator:
                 lines.append(f"\n### 階段 {phase.id}: {phase.name} ({phase.priority})")
                 lines.append(f"> {phase.description}")
                 for step in phase.steps[:3]:  # 只顯示前3步
-                    lines.append(f"- {step.get('operation')}: {step.get('target', step.get('source', ''))}")
+                    lines.append(
+                        f"- {step.get('operation')}: {step.get('target', step.get('source', ''))}"
+                    )
 
         return "\n".join(lines)
 
@@ -1130,9 +1234,11 @@ class ReportGenerator:
             "plan": asdict(self.plan) if self.plan else None,
         }
 
+
 # ============================================================================
 # CLI 入口
 # ============================================================================
+
 
 def main():
     parser = argparse.ArgumentParser(
@@ -1151,7 +1257,7 @@ def main():
 
   實際執行:
     python refactor_engine.py execute --plan plan.yaml --confirm
-        """
+        """,
     )
 
     subparsers = parser.add_subparsers(dest="command", help="可用命令")
@@ -1160,15 +1266,17 @@ def main():
     analyze_parser = subparsers.add_parser("analyze", help="分析目標目錄")
     analyze_parser.add_argument("--target", required=True, help="目標目錄路徑")
     analyze_parser.add_argument("--output", help="輸出檔案路徑")
-    analyze_parser.add_argument("--format", default="yaml", choices=["yaml", "json", "md"],
-                                help="輸出格式")
+    analyze_parser.add_argument(
+        "--format", default="yaml", choices=["yaml", "json", "md"], help="輸出格式"
+    )
 
     # plan 命令
     plan_parser = subparsers.add_parser("plan", help="生成執行計畫")
     plan_parser.add_argument("--target", required=True, help="目標目錄")
     plan_parser.add_argument("--output", required=True, help="計畫輸出路徑")
-    plan_parser.add_argument("--priority", default="all", choices=["P1", "P2", "P3", "all"],
-                             help="優先級篩選")
+    plan_parser.add_argument(
+        "--priority", default="all", choices=["P1", "P2", "P3", "all"], help="優先級篩選"
+    )
 
     # execute 命令
     execute_parser = subparsers.add_parser("execute", help="執行重構")
@@ -1181,9 +1289,12 @@ def main():
     # validate 命令
     validate_parser = subparsers.add_parser("validate", help="驗證結果")
     validate_parser.add_argument("--target", required=True, help="目標目錄")
-    validate_parser.add_argument("--scope", default="full",
-                                 choices=["full", "structure", "references", "naming"],
-                                 help="驗證範圍")
+    validate_parser.add_argument(
+        "--scope",
+        default="full",
+        choices=["full", "structure", "references", "naming"],
+        help="驗證範圍",
+    )
     validate_parser.add_argument("--report", action="store_true", help="生成驗證報告")
 
     # rollback 命令
@@ -1209,11 +1320,15 @@ def main():
         elif args.format == "json":
             output = json.dumps(report_gen.generate_yaml(), indent=2, ensure_ascii=False)
         else:
-            output = yaml.dump(report_gen.generate_yaml(), allow_unicode=True,
-                              default_flow_style=False, sort_keys=False)
+            output = yaml.dump(
+                report_gen.generate_yaml(),
+                allow_unicode=True,
+                default_flow_style=False,
+                sort_keys=False,
+            )
 
         if args.output:
-            with open(args.output, 'w', encoding='utf-8') as f:
+            with open(args.output, "w", encoding="utf-8") as f:
                 f.write(output)
             print(f"\n✅ 報告已儲存: {args.output}")
         else:
@@ -1227,7 +1342,7 @@ def main():
         plan = generator.generate(priority_filter=args.priority)
 
         plan_dict = asdict(plan)
-        with open(args.output, 'w', encoding='utf-8') as f:
+        with open(args.output, "w", encoding="utf-8") as f:
             yaml.dump(plan_dict, f, allow_unicode=True, default_flow_style=False, sort_keys=False)
 
         print(f"\n✅ 計畫已生成: {args.output}")
@@ -1235,7 +1350,7 @@ def main():
         print(f"   總步驟: {sum(len(p.steps) for p in plan.phases)}")
 
     elif args.command == "execute":
-        with open(args.plan, 'r', encoding='utf-8') as f:
+        with open(args.plan, "r", encoding="utf-8") as f:
             plan_dict = yaml.safe_load(f)
 
         # 重建 ExecutionPlan 物件
@@ -1318,7 +1433,7 @@ def main():
             sys.exit(1)
 
         try:
-            with open(manifest_path, 'r', encoding='utf-8') as f:
+            with open(manifest_path, "r", encoding="utf-8") as f:
                 manifest = yaml.safe_load(f)
 
             print(f"  📋 備份時間: {manifest.get('timestamp', 'unknown')}")
@@ -1347,7 +1462,7 @@ def main():
 
             # 從備份恢復檔案
             print("  📥 恢復備份檔案...")
-            for file_rel in manifest.get('files', []):
+            for file_rel in manifest.get("files", []):
                 source = checkpoint_dir / file_rel
                 target = target_dir / file_rel
 
@@ -1381,8 +1496,10 @@ def main():
         except Exception as e:
             print(f"❌ 回滾失敗: {e}")
             import traceback
+
             traceback.print_exc()
             sys.exit(1)
+
 
 if __name__ == "__main__":
     main()

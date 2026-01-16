@@ -56,7 +56,7 @@ class PythonSyntaxValidator:
     def validate_python_syntax(self, file_path: Path) -> bool:
         """Validate Python file syntax using AST parsing."""
         try:
-            with open(file_path, 'r', encoding='utf-8') as f:
+            with open(file_path, "r", encoding="utf-8") as f:
                 code = f.read()
             ast.parse(code)
             return True
@@ -67,9 +67,7 @@ class PythonSyntaxValidator:
             )
             return False
         except Exception as e:
-            self.log_error(
-                f"Error parsing {file_path.relative_to(self.repo_root)}: {str(e)}"
-            )
+            self.log_error(f"Error parsing {file_path.relative_to(self.repo_root)}: {str(e)}")
             return False
 
     def _validate_all_with_ast(self, file_path: Path, tree: ast.AST) -> bool:
@@ -77,18 +75,20 @@ class PythonSyntaxValidator:
         for node in ast.walk(tree):
             if isinstance(node, ast.Assign):
                 for target in node.targets:
-                    if isinstance(target, ast.Name) and target.id == '__all__':
+                    if isinstance(target, ast.Name) and target.id == "__all__":
                         if isinstance(node.value, ast.List):
                             # Check each element in the list
                             for elt in node.value.elts:
-                                # Check if element is a JoinedStr (concatenated strings)
+                                # Check if element is a JoinedStr (concatenated
+                                # strings)
                                 if isinstance(elt, ast.JoinedStr):
                                     self.log_error(
                                         f"Unexpected string concatenation in __all__ at "
                                         f"{file_path.relative_to(self.repo_root)}:line {elt.lineno}"
                                     )
                                     return False
-                                # Check if element is a BinOp (also concatenation)
+                                # Check if element is a BinOp (also
+                                # concatenation)
                                 elif isinstance(elt, ast.BinOp):
                                     self.log_error(
                                         f"String concatenation in __all__ (missing comma?) at "
@@ -99,7 +99,7 @@ class PythonSyntaxValidator:
 
     def _validate_all_with_text(self, file_path: Path, content: str) -> bool:
         """Validate __all__ list using text-based pattern matching."""
-        all_pattern = r'__all__\s*=\s*\[(.*?)\]'
+        all_pattern = r"__all__\s*=\s*\[(.*?)\]"
         matches = re.findall(all_pattern, content, re.DOTALL)
 
         if not matches:
@@ -112,24 +112,26 @@ class PythonSyntaxValidator:
                 continue
 
             # Split by newlines and check for missing commas
-            lines = match.strip().split('\n')
+            lines = match.strip().split("\n")
             for i, line in enumerate(lines):
                 line = line.strip()
-                if not line or line.startswith('#'):
+                if not line or line.startswith("#"):
                     continue
 
                 # Check if line contains a string but doesn't end with comma
                 if i < len(lines) - 1:  # Not the last line
                     has_string = bool(re.search(r'"[^"]*"|\'[^\']*\'', line))
-                    ends_with_comma = line.rstrip().endswith(',')
+                    ends_with_comma = line.rstrip().endswith(",")
 
                     if has_string and not ends_with_comma:
                         # Check if next line also has a string (missing comma)
                         next_line = lines[i + 1].strip() if i + 1 < len(lines) else ""
                         if re.search(r'"[^"]*"|\'[^\']*\'', next_line):
-                            # Check if this is actually string concatenation (no comma)
-                            combined_lines = line + ' ' + next_line
-                            # Pattern: string followed by another string without comma
+                            # Check if this is actually string concatenation
+                            # (no comma)
+                            combined_lines = line + " " + next_line
+                            # Pattern: string followed by another string
+                            # without comma
                             if re.search(r'["\'][^"\']*["\']\s+["\'][^"\']*["\']', combined_lines):
                                 self.log_error(
                                     f"Possible missing comma in __all__ list "
@@ -143,7 +145,7 @@ class PythonSyntaxValidator:
     def validate_all_list(self, file_path: Path) -> bool:
         """Validate __all__ list has proper comma separation."""
         try:
-            with open(file_path, 'r', encoding='utf-8') as f:
+            with open(file_path, "r", encoding="utf-8") as f:
                 content = f.read()
 
             # AST-based validation
@@ -158,7 +160,8 @@ class PythonSyntaxValidator:
             return True
 
         except SyntaxError:
-            # If there's a syntax error, it will be caught by validate_python_syntax
+            # If there's a syntax error, it will be caught by
+            # validate_python_syntax
             return True
         except Exception as e:
             self.log_warning(
@@ -168,11 +171,11 @@ class PythonSyntaxValidator:
 
     def validate_init_imports(self, file_path: Path) -> bool:
         """Validate __init__.py files have proper imports for __all__ items."""
-        if file_path.name != '__init__.py':
+        if file_path.name != "__init__.py":
             return True
 
         try:
-            with open(file_path, 'r', encoding='utf-8') as f:
+            with open(file_path, "r", encoding="utf-8") as f:
                 content = f.read()
 
             # Parse AST to get __all__ items
@@ -182,7 +185,7 @@ class PythonSyntaxValidator:
             for node in ast.walk(tree):
                 if isinstance(node, ast.Assign):
                     for target in node.targets:
-                        if isinstance(target, ast.Name) and target.id == '__all__':
+                        if isinstance(target, ast.Name) and target.id == "__all__":
                             if isinstance(node.value, ast.List):
                                 for elt in node.value.elts:
                                     if isinstance(elt, ast.Constant):
@@ -193,7 +196,7 @@ class PythonSyntaxValidator:
 
             # Check if there's a __getattr__ function (lazy loading)
             has_getattr = any(
-                isinstance(node, ast.FunctionDef) and node.name == '__getattr__'
+                isinstance(node, ast.FunctionDef) and node.name == "__getattr__"
                 for node in ast.walk(tree)
             )
 
@@ -259,19 +262,19 @@ class PythonSyntaxValidator:
 
         # Exclude certain directories
         exclude_patterns = {
-            '__pycache__',
-            '.git',
-            '.venv',
-            'venv',
-            'node_modules',
-            'dist',
-            'build',
-            '.eggs',
-            '*.egg-info',
-            '_scratch',
+            "__pycache__",
+            ".git",
+            ".venv",
+            "venv",
+            "node_modules",
+            "dist",
+            "build",
+            ".eggs",
+            "*.egg-info",
+            "_scratch",
         }
 
-        for py_file in target_dir.rglob('*.py'):
+        for py_file in target_dir.rglob("*.py"):
             # Check if file is in excluded directory
             if any(excl in py_file.parts for excl in exclude_patterns):
                 continue
@@ -285,7 +288,9 @@ class PythonSyntaxValidator:
             target_path = self.repo_root
 
         print(f"\n🔍 Python Syntax Validation")
-        print(f"📁 Target: {target_path.relative_to(self.repo_root) if target_path != self.repo_root else 'Repository Root'}")
+        print(
+            f"📁 Target: {target_path.relative_to(self.repo_root) if target_path != self.repo_root else 'Repository Root'}"
+        )
         print("=" * 70)
 
         python_files = self.find_python_files(target_path)
@@ -331,20 +336,14 @@ class PythonSyntaxValidator:
 
 def main() -> int:
     """Main entry point."""
-    parser = argparse.ArgumentParser(
-        description='Validate Python syntax in SynergyMesh repository'
-    )
+    parser = argparse.ArgumentParser(description="Validate Python syntax in SynergyMesh repository")
     parser.add_argument(
-        '--target',
+        "--target",
         type=str,
-        help='Target directory to validate (relative to repo root)',
-        default=None
+        help="Target directory to validate (relative to repo root)",
+        default=None,
     )
-    parser.add_argument(
-        '--verbose',
-        action='store_true',
-        help='Enable verbose output'
-    )
+    parser.add_argument("--verbose", action="store_true", help="Enable verbose output")
 
     args = parser.parse_args()
 
@@ -369,5 +368,5 @@ def main() -> int:
     return 0 if success else 1
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     sys.exit(main())
