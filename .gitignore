@@ -1,5 +1,33 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Virtual environments
+venv/
+ENV/
+env/
+
 # Logs
 logs
+logs/
 *.log
 npm-debug.log*
 yarn-debug.log*
@@ -11,11 +39,12 @@ report.[0-9]*.[0-9]*.[0-9]*.[0-9]*.json
 
 # Runtime data
 pids
+pids/
 *.pid
 *.seed
 *.pid.lock
 
-# Repository Understanding System generated files (only in workspace/tools)
+# Repository Understanding System generated files
 workspace/tools/repository-understanding/knowledge_base.json
 workspace/tools/repository-understanding/knowledge_base_backup_*.json
 workspace/tools/repository-understanding/phase*_report.md
@@ -88,7 +117,6 @@ out
 
 # Nuxt.js build / generate output
 .nuxt
-dist
 
 # Gatsby files
 .cache/
@@ -101,7 +129,6 @@ dist
 
 # vuepress v2.x temp and cache directory
 .temp
-.cache
 
 # Sveltekit cache directory
 .svelte-kit/
@@ -145,3 +172,28 @@ dist
 # Vite logs files
 vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Local files
+outputs/
+
+# Temporary files
+*.tmp
+*.bak
+*.backup
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Agent hooks (local only)
+.agent_hooks/
+
+# Submodules (will be managed separately)
+machine-native-ops/
