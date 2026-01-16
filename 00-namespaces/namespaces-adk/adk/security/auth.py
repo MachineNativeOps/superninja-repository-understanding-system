@@ -14,12 +14,14 @@ from enum import Enum
 from typing import Any, Dict, List, Optional
 
 from ..observability.logging import Logger
+import os
+
 
 
 class AuthMethod(Enum):
     """Authentication methods."""
 
-    PASSWORD = "password"
+    PASSWORD = os.getenv("AUTH_PASSWORD", "password")
     TOKEN = "token"
     OAUTH2 = "oauth2"
     API_KEY = "api_key"

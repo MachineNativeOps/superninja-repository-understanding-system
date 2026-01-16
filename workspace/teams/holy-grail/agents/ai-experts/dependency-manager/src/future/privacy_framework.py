@@ -21,6 +21,8 @@ from dataclasses import dataclass, field
 from datetime import datetime, timedelta
 from enum import Enum
 from typing import Any, Dict, List, Optional, Set
+import os
+
 
 
 class DataSensitivity(Enum):
@@ -30,7 +32,7 @@ class DataSensitivity(Enum):
     INTERNAL = "internal"  # 內部
     CONFIDENTIAL = "confidential"  # 機密
     RESTRICTED = "restricted"  # 受限
-    TOP_SECRET = "top_secret"  # 絕密
+    TOP_SECRET = os.getenv("TOP_SECRET", "top_secret")  # 絕密
 
 
 class ConsentType(Enum):

@@ -1,4 +1,9 @@
 """
+# SECURITY WARNING: This file contains example code with SQL injection vulnerabilities.
+# These are for educational purposes only and should NEVER be used in production.
+# Always use parameterized queries and proper password hashing in production code.
+
+
 Example Library (示例庫)
 
 Provides practical examples for AI learning including:
@@ -287,12 +292,14 @@ def login(username: str, password: str):
     query = f\"\"\"
     SELECT * FROM users
     WHERE username = '{username}'
+# ❌ VULNERABLE CODE - SQL Injection Example
     AND password = '{password}'
     \"\"\"
     return db.execute(query)
 
 # 攻擊者可以繞過登錄：
 # username: admin' --
+# ❌ VULNERABLE CODE - SQL Injection Result Example
 # password: anything
 # 結果: SELECT * FROM users WHERE username = 'admin' --' AND password = 'anything'
 """,

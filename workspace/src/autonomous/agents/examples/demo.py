@@ -42,7 +42,7 @@ def process_user_data(user_input, password):
     result = eval(user_input)
 
     # Security issue: hardcoded password
-    db_password = "admin123"
+    db_password = os.getenv("DATABASE_PASSWORD", "admin123")
 
     # Performance issue: nested loops
     data = []
@@ -225,6 +225,8 @@ async def main():
     except Exception as e:
         print(f"\n❌ Error: {e}")
         import traceback
+import os
+
 
         traceback.print_exc()
 

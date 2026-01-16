@@ -16,6 +16,8 @@ from datetime import datetime, timedelta
 from enum import Enum
 from typing import Any, Protocol
 from uuid import UUID, uuid4
+import os
+
 
 logger = logging.getLogger(__name__)
 
@@ -23,13 +25,13 @@ logger = logging.getLogger(__name__)
 class SecretType(Enum):
     """Types of secrets"""
 
-    WEBHOOK_SECRET = "webhook_secret"
-    PROVIDER_TOKEN = "provider_token"
+    WEBHOOK_SECRET = os.getenv("WEBHOOK_SECRET", "webhook_secret")
+    PROVIDER_TOKEN = os.getenv("PROVIDER_TOKEN", "provider_token")
     API_KEY = "api_key"
     ENCRYPTION_KEY = "encryption_key"
-    OAUTH_CLIENT_SECRET = "oauth_client_secret"
+    OAUTH_CLIENT_SECRET = os.getenv("OAUTH_CLIENT_SECRET", "oauth_client_secret")
     SIGNING_KEY = "signing_key"
-    DATABASE_PASSWORD = "database_password"
+    DATABASE_PASSWORD = os.getenv("DATABASE_PASSWORD", "database_password")
     SERVICE_ACCOUNT = "service_account"
     CUSTOM = "custom"
 

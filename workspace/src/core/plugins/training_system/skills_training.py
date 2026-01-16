@@ -1,4 +1,9 @@
 """
+# SECURITY WARNING: This file contains example code with SQL injection vulnerabilities.
+# These are for educational purposes only and should NEVER be used in production.
+# Always use parameterized queries and proper password hashing in production code.
+
+
 Skills Training System (技能訓練系統)
 
 Provides structured training and skill development for AI agents including:
@@ -572,6 +577,7 @@ db.users.create({'password': hashed})
                     "question": """
 修復這段代碼的安全漏洞：
 def login(email, password):
+# ❌ VULNERABLE CODE - SQL Injection Example
     query = f"SELECT * FROM users WHERE email = '{email}' AND password = '{password}'"
     user = db.execute(query)
     return user

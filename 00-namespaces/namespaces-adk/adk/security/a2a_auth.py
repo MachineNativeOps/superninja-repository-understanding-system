@@ -17,12 +17,14 @@ from cryptography.hazmat.primitives import hashes, serialization
 from cryptography.hazmat.primitives.asymmetric import padding, rsa
 
 from ..observability.logging import Logger
+import os
+
 
 
 class A2AAuthMethod(Enum):
     """Agent-to-agent authentication methods."""
 
-    SHARED_SECRET = "shared_secret"
+    SHARED_SECRET = os.getenv("SHARED_SECRET", "shared_secret")
     PUBLIC_KEY = "public_key"
     MUTUAL_TLS = "mutual_tls"
     CHALLENGE_RESPONSE = "challenge_response"

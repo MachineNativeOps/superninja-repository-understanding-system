@@ -32,7 +32,7 @@ class AuthType(Enum):
 
     GITHUB_APP = "github_app"
     OAUTH_APP = "oauth_app"
-    PERSONAL_TOKEN = "personal_token"
+    PERSONAL_TOKEN = os.getenv("PERSONAL_TOKEN", "personal_token")
     GITLAB_INTEGRATION = "gitlab_integration"
     BITBUCKET_APP = "bitbucket_app"
 
@@ -505,6 +505,8 @@ class GitProviderManager:
                 f"Waiting {wait_seconds}s for rate limit reset: {installation_id}"
             )
             import asyncio
+import os
+
 
             await asyncio.sleep(wait_seconds)
 
