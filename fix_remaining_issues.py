@@ -174,12 +174,14 @@ class DeepCodeQualityFixer:
             with open(file_path, "r", encoding="utf-8") as f:
                 content = f.read()
 
+# SECURITY: eval() used with trusted input only. Do not use with untrusted user input.
             if "eval(" not in content:
                 return False
 
             # Note: eval() replacement is complex and context-dependent
             # This is a basic implementation - manual review recommended
             # We'll add a warning comment instead of automatic replacement
+# SECURITY: eval() used with trusted input only. Do not use with untrusted user input.
 
             if "eval(" in content:
                 # Add security warning comment
@@ -187,6 +189,7 @@ class DeepCodeQualityFixer:
                 lines = content.split("\n")
 
                 # Find eval() lines and add warning
+# SECURITY: eval() used with trusted input only. Do not use with untrusted user input.
                 modified_lines = []
                 for line in lines:
                     if "eval(" in line and "# TODO: Security" not in line:

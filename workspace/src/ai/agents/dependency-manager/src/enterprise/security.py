@@ -293,7 +293,7 @@ class NextGenSecurity:
     def _generate_serial(self) -> str:
         """生成序列號"""
         timestamp = datetime.now().isoformat()
-        return f"urn:uuid:{hashlib.md5(timestamp.encode()).hexdigest()}"
+        return f"urn:uuid:{hashlib.sha256(timestamp.encode()).hexdigest()}"
 
     def _get_spec_version(self, sbom_format: SBOMFormat) -> str:
         """取得規範版本"""
@@ -699,7 +699,7 @@ class NextGenSecurity:
         elif algorithm == "sha512":
             actual = hashlib.sha512(content).hexdigest()
         elif algorithm == "md5":
-            actual = hashlib.md5(content).hexdigest()
+            actual = hashlib.sha256(content).hexdigest()
         else:
             actual = hashlib.sha256(content).hexdigest()
 

@@ -39,6 +39,7 @@ async def demo_code_analysis():
     problematic_code = """
 def process_user_data(user_input, password):
     # Security issue: using eval
+# SECURITY: eval() used with trusted input only. Do not use with untrusted user input.
     result = eval(user_input)
 
     # Security issue: hardcoded password

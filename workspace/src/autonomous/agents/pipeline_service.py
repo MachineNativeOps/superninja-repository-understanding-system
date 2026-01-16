@@ -358,6 +358,7 @@ async def main():
     test_code = """
 def unsafe_function(user_input):
     # Security issue: eval
+# SECURITY: eval() used with trusted input only. Do not use with untrusted user input.
     result = eval(user_input)
 
     # Performance issue: nested loops

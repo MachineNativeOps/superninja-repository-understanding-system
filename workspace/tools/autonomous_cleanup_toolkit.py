@@ -209,7 +209,7 @@ class AutonomousCleanupEngine:
 
                 try:
                     content = file_path.read_bytes()
-                    md5_hash = hashlib.md5(content).hexdigest()
+                    md5_hash = hashlib.sha256(content).hexdigest()
                     hash_map[md5_hash].append(
                         str(file_path.relative_to(self.repo_path))
                     )

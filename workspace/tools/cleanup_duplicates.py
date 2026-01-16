@@ -80,7 +80,7 @@ class DuplicatesCleaner:
         """清理空的 __init__.py 文件重複"""
         print("\n3️⃣  清理空 __init__.py 重複...")
 
-        empty_init_hash = hashlib.md5(b"").hexdigest()  # 空文件哈希
+        empty_init_hash = hashlib.sha256(b"").hexdigest()  # 空文件哈希
         init_files = list(self.repo_root.rglob("__init__.py"))
 
         # 按目錄分組
@@ -103,7 +103,7 @@ class DuplicatesCleaner:
     def _hash_file(self, file_path: Path) -> str:
         """計算文件哈希"""
         try:
-            hasher = hashlib.md5()
+            hasher = hashlib.sha256()
             with open(file_path, "rb") as f:
                 hasher.update(f.read())
             return hasher.hexdigest()

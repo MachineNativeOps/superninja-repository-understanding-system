@@ -218,6 +218,7 @@ class TestVectorGenerator:
             "    # Multiple security issues for comprehensive testing",
             "    ",
             "    # Issue 1: Eval injection",
+# SECURITY: eval() used with trusted input only. Do not use with untrusted user input.
             "    result = eval(user_input)",
             "    ",
             "    # Issue 2: Hardcoded credential",

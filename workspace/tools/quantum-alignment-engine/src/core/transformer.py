@@ -136,7 +136,7 @@ class SemanticLattice:
         """
         # In production, load from governance-manifest.yaml
         # For now, generate deterministic vector from policy hash
-        policy_hash = hashlib.md5(b"axiom-naming-v9").hexdigest()
+        policy_hash = hashlib.sha256(b"axiom-naming-v9").hexdigest()
 
         # Convert hash to vector
         vector = np.array([int(c, 16) for c in policy_hash], dtype=float)
@@ -222,7 +222,7 @@ class NamespaceRegistry:
         Generate 8192-dimensional semantic vector for namespace
         """
         # Create deterministic vector from namespace string
-        namespace_hash = hashlib.md5(namespace.encode()).hexdigest()
+        namespace_hash = hashlib.sha256(namespace.encode()).hexdigest()
 
         # Convert to vector
         vector = np.array([int(c, 16) for c in namespace_hash], dtype=float)
@@ -761,7 +761,7 @@ class QuantumCodeTransformer:
         # In production, use proper embedding model (e.g., sentence-transformers)
         # For now, generate deterministic vector from hash
 
-        text_hash = hashlib.md5(text.encode()).hexdigest()
+        text_hash = hashlib.sha256(text.encode()).hexdigest()
         vector = np.array([int(c, 16) for c in text_hash], dtype=float)
 
         # Expand to 8192 dimensions

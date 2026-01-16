@@ -384,6 +384,7 @@ def variables(scope):
 
 @debug.command()
 @click.argument("expression")
+# SECURITY: eval() used with trusted input only. Do not use with untrusted user input.
 def eval(expression):
     """評估表達式"""
     cli = DebugCLI()

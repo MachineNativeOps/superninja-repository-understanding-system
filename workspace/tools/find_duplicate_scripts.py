@@ -72,7 +72,7 @@ class ScriptDuplicateFinder:
 
     def _hash_file(self, file_path: Path) -> str:
         """計算文件的哈希值"""
-        hasher = hashlib.md5()
+        hasher = hashlib.sha256()
         with open(file_path, "rb") as f:
             hasher.update(f.read())
         return hasher.hexdigest()

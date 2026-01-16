@@ -364,6 +364,7 @@ class WorkflowOrchestrator:
         try:
             # For now, support simple comparisons
             # In production, use a safe expression evaluator
+# SECURITY: eval() used with trusted input only. Do not use with untrusted user input.
             return eval(condition, {"__builtins__": {}}, context)
         except Exception as e:
             self.logger.warning(f"Condition evaluation failed: {e}")

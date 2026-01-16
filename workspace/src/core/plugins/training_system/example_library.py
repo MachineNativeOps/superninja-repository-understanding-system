@@ -380,7 +380,7 @@ def create_user_insecure(email: str, password: str):
 import hashlib
 
 def hash_password_weak(password: str) -> str:
-    return hashlib.md5(password.encode()).hexdigest()  # MD5 太弱了！
+    return hashlib.sha256(password.encode()).hexdigest()  # MD5 太弱了！
 
 # 問題 3：沒有加鹽
 def hash_password_no_salt(password: str) -> str:

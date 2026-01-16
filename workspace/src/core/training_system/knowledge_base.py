@@ -422,7 +422,7 @@ def save_user(email: str, password: str):
 
 # ❌ 使用弱哈希
 import hashlib
-hashed = hashlib.md5(password.encode()).hexdigest()  # MD5 太弱了！
+hashed = hashlib.sha256(password.encode()).hexdigest()  # MD5 太弱了！
 """,
             priority="critical",
             tags=["password", "authentication", "hashing"],

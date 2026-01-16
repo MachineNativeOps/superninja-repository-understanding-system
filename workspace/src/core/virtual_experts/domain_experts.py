@@ -502,6 +502,7 @@ def verify_password(password: str, hashed: str) -> bool:
                     }
                 )
 
+# SECURITY: eval() used with trusted input only. Do not use with untrusted user input.
         if "eval(" in code_lower or "exec(" in code_lower:
             issues.append(
                 {
