@@ -78,9 +78,10 @@ class QualityChecker:
         for py_file in py_files:
             try:
                 content = py_file.read_text()
-                if "->" in content:  # 簡單檢測回傳型別提示
+                # 使用更精確的模式檢測函式回傳型別提示
+                if "def " in content and "->" in content:
                     files_with_type_hints += 1
-            except:
+            except (UnicodeDecodeError, OSError, PermissionError):
                 continue
         
         type_hint_coverage = (files_with_type_hints / total_files * 100) if total_files > 0 else 0
@@ -141,10 +142,10 @@ class QualityChecker:
         for py_file in py_files:
             try:
                 content = py_file.read_text()
-                # 簡單檢測：檔案包含 """
-                if '"""' in content:
+                # 檢測：檔案包含 docstrings（可能有誤報，建議使用 interrogate）
+                if '"""' in content or "'''" in content:
                     files_with_docstrings += 1
-            except:
+            except (UnicodeDecodeError, OSError, PermissionError):
                 continue
         
         coverage = (files_with_docstrings / len(py_files) * 100) if py_files else 0
@@ -186,7 +187,7 @@ class QualityChecker:
                     content = file_path.read_text()
                     if "console.log" in content:
                         files_with_console.append(str(file_path.relative_to(self.repo_root)))
-                except:
+                except (UnicodeDecodeError, OSError, PermissionError):
                     continue
         
         self.results["console_logs"] = {
@@ -206,7 +207,7 @@ class QualityChecker:
                     content = file_path.read_text()
                     if "eval(" in content:
                         files_with_eval.append(str(file_path.relative_to(self.repo_root)))
-                except:
+                except (UnicodeDecodeError, OSError, PermissionError):
                     continue
         
         self.results["eval_usage"] = {
@@ -295,8 +296,14 @@ class QualityChecker:
             if self.results.get("security", {}).get("secrets_detected"):
                 f.write("1. **高優先級**: 審查並移除硬編碼的秘密\n")
             
-            if float(self.results.get("python_quality", {}).get("type_hint_coverage", "0%").rstrip("%")) < 90:
-                f.write("2. **高優先級**: 提升 Python 型別提示覆蓋率至 90%+\n")
+            # 安全地解析型別提示覆蓋率
+            type_hint_coverage_str = self.results.get("python_quality", {}).get("type_hint_coverage", "0%")
+            try:
+                type_hint_coverage = float(type_hint_coverage_str.rstrip("%"))
+                if type_hint_coverage < 90:
+                    f.write("2. **高優先級**: 提升 Python 型別提示覆蓋率至 90%+\n")
+            except (ValueError, AttributeError):
+                pass
             
             if self.results.get("code_duplication", {}).get("duplicates_found", 0) > 0:
                 f.write("3. **高優先級**: 移除重複的程式碼模組\n")

@@ -28,7 +28,11 @@ jobs:
       
       - name: Run detect-secrets
         run: |
-          detect-secrets scan --baseline .secrets.baseline || echo "::warning::Secrets detected. Please review."
+          if [ -f .secrets.baseline ]; then
+            detect-secrets scan --baseline .secrets.baseline || echo "::warning::Secrets detected. Please review."
+          else
+            detect-secrets scan > .secrets.baseline || echo "::warning::Secrets detected. Creating baseline."
+          fi
       
       - name: Run Bandit security scan
         run: |
