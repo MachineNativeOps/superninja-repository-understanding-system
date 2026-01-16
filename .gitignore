@@ -197,3 +197,6 @@ Thumbs.db
 
 # Submodules (will be managed separately)
 machine-native-ops/
+
+# Archive directories (for reference only, not for active use)
+archive/

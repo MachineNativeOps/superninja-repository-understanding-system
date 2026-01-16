@@ -1,4 +1,10 @@
-# Machine Native Ops - Combined TODO List
+# Machine Native Ops - Task Tracking
+
+> **📌 For comprehensive project status, see [CONSOLIDATED_PROJECT_STATUS.md](CONSOLIDATED_PROJECT_STATUS.md)**
+
+This file tracks day-to-day tasks. For executive summary, metrics, and overall project organization, refer to the consolidated status document.
+
+---
 
 ## 🎉 Recently Completed
 
@@ -99,7 +105,28 @@
 2. ✅ Complete eval() security remediation
 3. ✅ Add comprehensive security warnings
 4. ✅ Generate compliance documentation
-5. [ ] Address remaining 9 MEDIUM severity security issues
-6. [ ] Run final security audit to verify improvements
-7. [ ] Update and finalize all documentation
-8. [ ] Resume Sprint 1.3 test infrastructure when security work complete
+5. ✅ Consolidate scattered documentation and TODOs
+6. ✅ Organize project structure
+7. [ ] Address remaining 9 MEDIUM severity security issues (Next PR)
+8. [ ] Run final security audit to verify improvements
+9. [ ] Resume Sprint 1.3 test infrastructure
+
+---
+
+## 📖 Documentation Organization
+
+**Active Documents** (use these):
+- `CONSOLIDATED_PROJECT_STATUS.md` - Central project hub, executive summary
+- `todo.md` - This file, day-to-day task tracking
+- `REMAINING_ISSUES_TODO.md` - Specific security issues tracking
+
+**Key Reports** (reference):
+- `EVAL_USAGE_COMPREHENSIVE_REPORT.md` - Detailed eval() analysis
+- `PHASE2_EVAL_REMEDIATION_COMPLETE.md` - Security remediation summary
+- `PR_2-5_REVIEW_COMPLETION_SUMMARY.md` - PR review results
+- `WORK_COMPLETION_REPORT.md` - Final work completion
+
+**Archived** (historical reference only):
+- `archive/old-todos/` - Old TODO files (consolidated)
+- `archive/phase-reports/` - Old phase reports (consolidated)
+- See `archive/README.md` for details
