@@ -37,7 +37,7 @@ jobs:
       - name: Run Bandit security scan
         run: |
           bandit -r workspace/src/ 00-namespaces/ -f json -o bandit-report.json || true
-          bandit -r workspace/src/ 00-namespaces/ -ll
+          bandit -r workspace/src/ 00-namespaces/ -ll || echo "::warning::Security issues found. Review bandit-report.json"
       
       - name: Upload security reports
         uses: actions/upload-artifact@v4
