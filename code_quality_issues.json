@@ -1,11 +1,11 @@
 {
   "summary": {
-    "files_analyzed": 1148,
-    "lines_analyzed": 376217,
-    "total_issues": 943,
+    "files_analyzed": 1149,
+    "lines_analyzed": 376574,
+    "total_issues": 959,
     "high_severity": 0,
     "medium_severity": 0,
-    "low_severity": 866
+    "low_severity": 871
   },
   "issues": [
     {
@@ -110,6 +110,134 @@
       "issue_type": "代碼風格",
       "description": "Import order: Standard library imports should come before third party imports",
       "solution": "Reorder imports to follow PEP 8",
+      "fixed_code": null
+    },
+    {
+      "severity": "低",
+      "location": "/workspace/machine-native-ops/fix_remaining_issues.py:12",
+      "issue_type": "代碼風格",
+      "description": "Import order: Standard library imports should come before third party imports",
+      "solution": "Reorder imports to follow PEP 8",
+      "fixed_code": null
+    },
+    {
+      "severity": "高危",
+      "location": "/workspace/machine-native-ops/fix_remaining_issues.py:7",
+      "issue_type": "安全漏洞",
+      "description": "高危：使用 eval() 可能導致代碼注入漏洞",
+      "solution": "使用更安全的替代方案",
+      "fixed_code": null
+    },
+    {
+      "severity": "高危",
+      "location": "/workspace/machine-native-ops/fix_remaining_issues.py:161",
+      "issue_type": "安全漏洞",
+      "description": "高危：使用 eval() 可能導致代碼注入漏洞",
+      "solution": "使用更安全的替代方案",
+      "fixed_code": null
+    },
+    {
+      "severity": "高危",
+      "location": "/workspace/machine-native-ops/fix_remaining_issues.py:166",
+      "issue_type": "安全漏洞",
+      "description": "高危：使用 eval() 可能導致代碼注入漏洞",
+      "solution": "使用更安全的替代方案",
+      "fixed_code": null
+    },
+    {
+      "severity": "高危",
+      "location": "/workspace/machine-native-ops/fix_remaining_issues.py:169",
+      "issue_type": "安全漏洞",
+      "description": "高危：使用 eval() 可能導致代碼注入漏洞",
+      "solution": "使用更安全的替代方案",
+      "fixed_code": null
+    },
+    {
+      "severity": "高危",
+      "location": "/workspace/machine-native-ops/fix_remaining_issues.py:173",
+      "issue_type": "安全漏洞",
+      "description": "高危：使用 eval() 可能導致代碼注入漏洞",
+      "solution": "使用更安全的替代方案",
+      "fixed_code": null
+    },
+    {
+      "severity": "高危",
+      "location": "/workspace/machine-native-ops/fix_remaining_issues.py:175",
+      "issue_type": "安全漏洞",
+      "description": "高危：使用 eval() 可能導致代碼注入漏洞",
+      "solution": "使用更安全的替代方案",
+      "fixed_code": null
+    },
+    {
+      "severity": "高危",
+      "location": "/workspace/machine-native-ops/fix_remaining_issues.py:178",
+      "issue_type": "安全漏洞",
+      "description": "高危：使用 eval() 可能導致代碼注入漏洞",
+      "solution": "使用更安全的替代方案",
+      "fixed_code": null
+    },
+    {
+      "severity": "高危",
+      "location": "/workspace/machine-native-ops/fix_remaining_issues.py:181",
+      "issue_type": "安全漏洞",
+      "description": "高危：使用 eval() 可能導致代碼注入漏洞",
+      "solution": "使用更安全的替代方案",
+      "fixed_code": null
+    },
+    {
+      "severity": "高危",
+      "location": "/workspace/machine-native-ops/fix_remaining_issues.py:230",
+      "issue_type": "安全漏洞",
+      "description": "高危：使用 eval() 可能導致代碼注入漏洞",
+      "solution": "使用更安全的替代方案",
+      "fixed_code": null
+    },
+    {
+      "severity": "高危",
+      "location": "/workspace/machine-native-ops/fix_remaining_issues.py:310",
+      "issue_type": "安全漏洞",
+      "description": "高危：使用 eval() 可能導致代碼注入漏洞",
+      "solution": "使用更安全的替代方案",
+      "fixed_code": null
+    },
+    {
+      "severity": "高危",
+      "location": "/workspace/machine-native-ops/fix_remaining_issues.py:344",
+      "issue_type": "安全漏洞",
+      "description": "高危：使用 eval() 可能導致代碼注入漏洞",
+      "solution": "使用更安全的替代方案",
+      "fixed_code": null
+    },
+    {
+      "severity": "低",
+      "location": "/workspace/machine-native-ops/fix_remaining_issues.py:55",
+      "issue_type": "代碼氣味",
+      "description": "硬編碼的 HTTP URL",
+      "solution": "Use configuration files or environment variables",
+      "fixed_code": null
+    },
+    {
+      "severity": "低",
+      "location": "/workspace/machine-native-ops/fix_remaining_issues.py:56",
+      "issue_type": "代碼氣味",
+      "description": "硬編碼的 HTTP URL",
+      "solution": "Use configuration files or environment variables",
+      "fixed_code": null
+    },
+    {
+      "severity": "低",
+      "location": "/workspace/machine-native-ops/fix_remaining_issues.py:57",
+      "issue_type": "代碼氣味",
+      "description": "硬編碼的 HTTP URL",
+      "solution": "Use configuration files or environment variables",
+      "fixed_code": null
+    },
+    {
+      "severity": "低",
+      "location": "/workspace/machine-native-ops/fix_remaining_issues.py:58",
+      "issue_type": "代碼氣味",
+      "description": "硬編碼的 HTTP URL",
+      "solution": "Use configuration files or environment variables",
       "fixed_code": null
     },
     {
