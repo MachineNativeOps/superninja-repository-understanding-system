@@ -79,7 +79,7 @@ def can_replace_with_literal_eval(code: str) -> bool:
                 return False
         
         return True
-    except:
+    except Exception as e:
         return False
 
 def can_replace_with_json(code: str) -> bool:
@@ -93,7 +93,7 @@ def can_replace_with_json(code: str) -> bool:
             # Try to parse as JSON
             json.loads(inner.strip('"\''))
             return True
-        except:
+        except Exception as e:
             pass
     
     return False

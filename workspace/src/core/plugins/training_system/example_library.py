@@ -419,7 +419,7 @@ def hash_password_argon2(password: str) -> str:
 def verify_password_argon2(password: str, hashed: str) -> bool:
     try:
         return ph.verify(hashed, password)
-    except:
+    except Exception as e:
         return False
 
 # 完整的用戶創建流程
@@ -449,7 +449,7 @@ class UserService:
         try:
             if self.ph.verify(user.password_hash, password):
                 return user
-        except:
+        except Exception as e:
             pass
 
         return None
