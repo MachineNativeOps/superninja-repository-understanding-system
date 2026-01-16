@@ -174,7 +174,9 @@ class TestAutomationFramework:
 
         if not logger.handlers:
             handler = logging.StreamHandler()
-            formatter = logging.Formatter("%(asctime)s - %(name)s - %(levelname)s - %(message)s")
+            formatter = logging.Formatter(
+                "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+            )
             handler.setFormatter(formatter)
             logger.addHandler(handler)
 
@@ -460,9 +462,13 @@ class TestAutomationFramework:
         await self._execute_hooks("after_suite", suite_name)
 
         # 生成測試報告
-        report = self._generate_test_report(suite_name, start_time, end_time, test_results)
+        report = self._generate_test_report(
+            suite_name, start_time, end_time, test_results
+        )
 
-        self.logger.info(f"測試套件執行完成: {suite_name} - 成功率: {report.success_rate:.1f}%")
+        self.logger.info(
+            f"測試套件執行完成: {suite_name} - 成功率: {report.success_rate:.1f}%"
+        )
 
         return report
 
@@ -503,11 +509,17 @@ class TestAutomationFramework:
         success_rate = (passed_tests / total_tests * 100) if total_tests > 0 else 0
 
         # 覆蓋率匯總（簡化實現）
-        coverage_summary = {"total_lines": 1000, "covered_lines": 850, "coverage_percentage": 85.0}
+        coverage_summary = {
+            "total_lines": 1000,
+            "covered_lines": 850,
+            "coverage_percentage": 85.0,
+        }
 
         # 性能指標
         performance_metrics = {
-            "average_test_duration": total_duration / total_tests if total_tests > 0 else 0,
+            "average_test_duration": (
+                total_duration / total_tests if total_tests > 0 else 0
+            ),
             "slowest_test": max((r.duration for r in test_results), default=0),
             "fastest_test": min((r.duration for r in test_results), default=0),
         }
@@ -536,7 +548,8 @@ class TestAutomationFramework:
 
         if format_type == "html":
             output_path = (
-                output_dir / f"{report.suite_name}_{datetime.now().strftime('%Y%m%d_%H%M%S')}.html"
+                output_dir
+                / f"{report.suite_name}_{datetime.now().strftime('%Y%m%d_%H%M%S')}.html"
             )
 
             if format_type in self.report_generators:
@@ -550,7 +563,8 @@ class TestAutomationFramework:
 
         elif format_type == "json":
             output_path = (
-                output_dir / f"{report.suite_name}_{datetime.now().strftime('%Y%m%d_%H%M%S')}.json"
+                output_dir
+                / f"{report.suite_name}_{datetime.now().strftime('%Y%m%d_%H%M%S')}.json"
             )
 
             report_data = asdict(report)
@@ -623,7 +637,9 @@ class TestAutomationFramework:
         self.logger.info(f"在 {test_directory} 中發現 {len(discovered_tests)} 個測試")
         return discovered_tests
 
-    def filter_tests_by_priority(self, test_ids: List[str], min_priority: Priority) -> List[str]:
+    def filter_tests_by_priority(
+        self, test_ids: List[str], min_priority: Priority
+    ) -> List[str]:
         """根據優先級過濾測試"""
         priority_order = {
             Priority.LOW: 0,
@@ -667,10 +683,26 @@ class TestAutomationFramework:
                 {
                     "color": color,
                     "fields": [
-                        {"title": "總測試數", "value": str(report.total_tests), "short": True},
-                        {"title": "通過", "value": str(report.passed_tests), "short": True},
-                        {"title": "失敗", "value": str(report.failed_tests), "short": True},
-                        {"title": "成功率", "value": f"{report.success_rate:.1f}%", "short": True},
+                        {
+                            "title": "總測試數",
+                            "value": str(report.total_tests),
+                            "short": True,
+                        },
+                        {
+                            "title": "通過",
+                            "value": str(report.passed_tests),
+                            "short": True,
+                        },
+                        {
+                            "title": "失敗",
+                            "value": str(report.failed_tests),
+                            "short": True,
+                        },
+                        {
+                            "title": "成功率",
+                            "value": f"{report.success_rate:.1f}%",
+                            "short": True,
+                        },
                     ],
                 }
             ],
@@ -714,7 +746,9 @@ class TestAutomationFramework:
 
 # 測試裝飾器
 def test_case(
-    test_name: str, test_type: TestType = TestType.UNIT, priority: Priority = Priority.MEDIUM
+    test_name: str,
+    test_type: TestType = TestType.UNIT,
+    priority: Priority = Priority.MEDIUM,
 ):
     """測試用例裝飾器"""
 

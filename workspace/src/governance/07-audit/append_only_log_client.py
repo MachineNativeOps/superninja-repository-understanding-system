@@ -138,7 +138,9 @@ class AppendOnlyLogClient:
             # 建立審計事件
             metadata = event.get("metadata", {})
             audit_event = {
-                "timestamp": datetime.now(timezone.utc).isoformat().replace("+00:00", "Z"),
+                "timestamp": datetime.now(timezone.utc)
+                .isoformat()
+                .replace("+00:00", "Z"),
                 "type": event["type"],
                 "action": event["action"],
                 "data": event.get("data", {}),
@@ -219,7 +221,9 @@ class AppendOnlyLogClient:
                 errors.append(f"雜湊鏈斷裂: 事件 {event['sequence']}")
 
             # 驗證當前雜湊
-            event_copy = {k: v for k, v in event.items() if k not in ["hash", "signature"]}
+            event_copy = {
+                k: v for k, v in event.items() if k not in ["hash", "signature"]
+            }
             computed_hash = self.hash_event(event_copy)
 
             if event["hash"] != computed_hash:
@@ -227,7 +231,11 @@ class AppendOnlyLogClient:
 
             previous_hash = event["hash"]
 
-        result = {"valid": len(errors) == 0, "totalEvents": len(lines), "errors": errors}
+        result = {
+            "valid": len(errors) == 0,
+            "totalEvents": len(lines),
+            "errors": errors,
+        }
 
         if self.verbose:
             if result["valid"]:
@@ -280,7 +288,8 @@ class AppendOnlyLogClient:
             events = [
                 e
                 for e in events
-                if datetime.fromisoformat(e["timestamp"].replace("Z", "+00:00")) >= since_dt
+                if datetime.fromisoformat(e["timestamp"].replace("Z", "+00:00"))
+                >= since_dt
             ]
 
         if until:
@@ -288,12 +297,15 @@ class AppendOnlyLogClient:
             events = [
                 e
                 for e in events
-                if datetime.fromisoformat(e["timestamp"].replace("Z", "+00:00")) <= until_dt
+                if datetime.fromisoformat(e["timestamp"].replace("Z", "+00:00"))
+                <= until_dt
             ]
 
         return events
 
-    def generate_report(self, include_events: bool = False, **filter_kwargs) -> Dict[str, Any]:
+    def generate_report(
+        self, include_events: bool = False, **filter_kwargs
+    ) -> Dict[str, Any]:
         """
         生成審計報告
 
@@ -307,7 +319,9 @@ class AppendOnlyLogClient:
         events = self.query(**filter_kwargs)
 
         report = {
-            "generated_at": datetime.now(timezone.utc).isoformat().replace("+00:00", "Z"),
+            "generated_at": datetime.now(timezone.utc)
+            .isoformat()
+            .replace("+00:00", "Z"),
             "total_events": len(events),
             "period": {
                 "start": events[0]["timestamp"] if events else None,

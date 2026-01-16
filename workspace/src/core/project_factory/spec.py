@@ -193,7 +193,12 @@ class ArchitectureSpec:
 
     pattern: ArchitecturePattern = ArchitecturePattern.CLEAN_ARCHITECTURE
     layers: List[str] = field(
-        default_factory=lambda: ["presentation", "application", "domain", "infrastructure"]
+        default_factory=lambda: [
+            "presentation",
+            "application",
+            "domain",
+            "infrastructure",
+        ]
     )
     bounded_contexts: List[str] = field(default_factory=list)
 
@@ -316,7 +321,9 @@ class ProjectSpec:
             "django",
             "starlette",
         ]:
-            errors.append(f"Unsupported framework {self.framework} for {self.language.value}")
+            errors.append(
+                f"Unsupported framework {self.framework} for {self.language.value}"
+            )
 
         # Validate coverage threshold
         if not 0 <= self.deliverables.tests.coverage_threshold <= 100:

@@ -172,4 +172,6 @@ class BaseDrone(ABC):
         }
 
     def __repr__(self) -> str:
-        return f"<{self.__class__.__name__}(name='{self.name}', status='{self.status}')>"
+        return (
+            f"<{self.__class__.__name__}(name='{self.name}', status='{self.status}')>"
+        )

@@ -88,7 +88,9 @@ class Problem:
         auto_fixable: bool = False,
     ):
         """Initialize a Problem instance"""
-        self.id = hashlib.sha256(f"{category}{title}{location}".encode()).hexdigest()[:8]
+        self.id = hashlib.sha256(f"{category}{title}{location}".encode()).hexdigest()[
+            :8
+        ]
         self.category = category
         self.severity = severity
         self.title = title
@@ -117,7 +119,8 @@ class ExtremeProblemIdentifier:
             # Use global secret regexes for consistency
             for regex in SECRET_REGEXES:
                 redacted = regex.sub(
-                    lambda m: re.sub(r'(["\'])(.*?)(\1)', r"\1***\1", m.group(0)), redacted
+                    lambda m: re.sub(r'(["\'])(.*?)(\1)', r"\1***\1", m.group(0)),
+                    redacted,
                 )
             # Additional defensive redaction for simple key=value style secrets
             patterns = [
@@ -177,21 +180,38 @@ class ExtremeProblemIdentifier:
             # severity
             self.log(
                 "Security issue detected (details suppressed in logs)",
-                "critical" if problem.severity == ProblemSeverity.CRITICAL else "warning",
+                (
+                    "critical"
+                    if problem.severity == ProblemSeverity.CRITICAL
+                    else "warning"
+                ),
             )
         else:
             if problem.severity == ProblemSeverity.CRITICAL:
-                self.log(f"[{problem.category}] {problem.title} @ {problem.location}", "critical")
+                self.log(
+                    f"[{problem.category}] {problem.title} @ {problem.location}",
+                    "critical",
+                )
             elif problem.severity == ProblemSeverity.HIGH:
-                self.log(f"[{problem.category}] {problem.title} @ {problem.location}", "error")
+                self.log(
+                    f"[{problem.category}] {problem.title} @ {problem.location}",
+                    "error",
+                )
             elif problem.severity == ProblemSeverity.MEDIUM:
-                self.log(f"[{problem.category}] {problem.title} @ {problem.location}", "warning")
+                self.log(
+                    f"[{problem.category}] {problem.title} @ {problem.location}",
+                    "warning",
+                )
             else:
-                self.log(f"[{problem.category}] {problem.title} @ {problem.location}", "info")
+                self.log(
+                    f"[{problem.category}] {problem.title} @ {problem.location}", "info"
+                )
 
     def detect_security_vulnerabilities(self):
         """Category 1: Security vulnerability detection"""
-        print(f"\n{Colors.BOLD}[1/10] 🔒 Detecting Security Vulnerabilities...{Colors.ENDC}")
+        print(
+            f"\n{Colors.BOLD}[1/10] 🔒 Detecting Security Vulnerabilities...{Colors.ENDC}"
+        )
 
         # Check for exposed secrets patterns
         secret_patterns = [
@@ -213,12 +233,13 @@ class ExtremeProblemIdentifier:
                                     severity=ProblemSeverity.CRITICAL,
                                     title=f"{desc} detected",
                                     description=f"Potential hardcoded credential found in configuration file",
-                                    location=str(yaml_file.relative_to(self.governance_root)),
+                                    location=str(
+                                        yaml_file.relative_to(
+                                            self.governance_root)),
                                     impact="CRITICAL: Exposed credentials can lead to unauthorized access",
                                     recommendation="Move credentials to environment variables or secret management system",
                                     auto_fixable=False,
-                                )
-                            )
+                                ))
             except Exception:
                 pass
 
@@ -236,18 +257,21 @@ class ExtremeProblemIdentifier:
                                     severity=ProblemSeverity.MEDIUM,
                                     title="Optional policy enforcement detected",
                                     description="Dimension has optional policy enforcement which may allow violations",
-                                    location=str(dim_file.relative_to(self.governance_root)),
+                                    location=str(
+                                        dim_file.relative_to(
+                                            self.governance_root)),
                                     impact="Security policies may not be enforced consistently",
                                     recommendation="Change enforcement to 'required' for critical dimensions",
                                     auto_fixable=True,
-                                )
-                            )
+                                ))
             except Exception:
                 pass
 
     def detect_architecture_violations(self):
         """Category 2: Architecture pattern violations"""
-        print(f"\n{Colors.BOLD}[2/10] 🏗️  Detecting Architecture Violations...{Colors.ENDC}")
+        print(
+            f"\n{Colors.BOLD}[2/10] 🏗️  Detecting Architecture Violations...{Colors.ENDC}"
+        )
 
         # Check for circular dependencies
         governance_map_file = self.governance_root / "governance-map.yaml"
@@ -294,8 +318,7 @@ class ExtremeProblemIdentifier:
                                         impact="Circular dependencies can cause initialization deadlocks",
                                         recommendation="Refactor dependencies to create a directed acyclic graph (DAG)",
                                         auto_fixable=False,
-                                    )
-                                )
+                                    ))
                                 break
             except Exception:
                 pass
@@ -309,12 +332,13 @@ class ExtremeProblemIdentifier:
                         severity=ProblemSeverity.LOW,
                         title="Missing README documentation",
                         description=f"Dimension {dim_dir.name} lacks README.md file",
-                        location=str(dim_dir.relative_to(self.governance_root)),
+                        location=str(
+                            dim_dir.relative_to(
+                                self.governance_root)),
                         impact="Reduced maintainability and onboarding difficulty",
                         recommendation="Create README.md with dimension purpose, usage, and examples",
                         auto_fixable=True,
-                    )
-                )
+                    ))
 
     def detect_performance_issues(self):
         """Category 3: Performance bottlenecks"""
@@ -347,7 +371,8 @@ class ExtremeProblemIdentifier:
                         if not isinstance(d, dict):
                             return current_depth
                         return max(
-                            [get_depth(v, current_depth + 1) for v in d.values()] or [current_depth]
+                            [get_depth(v, current_depth + 1) for v in d.values()]
+                            or [current_depth]
                         )
 
                     if data:
@@ -359,12 +384,13 @@ class ExtremeProblemIdentifier:
                                     severity=ProblemSeverity.LOW,
                                     title="Deeply nested structure detected",
                                     description=f"Nesting depth: {depth} levels (recommended: ≤ 8)",
-                                    location=str(yaml_file.relative_to(self.governance_root)),
+                                    location=str(
+                                        yaml_file.relative_to(
+                                            self.governance_root)),
                                     impact="Difficult to parse and maintain, potential performance impact",
                                     recommendation="Flatten structure or use references",
                                     auto_fixable=False,
-                                )
-                            )
+                                ))
             except Exception:
                 pass
 
@@ -388,12 +414,13 @@ class ExtremeProblemIdentifier:
                                     severity=ProblemSeverity.MEDIUM,
                                     title="No compliance frameworks defined",
                                     description="Dimension lacks compliance framework declarations",
-                                    location=str(dim_file.relative_to(self.governance_root)),
+                                    location=str(
+                                        dim_file.relative_to(
+                                            self.governance_root)),
                                     impact="Cannot track compliance requirements and audits",
                                     recommendation="Add relevant frameworks (ISO-42001, NIST-AI-RMF, COBIT-2019)",
                                     auto_fixable=True,
-                                )
-                            )
+                                ))
             except Exception:
                 pass
 
@@ -426,8 +453,7 @@ class ExtremeProblemIdentifier:
                                         impact="Runtime failures and initialization errors",
                                         recommendation=f"Either create dimension '{dep}' or remove dependency",
                                         auto_fixable=False,
-                                    )
-                                )
+                                    ))
             except Exception:
                 pass
 
@@ -465,8 +491,7 @@ class ExtremeProblemIdentifier:
                         impact="Inconsistent metadata structure across dimensions",
                         recommendation="Standardize metadata fields across all dimensions",
                         auto_fixable=True,
-                    )
-                )
+                    ))
 
     def detect_documentation_gaps(self):
         """Category 7: Documentation quality issues"""
@@ -482,12 +507,13 @@ class ExtremeProblemIdentifier:
                         severity=ProblemSeverity.LOW,
                         title="Minimal README documentation",
                         description=f"README.md is only {size} bytes",
-                        location=str(readme.relative_to(self.governance_root)),
+                        location=str(
+                            readme.relative_to(
+                                self.governance_root)),
                         impact="Insufficient documentation for maintainers",
                         recommendation="Expand README with purpose, usage, examples, and maintenance info",
                         auto_fixable=False,
-                    )
-                )
+                    ))
 
     def detect_code_quality_issues(self):
         """Category 8: Code quality and technical debt"""
@@ -505,12 +531,13 @@ class ExtremeProblemIdentifier:
                                     severity=ProblemSeverity.LOW,
                                     title="Technical debt marker found",
                                     description=f"Line {line_num}: {line.strip()}",
-                                    location=str(yaml_file.relative_to(self.governance_root)),
+                                    location=str(
+                                        yaml_file.relative_to(
+                                            self.governance_root)),
                                     impact="Unresolved technical debt tracked in comments",
                                     recommendation="Create tracked issue and resolve or remove marker",
                                     auto_fixable=False,
-                                )
-                            )
+                                ))
             except Exception:
                 pass
 
@@ -530,12 +557,13 @@ class ExtremeProblemIdentifier:
                             severity=ProblemSeverity.LOW,
                             title="Naming convention violation",
                             description=f"Dimension name '{dim_dir.name}' doesn't follow lowercase-hyphen pattern",
-                            location=str(dim_dir.relative_to(self.governance_root)),
+                            location=str(
+                                dim_dir.relative_to(
+                                    self.governance_root)),
                             impact="Inconsistent naming reduces readability",
                             recommendation="Use lowercase letters and hyphens only (e.g., 'XX-example-name')",
                             auto_fixable=False,
-                        )
-                    )
+                        ))
 
     def detect_predictive_issues(self):
         """Category 10: Predictive issue detection"""
@@ -580,8 +608,7 @@ class ExtremeProblemIdentifier:
                                         impact="Delayed migrations can cause governance debt",
                                         recommendation="Prioritize migration execution or extend deadline with justification",
                                         auto_fixable=False,
-                                    )
-                                )
+                                    ))
                             except ValueError:
                                 pass
             except Exception:
@@ -605,8 +632,7 @@ class ExtremeProblemIdentifier:
                     impact="High change rate may indicate instability or active development",
                     recommendation="Review changes for consistency and run full validation suite",
                     auto_fixable=False,
-                )
-            )
+                ))
 
     def identify_all_problems(self, categories: List[str] = None):
         """Run all problem detection categories"""
@@ -694,7 +720,9 @@ class ExtremeProblemIdentifier:
         # Execution metrics
         print(f"\n{Colors.BOLD}Execution Metrics:{Colors.ENDC}")
         print(f"  Scan time: {execution_time:.2f} seconds")
-        print(f"  Files scanned: {sum(1 for _ in self.governance_root.rglob('*.yaml'))}")
+        print(
+            f"  Files scanned: {sum(1 for _ in self.governance_root.rglob('*.yaml'))}"
+        )
 
         print(f"\n{Colors.BOLD}{'='*80}{Colors.ENDC}\n")
 
@@ -774,7 +802,9 @@ Examples:
         help="Path to governance root directory (default: governance)",
     )
 
-    parser.add_argument("--verbose", "-v", action="store_true", help="Enable verbose output")
+    parser.add_argument(
+        "--verbose", "-v", action="store_true", help="Enable verbose output"
+    )
 
     parser.add_argument(
         "--category",
@@ -794,7 +824,9 @@ Examples:
     )
 
     parser.add_argument(
-        "--export", choices=["json", "yaml"], help="Export detailed report in specified format"
+        "--export",
+        choices=["json", "yaml"],
+        help="Export detailed report in specified format",
     )
 
     parser.add_argument("--output", "-o", help="Output file for report export")

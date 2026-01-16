@@ -35,9 +35,6 @@ from models.messages import (
     MessageType,
     Urgency,
 )
-
-# Local imports
-from config import settings
 from services.agent_client import AgentClient, AgentRegistry
 from services.audit_trail import AuditAction, AuditTrail
 from services.consensus import ConsensusManager
@@ -51,6 +48,9 @@ from utils.structured_logging import (
     get_logger,
     set_trace_context,
 )
+
+# Local imports
+from config import settings
 
 # Initialize logger
 logger = get_logger(
@@ -144,7 +144,9 @@ class SuperAgentCore:
         else:
             return f"{seconds}s"
 
-    def validate_message_envelope(self, envelope: MessageEnvelope) -> Tuple[bool, Optional[str]]:
+    def validate_message_envelope(
+        self, envelope: MessageEnvelope
+    ) -> Tuple[bool, Optional[str]]:
         """Validate message envelope structure and required fields"""
         try:
             meta = envelope.meta
@@ -357,7 +359,9 @@ class SuperAgentCore:
             "proposal_id": proposal_id,
         }
 
-    async def handle_verification_report(self, envelope: MessageEnvelope) -> Dict[str, Any]:
+    async def handle_verification_report(
+        self, envelope: MessageEnvelope
+    ) -> Dict[str, Any]:
         """Handle verification report from QualityAssuranceAgent."""
         trace_id = envelope.meta["trace_id"]
         source_agent = envelope.meta["source_agent"]
@@ -424,7 +428,9 @@ class SuperAgentCore:
             "next_action": next_action,
         }
 
-    async def handle_execution_result(self, envelope: MessageEnvelope) -> Dict[str, Any]:
+    async def handle_execution_result(
+        self, envelope: MessageEnvelope
+    ) -> Dict[str, Any]:
         """Handle execution result from MaintenanceAgent."""
         trace_id = envelope.meta["trace_id"]
         source_agent = envelope.meta["source_agent"]
@@ -853,7 +859,9 @@ async def get_metrics():
     return {
         "total_incidents": len(super_agent.incidents),
         "incidents_by_state": {
-            state.value: sum(1 for inc in super_agent.incidents.values() if inc.state == state)
+            state.value: sum(
+                1 for inc in super_agent.incidents.values() if inc.state == state
+            )
             for state in IncidentState
         },
         "message_types_supported": [mt.value for mt in MessageType],
@@ -903,14 +911,22 @@ async def get_audit_entries(
         "limit": limit,
     }
 
-    def handle_gate_validation_request(self, envelope: MessageEnvelope) -> Dict[str, Any]:
+    def handle_gate_validation_request(
+        self, envelope: MessageEnvelope
+    ) -> Dict[str, Any]:
         """Handle gate validation requests"""
         try:
             request_data = envelope.payload
-            return asyncio.run(gate_handler.handle_gate_validation_request(request_data))
+            return asyncio.run(
+                gate_handler.handle_gate_validation_request(request_data)
+            )
         except Exception as e:
             logger.error(f"Gate validation request failed: {e}")
-            return {"status": "FAILED", "error": str(e), "timestamp": datetime.now().isoformat()}
+            return {
+                "status": "FAILED",
+                "error": str(e),
+                "timestamp": datetime.now().isoformat(),
+            }
 
 
 if __name__ == "__main__":

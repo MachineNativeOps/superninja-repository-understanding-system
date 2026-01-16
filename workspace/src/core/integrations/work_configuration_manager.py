@@ -425,7 +425,9 @@ class WorkConfigurationManager:
             )
         )
 
-        logger.debug(f"Initialized {len(self._capability_registry)} default capabilities")
+        logger.debug(
+            f"Initialized {len(self._capability_registry)} default capabilities"
+        )
 
     def create_configuration(
         self,
@@ -650,7 +652,9 @@ class WorkConfigurationManager:
         )
 
         configs = (
-            [self._configurations[config_id]] if config_id else list(self._configurations.values())
+            [self._configurations[config_id]]
+            if config_id
+            else list(self._configurations.values())
         )
 
         all_capabilities = set()
@@ -702,7 +706,9 @@ class WorkConfigurationManager:
 
         for provider, caps in provider_capabilities.items():
             if len(caps) > 1:
-                report.duplicate_providers.append({"provider": provider, "capabilities": caps})
+                report.duplicate_providers.append(
+                    {"provider": provider, "capabilities": caps}
+                )
 
         return report
 
@@ -752,7 +758,9 @@ class WorkConfigurationManager:
         """Get a strategy policy by ID"""
         return self._strategy_policies.get(policy_id)
 
-    def list_strategy_policies(self, category: Optional[str] = None) -> List[StrategyPolicy]:
+    def list_strategy_policies(
+        self, category: Optional[str] = None
+    ) -> List[StrategyPolicy]:
         """List strategy policies with optional category filter"""
         policies = list(self._strategy_policies.values())
         if category:
@@ -791,7 +799,9 @@ class WorkConfigurationManager:
                 )
                 self.register_capability(cap)
 
-        logger.info(f"Loaded module mappings with {len(self._module_mappings)} categories")
+        logger.info(
+            f"Loaded module mappings with {len(self._module_mappings)} categories"
+        )
 
     def get_stats(self) -> Dict[str, Any]:
         """Get manager statistics"""
@@ -864,7 +874,9 @@ class WorkConfigurationManager:
 
         return {"warnings": warnings, "errors": errors}
 
-    def _evaluate_policy(self, policy: StrategyPolicy, config: WorkConfiguration) -> Dict[str, Any]:
+    def _evaluate_policy(
+        self, policy: StrategyPolicy, config: WorkConfiguration
+    ) -> Dict[str, Any]:
         """Evaluate a policy against a configuration"""
         violations = []
 

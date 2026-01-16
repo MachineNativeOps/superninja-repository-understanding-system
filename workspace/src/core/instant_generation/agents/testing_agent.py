@@ -37,11 +37,15 @@ class TestingAgent(BaseAgent):
 
         try:
             # 提取代碼和架構信息
-            code_generation = task.input_data.get("code_generation", {}).get("output_data", {})
+            code_generation = task.input_data.get("code_generation", {}).get(
+                "output_data", {}
+            )
             architecture_design = task.input_data.get("architecture_design", {}).get(
                 "output_data", {}
             )
-            input_analysis = task.input_data.get("input_analysis", {}).get("output_data", {})
+            input_analysis = task.input_data.get("input_analysis", {}).get(
+                "output_data", {}
+            )
 
             # 生成測試套件
             test_suite = await self._generate_test_suite(
@@ -96,14 +100,21 @@ class TestingAgent(BaseAgent):
             )
 
     async def _generate_test_suite(
-        self, code: Dict[str, Any], architecture: Dict[str, Any], analysis: Dict[str, Any]
+        self,
+        code: Dict[str, Any],
+        architecture: Dict[str, Any],
+        analysis: Dict[str, Any],
     ) -> Dict[str, Any]:
         """生成完整測試套件"""
         test_suite = {
             "unit_tests": await self.test_types["unit"](code, architecture),
-            "integration_tests": await self.test_types["integration"](code, architecture),
+            "integration_tests": await self.test_types["integration"](
+                code, architecture
+            ),
             "api_tests": await self.test_types["api"](code, architecture),
-            "performance_tests": await self.test_types["performance"](code, architecture),
+            "performance_tests": await self.test_types["performance"](
+                code, architecture
+            ),
             "security_tests": await self.test_types["security"](code, architecture),
         }
 
@@ -125,7 +136,12 @@ class TestingAgent(BaseAgent):
                     "components/Home.test.js": self._generate_home_test(),
                     "App.test.js": self._generate_app_test(),
                 },
-                "coverage": {"statements": 90, "branches": 85, "functions": 90, "lines": 90},
+                "coverage": {
+                    "statements": 90,
+                    "branches": 85,
+                    "functions": 90,
+                    "lines": 90,
+                },
             }
 
         # 後端API測試
@@ -137,7 +153,12 @@ class TestingAgent(BaseAgent):
                     "test_auth.py": self._generate_auth_api_test(),
                     "test_models.py": self._generate_models_test(),
                 },
-                "coverage": {"statements": 85, "branches": 80, "functions": 85, "lines": 85},
+                "coverage": {
+                    "statements": 85,
+                    "branches": 80,
+                    "functions": 85,
+                    "lines": 85,
+                },
             }
 
         return tests
@@ -197,8 +218,18 @@ class TestingAgent(BaseAgent):
             "load_testing": {
                 "tool": "Locust",
                 "scenarios": [
-                    {"name": "normal_load", "users": 100, "spawn_rate": 10, "duration": "10m"},
-                    {"name": "stress_test", "users": 1000, "spawn_rate": 50, "duration": "5m"},
+                    {
+                        "name": "normal_load",
+                        "users": 100,
+                        "spawn_rate": 10,
+                        "duration": "10m",
+                    },
+                    {
+                        "name": "stress_test",
+                        "users": 1000,
+                        "spawn_rate": 50,
+                        "duration": "5m",
+                    },
                 ],
                 "targets": {
                     "response_time_p95": "<500ms",
@@ -283,8 +314,11 @@ class TestingAgent(BaseAgent):
 
         checks = {
             "authentication": {
-                "implemented": security_arch.get("authentication", {}).get("method") == "JWT",
-                "token_expiry": security_arch.get("authentication", {}).get("token_expiry")
+                "implemented": security_arch.get("authentication", {}).get("method")
+                == "JWT",
+                "token_expiry": security_arch.get("authentication", {}).get(
+                    "token_expiry"
+                )
                 == "24h",
                 "refresh_tokens": security_arch.get("authentication", {}).get(
                     "refresh_tokens", False
@@ -292,7 +326,8 @@ class TestingAgent(BaseAgent):
             },
             "authorization": {
                 "model": security_arch.get("authorization", {}).get("model"),
-                "rbac_implemented": security_arch.get("authorization", {}).get("model") == "RBAC",
+                "rbac_implemented": security_arch.get("authorization", {}).get("model")
+                == "RBAC",
             },
             "data_protection": {
                 "encryption_at_rest": security_arch.get("data_protection", {}).get(
@@ -577,7 +612,11 @@ class TestModels:
                     total_checks += 1
                     if isinstance(value, bool) and value:
                         score += 1
-                    elif isinstance(value, str) and value.lower() in ["jwt", "rbac", "true"]:
+                    elif isinstance(value, str) and value.lower() in [
+                        "jwt",
+                        "rbac",
+                        "true",
+                    ]:
                         score += 1
 
         return (score / total_checks * 100) if total_checks > 0 else 0

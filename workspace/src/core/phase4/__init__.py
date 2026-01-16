@@ -138,7 +138,10 @@ class Phase4System:
             return {"success": False, "error": str(e)}
 
     async def generate_multi_language_project(
-        self, user_input: str, target_languages: List[str] = None, frameworks: List[str] = None
+        self,
+        user_input: str,
+        target_languages: List[str] = None,
+        frameworks: List[str] = None,
     ) -> Dict[str, Any]:
         """生成多語言項目"""
         if not self.is_initialized:
@@ -151,8 +154,12 @@ class Phase4System:
             analysis = await self.language_manager.analyze_requirements(user_input)
 
             # 確定目標語言和框架
-            languages = target_languages or self.language_manager.suggest_languages(analysis)
-            selected_frameworks = frameworks or self.language_manager.suggest_frameworks(analysis)
+            languages = target_languages or self.language_manager.suggest_languages(
+                analysis
+            )
+            selected_frameworks = (
+                frameworks or self.language_manager.suggest_frameworks(analysis)
+            )
 
             # 生成多語言代碼
             project_results = {}
@@ -163,10 +170,14 @@ class Phase4System:
                 project_results[language] = code_result
 
             # 統一API接口
-            unified_api = await self.language_manager.create_unified_api(project_results)
+            unified_api = await self.language_manager.create_unified_api(
+                project_results
+            )
 
             # 語言檢測和最佳化
-            optimized_results = await self.language_manager.optimize_cross_language(project_results)
+            optimized_results = await self.language_manager.optimize_cross_language(
+                project_results
+            )
 
             return {
                 "success": True,
@@ -177,7 +188,9 @@ class Phase4System:
                 "results": project_results,
                 "unified_api": unified_api,
                 "optimization": optimized_results,
-                "generated_files": sum(r.get("file_count", 0) for r in project_results.values()),
+                "generated_files": sum(
+                    r.get("file_count", 0) for r in project_results.values()
+                ),
             }
 
         except Exception as e:
@@ -195,10 +208,14 @@ class Phase4System:
             self.logger.info(f"Generating mobile application: {user_input}")
 
             # 分析移動應用需求
-            mobile_analysis = await self.mobile_generator.analyze_mobile_requirements(user_input)
+            mobile_analysis = await self.mobile_generator.analyze_mobile_requirements(
+                user_input
+            )
 
             # 確定目標平台
-            target_platforms = platforms or self.mobile_generator.suggest_platforms(mobile_analysis)
+            target_platforms = platforms or self.mobile_generator.suggest_platforms(
+                mobile_analysis
+            )
 
             # 生成移動應用代碼
             app_results = {}
@@ -212,7 +229,9 @@ class Phase4System:
             pwa_support = await self.mobile_generator.generate_pwa_support(user_input)
 
             # 設備適配
-            device_adaptation = await self.mobile_generator.create_device_adaptation(app_results)
+            device_adaptation = await self.mobile_generator.create_device_adaptation(
+                app_results
+            )
 
             return {
                 "success": True,
@@ -223,7 +242,9 @@ class Phase4System:
                 "results": app_results,
                 "pwa_support": pwa_support,
                 "device_adaptation": device_adaptation,
-                "generated_screens": sum(r.get("screen_count", 0) for r in app_results.values()),
+                "generated_screens": sum(
+                    r.get("screen_count", 0) for r in app_results.values()
+                ),
             }
 
         except Exception as e:
@@ -241,7 +262,9 @@ class Phase4System:
             self.logger.info(f"Creating visual configuration: {user_input}")
 
             # 分析配置需求
-            config_analysis = await self.visual_editor.analyze_config_requirements(user_input)
+            config_analysis = await self.visual_editor.analyze_config_requirements(
+                user_input
+            )
 
             # 生成可視化配置器
             visual_config = await self.visual_editor.create_visual_configurator(
@@ -252,7 +275,9 @@ class Phase4System:
             live_preview = await self.visual_editor.enable_live_preview(visual_config)
 
             # 模板庫
-            template_library = await self.visual_editor.create_template_library(project_type)
+            template_library = await self.visual_editor.create_template_library(
+                project_type
+            )
 
             # 導入導出功能
             import_export = await self.visual_editor.setup_import_export()
@@ -265,7 +290,10 @@ class Phase4System:
                 "live_preview": live_preview,
                 "template_library": template_library,
                 "import_export": import_export,
-                "config_options": len(visual_config.get("options", [])),
+                "config_options": len(
+                    visual_config.get(
+                        "options",
+                        [])),
             }
 
         except Exception as e:
@@ -283,18 +311,24 @@ class Phase4System:
             self.logger.info(f"Setting up enterprise version: {user_input}")
 
             # 企業需求分析
-            enterprise_analysis = await self.enterprise_manager.analyze_enterprise_needs(
-                user_input, company_size
+            enterprise_analysis = (
+                await self.enterprise_manager.analyze_enterprise_needs(
+                    user_input, company_size
+                )
             )
 
             # 高級管理界面
             admin_interface = await self.enterprise_manager.create_admin_interface()
 
             # SaaS化架構
-            saas_architecture = await self.saas_platform.setup_multi_tenant_architecture()
+            saas_architecture = (
+                await self.saas_platform.setup_multi_tenant_architecture()
+            )
 
             # 計費系統
-            billing_system = await self.billing_manager.setup_billing_system(company_size)
+            billing_system = await self.billing_manager.setup_billing_system(
+                company_size
+            )
 
             # 監控Dashboard
             monitoring_dashboard = await self.dashboard.create_enterprise_dashboard()
@@ -308,7 +342,10 @@ class Phase4System:
                 "saas_architecture": saas_architecture,
                 "billing_system": billing_system,
                 "monitoring_dashboard": monitoring_dashboard,
-                "enterprise_features": len(admin_interface.get("features", [])),
+                "enterprise_features": len(
+                    admin_interface.get(
+                        "features",
+                        [])),
             }
 
         except Exception as e:
@@ -323,13 +360,17 @@ class Phase4System:
             "components": {
                 "language_manager": {
                     "status": "active" if self.language_manager else "inactive",
-                    "supported_languages": len(self.config.get("supported_languages", [])),
+                    "supported_languages": len(
+                        self.config.get("supported_languages", [])
+                    ),
                 },
                 "mobile_generator": {
                     "status": "active" if self.mobile_generator else "inactive",
                     "platforms": len(self.config.get("mobile_platforms", [])),
                 },
-                "visual_editor": {"status": "active" if self.visual_editor else "inactive"},
+                "visual_editor": {
+                    "status": "active" if self.visual_editor else "inactive"
+                },
                 "enterprise_manager": {
                     "status": "active" if self.enterprise_manager else "inactive",
                     "features_enabled": self.config.get("enterprise_features", False),
@@ -383,7 +424,10 @@ class Phase4System:
                 else:
                     health_status["components"][name] = {"status": "healthy"}
             except Exception as e:
-                health_status["components"][name] = {"status": "unhealthy", "error": str(e)}
+                health_status["components"][name] = {
+                    "status": "unhealthy",
+                    "error": str(e),
+                }
                 all_healthy = False
 
         health_status["overall_status"] = "healthy" if all_healthy else "degraded"
@@ -428,7 +472,9 @@ class Phase4System:
             self.logger.error(f"Visual configuration creation failed: {e}")
             return {"success": False, "error": str(e)}
 
-    async def setup_enterprise_features(self, company_size: str = "medium") -> Dict[str, Any]:
+    async def setup_enterprise_features(
+        self, company_size: str = "medium"
+    ) -> Dict[str, Any]:
         """設置企業版功能"""
         try:
             self.logger.info(f"Setting up enterprise features: {company_size}")
@@ -465,7 +511,9 @@ async def generate_multi_language_project(
 ) -> Dict[str, Any]:
     """便捷函數：生成多語言項目"""
     system = get_phase4_system()
-    return await system.generate_multi_language_project(user_input, target_languages, frameworks)
+    return await system.generate_multi_language_project(
+        user_input, target_languages, frameworks
+    )
 
 
 async def generate_mobile_application(
@@ -476,13 +524,17 @@ async def generate_mobile_application(
     return await system.generate_mobile_application(user_input, platforms, framework)
 
 
-async def create_visual_configuration(user_input: str, project_type: str = "web") -> Dict[str, Any]:
+async def create_visual_configuration(
+    user_input: str, project_type: str = "web"
+) -> Dict[str, Any]:
     """便捷函數：創建可視化配置"""
     system = get_phase4_system()
     return await system.create_visual_configuration(user_input, project_type)
 
 
-async def setup_enterprise_version(user_input: str, company_size: str = "medium") -> Dict[str, Any]:
+async def setup_enterprise_version(
+    user_input: str, company_size: str = "medium"
+) -> Dict[str, Any]:
     """便捷函數：設置企業版"""
     system = get_phase4_system()
     return await system.setup_enterprise_version(user_input, company_size)

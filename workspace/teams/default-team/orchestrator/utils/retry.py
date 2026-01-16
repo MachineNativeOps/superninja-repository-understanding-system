@@ -221,7 +221,9 @@ class BackpressureController:
             "total_waits": self._total_waits,
             "total_wait_time": self._total_wait_time,
             "wait_rate": (
-                self._total_waits / self._total_requests * 100 if self._total_requests > 0 else 0
+                self._total_waits / self._total_requests * 100
+                if self._total_requests > 0
+                else 0
             ),
         }
 
@@ -254,7 +256,9 @@ class RateLimiter:
 
             # Clean old requests
             if key in self._requests:
-                self._requests[key] = [ts for ts in self._requests[key] if ts > window_start]
+                self._requests[key] = [
+                    ts for ts in self._requests[key] if ts > window_start
+                ]
             else:
                 self._requests[key] = []
 
@@ -272,7 +276,9 @@ class RateLimiter:
             window_start = now - self.window_seconds
 
             if key in self._requests:
-                self._requests[key] = [ts for ts in self._requests[key] if ts > window_start]
+                self._requests[key] = [
+                    ts for ts in self._requests[key] if ts > window_start
+                ]
             else:
                 self._requests[key] = []
 

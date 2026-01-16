@@ -46,7 +46,9 @@ def rename_axm_to_mno(content):
     }
 
     # 按長度排序，先替換較長的字符串
-    sorted_replacements = sorted(replacements.items(), key=lambda x: len(x[0]), reverse=True)
+    sorted_replacements = sorted(
+        replacements.items(), key=lambda x: len(x[0]), reverse=True
+    )
 
     new_content = content
     for old, new in sorted_replacements:

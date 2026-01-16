@@ -63,7 +63,10 @@ class StaticAnalyzer:
         logger.info("StaticAnalyzer initialized")
 
     async def analyze(
-        self, code_path: str, language: Optional[str] = None, rules: Optional[List[str]] = None
+        self,
+        code_path: str,
+        language: Optional[str] = None,
+        rules: Optional[List[str]] = None,
     ) -> AnalysisResult:
         """
         執行靜態代碼分析
@@ -92,7 +95,9 @@ class StaticAnalyzer:
             all_metrics[str(path)] = file_metrics
         elif path.is_dir():
             for file_path in self._get_code_files(path):
-                file_issues, file_metrics = await self._analyze_file(file_path, language)
+                file_issues, file_metrics = await self._analyze_file(
+                    file_path, language
+                )
                 issues.extend(file_issues)
                 all_metrics[str(file_path)] = file_metrics
         else:
@@ -182,7 +187,13 @@ class StaticAnalyzer:
             CodeMetrics: 代碼指標
         """
         lines = code.split("\n")
-        loc = len([line for line in lines if line.strip() and not line.strip().startswith("#")])
+        loc = len(
+            [
+                line
+                for line in lines
+                if line.strip() and not line.strip().startswith("#")
+            ]
+        )
 
         # 簡化的循環複雜度計算
         complexity = self._calculate_cyclomatic_complexity(code, language)
@@ -204,7 +215,11 @@ class StaticAnalyzer:
             try:
                 tree = ast.parse(code)
                 function_count = len(
-                    [node for node in ast.walk(tree) if isinstance(node, ast.FunctionDef)]
+                    [
+                        node
+                        for node in ast.walk(tree)
+                        if isinstance(node, ast.FunctionDef)
+                    ]
                 )
                 class_count = len(
                     [node for node in ast.walk(tree) if isinstance(node, ast.ClassDef)]
@@ -213,7 +228,9 @@ class StaticAnalyzer:
                 pass
 
         # 可維護性指數 (簡化版)
-        maintainability = max(0, 100 - complexity * 2 - (100 - comment_ratio * 100) * 0.5)
+        maintainability = max(
+            0, 100 - complexity * 2 - (100 - comment_ratio * 100) * 0.5
+        )
 
         return CodeMetrics(
             lines_of_code=loc,
@@ -236,7 +253,18 @@ class StaticAnalyzer:
             int: 循環複雜度
         """
         # 簡化的複雜度計算：計算決策點
-        decision_keywords = ["if", "elif", "else", "for", "while", "case", "catch", "&&", "||", "?"]
+        decision_keywords = [
+            "if",
+            "elif",
+            "else",
+            "for",
+            "while",
+            "case",
+            "catch",
+            "&&",
+            "||",
+            "?",
+        ]
         complexity = 1  # 基礎複雜度
 
         for keyword in decision_keywords:
@@ -263,7 +291,11 @@ class StaticAnalyzer:
             # 檢查長函數
             for node in ast.walk(tree):
                 if isinstance(node, ast.FunctionDef):
-                    func_lines = node.end_lineno - node.lineno if hasattr(node, "end_lineno") else 0
+                    func_lines = (
+                        node.end_lineno - node.lineno
+                        if hasattr(node, "end_lineno")
+                        else 0
+                    )
                     if func_lines > 50:
                         issues.append(
                             {
@@ -272,8 +304,7 @@ class StaticAnalyzer:
                                 "message": f'Function "{node.name}" is too long ({func_lines} lines)',
                                 "file": str(file_path),
                                 "line": node.lineno,
-                            }
-                        )
+                            })
 
                 # 檢查過多參數
                 if isinstance(node, ast.FunctionDef):
@@ -286,8 +317,7 @@ class StaticAnalyzer:
                                 "message": f'Function "{node.name}" has too many parameters ({param_count})',
                                 "file": str(file_path),
                                 "line": node.lineno,
-                            }
-                        )
+                            })
 
         except SyntaxError as e:
             issues.append(
@@ -344,7 +374,9 @@ class StaticAnalyzer:
 
         return issues
 
-    def _check_complexity(self, code: str, metrics: CodeMetrics, file_path: Path) -> List[Dict]:
+    def _check_complexity(
+        self, code: str, metrics: CodeMetrics, file_path: Path
+    ) -> List[Dict]:
         """
         檢查代碼複雜度
 
@@ -368,8 +400,7 @@ class StaticAnalyzer:
                     "message": f"High cyclomatic complexity: {metrics.cyclomatic_complexity} (threshold: {threshold})",
                     "file": str(file_path),
                     "line": 0,
-                }
-            )
+                })
 
         # 檢查可維護性
         if metrics.maintainability_index < 60:
@@ -380,8 +411,7 @@ class StaticAnalyzer:
                     "message": f"Low maintainability index: {metrics.maintainability_index:.2f}",
                     "file": str(file_path),
                     "line": 0,
-                }
-            )
+                })
 
         return issues
 

@@ -45,7 +45,8 @@ class EmergencyRecovery:
         }
 
         self.log_file = (
-            self.recovery_log / f"recovery_{datetime.now().strftime('%Y%m%d_%H%M%S')}.log"
+            self.recovery_log
+            / f"recovery_{datetime.now().strftime('%Y%m%d_%H%M%S')}.log"
         )
 
     def log(self, message: str, level: str = "INFO"):
@@ -136,10 +137,14 @@ class EmergencyRecovery:
         self.log("⚠️  尝试回退方案：subprocess启动...")
 
         try:
-            orchestrator_path = self.base_path / "tools" / "automation" / "master_orchestrator.py"
+            orchestrator_path = (
+                self.base_path / "tools" / "automation" / "master_orchestrator.py"
+            )
 
             if not orchestrator_path.exists():
-                self.log(f"❌ 找不到 master_orchestrator.py: {orchestrator_path}", "ERROR")
+                self.log(
+                    f"❌ 找不到 master_orchestrator.py: {orchestrator_path}", "ERROR"
+                )
                 return False
 
             # 使用subprocess启动独立进程
@@ -205,10 +210,16 @@ class EmergencyRecovery:
             try:
                 with open(status_file, "r") as f:
                     status_data = json.load(f)
-                health_status["checks"]["status_file"] = {"status": "healthy", "data": status_data}
+                health_status["checks"]["status_file"] = {
+                    "status": "healthy",
+                    "data": status_data,
+                }
                 self.log(f"  ✓ 状态文件存在: {status_data.get('status', 'unknown')}")
             except Exception as e:
-                health_status["checks"]["status_file"] = {"status": "error", "message": str(e)}
+                health_status["checks"]["status_file"] = {
+                    "status": "error",
+                    "message": str(e),
+                }
                 self.log(f"  ✗ 状态文件读取失败: {e}", "ERROR")
         else:
             health_status["checks"]["status_file"] = {
@@ -220,30 +231,45 @@ class EmergencyRecovery:
         # 检查3: 日志文件
         log_dir = self.base_path / "logs"
         if log_dir.exists():
-            recent_logs = sorted(log_dir.glob("*.log"), key=os.path.getmtime, reverse=True)
+            recent_logs = sorted(
+                log_dir.glob("*.log"), key=os.path.getmtime, reverse=True
+            )
             if recent_logs:
                 latest_log = recent_logs[0]
                 health_status["checks"]["logs"] = {
                     "status": "healthy",
                     "latest_log": str(latest_log),
-                    "modified": datetime.fromtimestamp(os.path.getmtime(latest_log)).isoformat(),
+                    "modified": datetime.fromtimestamp(
+                        os.path.getmtime(latest_log)
+                    ).isoformat(),
                 }
                 self.log(f"  ✓ 最新日志: {latest_log.name}")
             else:
-                health_status["checks"]["logs"] = {"status": "warning", "message": "日志目录为空"}
+                health_status["checks"]["logs"] = {
+                    "status": "warning",
+                    "message": "日志目录为空",
+                }
                 self.log("  ⚠ 日志目录为空", "WARNING")
         else:
-            health_status["checks"]["logs"] = {"status": "missing", "message": "日志目录不存在"}
+            health_status["checks"]["logs"] = {
+                "status": "missing",
+                "message": "日志目录不存在",
+            }
             self.log("  ✗ 日志目录不存在", "WARNING")
 
         # 保存健康检查结果
-        health_file = self.recovery_log / f"health_{datetime.now().strftime('%Y%m%d_%H%M%S')}.json"
+        health_file = (
+            self.recovery_log
+            / f"health_{datetime.now().strftime('%Y%m%d_%H%M%S')}.json"
+        )
         with open(health_file, "w") as f:
             json.dump(health_status, f, indent=2)
 
         # 总结
         healthy_checks = sum(
-            1 for check in health_status["checks"].values() if check["status"] == "healthy"
+            1
+            for check in health_status["checks"].values()
+            if check["status"] == "healthy"
         )
         total_checks = len(health_status["checks"])
 

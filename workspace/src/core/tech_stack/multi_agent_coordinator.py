@@ -238,7 +238,9 @@ class AgentCommunicationBus:
         message.message_type = MessageType.BROADCAST
         await self.publish("broadcast", message)
 
-    async def respond_to(self, original_message_id: str, response: AgentMessage) -> None:
+    async def respond_to(
+        self, original_message_id: str, response: AgentMessage
+    ) -> None:
         """Respond to a message
 
         回覆消息
@@ -251,7 +253,9 @@ class AgentCommunicationBus:
         """Process messages from the queue"""
         while self._running:
             try:
-                topic, message = await asyncio.wait_for(self.message_queue.get(), timeout=1.0)
+                topic, message = await asyncio.wait_for(
+                    self.message_queue.get(), timeout=1.0
+                )
 
                 for callback in self.subscribers.get(topic, []):
                     try:
@@ -260,7 +264,9 @@ class AgentCommunicationBus:
                         else:
                             callback(message)
                     except Exception as e:
-                        logger.error(f"Error in message callback for topic {topic}: {e}")
+                        logger.error(
+                            f"Error in message callback for topic {topic}: {e}"
+                        )
 
             except asyncio.TimeoutError:
                 continue
@@ -321,7 +327,9 @@ class TaskRouter:
         )
         self.routing_rules.sort(key=lambda x: x["priority"])
 
-    def find_suitable_agents(self, task: TeamTask, max_agents: int = 1) -> List[AgentDefinition]:
+    def find_suitable_agents(
+        self, task: TeamTask, max_agents: int = 1
+    ) -> List[AgentDefinition]:
         """Find agents suitable for a task
 
         找到適合任務的代理
@@ -381,7 +389,8 @@ class TaskRouter:
                 "current_load": self.agent_load[agent_id],
                 "max_load": self.agents[agent_id].max_concurrent_tasks,
                 "utilization": (
-                    self.agent_load[agent_id] / self.agents[agent_id].max_concurrent_tasks
+                    self.agent_load[agent_id]
+                    / self.agents[agent_id].max_concurrent_tasks
                     if self.agents[agent_id].max_concurrent_tasks > 0
                     else 0
                 ),
@@ -427,7 +436,9 @@ class AgentTeam:
         """Get all agents with a specific role"""
         return [a for a in self.agents.values() if a.role == role]
 
-    def get_agents_with_capability(self, capability: AgentCapability) -> List[AgentDefinition]:
+    def get_agents_with_capability(
+        self, capability: AgentCapability
+    ) -> List[AgentDefinition]:
         """Get all agents with a specific capability"""
         return [a for a in self.agents.values() if a.has_capability(capability)]
 
@@ -636,9 +647,15 @@ class MultiAgentCoordinator:
             "teams_count": len(self.teams),
             "tasks": {
                 "total": len(self.tasks),
-                "pending": len([t for t in self.tasks.values() if t.status == "pending"]),
-                "running": len([t for t in self.tasks.values() if t.status == "running"]),
-                "completed": len([t for t in self.tasks.values() if t.status == "completed"]),
+                "pending": len(
+                    [t for t in self.tasks.values() if t.status == "pending"]
+                ),
+                "running": len(
+                    [t for t in self.tasks.values() if t.status == "running"]
+                ),
+                "completed": len(
+                    [t for t in self.tasks.values() if t.status == "completed"]
+                ),
                 "failed": len([t for t in self.tasks.values() if t.status == "failed"]),
             },
             "agent_load": self.task_router.get_load_status(),

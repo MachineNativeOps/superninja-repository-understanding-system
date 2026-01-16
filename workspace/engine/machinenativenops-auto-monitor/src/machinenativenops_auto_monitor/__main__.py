@@ -72,11 +72,17 @@ Examples:
         default="/etc/machinenativeops/auto-monitor.yaml",
         help="Configuration file path (YAML)",
     )
-    parser.add_argument("--verbose", "-v", action="store_true", help="Enable verbose logging")
     parser.add_argument(
-        "--dry-run", action="store_true", help="Run without actually sending alerts or storing data"
+        "--verbose", "-v", action="store_true", help="Enable verbose logging"
     )
-    parser.add_argument("--daemon", "-d", action="store_true", help="Run as daemon process")
+    parser.add_argument(
+        "--dry-run",
+        action="store_true",
+        help="Run without actually sending alerts or storing data",
+    )
+    parser.add_argument(
+        "--daemon", "-d", action="store_true", help="Run as daemon process"
+    )
 
     # Parse arguments
     args = parser.parse_args()
@@ -93,12 +99,19 @@ Examples:
     monitor = AutoMonitor(config)
     monitor.run()
     parser.add_argument(
-        "--config", default="config/auto-monitor.yaml", help="Path to configuration file"
+        "--config",
+        default="config/auto-monitor.yaml",
+        help="Path to configuration file",
     )
     parser.add_argument(
-        "--mode", choices=["collect", "alert", "monitor"], default="monitor", help="Operation mode"
+        "--mode",
+        choices=["collect", "alert", "monitor"],
+        default="monitor",
+        help="Operation mode",
     )
-    parser.add_argument("--interval", type=int, default=60, help="Collection interval in seconds")
+    parser.add_argument(
+        "--interval", type=int, default=60, help="Collection interval in seconds"
+    )
     parser.add_argument("-v", "--verbose", action="store_true", help="Verbose output")
     parser.add_argument("--daemon", action="store_true", help="Run as daemon")
 
@@ -114,7 +127,9 @@ Examples:
         # Load configuration
         config_path = Path(args.config)
         if not config_path.exists():
-            logger.warning(f"Configuration file not found: {config_path}, using defaults")
+            logger.warning(
+                f"Configuration file not found: {config_path}, using defaults"
+            )
             config = AutoMonitorConfig()
         else:
             logger.info(f"Loading configuration from: {config_path}")
@@ -265,23 +280,31 @@ def main():
         default="/etc/machinenativeops/auto-monitor.yaml",
         help="Configuration file path (default: /etc/machinenativeops/auto-monitor.yaml)",
     )
-    parser.add_argument("--verbose", "-v", action="store_true", help="Enable verbose logging")
+    parser.add_argument(
+        "--verbose", "-v", action="store_true", help="Enable verbose logging"
+    )
 
     # Create subparsers for commands
     subparsers = parser.add_subparsers(dest="command", help="Available commands")
 
     # Serve command
     serve_parser = subparsers.add_parser("serve", help="Start monitoring service")
-    serve_parser.add_argument("--daemon", "-d", action="store_true", help="Run as daemon process")
+    serve_parser.add_argument(
+        "--daemon", "-d", action="store_true", help="Run as daemon process"
+    )
     serve_parser.set_defaults(func=cmd_serve)
 
     # Once command
     once_parser = subparsers.add_parser("once", help="Run collection once")
-    once_parser.add_argument("--output", "-o", help="Output file for results (JSON format)")
+    once_parser.add_argument(
+        "--output", "-o", help="Output file for results (JSON format)"
+    )
     once_parser.set_defaults(func=cmd_once)
 
     # Validate config command
-    validate_parser = subparsers.add_parser("validate-config", help="Validate configuration file")
+    validate_parser = subparsers.add_parser(
+        "validate-config", help="Validate configuration file"
+    )
     validate_parser.set_defaults(func=cmd_validate_config)
 
     # Parse arguments

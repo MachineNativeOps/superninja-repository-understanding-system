@@ -124,7 +124,9 @@ class GovernancePolicyChecker:
 
         # Check compliance metrics
         if "compliance_metrics" in policy:
-            metrics["compliance_metric_count"] = len(policy.get("compliance_metrics", []))
+            metrics["compliance_metric_count"] = len(
+                policy.get("compliance_metrics", [])
+            )
         else:
             warnings.append("Consider adding 'compliance_metrics' field")
 
@@ -133,7 +135,9 @@ class GovernancePolicyChecker:
             import re
 
             if not re.match(r"^\d+\.\d+(\.\d+)?$", str(policy["version"])):
-                warnings.append(f"Version should follow semantic versioning: {policy['version']}")
+                warnings.append(
+                    f"Version should follow semantic versioning: {policy['version']}"
+                )
 
         valid = len(errors) == 0
 
@@ -201,9 +205,13 @@ class GovernancePolicyChecker:
                 for result in results:
                     if result.valid:
                         total_valid += 1
-                        print(f"  ✅ {domain_name}: {result.policy_file.split('/')[-1]}")
+                        print(
+                            f"  ✅ {domain_name}: {result.policy_file.split('/')[-1]}"
+                        )
                     else:
-                        print(f"  ❌ {domain_name}: {result.policy_file.split('/')[-1]}")
+                        print(
+                            f"  ❌ {domain_name}: {result.policy_file.split('/')[-1]}"
+                        )
                         for error in result.errors:
                             print(f"      • {error}")
                     total_errors += len(result.errors)
@@ -217,7 +225,9 @@ class GovernancePolicyChecker:
             "invalid_policies": total_checks - total_valid,
             "total_errors": total_errors,
             "total_warnings": total_warnings,
-            "compliance_rate": (total_valid / total_checks * 100) if total_checks > 0 else 0,
+            "compliance_rate": (
+                (total_valid / total_checks * 100) if total_checks > 0 else 0
+            ),
             "domain_results": domain_results,
         }
 

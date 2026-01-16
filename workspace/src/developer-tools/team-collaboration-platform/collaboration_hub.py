@@ -147,7 +147,9 @@ class CollaborationHub:
                 },
                 "github": {
                     "token": os.getenv("GITHUB_TOKEN"),
-                    "repo": os.getenv("GITHUB_REPO", "MachineNativeOps/MachineNativeOps"),
+                    "repo": os.getenv(
+                        "GITHUB_REPO", "MachineNativeOps/MachineNativeOps"
+                    ),
                 },
                 "notifications": {
                     "email_enabled": False,
@@ -169,7 +171,9 @@ class CollaborationHub:
 
         if not logger.handlers:
             handler = logging.StreamHandler()
-            formatter = logging.Formatter("%(asctime)s - %(name)s - %(levelname)s - %(message)s")
+            formatter = logging.Formatter(
+                "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+            )
             handler.setFormatter(formatter)
             logger.addHandler(handler)
 
@@ -495,7 +499,11 @@ class CollaborationHub:
 
     async def _broadcast_user_status(self, user_id: str, status: UserStatus):
         """廣播用戶狀態變更"""
-        status_data = {"type": "user_status", "user_id": user_id, "status": status.value}
+        status_data = {
+            "type": "user_status",
+            "user_id": user_id,
+            "status": status.value,
+        }
 
         await self._broadcast_to_all(status_data)
 
@@ -529,7 +537,10 @@ class CollaborationHub:
             if self.redis_client:
                 self.redis_client.hset(
                     f"user:{user_id}",
-                    mapping={"status": status.value, "last_seen": datetime.now().isoformat()},
+                    mapping={
+                        "status": status.value,
+                        "last_seen": datetime.now().isoformat(),
+                    },
                 )
 
             await self._broadcast_user_status(user_id, status)
@@ -540,7 +551,10 @@ class CollaborationHub:
         websocket = self.connected_websockets.get(notification.user_id)
         if websocket:
             try:
-                notification_data = {"type": "notification", "notification": asdict(notification)}
+                notification_data = {
+                    "type": "notification",
+                    "notification": asdict(notification),
+                }
                 await websocket.send_text(json.dumps(notification_data))
             except Exception as e:
                 self.logger.error(f"發送通知失敗: {e}")
@@ -560,7 +574,9 @@ class CollaborationHub:
         if teams_webhook:
             await self._send_teams_notification(notification, teams_webhook)
 
-    async def _send_slack_notification(self, notification: Notification, webhook_url: str):
+    async def _send_slack_notification(
+        self, notification: Notification, webhook_url: str
+    ):
         """發送 Slack 通知"""
         async with aiohttp.ClientSession() as session:
             payload = {
@@ -580,7 +596,9 @@ class CollaborationHub:
             except Exception as e:
                 self.logger.error(f"Slack 通知發送異常: {e}")
 
-    async def _send_teams_notification(self, notification: Notification, webhook_url: str):
+    async def _send_teams_notification(
+        self, notification: Notification, webhook_url: str
+    ):
         """發送 Teams 通知"""
         async with aiohttp.ClientSession() as session:
             payload = {

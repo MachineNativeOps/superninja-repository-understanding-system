@@ -299,7 +299,8 @@ class AgentRuntime:
                 "name": self.config.name,
                 "version": self.config.version,
                 "active_workflows": self.workflow_orchestrator.get_active_workflow_count(),
-                "plugins_loaded": len(self.plugin_manager.get_loaded_plugins()),
+                "plugins_loaded": len(
+                    self.plugin_manager.get_loaded_plugins()),
                 "memory_backend": self.config.memory_backend,
             },
         }

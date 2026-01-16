@@ -226,7 +226,11 @@ class AutomatedTestGenerator:
         for arg in node.args.args:
             param_info = {
                 "name": arg.arg,
-                "type": self._get_annotation_string(arg.annotation) if arg.annotation else None,
+                "type": (
+                    self._get_annotation_string(arg.annotation)
+                    if arg.annotation
+                    else None
+                ),
                 "default": None,
                 "kind": "positional",
             }
@@ -245,7 +249,11 @@ class AutomatedTestGenerator:
         for kwarg in node.args.kwonlyargs:
             param_info = {
                 "name": kwarg.arg,
-                "type": self._get_annotation_string(kwarg.annotation) if kwarg.annotation else None,
+                "type": (
+                    self._get_annotation_string(kwarg.annotation)
+                    if kwarg.annotation
+                    else None
+                ),
                 "default": None,
                 "kind": "keyword_only",
             }
@@ -254,7 +262,12 @@ class AutomatedTestGenerator:
         # **kwargs
         if node.args.kwarg:
             parameters.append(
-                {"name": node.args.kwarg.arg, "type": None, "default": None, "kind": "kwargs"}
+                {
+                    "name": node.args.kwarg.arg,
+                    "type": None,
+                    "default": None,
+                    "kind": "kwargs",
+                }
             )
 
         return parameters
@@ -308,7 +321,9 @@ class AutomatedTestGenerator:
 
         return complexity
 
-    def _analyze_dependencies(self, node: ast.FunctionDef, module: astroid.Module) -> List[str]:
+    def _analyze_dependencies(
+        self, node: ast.FunctionDef, module: astroid.Module
+    ) -> List[str]:
         """分析函數依賴"""
         dependencies = set()
 
@@ -322,7 +337,9 @@ class AutomatedTestGenerator:
 
         return list(dependencies)
 
-    def generate_test_cases(self, function_analysis: FunctionAnalysis) -> List[TestCase]:
+    def generate_test_cases(
+        self, function_analysis: FunctionAnalysis
+    ) -> List[TestCase]:
         """生成測試用例"""
         test_cases = []
 
@@ -521,14 +538,18 @@ def test_{analysis.name}_{scenario}():
     def _has_nullable_parameters(self, parameters: List[Dict[str, Any]]) -> bool:
         """檢查是否有可空參數"""
         for param in parameters:
-            if param.get("type") and ("Optional" in param["type"] or "Union" in param["type"]):
+            if param.get("type") and (
+                "Optional" in param["type"] or "Union" in param["type"]
+            ):
                 return True
         return False
 
     def _has_numeric_parameters(self, parameters: List[Dict[str, Any]]) -> bool:
         """檢查是否有數字參數"""
         for param in parameters:
-            if param.get("type") and any(t in param["type"].lower() for t in ["int", "float"]):
+            if param.get("type") and any(
+                t in param["type"].lower() for t in ["int", "float"]
+            ):
                 return True
         return False
 
@@ -661,7 +682,9 @@ def test_{analysis.name}_dependency_error():
         for test_case in test_cases:
             if "import" in test_case.setup_code:
                 for line in test_case.setup_code.split("\n"):
-                    if line.strip().startswith("import") or line.strip().startswith("from"):
+                    if line.strip().startswith("import") or line.strip().startswith(
+                        "from"
+                    ):
                         imports.add(line.strip())
 
         content.extend(sorted(imports))
@@ -687,7 +710,9 @@ def test_{analysis.name}_dependency_error():
                 test_lines = test_case.test_code.strip().split("\n")
                 for line in test_lines:
                     if line.strip():
-                        if line.strip().startswith("def ") or line.strip().startswith("async def "):
+                        if line.strip().startswith("def ") or line.strip().startswith(
+                            "async def "
+                        ):
                             content.append(f"    {line}\n")
                         else:
                             content.append(f"        {line}\n")
@@ -704,7 +729,9 @@ def test_{analysis.name}_dependency_error():
         except Exception:
             return file_content
 
-    def save_test_files(self, functions_analysis: List[FunctionAnalysis], output_dir: str):
+    def save_test_files(
+        self, functions_analysis: List[FunctionAnalysis], output_dir: str
+    ):
         """保存測試文件"""
         output_path = Path(output_dir)
         output_path.mkdir(parents=True, exist_ok=True)
@@ -735,10 +762,14 @@ def test_{analysis.name}_dependency_error():
 
             print(f"生成測試文件: {test_file_path}")
 
-    def generate_report(self, functions_analysis: List[FunctionAnalysis]) -> Dict[str, Any]:
+    def generate_report(
+        self, functions_analysis: List[FunctionAnalysis]
+    ) -> Dict[str, Any]:
         """生成分析報告"""
         total_functions = len(functions_analysis)
-        testable_functions = len([f for f in functions_analysis if not f.is_test_function])
+        testable_functions = len(
+            [f for f in functions_analysis if not f.is_test_function]
+        )
 
         complexity_stats = {
             "low": 0,  # 1-5

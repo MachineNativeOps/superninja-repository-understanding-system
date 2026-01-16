@@ -70,7 +70,9 @@ class BudgetAllocation:
 
     def get_by_priority(self, priority: int) -> List[str]:
         """根據優先級獲取類別"""
-        return [name for name, cat in self.allocations.items() if cat.priority == priority]
+        return [
+            name for name, cat in self.allocations.items() if cat.priority == priority
+        ]
 
     def to_dict(self) -> Dict[str, Any]:
         """轉換為字典"""
@@ -120,7 +122,9 @@ class TeamAllocation:
 
     def get_by_criticality(self, criticality: str) -> List[str]:
         """根據關鍵度獲取角色"""
-        return [name for name, role in self.roles.items() if role.criticality == criticality]
+        return [
+            name for name, role in self.roles.items() if role.criticality == criticality
+        ]
 
     def to_dict(self) -> Dict[str, Any]:
         """轉換為字典"""
@@ -235,7 +239,11 @@ class ResourceOptimizer:
             "marketing": {"ratio": 0.15, "criticality": "critical", "cost": 100000},
             "sales": {"ratio": 0.20, "criticality": "critical", "cost": 110000},
             "operations": {"ratio": 0.10, "criticality": "important", "cost": 85000},
-            "customer_success": {"ratio": 0.05, "criticality": "important", "cost": 75000},
+            "customer_success": {
+                "ratio": 0.05,
+                "criticality": "important",
+                "cost": 75000,
+            },
         },
         "enterprise": {
             "engineering": {"ratio": 0.30, "criticality": "critical", "cost": 150000},
@@ -243,7 +251,11 @@ class ResourceOptimizer:
             "marketing": {"ratio": 0.10, "criticality": "important", "cost": 110000},
             "sales": {"ratio": 0.20, "criticality": "critical", "cost": 130000},
             "operations": {"ratio": 0.15, "criticality": "important", "cost": 90000},
-            "customer_success": {"ratio": 0.10, "criticality": "critical", "cost": 85000},
+            "customer_success": {
+                "ratio": 0.10,
+                "criticality": "critical",
+                "cost": 85000,
+            },
             "finance": {"ratio": 0.05, "criticality": "important", "cost": 120000},
         },
     }
@@ -314,7 +326,9 @@ class ResourceOptimizer:
                 cat.amount *= adjustment_ratio
 
         # 計算優化分數
-        optimization_score = self._calculate_budget_optimization_score(allocations, strategy)
+        optimization_score = self._calculate_budget_optimization_score(
+            allocations, strategy
+        )
 
         return BudgetAllocation(
             total_budget=total_budget,
@@ -329,7 +343,9 @@ class ResourceOptimizer:
     ) -> float:
         """計算預算優化分數"""
         # 基於有效價值計算分數
-        total_effective_value = sum(cat.get_effective_value() for cat in allocations.values())
+        total_effective_value = sum(
+            cat.get_effective_value() for cat in allocations.values()
+        )
         total_amount = sum(cat.amount for cat in allocations.values())
 
         if total_amount == 0:
@@ -342,8 +358,12 @@ class ResourceOptimizer:
         strategy_bonus = {
             AllocationStrategy.BALANCED: 10,
             AllocationStrategy.GROWTH_FOCUSED: 15 if "marketing" in allocations else 5,
-            AllocationStrategy.EFFICIENCY_FOCUSED: 15 if "operations" in allocations else 5,
-            AllocationStrategy.INNOVATION_FOCUSED: 15 if "r_and_d" in allocations else 5,
+            AllocationStrategy.EFFICIENCY_FOCUSED: (
+                15 if "operations" in allocations else 5
+            ),
+            AllocationStrategy.INNOVATION_FOCUSED: (
+                15 if "r_and_d" in allocations else 5
+            ),
             AllocationStrategy.RISK_AVERSE: 10,
         }
         score += strategy_bonus.get(strategy, 0)
@@ -411,7 +431,9 @@ class ResourceOptimizer:
                                 if config["criticality"] == "critical"
                                 else 2 if config["criticality"] == "important" else 3
                             ),
-                            "timeline_months": 1 if config["criticality"] == "critical" else 3,
+                            "timeline_months": (
+                                1 if config["criticality"] == "critical" else 3
+                            ),
                         }
                     )
 
@@ -504,7 +526,9 @@ class ResourceOptimizer:
         payback_months = self._calculate_payback_period(total_budget, projected_roi)
 
         # 風險評估
-        risk_score = self._calculate_risk_score(budget_allocation, team_allocation, strategy)
+        risk_score = self._calculate_risk_score(
+            budget_allocation, team_allocation, strategy
+        )
 
         # 敏感度分析
         sensitivity = self._perform_sensitivity_analysis(
@@ -565,7 +589,10 @@ class ResourceOptimizer:
         return min(120, max(1, round(months)))
 
     def _calculate_risk_score(
-        self, budget: BudgetAllocation, team: TeamAllocation, strategy: AllocationStrategy
+        self,
+        budget: BudgetAllocation,
+        team: TeamAllocation,
+        strategy: AllocationStrategy,
     ) -> float:
         """計算風險分數 (0-100, 越高越危險)"""
         score = 20.0  # 基礎風險
@@ -581,7 +608,9 @@ class ResourceOptimizer:
         score += strategy_risk.get(strategy, 0)
 
         # 預算集中度風險
-        max_ratio = max(cat.amount / budget.total_budget for cat in budget.allocations.values())
+        max_ratio = max(
+            cat.amount / budget.total_budget for cat in budget.allocations.values()
+        )
         if max_ratio > 0.4:
             score += 15
 
@@ -650,7 +679,8 @@ class ResourceOptimizer:
             if "growth" in [g.lower() for g in goals]:
                 if (
                     "marketing" not in budget.allocations
-                    or budget.allocations["marketing"].amount < budget.total_budget * 0.15
+                    or budget.allocations["marketing"].amount
+                    < budget.total_budget * 0.15
                 ):
                     recommendations.append("增長目標需要更多行銷投資")
 
@@ -676,7 +706,9 @@ class ResourceOptimizer:
         report.append("\n## 一、預算分配")
         report.append(f"\n**總預算**: ${result.budget_allocation.total_budget:,.0f}")
         report.append(f"**分配策略**: {result.budget_allocation.strategy.value}")
-        report.append(f"**優化分數**: {result.budget_allocation.optimization_score:.1f}/100")
+        report.append(
+            f"**優化分數**: {result.budget_allocation.optimization_score:.1f}/100"
+        )
 
         report.append("\n| 類別 | 金額 | 佔比 | 優先級 | 預期 ROI |")
         report.append("|------|------|------|--------|----------|")
@@ -692,7 +724,9 @@ class ResourceOptimizer:
         report.append(f"\n**總人數**: {result.team_allocation.total_headcount}")
         report.append(f"**年度成本**: ${result.team_allocation.total_cost:,.0f}")
         report.append(f"**組織結構**: {result.team_allocation.structure}")
-        report.append(f"**優化分數**: {result.team_allocation.optimization_score:.1f}/100")
+        report.append(
+            f"**優化分數**: {result.team_allocation.optimization_score:.1f}/100"
+        )
 
         report.append("\n| 角色 | 人數 | 年薪 | 總成本 | 關鍵度 |")
         report.append("|------|------|------|--------|--------|")

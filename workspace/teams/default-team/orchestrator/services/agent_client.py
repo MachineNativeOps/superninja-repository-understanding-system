@@ -48,9 +48,17 @@ class AgentRegistry:
         """Initialize known agents from configuration."""
         known_agents = [
             ("monitoring-agent", settings.monitoring_agent_url, ["observe", "alert"]),
-            ("problem-solver-agent", settings.problem_solver_agent_url, ["rca", "propose"]),
+            (
+                "problem-solver-agent",
+                settings.problem_solver_agent_url,
+                ["rca", "propose"],
+            ),
             ("qa-agent", settings.qa_agent_url, ["verify", "validate"]),
-            ("maintenance-agent", settings.maintenance_agent_url, ["execute", "rollback"]),
+            (
+                "maintenance-agent",
+                settings.maintenance_agent_url,
+                ["execute", "rollback"],
+            ),
             ("learning-agent", settings.learning_agent_url, ["learn", "knowledge"]),
         ]
 

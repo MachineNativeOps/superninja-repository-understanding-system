@@ -59,7 +59,9 @@ def save_yaml(path: str, data: dict[str, Any]):
     """儲存 YAML 檔案"""
     os.makedirs(os.path.dirname(path), exist_ok=True)
     with open(path, "w", encoding="utf-8") as f:
-        yaml.dump(data, f, default_flow_style=False, allow_unicode=True, sort_keys=False)
+        yaml.dump(
+            data, f, default_flow_style=False, allow_unicode=True, sort_keys=False
+        )
 
 
 def calculate_violation_score(governance_report: dict[str, Any]) -> float:
@@ -90,7 +92,9 @@ def calculate_security_score(
 
     # Semgrep 結果
     semgrep_results = semgrep_report.get("results", [])
-    semgrep_high = sum(1 for r in semgrep_results if r.get("extra", {}).get("severity") == "ERROR")
+    semgrep_high = sum(
+        1 for r in semgrep_results if r.get("extra", {}).get("severity") == "ERROR"
+    )
     semgrep_medium = sum(
         1 for r in semgrep_results if r.get("extra", {}).get("severity") == "WARNING"
     )
@@ -126,7 +130,8 @@ def calculate_architecture_score(governance_report: dict[str, Any]) -> float:
     arch_violations = [
         v
         for v in violations
-        if "layer" in v.get("message", "").lower() or "directory" in v.get("message", "").lower()
+        if "layer" in v.get("message", "").lower()
+        or "directory" in v.get("message", "").lower()
     ]
 
     if not arch_violations:
@@ -155,7 +160,9 @@ def calculate_trend_score(history: dict[str, Any]) -> float:
     recent_fixes = []
     for fix in fixes:
         try:
-            fix_time = datetime.datetime.fromisoformat(fix["timestamp"].replace("Z", "+00:00"))
+            fix_time = datetime.datetime.fromisoformat(
+                fix["timestamp"].replace("Z", "+00:00")
+            )
             if fix_time >= thirty_days_ago:
                 recent_fixes.append(fix)
         except BaseException:
@@ -268,7 +275,9 @@ def display_score(score_data: dict[str, Any]):
 
 def main():
     parser = argparse.ArgumentParser(description="Calculate language health score")
-    parser.add_argument("--governance-report", required=True, help="Path to governance report JSON")
+    parser.add_argument(
+        "--governance-report", required=True, help="Path to governance report JSON"
+    )
     parser.add_argument("--semgrep-report", help="Path to Semgrep SARIF report")
     parser.add_argument("--codeql-report", help="Path to CodeQL SARIF report")
     parser.add_argument("--history", help="Path to language history YAML")
@@ -290,7 +299,9 @@ def main():
     history = load_yaml(args.history) if args.history else {}
 
     # 計算分數
-    score_data = calculate_health_score(governance_report, semgrep_report, codeql_report, history)
+    score_data = calculate_health_score(
+        governance_report, semgrep_report, codeql_report, history
+    )
 
     # 儲存分數
     save_yaml(args.output, score_data)
@@ -300,8 +311,12 @@ def main():
     if args.display:
         display_score(score_data)
     else:
-        console.print(f"[bold green]Total Score: {score_data['total_score']:.2f}/100[/bold green]")
-        console.print(f"[bold]Grade: {score_data['grade']} ({score_data['status']})[/bold]")
+        console.print(
+            f"[bold green]Total Score: {score_data['total_score']:.2f}/100[/bold green]"
+        )
+        console.print(
+            f"[bold]Grade: {score_data['grade']} ({score_data['status']})[/bold]"
+        )
 
     console.print("[green]✅ Health score calculation complete![/green]")
 

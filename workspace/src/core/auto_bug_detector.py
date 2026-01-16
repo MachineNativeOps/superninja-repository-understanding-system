@@ -244,9 +244,9 @@ class AutoBugDetector:
                         severity="high",
                         code_snippet=match.group(),
                         root_cause="Database query inside a loop causes excessive queries",
-                        metadata={"pattern": "N_PLUS_ONE"},
-                    )
-                )
+                        metadata={
+                            "pattern": "N_PLUS_ONE"},
+                    ))
 
         return bugs
 
@@ -267,9 +267,9 @@ class AutoBugDetector:
                         severity="medium",
                         code_snippet=match.group(),
                         root_cause="Async operations without try-catch may cause unhandled rejections",
-                        metadata={"pattern": "MISSING_ERROR_HANDLING"},
-                    )
-                )
+                        metadata={
+                            "pattern": "MISSING_ERROR_HANDLING"},
+                    ))
 
         return bugs
 
@@ -290,9 +290,9 @@ class AutoBugDetector:
                         severity="high",
                         code_snippet=match.group(),
                         root_cause="Resources opened but not closed in all code paths",
-                        metadata={"pattern": "RESOURCE_LEAK"},
-                    )
-                )
+                        metadata={
+                            "pattern": "RESOURCE_LEAK"},
+                    ))
 
         return bugs
 
@@ -313,9 +313,9 @@ class AutoBugDetector:
                         severity="critical",
                         code_snippet=match.group(),
                         root_cause="Sensitive values should be stored in environment variables",
-                        metadata={"pattern": "HARDCODED_VALUES"},
-                    )
-                )
+                        metadata={
+                            "pattern": "HARDCODED_VALUES"},
+                    ))
 
         return bugs
 
@@ -336,9 +336,9 @@ class AutoBugDetector:
                         severity="medium",
                         code_snippet=match.group(),
                         root_cause="Loose equality or falsy check may cause unexpected behavior",
-                        metadata={"pattern": "INVALID_NULL_CHECK"},
-                    )
-                )
+                        metadata={
+                            "pattern": "INVALID_NULL_CHECK"},
+                    ))
 
         return bugs
 
@@ -359,9 +359,9 @@ class AutoBugDetector:
                         severity="high",
                         code_snippet=match.group(),
                         root_cause="State may change between check and action",
-                        metadata={"pattern": "RACE_CONDITION"},
-                    )
-                )
+                        metadata={
+                            "pattern": "RACE_CONDITION"},
+                    ))
 
         return bugs
 
@@ -489,7 +489,9 @@ class AutoBugDetector:
         self._fix_templates["MISSING_ERROR_HANDLING"] = fix_missing_error_handling
         self._fix_templates["HARDCODED_VALUES"] = fix_hardcoded_values
 
-    def _assess_fix_confidence(self, bug: DetectedBug, fixed_code: str) -> FixConfidence:
+    def _assess_fix_confidence(
+        self, bug: DetectedBug, fixed_code: str
+    ) -> FixConfidence:
         """Assess confidence level of a fix (評估修復的置信度)"""
         # 簡單的啟發式評估
         if bug.category == BugCategory.SECURITY:
@@ -566,11 +568,15 @@ class AutoBugDetector:
                 self._stats["total_verified"] / self._stats["total_fixed"] * 100, 2
             )
 
-    def register_custom_detector(self, detector: Callable[[str], list[DetectedBug]]) -> None:
+    def register_custom_detector(
+        self, detector: Callable[[str], list[DetectedBug]]
+    ) -> None:
         """Register a custom bug detector (註冊自定義錯誤檢測器)"""
         self._custom_detectors.append(detector)
 
-    def register_fix_template(self, pattern: str, template: Callable[[str], str]) -> None:
+    def register_fix_template(
+        self, pattern: str, template: Callable[[str], str]
+    ) -> None:
         """Register a custom fix template (註冊自定義修復模板)"""
         self._fix_templates[pattern] = template
 

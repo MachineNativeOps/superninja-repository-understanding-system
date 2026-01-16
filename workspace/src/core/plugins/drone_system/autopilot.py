@@ -166,7 +166,9 @@ class AutopilotDrone(BaseDrone):
 
     def _run_lint(self, **_kwargs: Any) -> bool:
         """執行程式碼檢查"""
-        success, _ = self._run_command(["npm", "run", "lint", "--if-present"], "程式碼檢查")
+        success, _ = self._run_command(
+            ["npm", "run", "lint", "--if-present"], "程式碼檢查"
+        )
         return success
 
     def _run_format(self, **_kwargs: Any) -> bool:
@@ -204,7 +206,9 @@ class AutopilotDrone(BaseDrone):
                 checks[tool] = {
                     "installed": result.returncode == 0,
                     "version": (
-                        result.stdout.strip().split("\n")[0] if result.returncode == 0 else None
+                        result.stdout.strip().split("\n")[0]
+                        if result.returncode == 0
+                        else None
                     ),
                 }
             except (FileNotFoundError, subprocess.TimeoutExpired):

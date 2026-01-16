@@ -8,13 +8,16 @@ Tests for:
 - ZeroTouchDeploymentEngine
 """
 
-from core.ai_decision_engine import (
-    AIDecisionEngine,
-    ConfidenceLevel,
-    DecisionContext,
-    DecisionOption,
-    DecisionPriority,
-    DecisionType,
+import asyncio
+import os
+import sys
+
+import pytest
+from automation.zero_touch_deployment import (
+    DeploymentEnvironment,
+    DeploymentStatus,
+    DeploymentStrategy,
+    ZeroTouchDeploymentEngine,
 )
 from bridges.language_bridges import (
     BridgeStatus,
@@ -23,17 +26,14 @@ from bridges.language_bridges import (
     Language,
     LanguageBridgeManager,
 )
-from automation.zero_touch_deployment import (
-    DeploymentEnvironment,
-    DeploymentStatus,
-    DeploymentStrategy,
-    ZeroTouchDeploymentEngine,
+from core.ai_decision_engine import (
+    AIDecisionEngine,
+    ConfidenceLevel,
+    DecisionContext,
+    DecisionOption,
+    DecisionPriority,
+    DecisionType,
 )
-import asyncio
-import os
-import sys
-
-import pytest
 
 # Add paths for imports
 sys.path.insert(0, "/home/runner/work/SynergyMesh/SynergyMesh")
@@ -121,7 +121,9 @@ class TestAIDecisionEngine:
         """Test outcome prediction"""
         current_state = {"success_rate": 0.95, "error_rate": 0.02, "performance": 0.8}
 
-        prediction = await engine.predict_outcome(current_state, prediction_type="system_health")
+        prediction = await engine.predict_outcome(
+            current_state, prediction_type="system_health"
+        )
 
         assert prediction.prediction_id.startswith("pred-")
         assert 0 <= prediction.probability <= 1
@@ -133,7 +135,11 @@ class TestAIDecisionEngine:
         # Make a decision first
         async def make_and_record():
             context = DecisionContext(context_id="ctx-3", domain="test")
-            options = [DecisionOption(option_id="opt-1", name="Test", description="Test option")]
+            options = [
+                DecisionOption(
+                    option_id="opt-1", name="Test", description="Test option"
+                )
+            ]
             decision = await engine.make_decision(context, options)
 
             engine.record_outcome(decision.decision_id, success=True)

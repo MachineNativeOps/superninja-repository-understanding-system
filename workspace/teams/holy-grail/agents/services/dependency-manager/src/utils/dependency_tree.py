@@ -82,7 +82,9 @@ class DependencyTree:
         logger.info(f"初始化依賴樹: {project_name}")
 
     def build_tree(
-        self, dependencies: list[Dependency], parent_map: dict[str, list[str]] | None = None
+        self,
+        dependencies: list[Dependency],
+        parent_map: dict[str, list[str]] | None = None,
     ) -> None:
         """
         建構依賴樹
@@ -210,7 +212,9 @@ class DependencyTree:
         child_prefix = prefix + ("    " if is_last else "│   ")
         for i, child in enumerate(node.children):
             child_is_last = i == len(node.children) - 1
-            lines.extend(self._render_node(child, child_prefix, child_is_last, show_risk))
+            lines.extend(
+                self._render_node(child, child_prefix, child_is_last, show_risk)
+            )
 
         return lines
 

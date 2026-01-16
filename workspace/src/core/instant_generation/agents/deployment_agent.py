@@ -36,14 +36,18 @@ class DeploymentAgent(BaseAgent):
 
         try:
             # 提取相關數據
-            code_generation = task.input_data.get("code_generation", {}).get("output_data", {})
+            code_generation = task.input_data.get("code_generation", {}).get(
+                "output_data", {}
+            )
             testing = task.input_data.get("testing", {}).get("output_data", {})
             architecture_design = task.input_data.get("architecture_design", {}).get(
                 "output_data", {}
             )
 
             # 確定部署策略
-            deployment_strategy = self._determine_deployment_strategy(architecture_design)
+            deployment_strategy = self._determine_deployment_strategy(
+                architecture_design
+            )
 
             # 生成部署配置
             deployment_config = await self.deployment_strategies[deployment_strategy](
@@ -56,13 +60,19 @@ class DeploymentAgent(BaseAgent):
             )
 
             # 設置監控和日誌
-            monitoring_setup = await self._setup_monitoring(deployment_config, architecture_design)
+            monitoring_setup = await self._setup_monitoring(
+                deployment_config, architecture_design
+            )
 
             # 配置CI/CD管道
-            cicd_pipeline = await self._configure_cicd_pipeline(deployment_config, testing)
+            cicd_pipeline = await self._configure_cicd_pipeline(
+                deployment_config, testing
+            )
 
             # 生成部署腳本
-            deployment_scripts = await self._generate_deployment_scripts(deployment_config)
+            deployment_scripts = await self._generate_deployment_scripts(
+                deployment_config
+            )
 
             # 創建部署清單
             deployment_manifest = await self._create_deployment_manifest(
@@ -84,7 +94,9 @@ class DeploymentAgent(BaseAgent):
                     "cicd_pipeline": cicd_pipeline,
                     "deployment_scripts": deployment_scripts,
                     "deployment_manifest": deployment_manifest,
-                    "estimated_deployment_time": self._estimate_deployment_time(deployment_config),
+                    "estimated_deployment_time": self._estimate_deployment_time(
+                        deployment_config
+                    ),
                     "resource_requirements": self._calculate_resource_requirements(
                         deployment_config
                     ),
@@ -205,7 +217,11 @@ class DeploymentAgent(BaseAgent):
                 "application": "Custom metrics",
                 "infrastructure": "Node Exporter",
             },
-            "logging": {"framework": "ELK Stack", "log_level": "INFO", "retention": "30 days"},
+            "logging": {
+                "framework": "ELK Stack",
+                "log_level": "INFO",
+                "retention": "30 days",
+            },
             "alerting": {
                 "tool": "Grafana + Alertmanager",
                 "channels": ["email", "slack"],
@@ -224,8 +240,15 @@ class DeploymentAgent(BaseAgent):
             "stages": [
                 {"name": "lint", "commands": ["npm run lint", "flake8 ."]},
                 {"name": "test", "commands": ["npm test", "pytest"]},
-                {"name": "build", "commands": ["npm run build", "docker build -t app ."]},
-                {"name": "deploy", "commands": ["docker-compose up -d"], "environment": "staging"},
+                {
+                    "name": "build",
+                    "commands": ["npm run build", "docker build -t app ."],
+                },
+                {
+                    "name": "deploy",
+                    "commands": ["docker-compose up -d"],
+                    "environment": "staging",
+                },
             ],
             "artifacts": ["build/", "dist/", "coverage/"],
             "notifications": ["slack", "email"],
@@ -244,7 +267,10 @@ class DeploymentAgent(BaseAgent):
         }
 
     async def _create_deployment_manifest(
-        self, config: Dict[str, Any], env_configs: Dict[str, str], monitoring: Dict[str, Any]
+        self,
+        config: Dict[str, Any],
+        env_configs: Dict[str, str],
+        monitoring: Dict[str, Any],
     ) -> Dict[str, Any]:
         """創建部署清單"""
         return {
@@ -259,7 +285,11 @@ class DeploymentAgent(BaseAgent):
                 "frontend": "/",
                 "database": "connection_check",
             },
-            "rollback_plan": {"enabled": True, "retention": "3_versions", "automatic": False},
+            "rollback_plan": {
+                "enabled": True,
+                "retention": "3_versions",
+                "automatic": False,
+            },
             "scaling": {"min_replicas": 2, "max_replicas": 10, "target_cpu": 70},
         }
 
@@ -377,8 +407,18 @@ networks:
     def _generate_health_checks(self, components: Dict[str, Any]) -> Dict[str, Any]:
         """生成健康檢查"""
         return {
-            "backend": {"endpoint": "/health", "interval": "30s", "timeout": "10s", "retries": 3},
-            "frontend": {"endpoint": "/", "interval": "30s", "timeout": "5s", "retries": 3},
+            "backend": {
+                "endpoint": "/health",
+                "interval": "30s",
+                "timeout": "10s",
+                "retries": 3,
+            },
+            "frontend": {
+                "endpoint": "/",
+                "interval": "30s",
+                "timeout": "5s",
+                "retries": 3,
+            },
         }
 
     def _estimate_deployment_time(self, config: Dict[str, Any]) -> Dict[str, int]:
@@ -390,9 +430,16 @@ networks:
             "total_time_minutes": 6,
         }
 
-    def _calculate_resource_requirements(self, config: Dict[str, Any]) -> Dict[str, Any]:
+    def _calculate_resource_requirements(
+        self, config: Dict[str, Any]
+    ) -> Dict[str, Any]:
         """計算資源需求"""
-        return {"cpu": "2 cores", "memory": "4GB RAM", "storage": "20GB SSD", "network": "100Mbps"}
+        return {
+            "cpu": "2 cores",
+            "memory": "4GB RAM",
+            "storage": "20GB SSD",
+            "network": "100Mbps",
+        }
 
     # 配置文件生成方法
     def _generate_dev_env(self) -> str:

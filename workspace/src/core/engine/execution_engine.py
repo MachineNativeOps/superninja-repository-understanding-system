@@ -221,11 +221,15 @@ class ExecutionEngine:
 
             # 階段 2：執行前置處理
             for pre_processor in self._pre_processors:
-                await self._safe_call(pre_processor, action_type, action_params, context)
+                await self._safe_call(
+                    pre_processor, action_type, action_params, context
+                )
 
             # 階段 3：構建執行計劃
             result.status = ExecutionStatus.PLANNING
-            execution_plan = await self._build_execution_plan(action_type, action_params, context)
+            execution_plan = await self._build_execution_plan(
+                action_type, action_params, context
+            )
             result.steps_total = len(execution_plan.get("steps", []))
 
             # 階段 4：執行行動（或模擬執行）
@@ -233,7 +237,9 @@ class ExecutionEngine:
 
             if context.dry_run:
                 # 模擬執行
-                output = await self._simulate_execution(action_type, action_params, execution_plan)
+                output = await self._simulate_execution(
+                    action_type, action_params, execution_plan
+                )
             else:
                 # 實際執行
                 output = await self._execute_action(
@@ -245,7 +251,9 @@ class ExecutionEngine:
 
             # 階段 5：驗證執行結果
             result.status = ExecutionStatus.VERIFYING
-            verification = await self._verify_execution(action_type, action_params, output, context)
+            verification = await self._verify_execution(
+                action_type, action_params, output, context
+            )
             result.verification_passed = verification.get("passed", False)
             result.verification_details = verification
 
@@ -275,12 +283,16 @@ class ExecutionEngine:
             }
 
             # 記錄學習經驗
-            result.lessons_learned.append(f"Execution failed due to: {type(e).__name__}: {str(e)}")
+            result.lessons_learned.append(
+                f"Execution failed due to: {type(e).__name__}: {str(e)}"
+            )
 
         finally:
             # 記錄完成時間
             result.completed_at = datetime.now()
-            result.duration_ms = int((result.completed_at - started_at).total_seconds() * 1000)
+            result.duration_ms = int(
+                (result.completed_at - started_at).total_seconds() * 1000
+            )
 
             # 更新統計
             self._update_stats(result)
@@ -291,7 +303,10 @@ class ExecutionEngine:
         return result
 
     async def _validate_capability(
-        self, action_type: ActionType, action_params: Dict[str, Any], context: ExecutionContext
+        self,
+        action_type: ActionType,
+        action_params: Dict[str, Any],
+        context: ExecutionContext,
     ) -> bool:
         """驗證執行能力 - 確保我們真的能執行這個行動"""
 
@@ -300,7 +315,9 @@ class ExecutionEngine:
             raise ValueError(f"No executor registered for action type: {action_type}")
 
         # 檢查權限
-        required_permissions = self._get_required_permissions(action_type, action_params)
+        required_permissions = self._get_required_permissions(
+            action_type, action_params
+        )
         for perm in required_permissions:
             if perm not in context.permissions:
                 raise PermissionError(f"Missing required permission: {perm}")
@@ -321,7 +338,10 @@ class ExecutionEngine:
         return True
 
     async def _build_execution_plan(
-        self, action_type: ActionType, action_params: Dict[str, Any], context: ExecutionContext
+        self,
+        action_type: ActionType,
+        action_params: Dict[str, Any],
+        context: ExecutionContext,
     ) -> Dict[str, Any]:
         """構建執行計劃"""
 
@@ -596,7 +616,10 @@ class ExecutionEngine:
         return await executor(action_params, context, execution_plan)
 
     async def _simulate_execution(
-        self, action_type: ActionType, action_params: Dict[str, Any], execution_plan: Dict[str, Any]
+        self,
+        action_type: ActionType,
+        action_params: Dict[str, Any],
+        execution_plan: Dict[str, Any],
     ) -> Dict[str, Any]:
         """模擬執行（Dry Run）"""
 
@@ -701,7 +724,9 @@ class ExecutionEngine:
 
         return rollback_result
 
-    async def _execute_rollback_step(self, step: Dict[str, Any], context: ExecutionContext):
+    async def _execute_rollback_step(
+        self, step: Dict[str, Any], context: ExecutionContext
+    ):
         """執行單個回滾步驟"""
         # 模擬回滾執行
         await asyncio.sleep(0.01)
@@ -900,7 +925,9 @@ class ExecutionEngine:
         """註冊連接器"""
         self._connectors[name] = connector
 
-    def register_capability_validator(self, action_type: ActionType, validator: Callable):
+    def register_capability_validator(
+        self, action_type: ActionType, validator: Callable
+    ):
         """註冊能力驗證器"""
         self._capability_validators[action_type] = validator
 

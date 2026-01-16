@@ -38,7 +38,10 @@ class DependencyAnalyzer:
 
     # 14 Governance Dimensions
     DIMENSIONS = {
-        "governance-architecture": ["identity-tenancy-governance", "security-governance"],
+        "governance-architecture": [
+            "identity-tenancy-governance",
+            "security-governance",
+        ],
         "decision-governance": ["governance-architecture"],
         "change-governance": ["decision-governance", "risk-governance"],
         "risk-governance": ["decision-governance"],
@@ -56,7 +59,11 @@ class DependencyAnalyzer:
 
     # 9 Meta-Governance Domains
     META_DOMAINS = {
-        "architecture-governance": ["identity-tenancy-governance", "security-governance", "common"],
+        "architecture-governance": [
+            "identity-tenancy-governance",
+            "security-governance",
+            "common",
+        ],
         "api-governance": [
             "docs-governance",
             "security-governance",
@@ -219,7 +226,9 @@ class DependencyAnalyzer:
                 critical.append(entity)
 
         return sorted(
-            critical, key=lambda e: len(self.dependency_graph[e].dependents), reverse=True
+            critical,
+            key=lambda e: len(self.dependency_graph[e].dependents),
+            reverse=True,
         )
 
     def _get_initialization_order(self) -> Dict[int, List[str]]:

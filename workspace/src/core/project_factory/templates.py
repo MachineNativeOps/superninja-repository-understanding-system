@@ -117,7 +117,9 @@ class TemplateEngine:
         template = Template(template_string)
         return template.render(**context)
 
-    def _get_fallback_template(self, template_path: str, context: Dict[str, Any]) -> str:
+    def _get_fallback_template(
+        self, template_path: str, context: Dict[str, Any]
+    ) -> str:
         """
         Get fallback content when template is missing.
 
@@ -151,7 +153,9 @@ class TemplateEngine:
 
         for template_file in self.template_dir.rglob("*.j2"):
             relative_path = template_file.relative_to(self.template_dir)
-            category = str(relative_path.parts[0]) if relative_path.parts else "uncategorized"
+            category = (
+                str(relative_path.parts[0]) if relative_path.parts else "uncategorized"
+            )
 
             if category not in templates:
                 templates[category] = []

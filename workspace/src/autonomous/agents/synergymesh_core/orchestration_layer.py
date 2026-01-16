@@ -280,7 +280,10 @@ class IntentUnderstandingEngine:
             entities["target"] = target_match.group(1)
 
         # Extract system names
-        system_patterns = [r"(\w+)\s*(?:system|系統)", r"(\w+)\s*(?:database|資料庫|db)"]
+        system_patterns = [
+            r"(\w+)\s*(?:system|系統)",
+            r"(\w+)\s*(?:database|資料庫|db)",
+        ]
 
         for pattern in system_patterns:
             match = re.search(pattern, text_lower)
@@ -387,7 +390,10 @@ class IntentUnderstandingEngine:
             "intents_parsed": self.stats["intents_parsed"],
             "successful_parses": self.stats["successful_parses"],
             "success_rate": round(
-                self.stats["successful_parses"] / max(self.stats["intents_parsed"], 1) * 100, 2
+                self.stats["successful_parses"]
+                / max(self.stats["intents_parsed"], 1)
+                * 100,
+                2,
             ),
             "intent_distribution": self.stats["intent_distribution"],
             "active_contexts": len(self.context_memories),
@@ -412,13 +418,19 @@ class TaskOrchestrationEngine:
     WORKFLOW_TEMPLATES = {
         TaskType.DATA_MIGRATION: [
             {"name": "Analyze Source", "description": "Analyze source data structure"},
-            {"name": "Validate Target", "description": "Validate target system compatibility"},
+            {
+                "name": "Validate Target",
+                "description": "Validate target system compatibility",
+            },
             {"name": "Generate Scripts", "description": "Generate migration scripts"},
             {"name": "Execute Migration", "description": "Execute data migration"},
             {"name": "Verify Data", "description": "Verify data integrity"},
         ],
         TaskType.DATA_SYNC: [
-            {"name": "Configure Sync", "description": "Configure synchronization settings"},
+            {
+                "name": "Configure Sync",
+                "description": "Configure synchronization settings",
+            },
             {"name": "Initial Sync", "description": "Perform initial data sync"},
             {"name": "Setup Monitoring", "description": "Setup continuous monitoring"},
         ],
@@ -474,7 +486,8 @@ class TaskOrchestrationEngine:
 
         # Get template for task type
         template = self.WORKFLOW_TEMPLATES.get(
-            intent.task_type, [{"name": "Execute", "description": "Execute custom task"}]
+            intent.task_type,
+            [{"name": "Execute", "description": "Execute custom task"}],
         )
 
         # Generate steps from template
@@ -486,7 +499,10 @@ class TaskOrchestrationEngine:
                 description=step_template["description"],
                 task_type=intent.task_type,
                 dependencies=[f"step-{i}"] if i > 0 else [],
-                parameters={"entities": intent.entities, "constraints": intent.constraints},
+                parameters={
+                    "entities": intent.entities,
+                    "constraints": intent.constraints,
+                },
             )
             steps.append(step)
 
@@ -550,7 +566,11 @@ class TaskOrchestrationEngine:
             workflow.completed_at = datetime.now()
             self.stats["workflows_completed"] += 1
 
-            return {"workflow_id": workflow_id, "status": "completed", "results": results}
+            return {
+                "workflow_id": workflow_id,
+                "status": "completed",
+                "results": results,
+            }
 
         except Exception as e:
             workflow.status = WorkflowStatus.FAILED
@@ -586,11 +606,16 @@ class TaskOrchestrationEngine:
             "name": workflow.name,
             "status": workflow.status.value,
             "steps": [
-                {"step_id": s.step_id, "name": s.name, "status": s.status} for s in workflow.steps
+                {"step_id": s.step_id, "name": s.name, "status": s.status}
+                for s in workflow.steps
             ],
             "created_at": workflow.created_at.isoformat(),
-            "started_at": workflow.started_at.isoformat() if workflow.started_at else None,
-            "completed_at": workflow.completed_at.isoformat() if workflow.completed_at else None,
+            "started_at": (
+                workflow.started_at.isoformat() if workflow.started_at else None
+            ),
+            "completed_at": (
+                workflow.completed_at.isoformat() if workflow.completed_at else None
+            ),
         }
 
     def get_statistics(self) -> Dict[str, Any]:
@@ -601,7 +626,10 @@ class TaskOrchestrationEngine:
             "workflows_failed": self.stats["workflows_failed"],
             "steps_executed": self.stats["steps_executed"],
             "success_rate": round(
-                self.stats["workflows_completed"] / max(self.stats["workflows_created"], 1) * 100, 2
+                self.stats["workflows_completed"]
+                / max(self.stats["workflows_created"], 1)
+                * 100,
+                2,
             ),
             "active_workflows": len(
                 [

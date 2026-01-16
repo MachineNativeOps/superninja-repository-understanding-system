@@ -3,17 +3,17 @@
 Phase 2 Tests - Analyzers and Utils
 """
 
-from utils.dependency_tree import DependencyTree, RiskLevel
-from utils.audit_logger import AuditEventType, AuditLogger, AuditSeverity
-from models.dependency import Dependency, DependencyType, Ecosystem
-from analyzers.pip_analyzer import PipAnalyzer
-from analyzers.go_analyzer import GoAnalyzer
 import os
 import sys
 import tempfile
 from pathlib import Path
 
 import pytest
+from analyzers.go_analyzer import GoAnalyzer
+from analyzers.pip_analyzer import PipAnalyzer
+from models.dependency import Dependency, DependencyType, Ecosystem
+from utils.audit_logger import AuditEventType, AuditLogger, AuditSeverity
+from utils.dependency_tree import DependencyTree, RiskLevel
 
 # 添加 src 目錄到路徑
 sys.path.insert(0, str(Path(__file__).parent.parent / "src"))
@@ -87,7 +87,9 @@ class TestPipAnalyzer:
 
         assert analyzer._extract_poetry_version("^1.0.0") == "1.0.0"
         assert analyzer._extract_poetry_version({"version": "^2.0.0"}) == "2.0.0"
-        assert analyzer._extract_poetry_version({"git": "https://github.com/..."}) == "git"
+        assert (
+            analyzer._extract_poetry_version({"git": "https://github.com/..."}) == "git"
+        )
         assert analyzer._extract_poetry_version("*") == "*"
 
 
@@ -99,7 +101,9 @@ class TestGoAnalyzer:
         analyzer = GoAnalyzer()
 
         assert analyzer._clean_version("v1.0.0") == "1.0.0"
-        assert analyzer._clean_version("v0.0.0-20210101-abcdef") == "0.0.0-20210101-abcdef"
+        assert (
+            analyzer._clean_version("v0.0.0-20210101-abcdef") == "0.0.0-20210101-abcdef"
+        )
         assert analyzer._clean_version("1.2.3") == "1.2.3"
 
     def test_parse_require_line(self):
@@ -166,8 +170,12 @@ class TestDependencyTree:
         tree = DependencyTree("test-project")
 
         deps = [
-            Dependency(name="express", current_version="4.18.0", ecosystem=Ecosystem.NPM),
-            Dependency(name="lodash", current_version="4.17.21", ecosystem=Ecosystem.NPM),
+            Dependency(
+                name="express", current_version="4.18.0", ecosystem=Ecosystem.NPM
+            ),
+            Dependency(
+                name="lodash", current_version="4.17.21", ecosystem=Ecosystem.NPM
+            ),
         ]
 
         tree.build_tree(deps)
@@ -207,7 +215,9 @@ class TestDependencyTree:
         tree = DependencyTree("test-project")
 
         deps = [
-            Dependency(name="express", current_version="4.18.0", ecosystem=Ecosystem.NPM),
+            Dependency(
+                name="express", current_version="4.18.0", ecosystem=Ecosystem.NPM
+            ),
         ]
 
         tree.build_tree(deps)
@@ -253,7 +263,9 @@ class TestAuditLogger:
         audit = AuditLogger()
 
         event = audit.log(
-            event_type=AuditEventType.ANALYSIS_STARTED, target="test-project", details="開始分析"
+            event_type=AuditEventType.ANALYSIS_STARTED,
+            target="test-project",
+            details="開始分析",
         )
 
         assert event.event_type == AuditEventType.ANALYSIS_STARTED

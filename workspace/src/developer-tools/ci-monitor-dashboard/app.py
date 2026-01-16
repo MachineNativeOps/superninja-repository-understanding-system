@@ -73,7 +73,9 @@ class CIMonitorDashboard:
             return {
                 "github": {
                     "token": os.getenv("GITHUB_TOKEN"),
-                    "repo": os.getenv("GITHUB_REPO", "MachineNativeOps/MachineNativeOps"),
+                    "repo": os.getenv(
+                        "GITHUB_REPO", "MachineNativeOps/MachineNativeOps"
+                    ),
                 },
                 "redis": {
                     "host": os.getenv("REDIS_HOST", "localhost"),
@@ -113,13 +115,18 @@ class CIMonitorDashboard:
             __name__,
             external_stylesheets=[dbc.themes.BOOTSTRAP, dbc.icons.BOOTSTRAP],
             title=self.config["dashboard"]["title"],
-            meta_tags=[{"name": "viewport", "content": "width=device-width, initial-scale=1"}],
+            meta_tags=[
+                {"name": "viewport", "content": "width=device-width, initial-scale=1"}
+            ],
         )
 
         # 設置應用配置
         app.config.suppress_callback_exceptions = True
         app.config.update(
-            {"requests_pathname_prefix": "/ci-monitor/", "routes_pathname_prefix": "/ci-monitor/"}
+            {
+                "requests_pathname_prefix": "/ci-monitor/",
+                "routes_pathname_prefix": "/ci-monitor/",
+            }
         )
 
         return app
@@ -232,7 +239,9 @@ class CIMonitorDashboard:
                     "test_passed": int(cached_data.get("test_passed", 0)),
                     "coverage_percent": float(cached_data.get("coverage_percent", 0.0)),
                     "security_issues": int(cached_data.get("security_issues", 0)),
-                    "code_quality_score": float(cached_data.get("code_quality_score", 0.0)),
+                    "code_quality_score": float(
+                        cached_data.get("code_quality_score", 0.0)
+                    ),
                 }
         except Exception as e:
             print(f"從緩存獲取指標失敗: {e}")
@@ -264,7 +273,10 @@ class CIMonitorDashboard:
                     ]
                 ),
                 # 總覽卡片
-                dbc.Row([dbc.Col([self._create_overview_cards()], width=12)], className="mb-4"),
+                dbc.Row(
+                    [dbc.Col([self._create_overview_cards()], width=12)],
+                    className="mb-4",
+                ),
                 # 圖表區域
                 dbc.Row(
                     [
@@ -272,7 +284,8 @@ class CIMonitorDashboard:
                         dbc.Col(
                             [
                                 dcc.Graph(
-                                    id="status-distribution-chart", config={"displayModeBar": False}
+                                    id="status-distribution-chart",
+                                    config={"displayModeBar": False},
                                 )
                             ],
                             width=4,
@@ -281,7 +294,8 @@ class CIMonitorDashboard:
                         dbc.Col(
                             [
                                 dcc.Graph(
-                                    id="duration-trend-chart", config={"displayModeBar": False}
+                                    id="duration-trend-chart",
+                                    config={"displayModeBar": False},
                                 )
                             ],
                             width=8,
@@ -296,21 +310,30 @@ class CIMonitorDashboard:
                         dbc.Col(
                             [
                                 dcc.Graph(
-                                    id="coverage-trend-chart", config={"displayModeBar": False}
+                                    id="coverage-trend-chart",
+                                    config={"displayModeBar": False},
                                 )
                             ],
                             width=6,
                         ),
                         # 代碼品質評分
                         dbc.Col(
-                            [dcc.Graph(id="quality-score-chart", config={"displayModeBar": False})],
+                            [
+                                dcc.Graph(
+                                    id="quality-score-chart",
+                                    config={"displayModeBar": False},
+                                )
+                            ],
                             width=6,
                         ),
                     ],
                     className="mb-4",
                 ),
                 # 流水線詳細表格
-                dbc.Row([dbc.Col([self._create_pipeline_table()], width=12)], className="mb-4"),
+                dbc.Row(
+                    [dbc.Col([self._create_pipeline_table()], width=12)],
+                    className="mb-4",
+                ),
                 # 自動刷新間隔
                 dcc.Interval(
                     id="interval-component",
@@ -339,12 +362,15 @@ class CIMonitorDashboard:
                                                 html.I(
                                                     className="bi bi-check-circle me-2 text-success"
                                                 ),
-                                                html.Span("成功率", id="success-rate-value"),
+                                                html.Span(
+                                                    "成功率", id="success-rate-value"
+                                                ),
                                             ],
                                             className="card-title",
                                         ),
                                         html.P(
-                                            "過去7天流水線成功率", className="card-text text-muted"
+                                            "過去7天流水線成功率",
+                                            className="card-text text-muted",
                                         ),
                                     ]
                                 )
@@ -363,12 +389,19 @@ class CIMonitorDashboard:
                                     [
                                         html.H4(
                                             [
-                                                html.I(className="bi bi-clock me-2 text-info"),
-                                                html.Span("0分鐘", id="avg-duration-value"),
+                                                html.I(
+                                                    className="bi bi-clock me-2 text-info"
+                                                ),
+                                                html.Span(
+                                                    "0分鐘", id="avg-duration-value"
+                                                ),
                                             ],
                                             className="card-title",
                                         ),
-                                        html.P("平均執行時間", className="card-text text-muted"),
+                                        html.P(
+                                            "平均執行時間",
+                                            className="card-text text-muted",
+                                        ),
                                     ]
                                 )
                             ],
@@ -389,12 +422,15 @@ class CIMonitorDashboard:
                                                 html.I(
                                                     className="bi bi-lightning me-2 text-warning"
                                                 ),
-                                                html.Span("0", id="active-pipelines-value"),
+                                                html.Span(
+                                                    "0", id="active-pipelines-value"
+                                                ),
                                             ],
                                             className="card-title",
                                         ),
                                         html.P(
-                                            "正在運行的流水線", className="card-text text-muted"
+                                            "正在運行的流水線",
+                                            className="card-text text-muted",
                                         ),
                                     ]
                                 )
@@ -416,12 +452,15 @@ class CIMonitorDashboard:
                                                 html.I(
                                                     className="bi bi-shield-exclamation me-2 text-danger"
                                                 ),
-                                                html.Span("0", id="security-issues-value"),
+                                                html.Span(
+                                                    "0", id="security-issues-value"
+                                                ),
                                             ],
                                             className="card-title",
                                         ),
                                         html.P(
-                                            "待解決的安全問題", className="card-text text-muted"
+                                            "待解決的安全問題",
+                                            className="card-text text-muted",
                                         ),
                                     ]
                                 )
@@ -474,8 +513,12 @@ class CIMonitorDashboard:
                 seven_days_ago = datetime.now() - timedelta(days=7)
                 recent_metrics = [m for m in metrics if m.timestamp > seven_days_ago]
 
-                success_count = sum(1 for m in recent_metrics if m.status == PipelineStatus.SUCCESS)
-                success_rate = (success_count / len(recent_metrics) * 100) if recent_metrics else 0
+                success_count = sum(
+                    1 for m in recent_metrics if m.status == PipelineStatus.SUCCESS
+                )
+                success_rate = (
+                    (success_count / len(recent_metrics) * 100) if recent_metrics else 0
+                )
 
                 # 計算平均執行時間
                 completed_metrics = [m for m in metrics if m.duration > 0]
@@ -486,7 +529,9 @@ class CIMonitorDashboard:
                 )
 
                 # 計算活躍流水線數
-                active_count = sum(1 for m in metrics if m.status == PipelineStatus.RUNNING)
+                active_count = sum(
+                    1 for m in metrics if m.status == PipelineStatus.RUNNING
+                )
 
                 # 計算安全問題總數
                 security_issues = sum(m.security_issues for m in metrics)
@@ -502,7 +547,8 @@ class CIMonitorDashboard:
                 return [[], "0%", "0分鐘", "0", "0"]
 
         @self.app.callback(
-            Output("status-distribution-chart", "figure"), [Input("pipeline-data-store", "data")]
+            Output("status-distribution-chart", "figure"),
+            [Input("pipeline-data-store", "data")],
         )
         def update_status_distribution(data):
             """更新狀態分佈圖"""
@@ -522,7 +568,13 @@ class CIMonitorDashboard:
                         labels=list(status_counts.keys()),
                         values=list(status_counts.values()),
                         hole=0.3,
-                        marker_colors=["#28a745", "#dc3545", "#ffc107", "#17a2b8", "#6c757d"],
+                        marker_colors=[
+                            "#28a745",
+                            "#dc3545",
+                            "#ffc107",
+                            "#17a2b8",
+                            "#6c757d",
+                        ],
                     )
                 ]
             )
@@ -534,7 +586,8 @@ class CIMonitorDashboard:
             return fig
 
         @self.app.callback(
-            Output("duration-trend-chart", "figure"), [Input("pipeline-data-store", "data")]
+            Output("duration-trend-chart", "figure"),
+            [Input("pipeline-data-store", "data")],
         )
         def update_duration_trend(data):
             """更新執行時間趨勢圖"""
@@ -583,7 +636,8 @@ class CIMonitorDashboard:
             return fig
 
         @self.app.callback(
-            Output("coverage-trend-chart", "figure"), [Input("pipeline-data-store", "data")]
+            Output("coverage-trend-chart", "figure"),
+            [Input("pipeline-data-store", "data")],
         )
         def update_coverage_trend(data):
             """更新測試覆蓋率趨勢"""
@@ -621,7 +675,9 @@ class CIMonitorDashboard:
             )
 
             # 添加目標線
-            fig.add_hline(y=80, line_dash="dash", line_color="red", annotation_text="目標: 80%")
+            fig.add_hline(
+                y=80, line_dash="dash", line_color="red", annotation_text="目標: 80%"
+            )
 
             fig.update_layout(
                 title="測試覆蓋率趨勢",
@@ -636,7 +692,8 @@ class CIMonitorDashboard:
             return fig
 
         @self.app.callback(
-            Output("quality-score-chart", "figure"), [Input("pipeline-data-store", "data")]
+            Output("quality-score-chart", "figure"),
+            [Input("pipeline-data-store", "data")],
         )
         def update_quality_score(data):
             """更新代碼品質評分圖"""
@@ -659,7 +716,8 @@ class CIMonitorDashboard:
 
             # 計算平均值
             avg_scores = {
-                name: sum(scores) / len(scores) for name, scores in pipeline_scores.items()
+                name: sum(scores) / len(scores)
+                for name, scores in pipeline_scores.items()
             }
 
             names = list(avg_scores.keys())
@@ -694,7 +752,8 @@ class CIMonitorDashboard:
             return fig
 
         @self.app.callback(
-            Output("pipeline-table-container", "children"), [Input("pipeline-data-store", "data")]
+            Output("pipeline-table-container", "children"),
+            [Input("pipeline-data-store", "data")],
         )
         def update_pipeline_table(data):
             """更新流水線表格"""
@@ -702,7 +761,9 @@ class CIMonitorDashboard:
                 return html.P("暫無數據", className="text-center text-muted")
 
             # 按時間倒序排列
-            sorted_data = sorted(data, key=lambda x: x["timestamp"], reverse=True)[:10]  # 最近10條
+            sorted_data = sorted(data, key=lambda x: x["timestamp"], reverse=True)[
+                :10
+            ]  # 最近10條
 
             # 創建表格數據
             table_data = []
@@ -721,7 +782,9 @@ class CIMonitorDashboard:
                             else "-"
                         ),
                         html.Td(
-                            metric["security_issues"] if metric["security_issues"] > 0 else "-"
+                            metric["security_issues"]
+                            if metric["security_issues"] > 0
+                            else "-"
                         ),
                         html.Td(
                             datetime.fromisoformat(
@@ -814,7 +877,9 @@ def main():
     parser.add_argument("--host", default="0.0.0.0", help="主機地址")
     parser.add_argument("--port", type=int, default=8050, help="端口號")
     parser.add_argument("--debug", action="store_true", help="調試模式")
-    parser.add_argument("--config", default="config/ci-monitor-config.yaml", help="配置文件路徑")
+    parser.add_argument(
+        "--config", default="config/ci-monitor-config.yaml", help="配置文件路徑"
+    )
 
     args = parser.parse_args()
 

@@ -23,7 +23,9 @@ class TestKnowledgeBase:
         """Test knowledge base initializes with built-in knowledge."""
         import sys
 
-        sys.path.insert(0, "/home/runner/work/SynergyMesh/SynergyMesh/core/training_system")
+        sys.path.insert(
+            0, "/home/runner/work/SynergyMesh/SynergyMesh/core/training_system"
+        )
         from knowledge_base import KnowledgeBase, KnowledgeCategory
 
         kb = KnowledgeBase()
@@ -39,7 +41,9 @@ class TestKnowledgeBase:
         """Test retrieving a concept."""
         import sys
 
-        sys.path.insert(0, "/home/runner/work/SynergyMesh/SynergyMesh/core/training_system")
+        sys.path.insert(
+            0, "/home/runner/work/SynergyMesh/SynergyMesh/core/training_system"
+        )
         from knowledge_base import KnowledgeBase
 
         kb = KnowledgeBase()
@@ -53,20 +57,26 @@ class TestKnowledgeBase:
         """Test retrieving a best practice."""
         import sys
 
-        sys.path.insert(0, "/home/runner/work/SynergyMesh/SynergyMesh/core/training_system")
+        sys.path.insert(
+            0, "/home/runner/work/SynergyMesh/SynergyMesh/core/training_system"
+        )
         from knowledge_base import KnowledgeBase
 
         kb = KnowledgeBase()
         practice = kb.get_best_practice("use_transactions")
 
         assert practice is not None
-        assert "事務" in practice.principle or "transaction" in practice.principle.lower()
+        assert (
+            "事務" in practice.principle or "transaction" in practice.principle.lower()
+        )
 
     def test_get_anti_pattern(self):
         """Test retrieving an anti-pattern."""
         import sys
 
-        sys.path.insert(0, "/home/runner/work/SynergyMesh/SynergyMesh/core/training_system")
+        sys.path.insert(
+            0, "/home/runner/work/SynergyMesh/SynergyMesh/core/training_system"
+        )
         from knowledge_base import KnowledgeBase
 
         kb = KnowledgeBase()
@@ -80,7 +90,9 @@ class TestKnowledgeBase:
         """Test searching concepts."""
         import sys
 
-        sys.path.insert(0, "/home/runner/work/SynergyMesh/SynergyMesh/core/training_system")
+        sys.path.insert(
+            0, "/home/runner/work/SynergyMesh/SynergyMesh/core/training_system"
+        )
         from knowledge_base import KnowledgeBase
 
         kb = KnowledgeBase()
@@ -92,7 +104,9 @@ class TestKnowledgeBase:
         """Test getting relevant knowledge for a context."""
         import sys
 
-        sys.path.insert(0, "/home/runner/work/SynergyMesh/SynergyMesh/core/training_system")
+        sys.path.insert(
+            0, "/home/runner/work/SynergyMesh/SynergyMesh/core/training_system"
+        )
         from knowledge_base import KnowledgeBase
 
         kb = KnowledgeBase()
@@ -106,7 +120,9 @@ class TestKnowledgeBase:
         """Test adding a new concept."""
         import sys
 
-        sys.path.insert(0, "/home/runner/work/SynergyMesh/SynergyMesh/core/training_system")
+        sys.path.insert(
+            0, "/home/runner/work/SynergyMesh/SynergyMesh/core/training_system"
+        )
         from knowledge_base import ConceptDefinition, KnowledgeBase, KnowledgeCategory
 
         kb = KnowledgeBase()
@@ -130,7 +146,9 @@ class TestKnowledgeBase:
         """Test getting domain knowledge."""
         import sys
 
-        sys.path.insert(0, "/home/runner/work/SynergyMesh/SynergyMesh/core/training_system")
+        sys.path.insert(
+            0, "/home/runner/work/SynergyMesh/SynergyMesh/core/training_system"
+        )
         from knowledge_base import KnowledgeBase, KnowledgeCategory
 
         kb = KnowledgeBase()
@@ -152,7 +170,9 @@ class TestSkillsTraining:
         """Test training system initializes with built-in content."""
         import sys
 
-        sys.path.insert(0, "/home/runner/work/SynergyMesh/SynergyMesh/core/training_system")
+        sys.path.insert(
+            0, "/home/runner/work/SynergyMesh/SynergyMesh/core/training_system"
+        )
         from skills_training import SkillsTrainingSystem
 
         system = SkillsTrainingSystem()
@@ -166,7 +186,9 @@ class TestSkillsTraining:
         """Test retrieving a skill."""
         import sys
 
-        sys.path.insert(0, "/home/runner/work/SynergyMesh/SynergyMesh/core/training_system")
+        sys.path.insert(
+            0, "/home/runner/work/SynergyMesh/SynergyMesh/core/training_system"
+        )
         from skills_training import SkillLevel, SkillsTrainingSystem
 
         system = SkillsTrainingSystem()
@@ -180,7 +202,9 @@ class TestSkillsTraining:
         """Test retrieving a training module."""
         import sys
 
-        sys.path.insert(0, "/home/runner/work/SynergyMesh/SynergyMesh/core/training_system")
+        sys.path.insert(
+            0, "/home/runner/work/SynergyMesh/SynergyMesh/core/training_system"
+        )
         from skills_training import SkillsTrainingSystem
 
         system = SkillsTrainingSystem()
@@ -194,7 +218,9 @@ class TestSkillsTraining:
         """Test starting a training session."""
         import sys
 
-        sys.path.insert(0, "/home/runner/work/SynergyMesh/SynergyMesh/core/training_system")
+        sys.path.insert(
+            0, "/home/runner/work/SynergyMesh/SynergyMesh/core/training_system"
+        )
         from skills_training import SkillsTrainingSystem
 
         system = SkillsTrainingSystem()
@@ -210,7 +236,9 @@ class TestSkillsTraining:
         """Test submitting an exercise answer."""
         import sys
 
-        sys.path.insert(0, "/home/runner/work/SynergyMesh/SynergyMesh/core/training_system")
+        sys.path.insert(
+            0, "/home/runner/work/SynergyMesh/SynergyMesh/core/training_system"
+        )
         from skills_training import SkillsTrainingSystem
 
         system = SkillsTrainingSystem()
@@ -228,7 +256,9 @@ class TestSkillsTraining:
         """Test getting agent skill level."""
         import sys
 
-        sys.path.insert(0, "/home/runner/work/SynergyMesh/SynergyMesh/core/training_system")
+        sys.path.insert(
+            0, "/home/runner/work/SynergyMesh/SynergyMesh/core/training_system"
+        )
         from skills_training import SkillLevel, SkillsTrainingSystem
 
         system = SkillsTrainingSystem()
@@ -240,7 +270,9 @@ class TestSkillsTraining:
         """Test retrieving a learning path."""
         import sys
 
-        sys.path.insert(0, "/home/runner/work/SynergyMesh/SynergyMesh/core/training_system")
+        sys.path.insert(
+            0, "/home/runner/work/SynergyMesh/SynergyMesh/core/training_system"
+        )
         from skills_training import SkillsTrainingSystem
 
         system = SkillsTrainingSystem()
@@ -254,7 +286,9 @@ class TestSkillsTraining:
         """Test getting learning path progress."""
         import sys
 
-        sys.path.insert(0, "/home/runner/work/SynergyMesh/SynergyMesh/core/training_system")
+        sys.path.insert(
+            0, "/home/runner/work/SynergyMesh/SynergyMesh/core/training_system"
+        )
         from skills_training import SkillsTrainingSystem
 
         system = SkillsTrainingSystem()
@@ -268,7 +302,9 @@ class TestSkillsTraining:
         """Test getting recommended modules."""
         import sys
 
-        sys.path.insert(0, "/home/runner/work/SynergyMesh/SynergyMesh/core/training_system")
+        sys.path.insert(
+            0, "/home/runner/work/SynergyMesh/SynergyMesh/core/training_system"
+        )
         from skills_training import SkillsTrainingSystem
 
         system = SkillsTrainingSystem()
@@ -287,7 +323,9 @@ class TestExampleLibrary:
         """Test example library initializes with built-in examples."""
         import sys
 
-        sys.path.insert(0, "/home/runner/work/SynergyMesh/SynergyMesh/core/training_system")
+        sys.path.insert(
+            0, "/home/runner/work/SynergyMesh/SynergyMesh/core/training_system"
+        )
         from example_library import ExampleLibrary
 
         library = ExampleLibrary()
@@ -301,7 +339,9 @@ class TestExampleLibrary:
         """Test retrieving a code example."""
         import sys
 
-        sys.path.insert(0, "/home/runner/work/SynergyMesh/SynergyMesh/core/training_system")
+        sys.path.insert(
+            0, "/home/runner/work/SynergyMesh/SynergyMesh/core/training_system"
+        )
         from example_library import ExampleLibrary
 
         library = ExampleLibrary()
@@ -316,7 +356,9 @@ class TestExampleLibrary:
         """Test retrieving a scenario example."""
         import sys
 
-        sys.path.insert(0, "/home/runner/work/SynergyMesh/SynergyMesh/core/training_system")
+        sys.path.insert(
+            0, "/home/runner/work/SynergyMesh/SynergyMesh/core/training_system"
+        )
         from example_library import ExampleLibrary
 
         library = ExampleLibrary()
@@ -330,7 +372,9 @@ class TestExampleLibrary:
         """Test retrieving a decision example."""
         import sys
 
-        sys.path.insert(0, "/home/runner/work/SynergyMesh/SynergyMesh/core/training_system")
+        sys.path.insert(
+            0, "/home/runner/work/SynergyMesh/SynergyMesh/core/training_system"
+        )
         from example_library import ExampleLibrary
 
         library = ExampleLibrary()
@@ -344,7 +388,9 @@ class TestExampleLibrary:
         """Test searching examples."""
         import sys
 
-        sys.path.insert(0, "/home/runner/work/SynergyMesh/SynergyMesh/core/training_system")
+        sys.path.insert(
+            0, "/home/runner/work/SynergyMesh/SynergyMesh/core/training_system"
+        )
         from example_library import ExampleLibrary
 
         library = ExampleLibrary()
@@ -357,7 +403,9 @@ class TestExampleLibrary:
         """Test getting examples for a category."""
         import sys
 
-        sys.path.insert(0, "/home/runner/work/SynergyMesh/SynergyMesh/core/training_system")
+        sys.path.insert(
+            0, "/home/runner/work/SynergyMesh/SynergyMesh/core/training_system"
+        )
         from example_library import ExampleCategory, ExampleLibrary
 
         library = ExampleLibrary()
@@ -370,7 +418,9 @@ class TestExampleLibrary:
         """Test adding a code example."""
         import sys
 
-        sys.path.insert(0, "/home/runner/work/SynergyMesh/SynergyMesh/core/training_system")
+        sys.path.insert(
+            0, "/home/runner/work/SynergyMesh/SynergyMesh/core/training_system"
+        )
         from example_library import CodeExample, ExampleCategory, ExampleLibrary
 
         library = ExampleLibrary()
@@ -399,7 +449,9 @@ class TestVirtualExperts:
         """Test VirtualExpert base class."""
         import sys
 
-        sys.path.insert(0, "/home/runner/work/SynergyMesh/SynergyMesh/core/virtual_experts")
+        sys.path.insert(
+            0, "/home/runner/work/SynergyMesh/SynergyMesh/core/virtual_experts"
+        )
         from expert_base import ExpertKnowledge, ExpertPersonality, VirtualExpert
 
         expert = VirtualExpert(
@@ -418,7 +470,9 @@ class TestVirtualExperts:
         """Test expert self-introduction."""
         import sys
 
-        sys.path.insert(0, "/home/runner/work/SynergyMesh/SynergyMesh/core/virtual_experts")
+        sys.path.insert(
+            0, "/home/runner/work/SynergyMesh/SynergyMesh/core/virtual_experts"
+        )
         from domain_experts import DrAlexChen
 
         expert = DrAlexChen()
@@ -431,7 +485,9 @@ class TestVirtualExperts:
         """Test expert domain handling check."""
         import sys
 
-        sys.path.insert(0, "/home/runner/work/SynergyMesh/SynergyMesh/core/virtual_experts")
+        sys.path.insert(
+            0, "/home/runner/work/SynergyMesh/SynergyMesh/core/virtual_experts"
+        )
         from domain_experts import DrAlexChen, MarcusJohnson
 
         ai_expert = DrAlexChen()
@@ -445,7 +501,9 @@ class TestVirtualExperts:
         """Test expert providing guidance."""
         import sys
 
-        sys.path.insert(0, "/home/runner/work/SynergyMesh/SynergyMesh/core/virtual_experts")
+        sys.path.insert(
+            0, "/home/runner/work/SynergyMesh/SynergyMesh/core/virtual_experts"
+        )
         from domain_experts import MarcusJohnson
 
         expert = MarcusJohnson()
@@ -458,7 +516,9 @@ class TestVirtualExperts:
         """Test expert code review."""
         import sys
 
-        sys.path.insert(0, "/home/runner/work/SynergyMesh/SynergyMesh/core/virtual_experts")
+        sys.path.insert(
+            0, "/home/runner/work/SynergyMesh/SynergyMesh/core/virtual_experts"
+        )
         from domain_experts import MarcusJohnson
 
         expert = MarcusJohnson()
@@ -478,7 +538,9 @@ def save_password(password):
         """Test VirtualExpertTeam initialization."""
         import sys
 
-        sys.path.insert(0, "/home/runner/work/SynergyMesh/SynergyMesh/core/virtual_experts")
+        sys.path.insert(
+            0, "/home/runner/work/SynergyMesh/SynergyMesh/core/virtual_experts"
+        )
         from expert_team import VirtualExpertTeam
 
         team = VirtualExpertTeam()
@@ -491,7 +553,9 @@ def save_password(password):
         """Test listing all experts."""
         import sys
 
-        sys.path.insert(0, "/home/runner/work/SynergyMesh/SynergyMesh/core/virtual_experts")
+        sys.path.insert(
+            0, "/home/runner/work/SynergyMesh/SynergyMesh/core/virtual_experts"
+        )
         from expert_team import VirtualExpertTeam
 
         team = VirtualExpertTeam()
@@ -505,7 +569,9 @@ def save_password(password):
         """Test finding experts for specific domains."""
         import sys
 
-        sys.path.insert(0, "/home/runner/work/SynergyMesh/SynergyMesh/core/virtual_experts")
+        sys.path.insert(
+            0, "/home/runner/work/SynergyMesh/SynergyMesh/core/virtual_experts"
+        )
         from expert_team import VirtualExpertTeam
 
         team = VirtualExpertTeam()
@@ -520,7 +586,9 @@ def save_password(password):
         """Test creating a consultation."""
         import sys
 
-        sys.path.insert(0, "/home/runner/work/SynergyMesh/SynergyMesh/core/virtual_experts")
+        sys.path.insert(
+            0, "/home/runner/work/SynergyMesh/SynergyMesh/core/virtual_experts"
+        )
         from expert_team import ConsultationType, VirtualExpertTeam
 
         team = VirtualExpertTeam()
@@ -542,7 +610,9 @@ def save_password(password):
         """Test processing a consultation."""
         import sys
 
-        sys.path.insert(0, "/home/runner/work/SynergyMesh/SynergyMesh/core/virtual_experts")
+        sys.path.insert(
+            0, "/home/runner/work/SynergyMesh/SynergyMesh/core/virtual_experts"
+        )
         from expert_team import ConsultationType, VirtualExpertTeam
 
         team = VirtualExpertTeam()
@@ -566,7 +636,9 @@ def save_password(password):
         """Test Dr. Alex Chen expert."""
         import sys
 
-        sys.path.insert(0, "/home/runner/work/SynergyMesh/SynergyMesh/core/virtual_experts")
+        sys.path.insert(
+            0, "/home/runner/work/SynergyMesh/SynergyMesh/core/virtual_experts"
+        )
         from domain_experts import DrAlexChen
 
         expert = DrAlexChen()
@@ -579,19 +651,26 @@ def save_password(password):
         """Test Li Wei database expert."""
         import sys
 
-        sys.path.insert(0, "/home/runner/work/SynergyMesh/SynergyMesh/core/virtual_experts")
+        sys.path.insert(
+            0, "/home/runner/work/SynergyMesh/SynergyMesh/core/virtual_experts"
+        )
         from domain_experts import LiWei
 
         expert = LiWei()
 
         assert expert.name == "Li Wei"
-        assert "database" in expert.knowledge.primary_domains[0].lower() or "數據庫" in expert.title
+        assert (
+            "database" in expert.knowledge.primary_domains[0].lower()
+            or "數據庫" in expert.title
+        )
 
     def test_domain_expert_emma_thompson(self):
         """Test Emma Thompson DevOps expert."""
         import sys
 
-        sys.path.insert(0, "/home/runner/work/SynergyMesh/SynergyMesh/core/virtual_experts")
+        sys.path.insert(
+            0, "/home/runner/work/SynergyMesh/SynergyMesh/core/virtual_experts"
+        )
         from domain_experts import EmmaThompson
 
         expert = EmmaThompson()
@@ -603,7 +682,9 @@ def save_password(password):
         """Test expert guidance for deployment topic."""
         import sys
 
-        sys.path.insert(0, "/home/runner/work/SynergyMesh/SynergyMesh/core/virtual_experts")
+        sys.path.insert(
+            0, "/home/runner/work/SynergyMesh/SynergyMesh/core/virtual_experts"
+        )
         from domain_experts import EmmaThompson
 
         expert = EmmaThompson()
@@ -615,7 +696,9 @@ def save_password(password):
         """Test expert guidance for database topic."""
         import sys
 
-        sys.path.insert(0, "/home/runner/work/SynergyMesh/SynergyMesh/core/virtual_experts")
+        sys.path.insert(
+            0, "/home/runner/work/SynergyMesh/SynergyMesh/core/virtual_experts"
+        )
         from domain_experts import LiWei
 
         expert = LiWei()
@@ -634,7 +717,9 @@ class TestPhase7Integration:
         """Test knowledge base integrates with training system."""
         import sys
 
-        sys.path.insert(0, "/home/runner/work/SynergyMesh/SynergyMesh/core/training_system")
+        sys.path.insert(
+            0, "/home/runner/work/SynergyMesh/SynergyMesh/core/training_system"
+        )
         from knowledge_base import KnowledgeBase
         from skills_training import SkillsTrainingSystem
 
@@ -655,7 +740,9 @@ class TestPhase7Integration:
         """Test example library provides examples for training."""
         import sys
 
-        sys.path.insert(0, "/home/runner/work/SynergyMesh/SynergyMesh/core/training_system")
+        sys.path.insert(
+            0, "/home/runner/work/SynergyMesh/SynergyMesh/core/training_system"
+        )
         from example_library import ExampleCategory, ExampleLibrary
         from skills_training import SkillsTrainingSystem
 
@@ -675,8 +762,12 @@ class TestPhase7Integration:
         """Test experts can leverage knowledge base."""
         import sys
 
-        sys.path.insert(0, "/home/runner/work/SynergyMesh/SynergyMesh/core/virtual_experts")
-        sys.path.insert(0, "/home/runner/work/SynergyMesh/SynergyMesh/core/training_system")
+        sys.path.insert(
+            0, "/home/runner/work/SynergyMesh/SynergyMesh/core/virtual_experts"
+        )
+        sys.path.insert(
+            0, "/home/runner/work/SynergyMesh/SynergyMesh/core/training_system"
+        )
 
         from expert_team import ConsultationType, VirtualExpertTeam
         from knowledge_base import KnowledgeBase

@@ -53,7 +53,9 @@ class TestSustainableAnalyzer(unittest.TestCase):
     def test_energy_efficiency_grade(self):
         """測試能源效率等級"""
         efficiency = self.EnergyEfficiency(
-            component_name="api-server", component_type="dependency", efficiency_score=85
+            component_name="api-server",
+            component_type="dependency",
+            efficiency_score=85,
         )
 
         self.assertEqual(efficiency.energy_grade, self.EnergyGrade.A)
@@ -63,7 +65,11 @@ class TestSustainableAnalyzer(unittest.TestCase):
         analyzer = self.SustainableAnalyzer()
 
         footprint = analyzer.analyze_dependency(
-            name="lodash", version="4.17.21", ecosystem="npm", size_mb=1.5, dependencies_count=0
+            name="lodash",
+            version="4.17.21",
+            ecosystem="npm",
+            size_mb=1.5,
+            dependencies_count=0,
         )
 
         self.assertEqual(footprint.dependency_name, "lodash")
@@ -193,7 +199,9 @@ class TestLowCodeIntegration(unittest.TestCase):
         platform = self.LowCodeIntegration()
 
         workflow = platform.create_workflow(
-            workflow_id="wf_001", name="安全掃描工作流", description="定期掃描依賴項漏洞"
+            workflow_id="wf_001",
+            name="安全掃描工作流",
+            description="定期掃描依賴項漏洞",
         )
 
         self.assertEqual(workflow.workflow_id, "wf_001")
@@ -322,7 +330,10 @@ class TestPrivacyFramework(unittest.TestCase):
         # 添加數據欄位
         design.add_data_field(
             self.DataField(
-                field_name="user_id", field_type="string", is_pii=False, is_encrypted=True
+                field_name="user_id",
+                field_type="string",
+                is_pii=False,
+                is_encrypted=True,
             )
         )
 
@@ -359,7 +370,9 @@ class TestPrivacyFramework(unittest.TestCase):
 
         # 檢查同意
         has_consent = manager.check_consent(
-            user_id="user_001", purpose="marketing", data_category=self.DataCategory.PERSONAL
+            user_id="user_001",
+            purpose="marketing",
+            data_category=self.DataCategory.PERSONAL,
         )
         self.assertTrue(has_consent)
 
@@ -385,7 +398,9 @@ class TestPrivacyFramework(unittest.TestCase):
 
         # 檢查傳輸
         result = sovereignty.check_transfer_allowed(
-            data_type="customer_data", source_jurisdiction="TW", target_jurisdiction="EU"
+            data_type="customer_data",
+            source_jurisdiction="TW",
+            target_jurisdiction="EU",
         )
 
         self.assertTrue(result["allowed"])
@@ -457,7 +472,9 @@ class TestPrivacyFramework(unittest.TestCase):
         framework = self.PrivacyFramework("test-project")
 
         framework.add_data_field(
-            self.DataField(field_name="email", field_type="string", is_pii=True, is_encrypted=True)
+            self.DataField(
+                field_name="email", field_type="string", is_pii=True, is_encrypted=True
+            )
         )
 
         report = framework.generate_full_report()
@@ -563,7 +580,9 @@ class TestDevelopmentTracker(unittest.TestCase):
 
     def test_team_capability_assessment(self):
         """測試團隊能力評估"""
-        team = self.TeamCapability(team_id="team_001", team_name="開發團隊", team_size=10)
+        team = self.TeamCapability(
+            team_id="team_001", team_name="開發團隊", team_size=10
+        )
 
         assessment = team.assess_skill(
             category=self.SkillCategory.SECURITY,
@@ -579,7 +598,9 @@ class TestDevelopmentTracker(unittest.TestCase):
 
     def test_capability_gaps(self):
         """測試能力差距分析"""
-        team = self.TeamCapability(team_id="team_001", team_name="開發團隊", team_size=10)
+        team = self.TeamCapability(
+            team_id="team_001", team_name="開發團隊", team_size=10
+        )
 
         team.assess_skill(self.SkillCategory.SECURITY, 50, 80, 3)
         team.assess_skill(self.SkillCategory.CLOUD, 70, 90, 6)
@@ -646,7 +667,9 @@ class TestDevelopmentTracker(unittest.TestCase):
             metric_name="team_capability_score", threshold=60, comparison="below"
         )
 
-        triggered = optimization.check_alerts({"team_capability_score": 50, "active_strategies": 2})
+        triggered = optimization.check_alerts(
+            {"team_capability_score": 50, "active_strategies": 2}
+        )
 
         self.assertEqual(len(triggered), 1)
         self.assertIn("低於閾值", triggered[0]["message"])

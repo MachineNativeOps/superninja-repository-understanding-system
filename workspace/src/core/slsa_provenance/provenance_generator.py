@@ -80,7 +80,9 @@ class Builder:
         if self.version:
             result["version"] = self.version
         if self.builder_dependencies:
-            result["builderDependencies"] = [d.to_dict() for d in self.builder_dependencies]
+            result["builderDependencies"] = [
+                d.to_dict() for d in self.builder_dependencies
+            ]
         return result
 
 
@@ -94,7 +96,10 @@ class BuildMetadata:
 
     def to_dict(self) -> Dict[str, Any]:
         """Convert to dictionary"""
-        result = {"invocationId": self.invocation_id, "startedOn": self.started_on.isoformat()}
+        result = {
+            "invocationId": self.invocation_id,
+            "startedOn": self.started_on.isoformat(),
+        }
         if self.finished_on:
             result["finishedOn"] = self.finished_on.isoformat()
         return result
@@ -110,7 +115,10 @@ class RunDetails:
 
     def to_dict(self) -> Dict[str, Any]:
         """Convert to dictionary"""
-        result = {"builder": self.builder.to_dict(), "metadata": self.metadata.to_dict()}
+        result = {
+            "builder": self.builder.to_dict(),
+            "metadata": self.metadata.to_dict(),
+        }
         if self.byproducts:
             result["byproducts"] = [b.to_dict() for b in self.byproducts]
         return result
@@ -127,11 +135,16 @@ class BuildDefinition:
 
     def to_dict(self) -> Dict[str, Any]:
         """Convert to dictionary"""
-        result = {"buildType": self.build_type, "externalParameters": self.external_parameters}
+        result = {
+            "buildType": self.build_type,
+            "externalParameters": self.external_parameters,
+        }
         if self.internal_parameters:
             result["internalParameters"] = self.internal_parameters
         if self.resolved_dependencies:
-            result["resolvedDependencies"] = [d.to_dict() for d in self.resolved_dependencies]
+            result["resolvedDependencies"] = [
+                d.to_dict() for d in self.resolved_dependencies
+            ]
         return result
 
 
@@ -303,7 +316,11 @@ class ProvenanceGenerator:
         # Create builder
         builder = Builder(
             id=self.builder_id,
-            version={"machinenativenops": self.builder_version} if self.builder_version else None,
+            version=(
+                {"machinenativenops": self.builder_version}
+                if self.builder_version
+                else None
+            ),
         )
 
         # Create build metadata
@@ -314,7 +331,9 @@ class ProvenanceGenerator:
         )
 
         # Create run details
-        run_details = RunDetails(builder=builder, metadata=metadata, byproducts=build["byproducts"])
+        run_details = RunDetails(
+            builder=builder, metadata=metadata, byproducts=build["byproducts"]
+        )
 
         # Create build definition
         build_definition = BuildDefinition(
@@ -326,7 +345,9 @@ class ProvenanceGenerator:
 
         # Create provenance
         provenance = Provenance(
-            subjects=build["subjects"], build_definition=build_definition, run_details=run_details
+            subjects=build["subjects"],
+            build_definition=build_definition,
+            run_details=run_details,
         )
 
         self._current_build = None
@@ -365,7 +386,9 @@ class ProvenanceGenerator:
         if dependencies:
             for dep in dependencies:
                 self.add_dependency(
-                    uri=dep.get("uri", ""), digest=dep.get("digest", {}), name=dep.get("name")
+                    uri=dep.get("uri", ""),
+                    digest=dep.get("digest", {}),
+                    name=dep.get("name"),
                 )
 
         # Add subjects
@@ -488,7 +511,11 @@ class ProvenanceGenerator:
         }
 
         keywords = level_keywords.get(level, [])
-        return [issue for issue in issues if any(kw.lower() in issue.lower() for kw in keywords)]
+        return [
+            issue
+            for issue in issues
+            if any(kw.lower() in issue.lower() for kw in keywords)
+        ]
 
 
 # Factory functions
@@ -499,7 +526,9 @@ def create_provenance_generator(
     return ProvenanceGenerator(builder_id, builder_version)
 
 
-def compute_digest(content: bytes, algorithm: DigestAlgorithm = DigestAlgorithm.SHA256) -> str:
+def compute_digest(
+    content: bytes, algorithm: DigestAlgorithm = DigestAlgorithm.SHA256
+) -> str:
     """Compute digest of content"""
     hasher = hashlib.new(algorithm.value)
     hasher.update(content)

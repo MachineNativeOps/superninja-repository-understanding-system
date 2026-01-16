@@ -69,7 +69,11 @@ class ConfigValidator:
 
     def validate_docker_compose(self) -> dict:
         """驗證Docker Compose配置"""
-        compose_files = ["docker-compose.yml", "docker-compose.yaml", "docker-compose.override.yml"]
+        compose_files = [
+            "docker-compose.yml",
+            "docker-compose.yaml",
+            "docker-compose.override.yml",
+        ]
 
         results = {"files_checked": [], "valid": True, "errors": [], "warnings": []}
 
@@ -110,7 +114,10 @@ class ConfigValidator:
                             results["valid"] = False
 
                         # 檢查必需字段
-                        if "image" not in service_config and "build" not in service_config:
+                        if (
+                            "image" not in service_config
+                            and "build" not in service_config
+                        ):
                             results["warnings"].append(
                                 {
                                     "file": filename,
@@ -154,7 +161,10 @@ class ConfigValidator:
                     for field, field_type in required_fields.items():
                         if field not in manifest:
                             results["errors"].append(
-                                {"file": k8s_file, "error": f"Missing required field: {field}"}
+                                {
+                                    "file": k8s_file,
+                                    "error": f"Missing required field: {field}",
+                                }
                             )
                             results["invalid_files"] += 1
                             break
@@ -240,7 +250,9 @@ class ConfigValidator:
 
         return results
 
-    def _find_files(self, patterns: list[str], directories: list[str] | None = None) -> list[str]:
+    def _find_files(
+        self, patterns: list[str], directories: list[str] | None = None
+    ) -> list[str]:
         """查找匹配的文件"""
         matched_files = []
         search_dirs = directories or [self.project_path]
@@ -262,7 +274,15 @@ class ConfigValidator:
                     d
                     for d in dirs
                     if d
-                    not in ["node_modules", ".git", "__pycache__", ".venv", "venv", "dist", "build"]
+                    not in [
+                        "node_modules",
+                        ".git",
+                        "__pycache__",
+                        ".venv",
+                        "venv",
+                        "dist",
+                        "build",
+                    ]
                 ]
 
                 for pattern in patterns:

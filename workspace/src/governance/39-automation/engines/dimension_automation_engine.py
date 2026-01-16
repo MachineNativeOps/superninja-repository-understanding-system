@@ -101,9 +101,15 @@ class DimensionAutomationEngine:
 
     def _register_default_handlers(self) -> None:
         """Register default task handlers for this dimension."""
-        self.handler_registry[TaskType.POLICY_VALIDATION] = [self._handle_policy_validation]
-        self.handler_registry[TaskType.COMPLIANCE_CHECK] = [self._handle_compliance_check]
-        self.handler_registry[TaskType.METRICS_COLLECTION] = [self._handle_metrics_collection]
+        self.handler_registry[TaskType.POLICY_VALIDATION] = [
+            self._handle_policy_validation
+        ]
+        self.handler_registry[TaskType.COMPLIANCE_CHECK] = [
+            self._handle_compliance_check
+        ]
+        self.handler_registry[TaskType.METRICS_COLLECTION] = [
+            self._handle_metrics_collection
+        ]
 
     async def _handle_policy_validation(self, task: DimensionTask) -> Dict[str, Any]:
         """Handle policy validation task."""
@@ -157,7 +163,9 @@ class DimensionAutomationEngine:
             handlers = self.handler_registry.get(task.task_type, [])
 
             if not handlers:
-                self.logger.warning(f"No handlers registered for {task.task_type.value}")
+                self.logger.warning(
+                    f"No handlers registered for {task.task_type.value}"
+                )
                 task.result = {"status": "no_handler"}
             else:
                 # Execute first handler (can be extended for chaining)
@@ -202,7 +210,9 @@ class DimensionAutomationEngine:
         """Get current metrics for this dimension."""
         success_rate = 0.0
         if self.metrics["tasks_executed"] > 0:
-            success_rate = self.metrics["tasks_succeeded"] / self.metrics["tasks_executed"]
+            success_rate = (
+                self.metrics["tasks_succeeded"] / self.metrics["tasks_executed"]
+            )
 
         return {
             **self.metrics,
@@ -229,6 +239,8 @@ def create_dimension_engine(
 ) -> DimensionAutomationEngine:
     """Factory function to create a dimension automation engine."""
     engine = DimensionAutomationEngine(
-        dimension_id=dimension_id, dimension_name=dimension_name, dimension_path=dimension_path
+        dimension_id=dimension_id,
+        dimension_name=dimension_name,
+        dimension_path=dimension_path,
     )
     return engine

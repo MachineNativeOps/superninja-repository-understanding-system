@@ -43,7 +43,9 @@ class PerformanceAnalyzer:
         self.config = config or {}
         logger.info("PerformanceAnalyzer initialized")
 
-    async def analyze(self, code_path: str, profiling: bool = False) -> List[PerformanceIssue]:
+    async def analyze(
+        self, code_path: str, profiling: bool = False
+    ) -> List[PerformanceIssue]:
         """
         執行性能分析
 
@@ -78,7 +80,11 @@ class PerformanceAnalyzer:
 
             for line_num, line in enumerate(lines, 1):
                 # 檢查常見性能問題
-                if "for" in line and "for" in lines[line_num] if line_num < len(lines) else False:
+                if (
+                    "for" in line and "for" in lines[line_num]
+                    if line_num < len(lines)
+                    else False
+                ):
                     issues.append(
                         PerformanceIssue(
                             type="nested-loops",
@@ -87,8 +93,7 @@ class PerformanceAnalyzer:
                             file=str(file_path),
                             line=line_num,
                             suggestion="Consider using more efficient algorithms",
-                        )
-                    )
+                        ))
 
         except Exception as e:
             logger.error(f"Error analyzing file {file_path}: {e}")

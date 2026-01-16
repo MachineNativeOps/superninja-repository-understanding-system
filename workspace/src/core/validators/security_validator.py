@@ -42,7 +42,11 @@ class SecurityValidator:
     def _load_security_patterns(self) -> List[Tuple[str, str, str]]:
         """Load security patterns"""
         return [
-            ("hardcoded_secrets", r"(password|api_key|secret)\s*=\s*['\"]\w+", "critical"),
+            (
+                "hardcoded_secrets",
+                r"(password|api_key|secret)\s*=\s*['\"]\w+",
+                "critical",
+            ),
             ("sql_injection", r"execute\(.*\+.*\)", "critical"),
             ("xss", r"innerHTML\s*=\s*", "high"),
         ]

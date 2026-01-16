@@ -72,7 +72,9 @@ def create_namespace(name: str, labels: Optional[dict] = None) -> None:
 def delete_namespace(name: str) -> None:
     """刪除命名空間"""
     try:
-        run_kubectl(["delete", "namespace", name, "--grace-period=0", "--force", "--wait=false"])
+        run_kubectl(
+            ["delete", "namespace", name, "--grace-period=0", "--force", "--wait=false"]
+        )
     except KubectlError:
         pass
 
@@ -191,7 +193,9 @@ class TestNetworkPolicyCreation:
                         "from": [
                             {
                                 "namespaceSelector": {
-                                    "matchLabels": {"kubernetes.io/metadata.name": test_namespace}
+                                    "matchLabels": {
+                                        "kubernetes.io/metadata.name": test_namespace
+                                    }
                                 }
                             }
                         ]
@@ -249,7 +253,13 @@ class TestNetworkPolicyRules:
             "spec": {
                 "podSelector": {},
                 "policyTypes": ["Ingress"],
-                "ingress": [{"from": [{"namespaceSelector": {"matchLabels": {"role": "source"}}}]}],
+                "ingress": [
+                    {
+                        "from": [
+                            {"namespaceSelector": {"matchLabels": {"role": "source"}}}
+                        ]
+                    }
+                ],
             },
         }
 
@@ -310,7 +320,14 @@ class TestNetworkPolicyValidation:
                 "policyTypes": ["Egress"],
                 "egress": [
                     {
-                        "to": [{"ipBlock": {"cidr": "10.0.0.0/8", "except": ["10.0.0.0/24"]}}],
+                        "to": [
+                            {
+                                "ipBlock": {
+                                    "cidr": "10.0.0.0/8",
+                                    "except": ["10.0.0.0/24"],
+                                }
+                            }
+                        ],
                         "ports": [{"protocol": "TCP", "port": 443}],
                     }
                 ],
@@ -320,7 +337,9 @@ class TestNetworkPolicyValidation:
         apply_manifest(policy)
 
         policies = get_network_policies(test_namespace)
-        cidr_policy = next((p for p in policies if p["metadata"]["name"] == "allow-external"), None)
+        cidr_policy = next(
+            (p for p in policies if p["metadata"]["name"] == "allow-external"), None
+        )
 
         assert cidr_policy is not None
         ip_block = cidr_policy["spec"]["egress"][0]["to"][0]["ipBlock"]
@@ -367,7 +386,9 @@ class TestDNSPolicy:
                         "to": [
                             {
                                 "namespaceSelector": {
-                                    "matchLabels": {"kubernetes.io/metadata.name": "kube-system"}
+                                    "matchLabels": {
+                                        "kubernetes.io/metadata.name": "kube-system"
+                                    }
                                 }
                             }
                         ],
@@ -383,7 +404,9 @@ class TestDNSPolicy:
         apply_manifest(policy)
 
         policies = get_network_policies(test_namespace)
-        dns_policy = next((p for p in policies if p["metadata"]["name"] == "allow-dns"), None)
+        dns_policy = next(
+            (p for p in policies if p["metadata"]["name"] == "allow-dns"), None
+        )
 
         assert dns_policy is not None
         egress_ports = dns_policy["spec"]["egress"][0]["ports"]

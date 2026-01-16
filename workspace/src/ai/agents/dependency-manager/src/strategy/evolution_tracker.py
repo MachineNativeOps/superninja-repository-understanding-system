@@ -251,7 +251,9 @@ class EvolutionTracker:
         current_phase = self._determine_phase(project_data, overall_score)
 
         # 計算階段進度
-        phase_progress = self._calculate_phase_progress(current_phase, project_data, dimensions)
+        phase_progress = self._calculate_phase_progress(
+            current_phase, project_data, dimensions
+        )
 
         # 識別阻礙因素
         blockers = self._identify_blockers(dimensions, project_data)
@@ -313,7 +315,9 @@ class EvolutionTracker:
         else:
             return MaturityLevel.INITIAL
 
-    def _determine_phase(self, data: Dict[str, Any], overall_score: float) -> DevelopmentPhase:
+    def _determine_phase(
+        self, data: Dict[str, Any], overall_score: float
+    ) -> DevelopmentPhase:
         """判斷當前發展階段"""
         # 根據關鍵指標判斷
         revenue = data.get("revenue", 0)
@@ -528,7 +532,10 @@ class EvolutionTracker:
             return base * 2
 
     def _identify_transition_risks(
-        self, maturity: ProjectMaturity, from_phase: DevelopmentPhase, to_phase: DevelopmentPhase
+        self,
+        maturity: ProjectMaturity,
+        from_phase: DevelopmentPhase,
+        to_phase: DevelopmentPhase,
     ) -> List[str]:
         """識別轉換風險"""
         risks = []
@@ -541,7 +548,10 @@ class EvolutionTracker:
         weakest = maturity.get_weakest_dimension()
         strongest = maturity.get_strongest_dimension()
         if maturity.dimensions:
-            score_diff = maturity.dimensions[strongest].score - maturity.dimensions[weakest].score
+            score_diff = (
+                maturity.dimensions[strongest].score
+                - maturity.dimensions[weakest].score
+            )
             if score_diff > 30:
                 risks.append(f"維度發展不平衡：{weakest} 明顯落後")
 
@@ -609,7 +619,7 @@ class EvolutionTracker:
         current_idx = phase_order.index(current_phase)
         target_idx = phase_order.index(target_phase)
 
-        phases_to_traverse = phase_order[current_idx : target_idx + 1]
+        phases_to_traverse = phase_order[current_idx: target_idx + 1]
 
         # 生成里程碑
         milestones = []
@@ -828,7 +838,9 @@ class EvolutionTracker:
 
             report.append("\n### 里程碑")
             for milestone in roadmap.milestones:
-                report.append(f"\n**{milestone['phase']}** (第 {milestone['target_date']} 個月)")
+                report.append(
+                    f"\n**{milestone['phase']}** (第 {milestone['target_date']} 個月)"
+                )
                 for metric, value in milestone["key_metrics"].items():
                     report.append(f"- {metric}: {value}")
 

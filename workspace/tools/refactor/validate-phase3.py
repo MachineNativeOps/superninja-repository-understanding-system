@@ -61,7 +61,9 @@ class Phase3Validator:
 
         # Check directory exists
         if not self.deliverables_path.exists():
-            self.errors.append(f"Deliverables directory not found: {self.deliverables_path}")
+            self.errors.append(
+                f"Deliverables directory not found: {self.deliverables_path}"
+            )
             return False, self._get_report()
 
         # Validate each deliverable
@@ -165,7 +167,9 @@ class Phase3Validator:
         print("🔍 Checking architecture compliance...")
 
         # Look for architecture validation config
-        arch_config = self.repo_root / "controlplane" / "config" / "architecture-rules.yaml"
+        arch_config = (
+            self.repo_root / "controlplane" / "config" / "architecture-rules.yaml"
+        )
 
         if not arch_config.exists():
             self.warnings.append("Architecture rules config not found")
@@ -229,7 +233,9 @@ class Phase3Validator:
             if len(self.warnings) == 0:
                 print("✅ Phase 3 validation PASSED - Ready for deployment")
             else:
-                print("⚠️  Phase 3 validation PASSED with warnings - Review before deployment")
+                print(
+                    "⚠️  Phase 3 validation PASSED with warnings - Review before deployment"
+                )
         else:
             print("❌ Phase 3 validation FAILED - Address errors before proceeding")
 
@@ -251,11 +257,17 @@ class Phase3Validator:
 
 
 def main():
-    parser = argparse.ArgumentParser(description="Validate Phase 3 (Refactor) deliverables")
-    parser.add_argument(
-        "--deliverables-path", required=True, help="Path to Phase 3 deliverables directory"
+    parser = argparse.ArgumentParser(
+        description="Validate Phase 3 (Refactor) deliverables"
     )
-    parser.add_argument("--output", help="Output validation report to file (JSON format)")
+    parser.add_argument(
+        "--deliverables-path",
+        required=True,
+        help="Path to Phase 3 deliverables directory",
+    )
+    parser.add_argument(
+        "--output", help="Output validation report to file (JSON format)"
+    )
 
     args = parser.parse_args()
 

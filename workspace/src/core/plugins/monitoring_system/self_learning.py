@@ -148,14 +148,19 @@ class PatternLearner:
 
         return intersection / union if union > 0 else 0.0
 
-    def find_similar_pattern(self, conditions: list[dict[str, Any]]) -> IncidentPattern | None:
+    def find_similar_pattern(
+        self, conditions: list[dict[str, Any]]
+    ) -> IncidentPattern | None:
         """Find a similar existing pattern"""
         best_match = None
         best_similarity = 0.0
 
         for pattern in self._patterns.values():
             similarity = self._calculate_similarity(conditions, pattern.conditions)
-            if similarity > best_similarity and similarity >= self._similarity_threshold:
+            if (
+                similarity > best_similarity
+                and similarity >= self._similarity_threshold
+            ):
                 best_similarity = similarity
                 best_match = pattern
 
@@ -271,14 +276,12 @@ class EffectivenessTracker:
             if effectiveness < 0.5:
                 insights.append(
                     f"Playbook {playbook_id} has low effectiveness ({effectiveness:.1%}). "
-                    "Consider reviewing and updating remediation actions."
-                )
+                    "Consider reviewing and updating remediation actions.")
 
             if resolution_rate < effectiveness:
                 insights.append(
                     f"Playbook {playbook_id} executes successfully but doesn't always resolve issues. "
-                    "Consider adding additional remediation steps."
-                )
+                    "Consider adding additional remediation steps.")
 
         return insights
 
@@ -306,7 +309,10 @@ class SelfLearningEngine:
         return self._effectiveness_tracker
 
     def learn_from_incident(
-        self, conditions: list[dict[str, Any]], description: str = "", tags: list[str] | None = None
+        self,
+        conditions: list[dict[str, Any]],
+        description: str = "",
+        tags: list[str] | None = None,
     ) -> IncidentPattern:
         """Learn from an incident"""
         return self._pattern_learner.learn(
@@ -348,7 +354,8 @@ class SelfLearningEngine:
     def analyze_and_learn(self) -> LearningOutcome:
         """Analyze data and generate learning outcomes"""
         outcome = LearningOutcome(
-            source=LearningSource.MONITORING, description="Periodic analysis of monitoring data"
+            source=LearningSource.MONITORING,
+            description="Periodic analysis of monitoring data",
         )
 
         # Count patterns

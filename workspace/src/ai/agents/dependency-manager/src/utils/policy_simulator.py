@@ -204,7 +204,9 @@ class PolicySimulator:
         """
         logger.info(f"開始模擬: {scenario.name}")
 
-        result = SimulationResult(scenario=scenario, total_dependencies=analysis.total_count)
+        result = SimulationResult(
+            scenario=scenario, total_dependencies=analysis.total_count
+        )
 
         # 模擬每個過時依賴的更新
         for dep in analysis.dependencies:
@@ -297,7 +299,9 @@ class PolicySimulator:
 
         return comparison
 
-    def _simulate_update(self, dep: Dependency, scenario: SimulationScenario) -> Optional[Update]:
+    def _simulate_update(
+        self, dep: Dependency, scenario: SimulationScenario
+    ) -> Optional[Update]:
         """
         模擬單個依賴的更新
 
@@ -312,7 +316,9 @@ class PolicySimulator:
             return None
 
         # 判斷更新類型
-        update_type = self._classify_update_type(dep.current_version, dep.latest_version)
+        update_type = self._classify_update_type(
+            dep.current_version, dep.latest_version
+        )
 
         # 安全優先模式特殊處理
         if scenario.mode == SimulationMode.SECURITY_ONLY:
@@ -470,7 +476,9 @@ class PolicySimulator:
         self._scenarios.append(scenario)
         logger.info(f"已添加自定義情境: {scenario.name}")
 
-    def generate_report(self, results: List[SimulationResult], lang: str = "zh-TW") -> str:
+    def generate_report(
+        self, results: List[SimulationResult], lang: str = "zh-TW"
+    ) -> str:
         """
         生成模擬報告
 

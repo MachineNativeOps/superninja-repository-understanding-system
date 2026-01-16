@@ -214,8 +214,7 @@ class MachineNativeConverter:
                             context=f"{lang}_dependencies_bare",
                             priority=95,
                             description=f"替換裸導入 import {old_dep}",
-                        )
-                    )
+                        ))
 
                     # from django import
                     rules.append(
@@ -227,8 +226,7 @@ class MachineNativeConverter:
                             context=f"{lang}_dependencies_from",
                             priority=95,
                             description=f"替換 from {old_dep} import",
-                        )
-                    )
+                        ))
 
                 # 規則 3: JavaScript require/import
                 if lang == "javascript":

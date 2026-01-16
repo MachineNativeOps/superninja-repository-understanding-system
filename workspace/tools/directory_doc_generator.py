@@ -78,13 +78,20 @@ class DirectoryDocGenerator:
             "venv",
             ".DS_Store",
         }
-        self.exclude_files = {".gitignore", ".gitkeep", "__init__.py", ".DS_Store", "Thumbs.db"}
+        self.exclude_files = {
+            ".gitignore",
+            ".gitkeep",
+            "__init__.py",
+            ".DS_Store",
+            "Thumbs.db",
+        }
 
     def should_exclude(self, path: Path) -> bool:
         """判斷是否應該排除此路徑"""
         name = path.name
         return any(
-            name == exclude or name.startswith(exclude.rstrip("*")) for exclude in self.exclude_dirs
+            name == exclude or name.startswith(exclude.rstrip("*"))
+            for exclude in self.exclude_dirs
         )
 
     def scan_directory(self, dir_path: Path) -> Dict:
@@ -129,7 +136,9 @@ class DirectoryDocGenerator:
             if file_path.suffix in [".py", ".js", ".ts", ".go", ".rs"]:
                 with open(file_path, "r", encoding="utf-8") as f:
                     lines = [f.readline() for _ in range(10)]
-                    file_info["docstring"] = self.extract_docstring(lines, file_path.suffix)
+                    file_info["docstring"] = self.extract_docstring(
+                        lines, file_path.suffix
+                    )
         except Exception as e:
             file_info["docstring"] = None
 

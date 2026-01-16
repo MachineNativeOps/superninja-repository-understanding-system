@@ -10,6 +10,12 @@ Enterprise SynergyMesh Orchestrator 单元测试
 - 审计日志
 """
 
+import asyncio
+import sys
+from datetime import datetime
+from pathlib import Path
+
+import pytest
 from core.orchestrators import (
     ComponentType,
     DependencyResolver,
@@ -19,12 +25,6 @@ from core.orchestrators import (
     RetryPolicy,
     TenantTier,
 )
-import asyncio
-import sys
-from datetime import datetime
-from pathlib import Path
-
-import pytest
 
 # 添加 src 到路径
 project_root = Path(__file__).parent.parent
@@ -89,7 +89,9 @@ class TestMultiTenancy:
 
         basic = orch.get_tenant(orch.create_tenant("Basic", TenantTier.BASIC))
         pro = orch.get_tenant(orch.create_tenant("Pro", TenantTier.PROFESSIONAL))
-        enterprise = orch.get_tenant(orch.create_tenant("Enterprise", TenantTier.ENTERPRISE))
+        enterprise = orch.get_tenant(
+            orch.create_tenant("Enterprise", TenantTier.ENTERPRISE)
+        )
 
         # 基础功能在所有等级
         assert "basic_execution" in basic.features_enabled
@@ -141,7 +143,9 @@ class TestDependencyResolver:
         resolver.add_dependency("comp3", "comp2")
 
         # 验证依赖链存在
-        assert "comp1" in resolver.graph.get("comp2", set()) or "comp2" in resolver.graph
+        assert (
+            "comp1" in resolver.graph.get("comp2", set()) or "comp2" in resolver.graph
+        )
         # 循环检测应该防止反向依赖
         result = resolver.add_dependency("comp1", "comp3")
         # 如果实现允许，则验证链的存在
@@ -272,7 +276,9 @@ class TestFaultTolerance:
 
     def test_exponential_backoff(self):
         """测试指数退避"""
-        policy = RetryPolicy(max_retries=3, initial_delay=1.0, max_delay=10.0, exponential_base=2.0)
+        policy = RetryPolicy(
+            max_retries=3, initial_delay=1.0, max_delay=10.0, exponential_base=2.0
+        )
 
         delay_1 = policy.get_delay(0)
         delay_2 = policy.get_delay(1)
@@ -324,7 +330,9 @@ class TestFaultTolerance:
                 raise RuntimeError("Temporary failure")
             return {"success": True}
 
-        result = await orch.execute_with_retry(flaky_task, "test_comp", tenant_id, max_retries=3)
+        result = await orch.execute_with_retry(
+            flaky_task, "test_comp", tenant_id, max_retries=3
+        )
 
         assert result.status.value == "success"
         assert call_count == 3
@@ -343,7 +351,9 @@ class TestFaultTolerance:
             call_count += 1
             raise RuntimeError("Permanent failure")
 
-        result = await orch.execute_with_retry(always_fails, "test_comp", tenant_id, max_retries=2)
+        result = await orch.execute_with_retry(
+            always_fails, "test_comp", tenant_id, max_retries=2
+        )
 
         assert result.status.value == "failed"
         assert call_count == 3  # 1 initial + 2 retries
@@ -392,10 +402,14 @@ class TestResourceManagement:
         orch = EnterpriseSynergyMeshOrchestrator()
 
         basic = orch.get_tenant(orch.create_tenant("Basic", TenantTier.BASIC))
-        enterprise = orch.get_tenant(orch.create_tenant("Enterprise", TenantTier.ENTERPRISE))
+        enterprise = orch.get_tenant(
+            orch.create_tenant("Enterprise", TenantTier.ENTERPRISE)
+        )
 
         assert basic.quota.max_concurrent_tasks < enterprise.quota.max_concurrent_tasks
-        assert basic.quota.rate_limit_per_second < enterprise.quota.rate_limit_per_second
+        assert (
+            basic.quota.rate_limit_per_second < enterprise.quota.rate_limit_per_second
+        )
 
 
 # ============================================================================

@@ -110,7 +110,9 @@ class WorkflowScheduler:
 
             # Reorder tasks based on Rust scheduler output
             task_map = {task.id: task for task in tasks}
-            prioritized_tasks = [task_map[config["id"]] for config in prioritized_configs]
+            prioritized_tasks = [
+                task_map[config["id"]] for config in prioritized_configs
+            ]
 
             return prioritized_tasks
 

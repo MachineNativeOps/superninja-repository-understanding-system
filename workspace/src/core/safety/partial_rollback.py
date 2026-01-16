@@ -95,7 +95,9 @@ class PartialRollbackManager:
         self._execution_graph: dict[str, set[str]] = {}
         self._reverse_graph: dict[str, set[str]] = {}
 
-        logger.info("PartialRollbackManager initialized with retention=%d", checkpoint_retention)
+        logger.info(
+            "PartialRollbackManager initialized with retention=%d", checkpoint_retention
+        )
 
     def evaluate_rollback_trigger(self, condition: str, scope: str) -> RollbackAction:
         """
@@ -174,7 +176,10 @@ class PartialRollbackManager:
             )
 
         logger.info(
-            "Executing rollback: scope=%s, target=%s, execution_id=%s", scope, target, execution_id
+            "Executing rollback: scope=%s, target=%s, execution_id=%s",
+            scope,
+            target,
+            execution_id,
         )
 
         # Find dependencies that need to be rolled back
@@ -201,7 +206,9 @@ class PartialRollbackManager:
             rolled_back_items=rolled_back,
         )
 
-    def create_checkpoint(self, execution_id: str, phase_id: str, state: dict[str, Any]) -> str:
+    def create_checkpoint(
+        self, execution_id: str, phase_id: str, state: dict[str, Any]
+    ) -> str:
         """
         Create a checkpoint for rollback.
 
@@ -213,7 +220,9 @@ class PartialRollbackManager:
         Returns:
             Checkpoint ID
         """
-        checkpoint_id = f"cp_{execution_id}_{phase_id}_{int(datetime.utcnow().timestamp())}"
+        checkpoint_id = (
+            f"cp_{execution_id}_{phase_id}_{int(datetime.utcnow().timestamp())}"
+        )
 
         checkpoint = Checkpoint(
             checkpoint_id=checkpoint_id,
@@ -319,7 +328,9 @@ class PartialRollbackManager:
 
         return dependents
 
-    def _find_checkpoint_for_target(self, execution_id: str, target: str) -> Checkpoint | None:
+    def _find_checkpoint_for_target(
+        self, execution_id: str, target: str
+    ) -> Checkpoint | None:
         """
         Find the most recent checkpoint for a target.
 
@@ -400,6 +411,8 @@ class PartialRollbackManager:
         to_remove = current_count - keep_count
         self._checkpoints[execution_id] = self._checkpoints[execution_id][to_remove:]
 
-        logger.info("Cleaned up %d old checkpoints for execution=%s", to_remove, execution_id)
+        logger.info(
+            "Cleaned up %d old checkpoints for execution=%s", to_remove, execution_id
+        )
 
         return to_remove

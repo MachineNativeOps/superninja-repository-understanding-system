@@ -46,7 +46,9 @@ def parse_governance_report(report_path: Path) -> list[dict[str, Any]]:
     lines = content.split("\n")
     for line in lines:
         if "—" in line and "**" in line:
-            match = re.match(r"-\s*\*\*(.*?)\*\*\s*—\s*(.*?)(?:\(Layer:\s*(.*?)\))?$", line)
+            match = re.match(
+                r"-\s*\*\*(.*?)\*\*\s*—\s*(.*?)(?:\(Layer:\s*(.*?)\))?$", line
+            )
             if match:
                 file_path = match.group(1).strip()
                 reason = match.group(2).strip()
@@ -55,7 +57,12 @@ def parse_governance_report(report_path: Path) -> list[dict[str, Any]]:
                 violation_type = classify_violation(reason)
 
                 violations.append(
-                    {"file": file_path, "reason": reason, "layer": layer, "type": violation_type}
+                    {
+                        "file": file_path,
+                        "reason": reason,
+                        "layer": layer,
+                        "type": violation_type,
+                    }
                 )
 
     return violations
@@ -67,7 +74,11 @@ def classify_violation(reason: str) -> str:
 
     if "forbidden" in reason_lower or "not allowed" in reason_lower:
         return "forbidden_language"
-    elif "cross-layer" in reason_lower or "layer" in reason_lower or "wrong layer" in reason_lower:
+    elif (
+        "cross-layer" in reason_lower
+        or "layer" in reason_lower
+        or "wrong layer" in reason_lower
+    ):
         return "layer_violation"
     elif "security" in reason_lower or "vulnerability" in reason_lower:
         return "security_issue"
@@ -201,7 +212,9 @@ def generate_hotspot_data():
     repeated_violations = load_violation_history(history_path)
 
     # Aggregate by file
-    file_data = defaultdict(lambda: {"violations": [], "security_issues": 0, "repeated_count": 0})
+    file_data = defaultdict(
+        lambda: {"violations": [], "security_issues": 0, "repeated_count": 0}
+    )
 
     for violation in violations:
         file_path = violation["file"]
@@ -313,7 +326,9 @@ def generate_markdown_report(data: dict[str, Any], project_root: Path):
 
     for hotspot in data["hotspots"][:20]:  # Top 20 hotspots
         violations_str = ", ".join(hotspot["violations"])
-        intensity = "🔴" if hotspot["score"] >= 70 else "🟠" if hotspot["score"] >= 40 else "🟡"
+        intensity = (
+            "🔴" if hotspot["score"] >= 70 else "🟠" if hotspot["score"] >= 40 else "🟡"
+        )
         report += f"| {intensity} {hotspot['score']} | `{hotspot['file']}` | {hotspot['layer']} | {hotspot['language']} | {violations_str} | {hotspot['security_issues']} |\n"
 
     report += """

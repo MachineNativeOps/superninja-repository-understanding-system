@@ -9,7 +9,9 @@ import sys
 from pathlib import Path
 
 
-def _import_kebab_module(module_alias: str, file_name: str, legacy_alias: str | None = None):
+def _import_kebab_module(
+    module_alias: str, file_name: str, legacy_alias: str | None = None
+):
     """
     Import a module from a kebab-case filename and register module aliases.
 
@@ -68,11 +70,15 @@ _rust_island = _import_kebab_module(
 )
 RustIsland = _rust_island.RustIsland
 
-_go_island = _import_kebab_module("go_island", "go-island.py", legacy_alias="islands.go_island")
+_go_island = _import_kebab_module(
+    "go_island", "go-island.py", legacy_alias="islands.go_island"
+)
 GoIsland = _go_island.GoIsland
 
 _typescript_island = _import_kebab_module(
-    "typescript_island", "typescript-island.py", legacy_alias="islands.typescript_island"
+    "typescript_island",
+    "typescript-island.py",
+    legacy_alias="islands.typescript_island",
 )
 TypeScriptIsland = _typescript_island.TypeScriptIsland
 

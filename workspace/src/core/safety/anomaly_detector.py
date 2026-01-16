@@ -78,8 +78,8 @@ class MetricWindow:
 
         # Trim if needed
         if len(self.values) > self.max_size:
-            self.values = self.values[-self.max_size :]
-            self.timestamps = self.timestamps[-self.max_size :]
+            self.values = self.values[-self.max_size:]
+            self.timestamps = self.timestamps[-self.max_size:]
 
     def get_recent(self, seconds: float) -> List[float]:
         """Get values from the last N seconds"""
@@ -161,7 +161,9 @@ class AnomalyDetector:
         }
 
     def add_handler(
-        self, handler: Callable[[AnomalyAlert], None], anomaly_type: Optional[AnomalyType] = None
+        self,
+        handler: Callable[[AnomalyAlert], None],
+        anomaly_type: Optional[AnomalyType] = None,
     ) -> None:
         """
         Add a handler for anomaly alerts
@@ -257,7 +259,9 @@ class AnomalyDetector:
                     z_score = abs(value - mean) / std_dev
                     if z_score > factor:
                         is_anomaly = True
-                        description = f"Value {value} is {z_score:.2f} std devs from mean"
+                        description = (
+                            f"Value {value} is {z_score:.2f} std devs from mean"
+                        )
                         details["z_score"] = z_score
                         details["mean"] = mean
                         details["std_dev"] = std_dev
@@ -270,9 +274,7 @@ class AnomalyDetector:
             if len(recent) > count:
                 is_anomaly = True
                 anomaly_type = AnomalyType.RATE_ANOMALY
-                description = (
-                    f"Rate limit exceeded: {len(recent)} events in {seconds}s (limit: {count})"
-                )
+                description = f"Rate limit exceeded: {len(recent)} events in {seconds}s (limit: {count})"
                 details["rate_count"] = len(recent)
                 details["rate_limit"] = count
                 details["rate_window"] = seconds
@@ -325,7 +327,9 @@ class AnomalyDetector:
 
         return AnomalySeverity.LOW
 
-    def _get_recommended_action(self, anomaly_type: AnomalyType, severity: AnomalySeverity) -> str:
+    def _get_recommended_action(
+        self, anomaly_type: AnomalyType, severity: AnomalySeverity
+    ) -> str:
         """Get recommended action based on anomaly type and severity"""
         actions = {
             (
@@ -333,14 +337,23 @@ class AnomalyDetector:
                 AnomalySeverity.CRITICAL,
             ): "Immediately throttle or stop operations",
             (AnomalyType.RATE_ANOMALY, AnomalySeverity.HIGH): "Enable rate limiting",
-            (AnomalyType.VALUE_ANOMALY, AnomalySeverity.CRITICAL): "Trigger circuit breaker",
+            (
+                AnomalyType.VALUE_ANOMALY,
+                AnomalySeverity.CRITICAL,
+            ): "Trigger circuit breaker",
             (AnomalyType.VALUE_ANOMALY, AnomalySeverity.HIGH): "Alert on-call team",
             (
                 AnomalyType.SECURITY_ANOMALY,
                 AnomalySeverity.CRITICAL,
             ): "Emergency stop all operations",
-            (AnomalyType.SECURITY_ANOMALY, AnomalySeverity.HIGH): "Isolate affected components",
-            (AnomalyType.RESOURCE_ANOMALY, AnomalySeverity.CRITICAL): "Scale resources immediately",
+            (
+                AnomalyType.SECURITY_ANOMALY,
+                AnomalySeverity.HIGH,
+            ): "Isolate affected components",
+            (
+                AnomalyType.RESOURCE_ANOMALY,
+                AnomalySeverity.CRITICAL,
+            ): "Scale resources immediately",
         }
 
         return actions.get((anomaly_type, severity), "Monitor and investigate")

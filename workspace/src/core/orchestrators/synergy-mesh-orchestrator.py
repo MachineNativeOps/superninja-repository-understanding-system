@@ -141,7 +141,9 @@ class SynergyMeshOrchestrator:
 
         logger.info("🔧 SynergyMeshOrchestrator 初始化完成")
 
-    def register_agent(self, agent_id: str, agent: Any, auto_start: bool = False) -> bool:
+    def register_agent(
+        self, agent_id: str, agent: Any, auto_start: bool = False
+    ) -> bool:
         """
         註冊 Agent
 
@@ -171,7 +173,9 @@ class SynergyMeshOrchestrator:
             logger.error(f"❌ 註冊 Agent 失敗 {agent_id}: {e}")
             return False
 
-    def register_island(self, island_id: str, island: Any, auto_activate: bool = False) -> bool:
+    def register_island(
+        self, island_id: str, island: Any, auto_activate: bool = False
+    ) -> bool:
         """
         註冊 Island
 
@@ -418,10 +422,16 @@ class SynergyMeshOrchestrator:
     def _generate_report(self) -> Dict[str, Any]:
         """生成執行報告"""
         end_time = datetime.now()
-        duration = (end_time - self.start_time).total_seconds() if self.start_time else 0
+        duration = (
+            (end_time - self.start_time).total_seconds() if self.start_time else 0
+        )
 
-        successful = sum(1 for r in self.execution_results if r.status == ExecutionStatus.SUCCESS)
-        failed = sum(1 for r in self.execution_results if r.status == ExecutionStatus.FAILED)
+        successful = sum(
+            1 for r in self.execution_results if r.status == ExecutionStatus.SUCCESS
+        )
+        failed = sum(
+            1 for r in self.execution_results if r.status == ExecutionStatus.FAILED
+        )
 
         report = {
             "timestamp": end_time.isoformat(),
@@ -454,13 +464,19 @@ class SynergyMeshOrchestrator:
         Returns:
             系統狀態
         """
-        successful = sum(1 for r in self.execution_results if r.status == ExecutionStatus.SUCCESS)
-        failed = sum(1 for r in self.execution_results if r.status == ExecutionStatus.FAILED)
+        successful = sum(
+            1 for r in self.execution_results if r.status == ExecutionStatus.SUCCESS
+        )
+        failed = sum(
+            1 for r in self.execution_results if r.status == ExecutionStatus.FAILED
+        )
 
         return SystemStatus(
             timestamp=datetime.now(),
             total_components=len(self.agents) + len(self.islands),
-            active_components=len([a for a in self.agents.values() if a["status"] != "stopped"])
+            active_components=len(
+                [a for a in self.agents.values() if a["status"] != "stopped"]
+            )
             + len([i for i in self.islands.values() if i["status"] != "dormant"]),
             successful_executions=successful,
             failed_executions=failed,

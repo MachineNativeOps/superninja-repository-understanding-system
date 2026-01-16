@@ -145,7 +145,9 @@ class LanguagePolicyChecker:
             # 檢查是否在允許列表中
             if not self._is_allowed_language(language, allowed_languages):
                 # 檢查是否為數據格式（YAML, JSON等）
-                data_formats = self.policy.get("global_policy", {}).get("data_formats", [])
+                data_formats = self.policy.get("global_policy", {}).get(
+                    "data_formats", []
+                )
                 if language not in data_formats:
                     self.violations.append(
                         {
@@ -222,7 +224,9 @@ class LanguagePolicyChecker:
         for directory, languages in self.stats.items():
             if languages:
                 print(f"📁 {directory}")
-                for lang, count in sorted(languages.items(), key=lambda x: x[1], reverse=True):
+                for lang, count in sorted(
+                    languages.items(), key=lambda x: x[1], reverse=True
+                ):
                     print(f"   • {lang}: {count} 個檔案")
                 print()
 

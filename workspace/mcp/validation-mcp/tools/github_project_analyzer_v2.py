@@ -32,7 +32,9 @@ class GitHubAnalyzerConfig:
 class GitHubProjectAnalyzer:
     def __init__(self, config: GitHubAnalyzerConfig):
         self.config = config
-        self.base_url = f"https://api.github.com/repos/{config.repo_owner}/{config.repo_name}"
+        self.base_url = (
+            f"https://api.github.com/repos/{config.repo_owner}/{config.repo_name}"
+        )
         self.headers = {
             "Accept": "application/vnd.github.v3+json",
             "User-Agent": "namespace-mcp-Analyzer/2.0.0",
@@ -91,8 +93,14 @@ class GitHubProjectAnalyzer:
                 "monitoring": ["Prometheus", "Grafana", "Jaeger"],
             },
             "module_relationships": {
-                "core": {"dependencies": ["utils", "config"], "dependents": ["api", "services"]},
-                "api": {"dependencies": ["core", "auth"], "dependents": ["gateway", "clients"]},
+                "core": {
+                    "dependencies": ["utils", "config"],
+                    "dependents": ["api", "services"],
+                },
+                "api": {
+                    "dependencies": ["core", "auth"],
+                    "dependents": ["gateway", "clients"],
+                },
                 "services": {
                     "dependencies": ["core", "db"],
                     "dependents": ["workers", "schedulers"],
@@ -137,8 +145,16 @@ class GitHubProjectAnalyzer:
             ],
             "performance_metrics": {
                 "latency": {"p95": "15ms", "target": "<20ms", "status": "met"},
-                "throughput": {"current": "50k rpm", "target": "100k rpm", "status": "partial"},
-                "availability": {"current": "99.95%", "target": "99.99%", "status": "met"},
+                "throughput": {
+                    "current": "50k rpm",
+                    "target": "100k rpm",
+                    "status": "partial",
+                },
+                "availability": {
+                    "current": "99.95%",
+                    "target": "99.99%",
+                    "status": "met",
+                },
                 "error_rate": {
                     "current": "0.1%",
                     "target": "<0.05%",
@@ -482,12 +498,16 @@ namespace-mcp-cli prompt fix --input=inconsistent_prompt.md --output=fixed_promp
     def _format_capabilities(self, capabilities: List[Dict]) -> str:
         result = ""
         for cap in capabilities:
-            result += f"- **{cap['name']}** ({cap['status']}, 成熟度: {cap['maturity']})\n"
+            result += (
+                f"- **{cap['name']}** ({cap['status']}, 成熟度: {cap['maturity']})\n"
+            )
             result += f"  - {cap['description']}\n"
         return result
 
     def _format_performance_metrics(self, metrics: Dict) -> str:
-        result = "| 指標 | 當前值 | 目標值 | 狀態 |\n|------|--------|--------|------|\n"
+        result = (
+            "| 指標 | 當前值 | 目標值 | 狀態 |\n|------|--------|--------|------|\n"
+        )
         for metric, data in metrics.items():
             status_emoji = (
                 "✅"

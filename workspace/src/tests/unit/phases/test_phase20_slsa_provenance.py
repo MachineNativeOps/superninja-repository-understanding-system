@@ -2,7 +2,11 @@
 Tests for Phase 20: SLSA L3 Provenance System
 """
 
-from slsa_provenance.provenance_generator import SLSALevel, Subject
+import asyncio
+import os
+import sys
+
+import pytest
 from slsa_provenance import (
     ArtifactVerifier,
     AttestationManager,
@@ -15,11 +19,7 @@ from slsa_provenance import (
     VerificationPolicy,
     VerificationResult,
 )
-import asyncio
-import os
-import sys
-
-import pytest
+from slsa_provenance.provenance_generator import SLSALevel, Subject
 
 # Add core to path
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "..", "core"))
@@ -55,7 +55,9 @@ class TestProvenanceGenerator:
 
     def test_finish_build(self, generator):
         """Test finishing a build and generating provenance"""
-        generator.start_build(build_type="test-build", external_parameters={"source": "test"})
+        generator.start_build(
+            build_type="test-build", external_parameters={"source": "test"}
+        )
 
         generator.add_subject(name="artifact.zip", content=b"test content")
 
@@ -102,7 +104,8 @@ class TestSignatureVerifier:
         import base64
 
         result = verifier.verify_signature(
-            artifact_digest="abc123", signature=base64.b64encode(b"test signature").decode()
+            artifact_digest="abc123",
+            signature=base64.b64encode(b"test signature").decode(),
         )
 
         assert result is not None
@@ -110,7 +113,9 @@ class TestSignatureVerifier:
 
     def test_create_policy(self, verifier):
         """Test creating verification policy"""
-        policy = verifier.create_policy(name="test-policy", require_transparency_log=True)
+        policy = verifier.create_policy(
+            name="test-policy", require_transparency_log=True
+        )
 
         assert policy.name == "test-policy"
         assert policy.require_transparency_log is True
@@ -203,7 +208,9 @@ class TestArtifactVerifier:
         """Test verifying artifact from content"""
         content = b"test artifact content"
 
-        result = verifier.verify_artifact(artifact_content=content, artifact_name="test.zip")
+        result = verifier.verify_artifact(
+            artifact_content=content, artifact_name="test.zip"
+        )
 
         assert isinstance(result, VerificationResult)
         assert result.artifact.name == "test.zip"
@@ -216,7 +223,9 @@ class TestArtifactVerifier:
         expected_digest = {"sha256": hashlib.sha256(content).hexdigest()}
 
         result = verifier.verify_artifact(
-            artifact_content=content, artifact_name="test.zip", expected_digest=expected_digest
+            artifact_content=content,
+            artifact_name="test.zip",
+            expected_digest=expected_digest,
         )
 
         assert result.integrity_status.value == "verified"
@@ -234,7 +243,10 @@ class TestArtifactVerifier:
                 "buildDefinition": {"buildType": "test", "resolvedDependencies": []},
                 "runDetails": {
                     "builder": {"id": "test-builder"},
-                    "metadata": {"invocationId": "inv-123", "startedOn": "2024-01-01T00:00:00Z"},
+                    "metadata": {
+                        "invocationId": "inv-123",
+                        "startedOn": "2024-01-01T00:00:00Z",
+                    },
                 },
             },
         }
@@ -249,8 +261,12 @@ class TestArtifactVerifier:
         """Test creating verification summary"""
         content = b"test"
 
-        result1 = verifier.verify_artifact(artifact_content=content, artifact_name="test1.zip")
-        result2 = verifier.verify_artifact(artifact_content=content, artifact_name="test2.zip")
+        result1 = verifier.verify_artifact(
+            artifact_content=content, artifact_name="test1.zip"
+        )
+        result2 = verifier.verify_artifact(
+            artifact_content=content, artifact_name="test2.zip"
+        )
 
         summary = verifier.create_verification_summary([result1, result2])
 

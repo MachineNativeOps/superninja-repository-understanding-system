@@ -111,7 +111,11 @@ def main() -> int:
     all_passed = all(r["passed"] for r in results)
 
     if args.json_output:
-        print(json.dumps({"passed": all_passed, "results": results}, indent=2, ensure_ascii=False))
+        print(
+            json.dumps(
+                {"passed": all_passed, "results": results}, indent=2, ensure_ascii=False
+            )
+        )
     else:
         for result in results:
             status = "PASS" if result["passed"] else "FAIL"

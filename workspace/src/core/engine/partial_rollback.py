@@ -93,7 +93,11 @@ class PartialRollbackManager:
         self.checkpoint_order: List[str] = []  # Maintain checkpoint sequence
 
     def create_checkpoint(
-        self, checkpoint_id: str, level: RollbackLevel, state: Dict[str, Any], **metadata
+        self,
+        checkpoint_id: str,
+        level: RollbackLevel,
+        state: Dict[str, Any],
+        **metadata,
     ) -> Checkpoint:
         """
         Create a checkpoint for potential rollback
@@ -137,7 +141,9 @@ class PartialRollbackManager:
         """
         return self.checkpoints.get(checkpoint_id)
 
-    def list_checkpoints(self, level: Optional[RollbackLevel] = None) -> List[Checkpoint]:
+    def list_checkpoints(
+        self, level: Optional[RollbackLevel] = None
+    ) -> List[Checkpoint]:
         """
         List all checkpoints, optionally filtered by level
 
@@ -148,7 +154,9 @@ class PartialRollbackManager:
             List of checkpoints
         """
         checkpoints = [
-            self.checkpoints[cid] for cid in self.checkpoint_order if cid in self.checkpoints
+            self.checkpoints[cid]
+            for cid in self.checkpoint_order
+            if cid in self.checkpoints
         ]
 
         if level:
@@ -320,7 +328,9 @@ class PartialRollbackManager:
         return {
             "total_checkpoints": len(self.checkpoints),
             "checkpoints_by_level": {
-                level.value: len([cp for cp in self.checkpoints.values() if cp.level == level])
+                level.value: len(
+                    [cp for cp in self.checkpoints.values() if cp.level == level]
+                )
                 for level in RollbackLevel
             },
             "total_operations": len(self.operations),

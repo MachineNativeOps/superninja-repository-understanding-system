@@ -7,20 +7,10 @@ Phase 5 focuses on:
 3. Automatic Bug Detection and Fixing
 """
 
-from hallucination_detector import (
-    HallucinationDetection,
-    HallucinationDetector,
-    HallucinationType,
-    SeverityLevel,
-    ValidationResult,
-)
-from context_understanding_engine import (
-    ContextAnalysis,
-    ContextType,
-    ContextUnderstandingEngine,
-    IntentCategory,
-    ParsedIntent,
-)
+import os
+import sys
+
+import pytest
 from auto_bug_detector import (
     AutoBugDetector,
     BugCategory,
@@ -29,10 +19,20 @@ from auto_bug_detector import (
     FixConfidence,
     FixStatus,
 )
-import os
-import sys
-
-import pytest
+from context_understanding_engine import (
+    ContextAnalysis,
+    ContextType,
+    ContextUnderstandingEngine,
+    IntentCategory,
+    ParsedIntent,
+)
+from hallucination_detector import (
+    HallucinationDetection,
+    HallucinationDetector,
+    HallucinationType,
+    SeverityLevel,
+    ValidationResult,
+)
 
 # Add core directory to path
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "..", "core"))
@@ -94,7 +94,9 @@ class TestHallucinationDetector:
         """
         result = detector.validate_code(code, "python")
         incomplete_issues = [
-            h for h in result.hallucinations if h.hallucination_type == HallucinationType.INCOMPLETE
+            h
+            for h in result.hallucinations
+            if h.hallucination_type == HallucinationType.INCOMPLETE
         ]
         assert len(incomplete_issues) > 0
 
@@ -123,7 +125,9 @@ class TestHallucinationDetector:
         """
         result = detector.validate_code(code, "python")
         assert result.overall_confidence > 0.5
-        critical_issues = [h for h in result.hallucinations if h.severity == SeverityLevel.CRITICAL]
+        critical_issues = [
+            h for h in result.hallucinations if h.severity == SeverityLevel.CRITICAL
+        ]
         assert len(critical_issues) == 0
 
     def test_custom_validator_registration(self):
@@ -200,7 +204,9 @@ class TestContextUnderstandingEngine:
     def test_parse_migration_intent(self):
         """Test parsing migration intent from Chinese request"""
         engine = ContextUnderstandingEngine()
-        result = engine.analyze_request("user-1", "我需要將用戶資料從舊系統遷移到新系統")
+        result = engine.analyze_request(
+            "user-1", "我需要將用戶資料從舊系統遷移到新系統"
+        )
         assert result.parsed_intent.primary_intent == IntentCategory.MIGRATION
         assert result.understanding_confidence > 0
 
@@ -219,7 +225,9 @@ class TestContextUnderstandingEngine:
     def test_extract_entities(self):
         """Test entity extraction from request"""
         engine = ContextUnderstandingEngine()
-        result = engine.analyze_request("user-1", "Migrate user data from old system to new system")
+        result = engine.analyze_request(
+            "user-1", "Migrate user data from old system to new system"
+        )
         entities = result.parsed_intent.entities
         assert "systems" in entities or "data_types" in entities
 

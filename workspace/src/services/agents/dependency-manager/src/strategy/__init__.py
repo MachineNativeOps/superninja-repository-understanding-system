@@ -12,7 +12,12 @@ MIT License
 """
 
 from .case_study_engine import CaseStudy, CaseStudyEngine, EvolutionPhase, LessonLearned
-from .evolution_tracker import EvolutionTracker, MaturityLevel, PhaseTransition, ProjectMaturity
+from .evolution_tracker import (
+    EvolutionTracker,
+    MaturityLevel,
+    PhaseTransition,
+    ProjectMaturity,
+)
 from .resource_optimizer import (
     BudgetAllocation,
     OptimizationResult,

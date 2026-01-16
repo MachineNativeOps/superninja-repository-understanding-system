@@ -198,7 +198,11 @@ class PerceptionLayer:
         self._baselines: Dict[str, Any] = {}
 
         # Statistics
-        self._stats = {"signals_processed": 0, "anomalies_detected": 0, "drifts_detected": 0}
+        self._stats = {
+            "signals_processed": 0,
+            "anomalies_detected": 0,
+            "drifts_detected": 0,
+        }
 
         logger.debug("PerceptionLayer initialized - 感知層已初始化")
 
@@ -333,7 +337,11 @@ class ReasoningLayer:
         self._causal_relationships: Dict[str, List[str]] = {}
 
         # Statistics
-        self._stats = {"signals_processed": 0, "decisions_made": 0, "risk_assessments": 0}
+        self._stats = {
+            "signals_processed": 0,
+            "decisions_made": 0,
+            "risk_assessments": 0,
+        }
 
         logger.debug("ReasoningLayer initialized - 推理層已初始化")
 
@@ -487,7 +495,9 @@ class ReasoningLayer:
                     result = evaluator(signal, risk, context)
 
                 if result and result.get("score", 0) > confidence_score:
-                    alternatives.append({"action": best_action, "score": confidence_score})
+                    alternatives.append(
+                        {"action": best_action, "score": confidence_score}
+                    )
                     best_action = result.get("action", "monitor")
                     confidence_score = result.get("score", 0.5)
                     reasoning.extend(result.get("reasoning", []))
@@ -538,7 +548,9 @@ class ReasoningLayer:
             auto_execute=not requires_approval and confidence_score >= 0.85,
         )
 
-    def _generate_mitigations(self, level: RiskLevel, factors: List[Dict[str, Any]]) -> List[str]:
+    def _generate_mitigations(
+        self, level: RiskLevel, factors: List[Dict[str, Any]]
+    ) -> List[str]:
         """Generate mitigation recommendations"""
         mitigations = []
 
@@ -759,7 +771,10 @@ class ProofLayer:
         logger.debug("ProofLayer initialized - 證明層已初始化")
 
     async def generate_evidence(
-        self, signals: List[CognitiveSignal], decisions: List[Decision], context: CognitiveContext
+        self,
+        signals: List[CognitiveSignal],
+        decisions: List[Decision],
+        context: CognitiveContext,
     ) -> List[CognitiveSignal]:
         """
         Generate evidence for the cognitive processing
@@ -839,9 +854,13 @@ class ProofLayer:
             "confidence_score": decision.confidence_score,
             "reasoning": decision.reasoning,
             "risk_level": (
-                decision.risk_assessment.level.value if decision.risk_assessment else None
+                decision.risk_assessment.level.value
+                if decision.risk_assessment
+                else None
             ),
-            "risk_score": decision.risk_assessment.score if decision.risk_assessment else None,
+            "risk_score": (
+                decision.risk_assessment.score if decision.risk_assessment else None
+            ),
             "requires_approval": decision.requires_approval,
             "auto_execute": decision.auto_execute,
             "context_id": context.context_id,
@@ -915,14 +934,20 @@ class EnhancedCognitiveProcessor:
 
         # Processing state
         self._is_running = False
-        self._signal_queue: asyncio.Queue = asyncio.Queue(maxsize=self.config.max_signal_queue)
+        self._signal_queue: asyncio.Queue = asyncio.Queue(
+            maxsize=self.config.max_signal_queue
+        )
         self._processor_task: Optional[asyncio.Task] = None
 
         # Contexts
         self._contexts: Dict[str, CognitiveContext] = {}
 
         # Statistics
-        self._stats = {"signals_received": 0, "signals_processed": 0, "processing_errors": 0}
+        self._stats = {
+            "signals_received": 0,
+            "signals_processed": 0,
+            "processing_errors": 0,
+        }
 
         logger.info("EnhancedCognitiveProcessor initialized - 增強認知處理器已初始化")
 
@@ -1012,7 +1037,9 @@ class EnhancedCognitiveProcessor:
 
         # L2: Reasoning
         if self.config.enable_reasoning:
-            decisions, reasoning_signals = await self.reasoning.process(perception_signals, context)
+            decisions, reasoning_signals = await self.reasoning.process(
+                perception_signals, context
+            )
             result["layers_processed"].append("reasoning")
             result["decisions"].extend([d.to_dict() for d in decisions])
             result["signals"].extend([s.to_dict() for s in reasoning_signals])
@@ -1032,7 +1059,9 @@ class EnhancedCognitiveProcessor:
         # L4: Proof
         if self.config.enable_proof:
             all_signals = perception_signals + reasoning_signals + action_signals
-            evidence_signals = await self.proof.generate_evidence(all_signals, decisions, context)
+            evidence_signals = await self.proof.generate_evidence(
+                all_signals, decisions, context
+            )
             result["layers_processed"].append("proof")
             result["evidence"].extend([s.to_dict() for s in evidence_signals])
 

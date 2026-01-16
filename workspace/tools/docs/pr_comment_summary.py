@@ -39,7 +39,10 @@ def generate_stage_summary(results: dict[str, Any]) -> str:
         ("8", "Audit", "audit"),
     ]
 
-    lines = ["| Stage | Name | Status | Duration |", "|-------|------|--------|----------|"]
+    lines = [
+        "| Stage | Name | Status | Duration |",
+        "|-------|------|--------|----------|",
+    ]
 
     for num, name, key in stages:
         stage_result = results.get(key, {})
@@ -130,13 +133,31 @@ def generate_pr_comment(results: dict[str, Any], context: dict[str, str] = None)
     # Determine overall status
     all_passed = all(
         results.get(stage, {}).get("status") in ("success", "skipped")
-        for stage in ["lint", "format", "schema", "vector", "policy", "sbom", "provenance", "audit"]
+        for stage in [
+            "lint",
+            "format",
+            "schema",
+            "vector",
+            "policy",
+            "sbom",
+            "provenance",
+            "audit",
+        ]
     )
 
     header_emoji = "✅" if all_passed else "⚠️"
-    header_text = "Governance Pipeline Passed" if all_passed else "Governance Pipeline Issues Found"
+    header_text = (
+        "Governance Pipeline Passed"
+        if all_passed
+        else "Governance Pipeline Issues Found"
+    )
 
-    sections = [f"## {header_emoji} {header_text}", "", generate_stage_summary(results), ""]
+    sections = [
+        f"## {header_emoji} {header_text}",
+        "",
+        generate_stage_summary(results),
+        "",
+    ]
 
     # Add details if there are issues
     details = generate_validation_details(results)
@@ -172,7 +193,9 @@ def generate_pr_comment(results: dict[str, Any], context: dict[str, str] = None)
     if all_passed:
         sections.append("*All governance checks completed successfully.* 🎉")
     else:
-        sections.append("*Please review the issues above and address them before merging.*")
+        sections.append(
+            "*Please review the issues above and address them before merging.*"
+        )
 
     return "\n".join(sections)
 
@@ -191,7 +214,10 @@ def main():
     parser.add_argument("--input", "-i", help="Input results file (JSON/YAML)")
     parser.add_argument("--output", "-o", help="Output file (default: stdout)")
     parser.add_argument(
-        "--format", choices=["markdown", "json"], default="markdown", help="Output format"
+        "--format",
+        choices=["markdown", "json"],
+        default="markdown",
+        help="Output format",
     )
     args = parser.parse_args()
 
@@ -220,7 +246,12 @@ def main():
             },
             "vector": {"status": "success", "duration_ms": 800},
             "policy": {"status": "success", "duration_ms": 600, "violations": []},
-            "sbom": {"status": "success", "duration_ms": 1000, "exists": True, "packages": 35},
+            "sbom": {
+                "status": "success",
+                "duration_ms": 1000,
+                "exists": True,
+                "packages": 35,
+            },
             "provenance": {
                 "status": "success",
                 "duration_ms": 500,

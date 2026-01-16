@@ -292,12 +292,16 @@ class ActionExecutor:
             # 檢查是否有失敗
             if plan.stop_on_failure:
                 failed = any(
-                    r.status == StepStatus.FAILED for r in results if isinstance(r, StepResult)
+                    r.status == StepStatus.FAILED
+                    for r in results
+                    if isinstance(r, StepResult)
                 )
                 if failed:
                     break
 
-    def _build_execution_layers(self, steps: List[ActionStep]) -> List[List[ActionStep]]:
+    def _build_execution_layers(
+        self, steps: List[ActionStep]
+    ) -> List[List[ActionStep]]:
         """構建執行層次（按依賴關係）"""
 
         # 計算每個步驟的依賴數
@@ -349,7 +353,9 @@ class ActionExecutor:
 
         try:
             # 獲取處理器
-            handler = step.handler or self._handlers.get(step.name, self._handlers["default"])
+            handler = step.handler or self._handlers.get(
+                step.name, self._handlers["default"]
+            )
 
             # 執行處理器
             output = await self._safe_call(handler, step.params, completed_steps)
@@ -376,14 +382,18 @@ class ActionExecutor:
 
         finally:
             step.completed_at = datetime.now()
-            step.duration_ms = int((step.completed_at - step.started_at).total_seconds() * 1000)
+            step.duration_ms = int(
+                (step.completed_at - step.started_at).total_seconds() * 1000
+            )
 
             result.completed_at = step.completed_at
             result.duration_ms = step.duration_ms
 
         return result
 
-    def _check_dependencies(self, step: ActionStep, completed_steps: Dict[str, StepResult]) -> bool:
+    def _check_dependencies(
+        self, step: ActionStep, completed_steps: Dict[str, StepResult]
+    ) -> bool:
         """檢查步驟依賴是否滿足"""
 
         for dep_id in step.depends_on:
@@ -460,7 +470,9 @@ class ActionExecutor:
 
         return True
 
-    def create_plan(self, name: str, steps: List[Dict[str, Any]], **kwargs) -> ActionPlan:
+    def create_plan(
+        self, name: str, steps: List[Dict[str, Any]], **kwargs
+    ) -> ActionPlan:
         """
         創建行動計劃
 

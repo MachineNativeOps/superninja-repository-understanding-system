@@ -140,7 +140,12 @@ class AutonomousCleanupEngine:
         self.logger = self._setup_logging()
 
         # Statistics
-        self.stats = {"scans_performed": 0, "items_found": 0, "items_fixed": 0, "files_modified": 0}
+        self.stats = {
+            "scans_performed": 0,
+            "items_found": 0,
+            "items_fixed": 0,
+            "files_modified": 0,
+        }
 
     def _setup_logging(self) -> logging.Logger:
         """Setup logging configuration"""
@@ -159,7 +164,9 @@ class AutonomousCleanupEngine:
         ch.setLevel(logging.INFO)
 
         # Formatter
-        formatter = logging.Formatter("%(asctime)s - %(name)s - %(levelname)s - %(message)s")
+        formatter = logging.Formatter(
+            "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+        )
         fh.setFormatter(formatter)
         ch.setFormatter(formatter)
 
@@ -203,7 +210,9 @@ class AutonomousCleanupEngine:
                 try:
                     content = file_path.read_bytes()
                     md5_hash = hashlib.md5(content).hexdigest()
-                    hash_map[md5_hash].append(str(file_path.relative_to(self.repo_path)))
+                    hash_map[md5_hash].append(
+                        str(file_path.relative_to(self.repo_path))
+                    )
                 except Exception as e:
                     self.logger.warning(f"Error reading {file_path}: {e}")
 
@@ -219,7 +228,10 @@ class AutonomousCleanupEngine:
 
                 duplicate_groups.append(
                     DuplicateGroup(
-                        md5_hash=md5_hash, files=files, size_bytes=size_bytes, removable=removable
+                        md5_hash=md5_hash,
+                        files=files,
+                        size_bytes=size_bytes,
+                        removable=removable,
                     )
                 )
 
@@ -235,7 +247,9 @@ class AutonomousCleanupEngine:
             if file.startswith("legacy/"):
                 removable.append(file)
             # Rule 2: Prefer services/agents/ over agent/
-            elif file.startswith("agent/") and any(f.startswith("services/agents/") for f in files):
+            elif file.startswith("agent/") and any(
+                f.startswith("services/agents/") for f in files
+            ):
                 removable.append(file)
             # Rule 3: Prefer non-backup versions
             elif ".backup" in file or "_backup" in file:
@@ -266,7 +280,8 @@ class AutonomousCleanupEngine:
 
         for py_file in self.repo_path.rglob("*.py"):
             if any(
-                excluded in str(py_file) for excluded in [".venv", "__pycache__", "node_modules"]
+                excluded in str(py_file)
+                for excluded in [".venv", "__pycache__", "node_modules"]
             ):
                 continue
 
@@ -317,7 +332,14 @@ class AutonomousCleanupEngine:
             return "HIGH"
 
         # Check for urgency keywords
-        high_priority_keywords = ["critical", "urgent", "important", "security", "bug", "error"]
+        high_priority_keywords = [
+            "critical",
+            "urgent",
+            "important",
+            "security",
+            "bug",
+            "error",
+        ]
         if any(keyword in message_lower for keyword in high_priority_keywords):
             return "HIGH"
 
@@ -359,7 +381,9 @@ class AutonomousCleanupEngine:
 
                     # Try to find class name
                     class_pattern = re.compile(r"class\s+(\w+)", re.MULTILINE)
-                    class_matches = list(class_pattern.finditer(content[: match.start()]))
+                    class_matches = list(
+                        class_pattern.finditer(content[: match.start()])
+                    )
                     class_name = class_matches[-1].group(1) if class_matches else None
 
                     stubs.append(
@@ -404,7 +428,8 @@ class AutonomousCleanupEngine:
                     "groups": len(duplicates),
                     "total_files": sum(len(g.files) for g in duplicates),
                     "removable": sum(len(g.removable) for g in duplicates),
-                    "potential_savings_kb": sum(g.size_bytes for g in duplicates) / 1024,
+                    "potential_savings_kb": sum(g.size_bytes for g in duplicates)
+                    / 1024,
                 },
                 "todos": {
                     "total": len(todos),
@@ -417,7 +442,9 @@ class AutonomousCleanupEngine:
                         "TODO": len([t for t in todos if t.todo_type == "TODO"]),
                         "FIXME": len([t for t in todos if t.todo_type == "FIXME"]),
                         "HACK": len([t for t in todos if t.todo_type == "HACK"]),
-                        "DEPRECATED": len([t for t in todos if t.todo_type == "DEPRECATED"]),
+                        "DEPRECATED": len(
+                            [t for t in todos if t.todo_type == "DEPRECATED"]
+                        ),
                     },
                 },
                 "not_implemented": {
@@ -456,8 +483,12 @@ class AutonomousCleanupEngine:
         dup_details = report.details.get("duplicates", {})
         print(f"  Groups: {dup_details.get('groups', 0)}")
         print(f"  Total Files: {dup_details.get('total_files', 0)}")
-        print(f"  Removable: {Colors.GREEN}{dup_details.get('removable', 0)}{Colors.END}")
-        print(f"  Potential Savings: {dup_details.get('potential_savings_kb', 0):.2f} KB")
+        print(
+            f"  Removable: {Colors.GREEN}{dup_details.get('removable', 0)}{Colors.END}"
+        )
+        print(
+            f"  Potential Savings: {dup_details.get('potential_savings_kb', 0):.2f} KB"
+        )
 
         # TODOs
         print(f"\n{Colors.BOLD}📝 TODOs:{Colors.END}")
@@ -508,13 +539,18 @@ def main():
         help="Cleanup phase to execute",
     )
     cleanup_parser.add_argument(
-        "--dry-run", action="store_true", help="Show what would be cleaned without making changes"
+        "--dry-run",
+        action="store_true",
+        help="Show what would be cleaned without making changes",
     )
 
     # Report command
     report_parser = subparsers.add_parser("report", help="Generate report only")
     report_parser.add_argument(
-        "--output", type=Path, default=Path("CLEANUP_REPORT.json"), help="Output file for report"
+        "--output",
+        type=Path,
+        default=Path("CLEANUP_REPORT.json"),
+        help="Output file for report",
     )
 
     args = parser.parse_args()

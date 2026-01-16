@@ -63,8 +63,12 @@ class Plugin:
             threads = config.get("threads", min(8, os.cpu_count() or 1))
 
             # Validate compression level (1-22 for ZSTD)
-            if not isinstance(compression_level, int) or not (1 <= compression_level <= 22):
-                logger.error(f"Invalid compression level: {compression_level}. Must be 1-22")
+            if not isinstance(compression_level, int) or not (
+                1 <= compression_level <= 22
+            ):
+                logger.error(
+                    f"Invalid compression level: {compression_level}. Must be 1-22"
+                )
                 return False
 
             # Initialize compressor with optimized settings
@@ -77,7 +81,9 @@ class Plugin:
                 min_match=config.get("min_match", 3),
                 target_length=config.get("target_length", 16),
                 strategy=(
-                    zstd.STRATEGY_BTULTRA2 if compression_level >= 19 else zstd.STRATEGY_BTULTRA
+                    zstd.STRATEGY_BTULTRA2
+                    if compression_level >= 19
+                    else zstd.STRATEGY_BTULTRA
                 ),
                 threads=threads,
             )
@@ -96,7 +102,9 @@ class Plugin:
 
             # Streaming configuration
             self.chunk_size = chunk_size
-            self.stream_buffer_size = config.get("stream_buffer_size", 1024 * 1024)  # 1MB
+            self.stream_buffer_size = config.get(
+                "stream_buffer_size", 1024 * 1024
+            )  # 1MB
 
             self.initialized = True
             logger.info(
@@ -120,7 +128,11 @@ class Plugin:
             dict: Execution result with metrics
         """
         if not self.initialized:
-            return {"status": "FAILED", "error": "Plugin not initialized", "timestamp": time.time()}
+            return {
+                "status": "FAILED",
+                "error": "Plugin not initialized",
+                "timestamp": time.time(),
+            }
 
         try:
             start_time = time.time()
@@ -276,7 +288,8 @@ class Plugin:
             "compression_ratio": compression_ratio,
             "files_processed": 1,
             # MB/s
-            "throughput": (original_size / (1024 * 1024)) / (time.time() - time.time() or 0.001),
+            "throughput": (original_size / (1024 * 1024))
+            / (time.time() - time.time() or 0.001),
         }
 
     def _compress_directory(self, source: Path, target: Path) -> Dict[str, Any]:
@@ -300,7 +313,10 @@ class Plugin:
             # Compress the tar archive
             result = self._compress_file(tar_path, target)
             result.update(
-                {"original_size": total_original_size, "files_processed": files_processed}
+                {
+                    "original_size": total_original_size,
+                    "files_processed": files_processed,
+                }
             )
 
             return result
@@ -331,14 +347,17 @@ class Plugin:
             dst_file.write(remaining)
 
         decompressed_size = target.stat().st_size
-        compression_ratio = compressed_size / decompressed_size if decompressed_size > 0 else 0
+        compression_ratio = (
+            compressed_size / decompressed_size if decompressed_size > 0 else 0
+        )
 
         return {
             "original_size": decompressed_size,
             "compressed_size": compressed_size,
             "compression_ratio": compression_ratio,
             "files_processed": 1,
-            "throughput": (compressed_size / (1024 * 1024)) / (time.time() - time.time() or 0.001),
+            "throughput": (compressed_size / (1024 * 1024))
+            / (time.time() - time.time() or 0.001),
         }
 
     def _estimate_compression(self, source: Path) -> Dict[str, Any]:
@@ -391,7 +410,9 @@ class Plugin:
             total_original = source.stat().st_size
             files_processed = 1
         else:
-            total_original = sum(f.stat().st_size for f in source.rglob("*") if f.is_file())
+            total_original = sum(
+                f.stat().st_size for f in source.rglob("*") if f.is_file()
+            )
             files_processed = len([f for f in source.rglob("*") if f.is_file()])
 
         estimated_compressed = int(total_original * estimated_ratio)

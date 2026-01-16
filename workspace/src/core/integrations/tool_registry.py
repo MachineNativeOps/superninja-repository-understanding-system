@@ -101,7 +101,9 @@ class ToolDefinition:
 
         return {"valid": len(errors) == 0, "errors": errors}
 
-    def _validate_type(self, field_name: str, value: Any, schema: Dict[str, Any]) -> Optional[str]:
+    def _validate_type(
+        self, field_name: str, value: Any, schema: Dict[str, Any]
+    ) -> Optional[str]:
         """Validate a single field type"""
         expected_type = schema.get("type")
 
@@ -217,7 +219,9 @@ class ToolRegistry:
                 self._server_index[tool.server_name].remove(tool_name)
 
         # Remove aliases
-        aliases_to_remove = [alias for alias, name in self._aliases.items() if name == tool_name]
+        aliases_to_remove = [
+            alias for alias, name in self._aliases.items() if name == tool_name
+        ]
         for alias in aliases_to_remove:
             del self._aliases[alias]
 
@@ -308,12 +312,17 @@ class ToolRegistry:
                 continue
 
             # Search in name and description
-            if query_lower in tool.name.lower() or query_lower in tool.description.lower():
+            if (
+                query_lower in tool.name.lower()
+                or query_lower in tool.description.lower()
+            ):
                 results.append(tool)
 
         return results
 
-    def validate_arguments(self, tool_name: str, arguments: Dict[str, Any]) -> Dict[str, Any]:
+    def validate_arguments(
+        self, tool_name: str, arguments: Dict[str, Any]
+    ) -> Dict[str, Any]:
         """
         Validate arguments for a tool
 
@@ -376,7 +385,10 @@ def get_default_tool_definitions() -> List[ToolDefinition]:
                 "type": "object",
                 "properties": {
                     "code": {"type": "string", "description": "Source code to analyze"},
-                    "language": {"type": "string", "description": "Programming language"},
+                    "language": {
+                        "type": "string",
+                        "description": "Programming language",
+                    },
                     "metrics": {
                         "type": "array",
                         "items": {"type": "string"},
@@ -426,7 +438,10 @@ def get_default_tool_definitions() -> List[ToolDefinition]:
                 "type": "object",
                 "properties": {
                     "code": {"type": "string"},
-                    "framework": {"type": "string", "enum": ["jest", "pytest", "mocha", "junit"]},
+                    "framework": {
+                        "type": "string",
+                        "enum": ["jest", "pytest", "mocha", "junit"],
+                    },
                     "coverage_target": {"type": "number", "minimum": 0, "maximum": 100},
                 },
                 "required": ["code"],

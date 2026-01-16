@@ -60,7 +60,9 @@ class ExceptionManager:
     """例外管理器類別"""
 
     def __init__(
-        self, spec_path: str = "config/machine-spec.yaml", exceptions_db: str = "exceptions-db.yaml"
+        self,
+        spec_path: str = "config/machine-spec.yaml",
+        exceptions_db: str = "exceptions-db.yaml",
     ):
         """初始化例外管理器"""
         self.spec_path = Path(spec_path)
@@ -103,9 +105,13 @@ class ExceptionManager:
         }
 
         with open(self.exceptions_db_path, "w", encoding="utf-8") as f:
-            yaml.dump(data, f, allow_unicode=True, default_flow_style=False, sort_keys=False)
+            yaml.dump(
+                data, f, allow_unicode=True, default_flow_style=False, sort_keys=False
+            )
 
-    def validate_exception_request(self, exception: ComplianceException) -> Tuple[bool, List[str]]:
+    def validate_exception_request(
+        self, exception: ComplianceException
+    ) -> Tuple[bool, List[str]]:
         """驗證例外申請"""
         errors = []
 
@@ -131,7 +137,12 @@ class ExceptionManager:
             errors.append("到期日期格式無效，應為 ISO 8601 格式")
 
         # 驗證風險評估
-        if exception.risk_assessment.lower() not in ["low", "medium", "high", "critical"]:
+        if exception.risk_assessment.lower() not in [
+            "low",
+            "medium",
+            "high",
+            "critical",
+        ]:
             errors.append("風險評估必須為: low, medium, high, 或 critical")
 
         # 驗證緩解措施
@@ -239,26 +250,48 @@ class ExceptionManager:
         filtered_exceptions = self.exceptions
 
         if status_filter:
-            filtered_exceptions = [exc for exc in self.exceptions if exc["status"] == status_filter]
+            filtered_exceptions = [
+                exc for exc in self.exceptions if exc["status"] == status_filter
+            ]
 
         report = {
             "generated_at": datetime.now().isoformat(),
             "total_exceptions": len(self.exceptions),
             "by_status": {
                 "pending": len(
-                    [e for e in self.exceptions if e["status"] == ExceptionStatus.PENDING.value]
+                    [
+                        e
+                        for e in self.exceptions
+                        if e["status"] == ExceptionStatus.PENDING.value
+                    ]
                 ),
                 "approved": len(
-                    [e for e in self.exceptions if e["status"] == ExceptionStatus.APPROVED.value]
+                    [
+                        e
+                        for e in self.exceptions
+                        if e["status"] == ExceptionStatus.APPROVED.value
+                    ]
                 ),
                 "rejected": len(
-                    [e for e in self.exceptions if e["status"] == ExceptionStatus.REJECTED.value]
+                    [
+                        e
+                        for e in self.exceptions
+                        if e["status"] == ExceptionStatus.REJECTED.value
+                    ]
                 ),
                 "expired": len(
-                    [e for e in self.exceptions if e["status"] == ExceptionStatus.EXPIRED.value]
+                    [
+                        e
+                        for e in self.exceptions
+                        if e["status"] == ExceptionStatus.EXPIRED.value
+                    ]
                 ),
                 "revoked": len(
-                    [e for e in self.exceptions if e["status"] == ExceptionStatus.REVOKED.value]
+                    [
+                        e
+                        for e in self.exceptions
+                        if e["status"] == ExceptionStatus.REVOKED.value
+                    ]
                 ),
             },
             "exceptions": filtered_exceptions,
@@ -277,7 +310,10 @@ class ExceptionManager:
             if exc["id"] == exception_id:
                 if format == "yaml":
                     return yaml.dump(
-                        exc, allow_unicode=True, default_flow_style=False, sort_keys=False
+                        exc,
+                        allow_unicode=True,
+                        default_flow_style=False,
+                        sort_keys=False,
                     )
                 elif format == "json":
                     return json.dumps(exc, indent=2, ensure_ascii=False)
@@ -288,7 +324,9 @@ class ExceptionManager:
 def main():
     """主函數"""
     parser = argparse.ArgumentParser(description="合規例外管理工具 v1.0.0")
-    parser.add_argument("--spec", default="config/machine-spec.yaml", help="命名規範文件路徑")
+    parser.add_argument(
+        "--spec", default="config/machine-spec.yaml", help="命名規範文件路徑"
+    )
     parser.add_argument("--db", default="exceptions-db.yaml", help="例外資料庫文件路徑")
 
     subparsers = parser.add_subparsers(dest="command", help="可用命令")
@@ -299,7 +337,10 @@ def main():
     create_parser.add_argument("--type", required=True, help="例外類型")
     create_parser.add_argument("--justification", required=True, help="申請理由")
     create_parser.add_argument(
-        "--risk", required=True, choices=["low", "medium", "high", "critical"], help="風險評估"
+        "--risk",
+        required=True,
+        choices=["low", "medium", "high", "critical"],
+        help="風險評估",
     )
     create_parser.add_argument("--expiry", required=True, help="到期日期 (YYYY-MM-DD)")
     create_parser.add_argument("--resources", nargs="+", help="受影響的資源")

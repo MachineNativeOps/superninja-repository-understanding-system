@@ -80,12 +80,19 @@ class Plugin:
 
             # Encryption configuration
             algorithm = config.get("algorithm", "AES-256-GCM")
-            key_rotation_interval = config.get("key_rotation_interval", 86400)  # 24 hours
+            key_rotation_interval = config.get(
+                "key_rotation_interval", 86400
+            )  # 24 hours
             max_keys = config.get("max_keys", 100)
             key_derivation_iterations = config.get("key_derivation_iterations", 100000)
 
             # Validate algorithm
-            supported_algorithms = ["AES-256-GCM", "AES-256-CBC", "AES-256-CTR", "FERNET"]
+            supported_algorithms = [
+                "AES-256-GCM",
+                "AES-256-CBC",
+                "AES-256-CTR",
+                "FERNET",
+            ]
             if algorithm not in supported_algorithms:
                 logger.error(f"Unsupported encryption algorithm: {algorithm}")
                 return False
@@ -112,7 +119,9 @@ class Plugin:
             self.parallel_encryption = config.get("parallel_encryption", True)
 
             self.initialized = True
-            logger.info(f"AES encryption plugin initialized with algorithm: {algorithm}")
+            logger.info(
+                f"AES encryption plugin initialized with algorithm: {algorithm}"
+            )
 
             return True
 
@@ -131,7 +140,11 @@ class Plugin:
             dict: Execution result with encryption metadata
         """
         if not self.initialized:
-            return {"status": "FAILED", "error": "Plugin not initialized", "timestamp": time.time()}
+            return {
+                "status": "FAILED",
+                "error": "Plugin not initialized",
+                "timestamp": time.time(),
+            }
 
         try:
             start_time = time.time()
@@ -358,10 +371,14 @@ class Plugin:
                             with open(file_path, "rb") as f:
                                 file_data = f.read()
 
-                            encrypted_data, metadata = self._encrypt_data(file_data, key_id)
+                            encrypted_data, metadata = self._encrypt_data(
+                                file_data, key_id
+                            )
 
                             # Add encrypted file to zip
-                            zip_info = zipfile.ZipInfo(str(file_path.relative_to(source)))
+                            zip_info = zipfile.ZipInfo(
+                                str(file_path.relative_to(source))
+                            )
                             zip_file.writestr(zip_info, encrypted_data)
 
                             files_processed += 1
@@ -411,14 +428,18 @@ class Plugin:
             encrypted_data = src_file.read()
 
         if metadata:
-            decrypted_data, verify_metadata = self._decrypt_data(encrypted_data, metadata, key)
+            decrypted_data, verify_metadata = self._decrypt_data(
+                encrypted_data, metadata, key
+            )
         else:
             # Legacy decryption
             if self.algorithm == "FERNET":
                 fernet = Fernet(base64.urlsafe_b64encode(key))
                 decrypted_data = fernet.decrypt(encrypted_data)
             else:
-                raise ValueError("Cannot decrypt without metadata for non-FERNET algorithms")
+                raise ValueError(
+                    "Cannot decrypt without metadata for non-FERNET algorithms"
+                )
 
         # Write decrypted file
         with open(target, "wb") as dst_file:
@@ -430,7 +451,9 @@ class Plugin:
             "artifacts": [str(target)],
         }
 
-    def _encrypt_data(self, data: bytes, key_id: str) -> Tuple[bytes, EncryptionMetadata]:
+    def _encrypt_data(
+        self, data: bytes, key_id: str
+    ) -> Tuple[bytes, EncryptionMetadata]:
         """Encrypt data using configured algorithm"""
         key = self.encryption_keys[key_id]
 
@@ -466,7 +489,9 @@ class Plugin:
 
         return encrypted_data, metadata
 
-    def _encrypt_aes_gcm(self, data: bytes, key_id: str) -> Tuple[bytes, EncryptionMetadata]:
+    def _encrypt_aes_gcm(
+        self, data: bytes, key_id: str
+    ) -> Tuple[bytes, EncryptionMetadata]:
         """Encrypt using AES-256-GCM"""
         salt = os.urandom(16)
         iv = os.urandom(12)  # 96-bit IV for GCM
@@ -482,7 +507,9 @@ class Plugin:
         derived_key = kdf.derive(self.encryption_keys[key_id])
 
         # Encrypt
-        cipher = Cipher(algorithms.AES(derived_key), modes.GCM(iv), backend=self.backend)
+        cipher = Cipher(
+            algorithms.AES(derived_key), modes.GCM(iv), backend=self.backend
+        )
         encryptor = cipher.encryptor()
 
         encrypted_data = encryptor.update(data) + encryptor.finalize()
@@ -504,7 +531,9 @@ class Plugin:
 
         return result, metadata
 
-    def _encrypt_aes_cbc(self, data: bytes, key_id: str) -> Tuple[bytes, EncryptionMetadata]:
+    def _encrypt_aes_cbc(
+        self, data: bytes, key_id: str
+    ) -> Tuple[bytes, EncryptionMetadata]:
         """Encrypt using AES-256-CBC"""
         salt = os.urandom(16)
         iv = os.urandom(16)
@@ -524,7 +553,9 @@ class Plugin:
         padded_data = padder.update(data) + padder.finalize()
 
         # Encrypt
-        cipher = Cipher(algorithms.AES(derived_key), modes.CBC(iv), backend=self.backend)
+        cipher = Cipher(
+            algorithms.AES(derived_key), modes.CBC(iv), backend=self.backend
+        )
         encryptor = cipher.encryptor()
         encrypted_data = encryptor.update(padded_data) + encryptor.finalize()
 
@@ -544,7 +575,9 @@ class Plugin:
 
         return result, metadata
 
-    def _encrypt_aes_ctr(self, data: bytes, key_id: str) -> Tuple[bytes, EncryptionMetadata]:
+    def _encrypt_aes_ctr(
+        self, data: bytes, key_id: str
+    ) -> Tuple[bytes, EncryptionMetadata]:
         """Encrypt using AES-256-CTR"""
         salt = os.urandom(16)
         iv = os.urandom(16)
@@ -560,7 +593,9 @@ class Plugin:
         derived_key = kdf.derive(self.encryption_keys[key_id])
 
         # Encrypt
-        cipher = Cipher(algorithms.AES(derived_key), modes.CTR(iv), backend=self.backend)
+        cipher = Cipher(
+            algorithms.AES(derived_key), modes.CTR(iv), backend=self.backend
+        )
         encryptor = cipher.encryptor()
         encrypted_data = encryptor.update(data) + encryptor.finalize()
 
@@ -609,7 +644,9 @@ class Plugin:
             derived_key = kdf.derive(key)
 
             # Decrypt
-            cipher = Cipher(algorithms.AES(derived_key), modes.GCM(iv, tag), backend=self.backend)
+            cipher = Cipher(
+                algorithms.AES(derived_key), modes.GCM(iv, tag), backend=self.backend
+            )
             decryptor = cipher.decryptor()
             decrypted_data = decryptor.update(ciphertext) + decryptor.finalize()
 
@@ -634,7 +671,9 @@ class Plugin:
             derived_key = kdf.derive(key)
 
             # Decrypt
-            cipher = Cipher(algorithms.AES(derived_key), modes.CBC(iv), backend=self.backend)
+            cipher = Cipher(
+                algorithms.AES(derived_key), modes.CBC(iv), backend=self.backend
+            )
             decryptor = cipher.decryptor()
             padded_data = decryptor.update(ciphertext) + decryptor.finalize()
 
@@ -663,7 +702,9 @@ class Plugin:
             derived_key = kdf.derive(key)
 
             # Decrypt
-            cipher = Cipher(algorithms.AES(derived_key), modes.CTR(iv), backend=self.backend)
+            cipher = Cipher(
+                algorithms.AES(derived_key), modes.CTR(iv), backend=self.backend
+            )
             decryptor = cipher.decryptor()
             decrypted_data = decryptor.update(ciphertext) + decryptor.finalize()
 
@@ -698,7 +739,11 @@ class Plugin:
         # Save key
         self._save_key(key_id, key)
 
-        return {"key_id": key_id, "algorithm": self.algorithm, "created_at": key_info.created_at}
+        return {
+            "key_id": key_id,
+            "algorithm": self.algorithm,
+            "created_at": key_info.created_at,
+        }
 
     def _rotate_key(self) -> Dict[str, Any]:
         """Rotate encryption keys"""
@@ -810,7 +855,9 @@ class Plugin:
 
     def _get_active_key_id(self) -> Optional[str]:
         """Get the most recently active key"""
-        active_keys = [k_id for k_id, info in self.key_metadata.items() if info.is_active]
+        active_keys = [
+            k_id for k_id, info in self.key_metadata.items() if info.is_active
+        ]
         if not active_keys:
             return None
 

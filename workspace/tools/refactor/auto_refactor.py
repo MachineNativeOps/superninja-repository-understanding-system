@@ -24,11 +24,12 @@ Usage:
 ═══════════════════════════════════════════════════════════════════════════════
 """
 
-from refactor_evolution_workflow import REPORTS_DIR, RefactorEvolutionWorkflow
 import argparse
 import asyncio
 import sys
 from pathlib import Path
+
+from refactor_evolution_workflow import REPORTS_DIR, RefactorEvolutionWorkflow
 
 # Add parent directory to path
 # Note: Consider setting PYTHONPATH environment variable as an alternative

@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 """Integration tests for workflow system"""
 import pytest
-
 from core.contract_engine import ContractEngine
 
 

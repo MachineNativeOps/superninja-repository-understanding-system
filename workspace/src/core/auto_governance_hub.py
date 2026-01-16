@@ -145,12 +145,20 @@ class AutoGovernanceHub:
         "deployment_auto_approve": {
             "type": PolicyType.DEPLOYMENT,
             "enforcement": PolicyEnforcement.AUTO_CORRECT,
-            "auto_approve": ["risk_score_below_threshold", "tests_passing", "no_breaking_changes"],
+            "auto_approve": [
+                "risk_score_below_threshold",
+                "tests_passing",
+                "no_breaking_changes",
+            ],
         },
         "security_auto_enforce": {
             "type": PolicyType.SECURITY,
             "enforcement": PolicyEnforcement.STRICT,
-            "auto_approve": ["no_privilege_escalation", "encryption_enabled", "audit_trail_active"],
+            "auto_approve": [
+                "no_privilege_escalation",
+                "encryption_enabled",
+                "audit_trail_active",
+            ],
         },
     }
 
@@ -190,7 +198,10 @@ class AutoGovernanceHub:
                     "no_breaking_changes == true",
                     "rollback_available == true",
                 ],
-                auto_deny_conditions=["risk_score > 0.9", "security_vulnerabilities > 0"],
+                auto_deny_conditions=[
+                    "risk_score > 0.9",
+                    "security_vulnerabilities > 0",
+                ],
             )
         )
 
@@ -243,7 +254,9 @@ class AutoGovernanceHub:
         self.policies[policy.policy_id] = policy
         logger.info(f"Policy added: {policy.name}")
 
-    async def process_change_request(self, request: ChangeRequest) -> GovernanceDecision:
+    async def process_change_request(
+        self, request: ChangeRequest
+    ) -> GovernanceDecision:
         """
         Process change request with fully autonomous governance
 
@@ -293,7 +306,9 @@ class AutoGovernanceHub:
             policy_applied=policy_applied,
             reasoning=reasoning,
             conditions_met=[
-                r["conditions_met"] for r in evaluation_results if r.get("conditions_met")
+                r["conditions_met"]
+                for r in evaluation_results
+                if r.get("conditions_met")
             ],
             auto_corrections=auto_corrections,
         )
@@ -307,12 +322,15 @@ class AutoGovernanceHub:
         self.decisions.append(decision)
 
         logger.info(
-            f"Governance decision: {decision_id} - {action.value} " f"(policy: {policy_applied})"
+            f"Governance decision: {decision_id} - {action.value} "
+            f"(policy: {policy_applied})"
         )
 
         return decision
 
-    def _get_applicable_policies(self, change_type: ChangeType) -> List[GovernancePolicy]:
+    def _get_applicable_policies(
+        self, change_type: ChangeType
+    ) -> List[GovernancePolicy]:
         """Get policies applicable to change type"""
         type_mapping = {
             ChangeType.DEPLOYMENT: [PolicyType.DEPLOYMENT, PolicyType.SECURITY],
@@ -435,9 +453,15 @@ class AutoGovernanceHub:
         """Determine final action from all policy evaluations"""
         # Priority: DENY > AUTO_FIX > ESCALATE_TO_SYSTEM > APPROVE
 
-        deny_results = [r for r in evaluation_results if r["action"] == GovernanceAction.DENY]
+        deny_results = [
+            r for r in evaluation_results if r["action"] == GovernanceAction.DENY
+        ]
         if deny_results:
-            return (GovernanceAction.DENY, deny_results[0]["reason"], deny_results[0]["policy_id"])
+            return (
+                GovernanceAction.DENY,
+                deny_results[0]["reason"],
+                deny_results[0]["policy_id"],
+            )
 
         auto_fix_results = [
             r for r in evaluation_results if r["action"] == GovernanceAction.AUTO_FIX
@@ -450,7 +474,9 @@ class AutoGovernanceHub:
             )
 
         escalate_results = [
-            r for r in evaluation_results if r["action"] == GovernanceAction.ESCALATE_TO_SYSTEM
+            r
+            for r in evaluation_results
+            if r["action"] == GovernanceAction.ESCALATE_TO_SYSTEM
         ]
         if escalate_results:
             # System escalation means more analysis, not human approval
@@ -460,7 +486,9 @@ class AutoGovernanceHub:
                 escalate_results[0]["policy_id"],
             )
 
-        approve_results = [r for r in evaluation_results if r["action"] == GovernanceAction.APPROVE]
+        approve_results = [
+            r for r in evaluation_results if r["action"] == GovernanceAction.APPROVE
+        ]
         if approve_results:
             return (
                 GovernanceAction.APPROVE,
@@ -556,7 +584,9 @@ class AutoGovernanceHub:
                             "policy": policy.name,
                             "issue": check_result["issue"],
                             "severity": (
-                                "high" if policy.enforcement == PolicyEnforcement.STRICT else "low"
+                                "high"
+                                if policy.enforcement == PolicyEnforcement.STRICT
+                                else "low"
                             ),
                         }
                     )
@@ -571,7 +601,9 @@ class AutoGovernanceHub:
         self.compliance_cache[scope] = status
         return status
 
-    async def _check_policy_compliance(self, policy: GovernancePolicy) -> Dict[str, Any]:
+    async def _check_policy_compliance(
+        self, policy: GovernancePolicy
+    ) -> Dict[str, Any]:
         """Check compliance with a specific policy"""
         # Simulated compliance check
         await asyncio.sleep(0.01)
@@ -598,7 +630,9 @@ class AutoGovernanceHub:
 
     def get_statistics(self) -> Dict[str, Any]:
         """Get governance hub statistics"""
-        approval_rate = self.stats["auto_approved"] / max(self.stats["total_requests"], 1) * 100
+        approval_rate = (
+            self.stats["auto_approved"] / max(self.stats["total_requests"], 1) * 100
+        )
 
         return {
             "total_requests": self.stats["total_requests"],

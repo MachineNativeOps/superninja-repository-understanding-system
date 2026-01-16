@@ -51,8 +51,12 @@ class Settings(BaseSettings):
 
     # Quantum Backend Configuration
     cirq_default_backend: str = Field(default="simulator", env="CIRQ_DEFAULT_BACKEND")
-    qiskit_default_backend: str = Field(default="qasm_simulator", env="QISKIT_DEFAULT_BACKEND")
-    pennylane_default_backend: str = Field(default="default.qubit", env="PENNYLANE_DEFAULT_BACKEND")
+    qiskit_default_backend: str = Field(
+        default="qasm_simulator", env="QISKIT_DEFAULT_BACKEND"
+    )
+    pennylane_default_backend: str = Field(
+        default="default.qubit", env="PENNYLANE_DEFAULT_BACKEND"
+    )
 
     # Performance Monitoring
     metrics_enabled: bool = Field(default=True, env="METRICS_ENABLED")
@@ -63,8 +67,12 @@ class Settings(BaseSettings):
 
     # Rust Scheduler
     rust_scheduler_enabled: bool = Field(default=True, env="RUST_SCHEDULER_ENABLED")
-    rust_scheduler_max_latency: float = Field(default=600.0, env="RUST_SCHEDULER_MAX_LATENCY")
-    rust_scheduler_max_budget: float = Field(default=100.0, env="RUST_SCHEDULER_MAX_BUDGET")
+    rust_scheduler_max_latency: float = Field(
+        default=600.0, env="RUST_SCHEDULER_MAX_LATENCY"
+    )
+    rust_scheduler_max_budget: float = Field(
+        default=100.0, env="RUST_SCHEDULER_MAX_BUDGET"
+    )
 
     @validator("allowed_origins", pre=True)
     def parse_allowed_origins(cls, v):

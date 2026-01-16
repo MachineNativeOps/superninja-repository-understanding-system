@@ -91,7 +91,9 @@ def extract_violations_from_markdown(md_content: str) -> list[Violation]:
             parts = line.split("—")
             if len(parts) >= 2:
                 file_part = parts[0].strip("- *").strip()
-                reason_part = parts[1].strip() if len(parts) > 1 else "Unknown violation"
+                reason_part = (
+                    parts[1].strip() if len(parts) > 1 else "Unknown violation"
+                )
 
                 severity = "warning"
                 if "critical" in line.lower():
@@ -99,7 +101,9 @@ def extract_violations_from_markdown(md_content: str) -> list[Violation]:
                 elif "error" in line.lower():
                     severity = "error"
 
-                violations.append(Violation(file=file_part, reason=reason_part, severity=severity))
+                violations.append(
+                    Violation(file=file_part, reason=reason_part, severity=severity)
+                )
 
     return violations
 
@@ -157,7 +161,9 @@ def load_governance_report() -> GovernanceReport:
                 if isinstance(history_data, list):
                     history = [
                         HistoryEvent(
-                            timestamp=event.get("timestamp", datetime.now().isoformat()),
+                            timestamp=event.get(
+                                "timestamp", datetime.now().isoformat()
+                            ),
                             event=event.get("event", "Event"),
                             details=event.get("details", ""),
                             type=event.get("type", "scan"),
@@ -251,7 +257,11 @@ def load_governance_report() -> GovernanceReport:
 @app.get("/")
 async def root():
     """Root endpoint"""
-    return {"service": "Language Governance API", "version": "1.0.0", "status": "operational"}
+    return {
+        "service": "Language Governance API",
+        "version": "1.0.0",
+        "status": "operational",
+    }
 
 
 @app.get("/api/language-governance", response_model=GovernanceReport)

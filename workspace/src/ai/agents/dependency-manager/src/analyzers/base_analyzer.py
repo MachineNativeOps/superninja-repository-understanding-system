@@ -85,7 +85,9 @@ class BaseAnalyzer(ABC):
         logger.warning(f"在 {project_path} 中未找到 {self.ecosystem.value} 清單文件")
         return None
 
-    async def analyze(self, project_path: Path, analysis_id: str) -> Optional[DependencyAnalysis]:
+    async def analyze(
+        self, project_path: Path, analysis_id: str
+    ) -> Optional[DependencyAnalysis]:
         """
         分析專案依賴
 

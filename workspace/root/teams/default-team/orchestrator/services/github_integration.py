@@ -239,7 +239,9 @@ class GitHubIntegration:
         description: Optional[str] = None,
     ) -> Dict[str, Any]:
         """Create a deployment status."""
-        endpoint = f"/repos/{self._owner}/{self._repo}/deployments/{deployment_id}/statuses"
+        endpoint = (
+            f"/repos/{self._owner}/{self._repo}/deployments/{deployment_id}/statuses"
+        )
 
         data: Dict[str, Any] = {
             "state": state,
@@ -379,10 +381,14 @@ class GitHubEventHandler:
     def map_event(cls, github_event: str, action: Optional[str] = None) -> str:
         """Map GitHub event to team event type."""
         key = f"{github_event}.{action}" if action else github_event
-        return cls.EVENT_MAPPING.get(key, cls.EVENT_MAPPING.get(github_event, "UNKNOWN_EVENT"))
+        return cls.EVENT_MAPPING.get(
+            key, cls.EVENT_MAPPING.get(github_event, "UNKNOWN_EVENT")
+        )
 
     @classmethod
-    def parse_webhook(cls, headers: Dict[str, str], payload: Dict[str, Any]) -> Dict[str, Any]:
+    def parse_webhook(
+        cls, headers: Dict[str, str], payload: Dict[str, Any]
+    ) -> Dict[str, Any]:
         """Parse GitHub webhook payload into team event."""
         event_type = headers.get("X-GitHub-Event", "unknown")
         action = payload.get("action")

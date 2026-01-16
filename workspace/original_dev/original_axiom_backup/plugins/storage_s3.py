@@ -154,13 +154,19 @@ class Plugin:
             # Upload configuration
             self.upload_config = {
                 # 64MB
-                "multipart_threshold": config.get("multipart_threshold", 64 * 1024 * 1024),
+                "multipart_threshold": config.get(
+                    "multipart_threshold", 64 * 1024 * 1024
+                ),
                 # 16MB
-                "multipart_chunksize": config.get("multipart_chunksize", 16 * 1024 * 1024),
+                "multipart_chunksize": config.get(
+                    "multipart_chunksize", 16 * 1024 * 1024
+                ),
                 "max_concurrency": config.get("max_concurrency", 8),
                 "use_threads": config.get("use_threads", True),
                 "storage_class": config.get("storage_class", "STANDARD"),
-                "server_side_encryption": config.get("server_side_encryption", "AES256"),
+                "server_side_encryption": config.get(
+                    "server_side_encryption", "AES256"
+                ),
                 "metadata": config.get("default_metadata", {}),
                 "tags": config.get("default_tags", {}),
                 "content_type_detection": config.get("content_type_detection", True),
@@ -175,7 +181,9 @@ class Plugin:
                 self._create_bucket()
 
             self.initialized = True
-            logger.info(f"S3 storage plugin initialized for bucket: {s3_config.bucket_name}")
+            logger.info(
+                f"S3 storage plugin initialized for bucket: {s3_config.bucket_name}"
+            )
 
             return True
 
@@ -194,7 +202,11 @@ class Plugin:
             dict: Execution result with storage metrics
         """
         if not self.initialized:
-            return {"status": "FAILED", "error": "Plugin not initialized", "timestamp": time.time()}
+            return {
+                "status": "FAILED",
+                "error": "Plugin not initialized",
+                "timestamp": time.time(),
+            }
 
         try:
             start_time = time.time()
@@ -215,7 +227,9 @@ class Plugin:
             if operation_mode == "UPLOAD":
                 result = self._upload_to_s3(source_path, context)
             elif operation_mode == "DOWNLOAD":
-                result = self._download_from_s3(source_path, Path(context["target_path"]))
+                result = self._download_from_s3(
+                    source_path, Path(context["target_path"])
+                )
             elif operation_mode == "LIST":
                 result = self._list_s3_objects(context)
             elif operation_mode == "DELETE":
@@ -282,11 +296,16 @@ class Plugin:
 
                 # Upload test file
                 self.s3_client.put_object(
-                    Bucket=self.bucket.name, Key=test_key, Body=test_data, Metadata={"test": "true"}
+                    Bucket=self.bucket.name,
+                    Key=test_key,
+                    Body=test_data,
+                    Metadata={"test": "true"},
                 )
 
                 # Download and verify
-                response = self.s3_client.get_object(Bucket=self.bucket.name, Key=test_key)
+                response = self.s3_client.get_object(
+                    Bucket=self.bucket.name, Key=test_key
+                )
                 downloaded_data = response["Body"].read()
 
                 if downloaded_data == test_data:
@@ -379,8 +398,12 @@ class Plugin:
             futures = []
 
             for file_path, relative_path in files_to_upload:
-                s3_key = f"{s3_prefix}/{relative_path}" if s3_prefix else str(relative_path)
-                future = self.executor.submit(self._upload_file_internal, file_path, s3_key)
+                s3_key = (
+                    f"{s3_prefix}/{relative_path}" if s3_prefix else str(relative_path)
+                )
+                future = self.executor.submit(
+                    self._upload_file_internal, file_path, s3_key
+                )
                 futures.append((future, s3_key))
 
             for future, s3_key in futures:
@@ -395,7 +418,9 @@ class Plugin:
         else:
             # Sequential upload
             for file_path, relative_path in files_to_upload:
-                s3_key = f"{s3_prefix}/{relative_path}" if s3_prefix else str(relative_path)
+                s3_key = (
+                    f"{s3_prefix}/{relative_path}" if s3_prefix else str(relative_path)
+                )
                 try:
                     result = self._upload_file_internal(file_path, s3_key)
                     files_uploaded += 1
@@ -408,7 +433,9 @@ class Plugin:
         return {
             "files_processed": files_uploaded,
             "bytes_transferred": bytes_uploaded,
-            "transfer_speed": bytes_uploaded / (time.time() - time.time() or 0.001) / (1024 * 1024),
+            "transfer_speed": bytes_uploaded
+            / (time.time() - time.time() or 0.001)
+            / (1024 * 1024),
             "s3_objects": s3_objects,
             "artifacts": artifacts,
         }
@@ -434,7 +461,9 @@ class Plugin:
         }
 
         if self.upload_config["server_side_encryption"]:
-            upload_args["ServerSideEncryption"] = self.upload_config["server_side_encryption"]
+            upload_args["ServerSideEncryption"] = self.upload_config[
+                "server_side_encryption"
+            ]
 
         # Add metadata
         metadata = self.upload_config["metadata"].copy()
@@ -458,7 +487,9 @@ class Plugin:
 
         upload_time = time.time() - start_time
         file_size = local_file.stat().st_size
-        upload_speed = (file_size / (1024 * 1024)) / upload_time if upload_time > 0 else 0
+        upload_speed = (
+            (file_size / (1024 * 1024)) / upload_time if upload_time > 0 else 0
+        )
 
         s3_object = {
             "key": s3_key,
@@ -467,7 +498,11 @@ class Plugin:
             "storage_class": self.upload_config["storage_class"],
         }
 
-        return {"s3_object": s3_object, "bytes_uploaded": file_size, "upload_speed": upload_speed}
+        return {
+            "s3_object": s3_object,
+            "bytes_uploaded": file_size,
+            "upload_speed": upload_speed,
+        }
 
     def _multipart_upload(self, local_file: Path, s3_key: str) -> Dict[str, Any]:
         """Multipart upload for large files"""
@@ -481,7 +516,9 @@ class Plugin:
         }
 
         if self.upload_config["server_side_encryption"]:
-            initiate_args["ServerSideEncryption"] = self.upload_config["server_side_encryption"]
+            initiate_args["ServerSideEncryption"] = self.upload_config[
+                "server_side_encryption"
+            ]
 
         # Add metadata
         metadata = self.upload_config["metadata"].copy()
@@ -522,7 +559,9 @@ class Plugin:
                         Body=chunk,
                     )
 
-                    parts.append({"ETag": part_response["ETag"], "PartNumber": part_number})
+                    parts.append(
+                        {"ETag": part_response["ETag"], "PartNumber": part_number}
+                    )
 
                     bytes_uploaded += len(chunk)
                     part_number += 1
@@ -535,7 +574,9 @@ class Plugin:
                 "MultipartUpload": {"Parts": parts},
             }
 
-            complete_response = self.s3_client.complete_multipart_upload(**complete_args)
+            complete_response = self.s3_client.complete_multipart_upload(
+                **complete_args
+            )
 
         except Exception as e:
             # Abort multipart upload on error
@@ -549,7 +590,9 @@ class Plugin:
 
         upload_time = time.time() - start_time
         file_size = local_file.stat().st_size
-        upload_speed = (file_size / (1024 * 1024)) / upload_time if upload_time > 0 else 0
+        upload_speed = (
+            (file_size / (1024 * 1024)) / upload_time if upload_time > 0 else 0
+        )
 
         s3_object = {
             "key": s3_key,
@@ -588,7 +631,9 @@ class Plugin:
 
             download_time = time.time() - start_time
             file_size = local_file.stat().st_size
-            download_speed = (file_size / (1024 * 1024)) / download_time if download_time > 0 else 0
+            download_speed = (
+                (file_size / (1024 * 1024)) / download_time if download_time > 0 else 0
+            )
 
             return {
                 "files_processed": 1,
@@ -618,7 +663,7 @@ class Plugin:
                     s3_key = obj["Key"]
 
                     # Calculate local file path
-                    relative_path = s3_key[len(s3_prefix) :].lstrip("/")
+                    relative_path = s3_key[len(s3_prefix):].lstrip("/")
                     local_file = local_dir / relative_path
                     local_file.parent.mkdir(parents=True, exist_ok=True)
 
@@ -647,7 +692,9 @@ class Plugin:
         objects = []
         paginator = self.s3_client.get_paginator("list_objects_v2")
         pages = paginator.paginate(
-            Bucket=self.bucket.name, Prefix=prefix, PaginationConfig={"MaxItems": max_keys}
+            Bucket=self.bucket.name,
+            Prefix=prefix,
+            PaginationConfig={"MaxItems": max_keys},
         )
 
         for page in pages:
@@ -675,7 +722,7 @@ class Plugin:
 
         # Delete in batches of 1000 (S3 limit)
         for i in range(0, len(keys_to_delete), 1000):
-            batch = keys_to_delete[i : i + 1000]
+            batch = keys_to_delete[i: i + 1000]
 
             delete_objects = [{"Key": key} for key in batch]
 
@@ -689,7 +736,9 @@ class Plugin:
                 if "Errors" in response:
                     failed_count += len(response["Errors"])
                     for error in response["Errors"]:
-                        logger.error(f"Failed to delete {error['Key']}: {error['Message']}")
+                        logger.error(
+                            f"Failed to delete {error['Key']}: {error['Message']}"
+                        )
 
             except Exception as e:
                 logger.error(f"Batch delete failed: {e}")
@@ -707,7 +756,9 @@ class Plugin:
         for file_path in local_path.rglob("*"):
             if file_path.is_file():
                 relative_path = file_path.relative_to(local_path)
-                s3_key = f"{s3_prefix}/{relative_path}" if s3_prefix else str(relative_path)
+                s3_key = (
+                    f"{s3_prefix}/{relative_path}" if s3_prefix else str(relative_path)
+                )
                 local_files.add((s3_key, file_path))
 
         # Get S3 files
@@ -745,7 +796,9 @@ class Plugin:
         if delete_removed:
             s3_files_to_delete = s3_files - {s3_key for s3_key, _ in local_files}
             if s3_files_to_delete:
-                delete_result = self._delete_from_s3({"s3_keys": list(s3_files_to_delete)})
+                delete_result = self._delete_from_s3(
+                    {"s3_keys": list(s3_files_to_delete)}
+                )
                 deleted_count = delete_result["deleted_count"]
 
         return {
@@ -767,7 +820,9 @@ class Plugin:
         for s3_key in s3_keys:
             try:
                 # Get object metadata
-                response = self.s3_client.head_object(Bucket=self.bucket.name, Key=s3_key)
+                response = self.s3_client.head_object(
+                    Bucket=self.bucket.name, Key=s3_key
+                )
 
                 # Get local file hash if available
                 original_hash = response.get("Metadata", {}).get("file_hash")

@@ -809,7 +809,11 @@ def login(email, password):
         for result in session.exercise_results:
             total_score += result["result"]["score"]
 
-        avg_score = total_score / len(session.exercise_results) if session.exercise_results else 0.0
+        avg_score = (
+            total_score / len(session.exercise_results)
+            if session.exercise_results
+            else 0.0
+        )
         session.assessment_score = avg_score
 
         # Determine if passed
@@ -831,7 +835,9 @@ def login(email, password):
             agent_id=session.agent_id,
             skill_id=module.skill_id,
             assessed_level=(
-                module.target_level if session.status == "completed" else SkillLevel.NOVICE
+                module.target_level
+                if session.status == "completed"
+                else SkillLevel.NOVICE
             ),
             score=avg_score,
             confidence=0.8 if len(session.exercise_results) >= 3 else 0.5,
@@ -862,7 +868,9 @@ def login(email, password):
             return self.agent_skills[agent_id].get(skill_id, SkillLevel.NOVICE)
         return SkillLevel.NOVICE
 
-    def get_recommended_modules(self, agent_id: str, skill_id: str) -> list[TrainingModule]:
+    def get_recommended_modules(
+        self, agent_id: str, skill_id: str
+    ) -> list[TrainingModule]:
         """Get recommended training modules for an agent."""
         current_level = self.get_agent_skill_level(agent_id, skill_id)
 
@@ -892,7 +900,9 @@ def login(email, password):
             if self._has_completed_module(agent_id, module_id):
                 completed_modules.append(module_id)
 
-        progress = len(completed_modules) / len(path.modules) * 100 if path.modules else 0
+        progress = (
+            len(completed_modules) / len(path.modules) * 100 if path.modules else 0
+        )
 
         return {
             "path_id": path_id,

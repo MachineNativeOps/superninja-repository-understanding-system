@@ -37,7 +37,9 @@ class RefactorIndexValidator:
 
     def load_legacy_assets_index(self) -> dict:
         """Load the legacy assets index"""
-        assets_path = self.refactor_root / "01_deconstruction" / "legacy_assets_index.yaml"
+        assets_path = (
+            self.refactor_root / "01_deconstruction" / "legacy_assets_index.yaml"
+        )
         if not assets_path.exists():
             self.errors.append(f"legacy_assets_index.yaml not found at {assets_path}")
             return {}
@@ -45,7 +47,9 @@ class RefactorIndexValidator:
         with open(assets_path, encoding="utf-8") as f:
             return yaml.safe_load(f)
 
-    def validate_file_exists(self, file_path: str, cluster_id: str, field_name: str) -> bool:
+    def validate_file_exists(
+        self, file_path: str, cluster_id: str, field_name: str
+    ) -> bool:
         """Check if a referenced file exists"""
         if not file_path:
             return True  # Empty is okay for optional fields
@@ -55,7 +59,9 @@ class RefactorIndexValidator:
         full_path = (base_path / file_path).resolve()
 
         if not full_path.exists():
-            self.errors.append(f"Cluster '{cluster_id}': {field_name} file not found: {file_path}")
+            self.errors.append(
+                f"Cluster '{cluster_id}': {field_name} file not found: {file_path}"
+            )
             return False
         return True
 
@@ -84,11 +90,15 @@ class RefactorIndexValidator:
         required_fields = ["cluster_id", "domain", "status", "refactor_file"]
         for field in required_fields:
             if field not in cluster or not cluster[field]:
-                self.errors.append(f"Cluster '{cluster_id}': Missing required field '{field}'")
+                self.errors.append(
+                    f"Cluster '{cluster_id}': Missing required field '{field}'"
+                )
                 return False
 
         # Validate file references
-        self.validate_file_exists(cluster.get("refactor_file", ""), cluster_id, "refactor_file")
+        self.validate_file_exists(
+            cluster.get("refactor_file", ""), cluster_id, "refactor_file"
+        )
         self.validate_file_exists(
             cluster.get("deconstruction_file", ""), cluster_id, "deconstruction_file"
         )
@@ -201,7 +211,9 @@ def main():
     """Main entry point"""
     import argparse
 
-    parser = argparse.ArgumentParser(description="Validate refactor playbook index consistency")
+    parser = argparse.ArgumentParser(
+        description="Validate refactor playbook index consistency"
+    )
     parser.add_argument(
         "--repo-root",
         type=Path,

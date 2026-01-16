@@ -65,7 +65,10 @@ compatibility_matrix:
     def test_imu_data_fusion(self):
         """測試 IMU 資料融合"""
         # 模擬 IMU 資料
-        imu_data = {"acceleration": [0.1, 0.2, 9.8], "angular_velocity": [0.01, 0.02, 0.03]}
+        imu_data = {
+            "acceleration": [0.1, 0.2, 9.8],
+            "angular_velocity": [0.01, 0.02, 0.03],
+        }
 
         # 驗證融合結果
         fused_state = self.fuse_imu_data(imu_data)
@@ -79,7 +82,9 @@ compatibility_matrix:
         current_altitude = 0.0
 
         # 計算控制命令
-        motor_commands = self.compute_altitude_control(target_altitude, current_altitude)
+        motor_commands = self.compute_altitude_control(
+            target_altitude, current_altitude
+        )
 
         self.assertEqual(len(motor_commands), 4)  # 四軸無人機
         self.assertTrue(all(0 <= cmd <= 1.0 for cmd in motor_commands))

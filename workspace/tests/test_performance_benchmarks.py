@@ -16,18 +16,18 @@
 - 內存開銷: < 5%
 """
 
-from core.orchestrators import (
-    DependencyResolver,
-    EnterpriseSynergyMeshOrchestrator,
-    RetryPolicy,
-    TenantTier,
-)
 import asyncio
 import sys
 import time
 from pathlib import Path
 
 import pytest
+from core.orchestrators import (
+    DependencyResolver,
+    EnterpriseSynergyMeshOrchestrator,
+    RetryPolicy,
+    TenantTier,
+)
 
 # 添加 src 到路徑
 project_root = Path(__file__).parent.parent
@@ -219,7 +219,9 @@ class TestThroughputBenchmark:
         # 每個租戶執行 20 個任務
         for tenant_id in tenants:
             for i in range(20):
-                result = await orch.execute_with_retry(quick_task, f"task_{i}", tenant_id)
+                result = await orch.execute_with_retry(
+                    quick_task, f"task_{i}", tenant_id
+                )
                 if result.status.value == "success":
                     total_executions += 1
 
@@ -342,7 +344,9 @@ class TestRetryPerformanceOverhead:
 
         # 測量重試時間
         start = time.time()
-        result = await orch.execute_with_retry(flaky_task, "flaky_task", tenant_id, max_retries=2)
+        result = await orch.execute_with_retry(
+            flaky_task, "flaky_task", tenant_id, max_retries=2
+        )
         elapsed = time.time() - start
 
         # 驗證執行成功，且包含指數退避延遲

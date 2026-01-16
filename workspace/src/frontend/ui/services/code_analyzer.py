@@ -117,7 +117,9 @@ class AnalysisResult:
     repository: str = ""
     commit_hash: str = ""
     branch: str = "main"
-    analysis_timestamp: datetime = field(default_factory=lambda: datetime.now(timezone.utc))
+    analysis_timestamp: datetime = field(
+        default_factory=lambda: datetime.now(timezone.utc)
+    )
     duration: float = 0.0
     strategy: AnalysisStrategy = AnalysisStrategy.STANDARD
     issues: List[CodeIssue] = field(default_factory=list)
@@ -196,7 +198,10 @@ class BaseAnalyzer:
         return f"analysis:{hashlib.md5(content.encode()).hexdigest()}"
 
     async def analyze(
-        self, code: str, file_path: str, strategy: AnalysisStrategy = AnalysisStrategy.STANDARD
+        self,
+        code: str,
+        file_path: str,
+        strategy: AnalysisStrategy = AnalysisStrategy.STANDARD,
     ) -> List[CodeIssue]:
         """分析代碼 - 支持緩存"""
         cache_key = self._get_cache_key(code, file_path)
@@ -218,7 +223,9 @@ class BaseAnalyzer:
         # 存儲到緩存
         if self.cache_client:
             try:
-                cache_data = json.dumps([asdict(issue) for issue in issues], default=str)
+                cache_data = json.dumps(
+                    [asdict(issue) for issue in issues], default=str
+                )
                 self.cache_client.setex(cache_key, 3600, cache_data)  # 1 小時過期
             except Exception as e:
                 self.logger.warning(f"Cache storage failed: {e}")
@@ -494,7 +501,9 @@ class StaticAnalyzer(BaseAnalyzer):
 
         return "unknown"
 
-    async def _check_security(self, code: str, file_path: str, language: str) -> List[CodeIssue]:
+    async def _check_security(
+        self, code: str, file_path: str, language: str
+    ) -> List[CodeIssue]:
         """檢測安全漏洞"""
         issues = []
 
@@ -630,7 +639,9 @@ class StaticAnalyzer(BaseAnalyzer):
 
         return issues
 
-    def _detect_csrf_vulnerabilities(self, code: str, file_path: str) -> List[CodeIssue]:
+    def _detect_csrf_vulnerabilities(
+        self, code: str, file_path: str
+    ) -> List[CodeIssue]:
         """檢測 CSRF 漏洞"""
         issues = []
 
@@ -655,7 +666,9 @@ class StaticAnalyzer(BaseAnalyzer):
 
         return issues
 
-    def _detect_unsafe_deserialization(self, code: str, file_path: str) -> List[CodeIssue]:
+    def _detect_unsafe_deserialization(
+        self, code: str, file_path: str
+    ) -> List[CodeIssue]:
         """檢測不安全的反序列化"""
         issues = []
 
@@ -689,7 +702,9 @@ class StaticAnalyzer(BaseAnalyzer):
 
         return issues
 
-    def _detect_cryptographic_weaknesses(self, code: str, file_path: str) -> List[CodeIssue]:
+    def _detect_cryptographic_weaknesses(
+        self, code: str, file_path: str
+    ) -> List[CodeIssue]:
         """檢測密碼學弱點"""
         issues = []
 
@@ -768,12 +783,16 @@ class StaticAnalyzer(BaseAnalyzer):
 
         return issues
 
-    async def _check_performance(self, code: str, file_path: str, language: str) -> List[CodeIssue]:
+    async def _check_performance(
+        self, code: str, file_path: str, language: str
+    ) -> List[CodeIssue]:
         """檢測性能問題"""
         issues = []
 
         # 檢測 N+1 查詢
-        if re.search(r"for\s+\w+\s+in\s+.*:\s*.*\.(query|filter|get)\(", code, re.DOTALL):
+        if re.search(
+            r"for\s+\w+\s+in\s+.*:\s*.*\.(query|filter|get)\(", code, re.DOTALL
+        ):
             issues.append(
                 CodeIssue(
                     type=IssueType.PERFORMANCE,
@@ -895,7 +914,9 @@ class StaticAnalyzer(BaseAnalyzer):
 
         return issues
 
-    async def _check_compliance(self, code: str, file_path: str, language: str) -> List[CodeIssue]:
+    async def _check_compliance(
+        self, code: str, file_path: str, language: str
+    ) -> List[CodeIssue]:
         """檢測合規性問題"""
         issues = []
 
@@ -931,7 +952,9 @@ class StaticAnalyzer(BaseAnalyzer):
         """計算代碼重複率"""
         lines = code.split("\n")
         lines = [
-            line.strip() for line in lines if line.strip() and not line.strip().startswith("#")
+            line.strip()
+            for line in lines
+            if line.strip() and not line.strip().startswith("#")
         ]
         if len(lines) < 10:
             return 0.0
@@ -1055,7 +1078,8 @@ class CodeAnalysisEngine:
 async def main():
     """主程序"""
     logging.basicConfig(
-        level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+        level=logging.INFO,
+        format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
     )
 
     config = {

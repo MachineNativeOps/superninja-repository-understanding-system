@@ -223,7 +223,9 @@ class CheckRunWriter:
             check_run_id=check_run_id,
             url=response.get("html_url", ""),
             status=status,
-            started_at=datetime.utcnow() if status == CheckRunStatus.IN_PROGRESS else None,
+            started_at=(
+                datetime.utcnow() if status == CheckRunStatus.IN_PROGRESS else None
+            ),
         )
 
     async def update_check_run(
@@ -339,7 +341,7 @@ class CheckRunWriter:
         batch_size = 50
 
         for i in range(0, len(annotations), batch_size):
-            batch = annotations[i : i + batch_size]
+            batch = annotations[i: i + batch_size]
 
             output = CheckRunOutput(
                 title=output_title,
@@ -373,9 +375,13 @@ class CheckRunWriter:
         for attempt in range(self.max_retries):
             try:
                 if method == "post":
-                    return await self.http_client.post(url, data=payload, headers=headers)
+                    return await self.http_client.post(
+                        url, data=payload, headers=headers
+                    )
                 elif method == "patch":
-                    return await self.http_client.patch(url, data=payload, headers=headers)
+                    return await self.http_client.patch(
+                        url, data=payload, headers=headers
+                    )
                 else:
                     raise ValueError(f"Unsupported method: {method}")
 
@@ -535,7 +541,9 @@ class CommentWriter:
                 headers=headers,
             )
 
-            logger.info(f"Comment updated: repo={repo_full_name} pr={pr_number} id={existing_id}")
+            logger.info(
+                f"Comment updated: repo={repo_full_name} pr={pr_number} id={existing_id}"
+            )
 
             return CommentResult(
                 comment_id=existing_id,
@@ -552,7 +560,9 @@ class CommentWriter:
         comment_id = response.get("id", 0)
         self._created_comments[cache_key] = comment_id
 
-        logger.info(f"Comment created: repo={repo_full_name} pr={pr_number} id={comment_id}")
+        logger.info(
+            f"Comment created: repo={repo_full_name} pr={pr_number} id={comment_id}"
+        )
 
         return CommentResult(
             comment_id=comment_id,

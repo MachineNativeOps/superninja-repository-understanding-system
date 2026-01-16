@@ -64,7 +64,9 @@ class PlatformBootstrapRunner:
             with open(self.bootstrap_config_file, "r") as f:
                 return yaml.safe_load(f)
         except FileNotFoundError:
-            self.logger.error(f"Bootstrap config not found: {self.bootstrap_config_file}")
+            self.logger.error(
+                f"Bootstrap config not found: {self.bootstrap_config_file}"
+            )
             return {}
         except yaml.YAMLError as e:
             self.logger.error(f"Bootstrap config YAML error: {e}")
@@ -74,7 +76,12 @@ class PlatformBootstrapRunner:
         """Run command with timeout and capture output"""
         try:
             result = subprocess.run(
-                cmd, cwd=self.root_dir, timeout=timeout, capture_output=True, text=True, check=True
+                cmd,
+                cwd=self.root_dir,
+                timeout=timeout,
+                capture_output=True,
+                text=True,
+                check=True,
             )
             return {
                 "success": True,
@@ -97,13 +104,22 @@ class PlatformBootstrapRunner:
                 "stderr": e.stderr,
             }
         except Exception as e:
-            return {"success": False, "error": f"Unexpected error: {str(e)}", "returncode": -1}
+            return {
+                "success": False,
+                "error": f"Unexpected error: {str(e)}",
+                "returncode": -1,
+            }
 
     def step_validate_root_integrity(self) -> Dict[str, Any]:
         """Step 1: Validate root integrity using Root Validator"""
         self.logger.info("Step 1: Validating Root Layer Integrity")
 
-        cmd = [sys.executable, str(self.validator_path), "--root-dir", str(self.root_dir)]
+        cmd = [
+            sys.executable,
+            str(self.validator_path),
+            "--root-dir",
+            str(self.root_dir),
+        ]
         result = self.run_command(cmd, timeout=120)
 
         if result["success"]:
@@ -113,9 +129,12 @@ class PlatformBootstrapRunner:
                 with open(report_file, "r") as f:
                     validation_report = json.load(f)
 
-                self.bootstrap_context["evidence"]["validation_report"] = validation_report
+                self.bootstrap_context["evidence"][
+                    "validation_report"
+                ] = validation_report
                 self.bootstrap_context["evidence"]["validation_success"] = (
-                    validation_report.get("summary", {}).get("overall_status") == "PASSED"
+                    validation_report.get("summary", {}).get("overall_status")
+                    == "PASSED"
                 )
 
                 return {
@@ -163,12 +182,18 @@ class PlatformBootstrapRunner:
                 ["pgrep", "-f", "config-manager"], capture_output=True, text=True
             )
             if result.returncode != 0:
-                return {"status": "FAILED", "message": "Config manager process not found"}
+                return {
+                    "status": "FAILED",
+                    "message": "Config manager process not found",
+                }
 
             pids = result.stdout.strip().split("\n")
 
         except Exception as e:
-            return {"status": "FAILED", "message": f"Failed to verify config-manager: {str(e)}"}
+            return {
+                "status": "FAILED",
+                "message": f"Failed to verify config-manager: {str(e)}",
+            }
 
         # Governance status (simulated for now, but with real verification)
         governance_status = {
@@ -201,7 +226,10 @@ class PlatformBootstrapRunner:
         # Check modules config exists
         modules_file = self.root_dir / "root.modules.yaml"
         if not modules_file.exists():
-            return {"status": "FAILED", "message": "Modules configuration file not found"}
+            return {
+                "status": "FAILED",
+                "message": "Modules configuration file not found",
+            }
 
         try:
             with open(modules_file, "r") as f:
@@ -250,7 +278,9 @@ class PlatformBootstrapRunner:
             with open(status_file, "w") as f:
                 json.dump(registry_status, f, indent=2)
 
-            self.bootstrap_context["evidence"]["module_registry_status"] = registry_status
+            self.bootstrap_context["evidence"][
+                "module_registry_status"
+            ] = registry_status
 
             return {
                 "status": "PASSED",
@@ -259,7 +289,10 @@ class PlatformBootstrapRunner:
             }
 
         except Exception as e:
-            return {"status": "FAILED", "message": f"Failed to load module registry: {str(e)}"}
+            return {
+                "status": "FAILED",
+                "message": f"Failed to load module registry: {str(e)}",
+            }
 
     def step_initialize_trust_chain(self) -> Dict[str, Any]:
         """Step 4: Initialize trust chain (simulated)"""
@@ -355,7 +388,9 @@ class PlatformBootstrapRunner:
             }
 
         pipeline_steps = (
-            bootstrap_config.get("spec", {}).get("bootstrap_pipeline", {}).get("steps", [])
+            bootstrap_config.get("spec", {})
+            .get("bootstrap_pipeline", {})
+            .get("steps", [])
         )
 
         # Execute each step
@@ -397,7 +432,9 @@ class PlatformBootstrapRunner:
                                 "details": result.get("details", {}),
                             }
                         )
-                        self.logger.error(f"❌ Step {step_name} failed: {result['message']}")
+                        self.logger.error(
+                            f"❌ Step {step_name} failed: {result['message']}"
+                        )
 
                         # For critical failures, abort bootstrap
                         if step_config.get("failure_action") == "abort_bootstrap":
@@ -439,7 +476,9 @@ class PlatformBootstrapRunner:
 def main():
     import argparse
 
-    parser = argparse.ArgumentParser(description="MachineNativeOps Platform Bootstrap Runner")
+    parser = argparse.ArgumentParser(
+        description="MachineNativeOps Platform Bootstrap Runner"
+    )
     parser.add_argument("--root-dir", default=".", help="Root directory for bootstrap")
     parser.add_argument("--verbose", "-v", action="store_true", help="Verbose logging")
 

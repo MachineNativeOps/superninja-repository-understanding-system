@@ -52,7 +52,9 @@ class CirqBackend:
             raise ImportError("Cirq is not installed. Install with: pip install cirq")
 
         settings = get_settings()
-        self.api_key_path = api_key_path or settings.cirq_api_key_path or os.getenv("CIRQ_API_KEY")
+        self.api_key_path = (
+            api_key_path or settings.cirq_api_key_path or os.getenv("CIRQ_API_KEY")
+        )
         self.simulator = Simulator() if CIRQ_AVAILABLE else None
         self.client = None
 
@@ -62,12 +64,18 @@ class CirqBackend:
                     credentials = service_account.Credentials.from_service_account_file(
                         self.api_key_path
                     )
-                    self.client = quantum.QuantumEngineServiceClient(credentials=credentials)
-                    logger.info("Initialized CirqBackend with Google Quantum Engine client")
+                    self.client = quantum.QuantumEngineServiceClient(
+                        credentials=credentials
+                    )
+                    logger.info(
+                        "Initialized CirqBackend with Google Quantum Engine client"
+                    )
                 else:
                     logger.warning(f"API key path does not exist: {self.api_key_path}")
             except Exception as e:
-                logger.warning(f"Failed to initialize Google Quantum Engine client: {str(e)}")
+                logger.warning(
+                    f"Failed to initialize Google Quantum Engine client: {str(e)}"
+                )
                 self.client = None
         else:
             logger.info("CirqBackend initialized for local simulation only")
@@ -119,9 +127,13 @@ class CirqBackend:
                 processor_id = config.get("processor_id", "default_processor")
                 result = self._run_cloud(circuit, shots, processor_id)
             else:
-                raise BackendError(f"Invalid backend type or missing cloud client: {backend_type}")
+                raise BackendError(
+                    f"Invalid backend type or missing cloud client: {backend_type}"
+                )
 
-            logger.info(f"Executed circuit '{circuit_type}' with {shots} shots on {backend_type}")
+            logger.info(
+                f"Executed circuit '{circuit_type}' with {shots} shots on {backend_type}"
+            )
             return {
                 "result": result,
                 "backend": "cirq",
@@ -159,7 +171,9 @@ class CirqBackend:
             logger.error(f"Simulator execution error: {str(e)}", exc_info=True)
             raise BackendError(f"Simulator execution failed: {str(e)}")
 
-    def _run_cloud(self, circuit: Circuit, shots: int, processor_id: str) -> Dict[str, Any]:
+    def _run_cloud(
+        self, circuit: Circuit, shots: int, processor_id: str
+    ) -> Dict[str, Any]:
         """
         Run circuit on Google Quantum Engine cloud QPU.
 
@@ -192,7 +206,9 @@ class CirqBackend:
             # Wait for job completion (simplified - in production, use async
             # polling)
             result = self.client.get_quantum_result(job.name)
-            histogram = {str(key): int(value) for key, value in result.histogram.items()}
+            histogram = {
+                str(key): int(value) for key, value in result.histogram.items()
+            }
 
             return histogram
         except exceptions.GoogleAPIError as e:

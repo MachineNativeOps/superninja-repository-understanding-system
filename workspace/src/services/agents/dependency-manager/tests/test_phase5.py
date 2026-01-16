@@ -11,6 +11,35 @@ Copyright (c) 2024 SynergyMesh
 MIT License
 """
 
+import os
+
+# 模擬導入（測試時需要確保路徑正確）
+import sys
+import unittest
+from datetime import datetime
+
+from strategy.case_study_engine import (
+    CaseStudy,
+    CaseStudyEngine,
+    DevelopmentStrategy,
+    EvolutionPhase,
+    PhaseType,
+)
+from strategy.evolution_tracker import (
+    DevelopmentPhase,
+    EvolutionRoadmap,
+    EvolutionTracker,
+    MaturityLevel,
+    PhaseTransition,
+    ProjectMaturity,
+)
+from strategy.resource_optimizer import (
+    AllocationStrategy,
+    BudgetAllocation,
+    OptimizationResult,
+    ResourceOptimizer,
+    TeamAllocation,
+)
 from strategy.strategy_advisor import (
     CapabilityLevel,
     MarketMaturity,
@@ -21,34 +50,6 @@ from strategy.strategy_advisor import (
     TechCapability,
     TechCapabilityAssessment,
 )
-from strategy.resource_optimizer import (
-    AllocationStrategy,
-    BudgetAllocation,
-    OptimizationResult,
-    ResourceOptimizer,
-    TeamAllocation,
-)
-from strategy.evolution_tracker import (
-    DevelopmentPhase,
-    EvolutionRoadmap,
-    EvolutionTracker,
-    MaturityLevel,
-    PhaseTransition,
-    ProjectMaturity,
-)
-from strategy.case_study_engine import (
-    CaseStudy,
-    CaseStudyEngine,
-    DevelopmentStrategy,
-    EvolutionPhase,
-    PhaseType,
-)
-import os
-
-# 模擬導入（測試時需要確保路徑正確）
-import sys
-import unittest
-from datetime import datetime
 
 # 添加 src 目錄到路徑
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "src"))
@@ -105,7 +106,9 @@ class TestCaseStudyEngine(unittest.TestCase):
 
     def test_find_cases_by_strategy(self):
         """測試根據策略查找案例"""
-        results = self.engine.find_cases_by_strategy(DevelopmentStrategy.COMMERCIAL_ORIENTED)
+        results = self.engine.find_cases_by_strategy(
+            DevelopmentStrategy.COMMERCIAL_ORIENTED
+        )
         self.assertGreater(len(results), 0)
 
         # 結果應該包含案例和階段
@@ -216,10 +219,22 @@ class TestStrategyAdvisor(unittest.TestCase):
                     "certifications": ["AWS"],
                     "tools": {"Python": "expert"},
                 },
-                "frontend": {"level": "intermediate", "team_members": 3, "experience_years": 2.0},
+                "frontend": {
+                    "level": "intermediate",
+                    "team_members": 3,
+                    "experience_years": 2.0,
+                },
             },
-            "infrastructure": {"has_cloud": True, "has_ci_cd": True, "has_monitoring": True},
-            "process": {"has_agile": True, "has_code_review": True, "has_testing": True},
+            "infrastructure": {
+                "has_cloud": True,
+                "has_ci_cd": True,
+                "has_monitoring": True,
+            },
+            "process": {
+                "has_agile": True,
+                "has_code_review": True,
+                "has_testing": True,
+            },
             "culture": {"innovation_mindset": 0.7, "customer_focus": 0.8},
         }
 
@@ -354,7 +369,9 @@ class TestResourceOptimizer(unittest.TestCase):
 
         # 增長導向應該有較多行銷預算
         if "marketing" in allocation.allocations:
-            marketing_ratio = allocation.allocations["marketing"].amount / allocation.total_budget
+            marketing_ratio = (
+                allocation.allocations["marketing"].amount / allocation.total_budget
+            )
             self.assertGreater(marketing_ratio, 0.2)
 
     def test_optimize_budget_with_constraints(self):
@@ -429,7 +446,9 @@ class TestResourceOptimizer(unittest.TestCase):
     def test_sensitivity_analysis(self):
         """測試敏感度分析"""
         result = self.optimizer.generate_optimization(
-            total_budget=1000000, target_headcount=10, strategy=AllocationStrategy.BALANCED
+            total_budget=1000000,
+            target_headcount=10,
+            strategy=AllocationStrategy.BALANCED,
         )
 
         sensitivity = result.sensitivity_analysis
@@ -439,7 +458,9 @@ class TestResourceOptimizer(unittest.TestCase):
 
     def test_resource_report_generation(self):
         """測試資源優化報告生成"""
-        result = self.optimizer.generate_optimization(total_budget=1500000, target_headcount=15)
+        result = self.optimizer.generate_optimization(
+            total_budget=1500000, target_headcount=15
+        )
 
         report = self.optimizer.generate_report(result)
 
@@ -549,7 +570,9 @@ class TestEvolutionTracker(unittest.TestCase):
         """測試轉換到指定階段"""
         maturity = self.tracker.assess_maturity({"has_mvp": True, "customers": 5})
 
-        transition = self.tracker.evaluate_transition(maturity, target_phase=DevelopmentPhase.SCALE)
+        transition = self.tracker.evaluate_transition(
+            maturity, target_phase=DevelopmentPhase.SCALE
+        )
 
         self.assertEqual(transition.to_phase, DevelopmentPhase.SCALE)
 
@@ -563,7 +586,9 @@ class TestEvolutionTracker(unittest.TestCase):
         }
 
         maturity = self.tracker.assess_maturity(project_data)
-        roadmap = self.tracker.create_roadmap(maturity, target_phase=DevelopmentPhase.SCALE)
+        roadmap = self.tracker.create_roadmap(
+            maturity, target_phase=DevelopmentPhase.SCALE
+        )
 
         self.assertIsInstance(roadmap, EvolutionRoadmap)
         self.assertEqual(roadmap.target_phase, DevelopmentPhase.SCALE)
@@ -576,7 +601,9 @@ class TestEvolutionTracker(unittest.TestCase):
         """測試路線圖里程碑"""
         maturity = self.tracker.assess_maturity({"has_mvp": False})
 
-        roadmap = self.tracker.create_roadmap(maturity, target_phase=DevelopmentPhase.EFFICIENCY)
+        roadmap = self.tracker.create_roadmap(
+            maturity, target_phase=DevelopmentPhase.EFFICIENCY
+        )
 
         for milestone in roadmap.milestones:
             self.assertIn("phase", milestone)
@@ -595,7 +622,9 @@ class TestEvolutionTracker(unittest.TestCase):
 
         maturity = self.tracker.assess_maturity(project_data)
         transition = self.tracker.evaluate_transition(maturity)
-        roadmap = self.tracker.create_roadmap(maturity, target_phase=DevelopmentPhase.EXPANSION)
+        roadmap = self.tracker.create_roadmap(
+            maturity, target_phase=DevelopmentPhase.EXPANSION
+        )
 
         report = self.tracker.generate_report(maturity, transition, roadmap)
 
@@ -645,7 +674,9 @@ class TestIntegration(unittest.TestCase):
         # 3. 資源優化
         optimizer = ResourceOptimizer()
         optimization = optimizer.generate_optimization(
-            total_budget=1500000, target_headcount=15, strategy=AllocationStrategy.GROWTH_FOCUSED
+            total_budget=1500000,
+            target_headcount=15,
+            strategy=AllocationStrategy.GROWTH_FOCUSED,
         )
 
         self.assertIsInstance(optimization, OptimizationResult)
@@ -662,14 +693,22 @@ class TestIntegration(unittest.TestCase):
     def test_data_consistency(self):
         """測試數據一致性"""
         optimizer = ResourceOptimizer()
-        result = optimizer.generate_optimization(total_budget=1000000, target_headcount=10)
+        result = optimizer.generate_optimization(
+            total_budget=1000000, target_headcount=10
+        )
 
         # 預算分配總和應等於營運預算部分
-        budget_sum = sum(cat.amount for cat in result.budget_allocation.allocations.values())
-        self.assertAlmostEqual(budget_sum, result.budget_allocation.total_budget, places=0)
+        budget_sum = sum(
+            cat.amount for cat in result.budget_allocation.allocations.values()
+        )
+        self.assertAlmostEqual(
+            budget_sum, result.budget_allocation.total_budget, places=0
+        )
 
         # 團隊成本不應超過人力預算
-        self.assertLessEqual(result.team_allocation.total_cost, 1000000 * 0.7)  # 70% 用於人力
+        self.assertLessEqual(
+            result.team_allocation.total_cost, 1000000 * 0.7
+        )  # 70% 用於人力
 
 
 if __name__ == "__main__":

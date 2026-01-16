@@ -116,7 +116,9 @@ class InstantAgent(ABC):
     def __init__(self, config: AgentConfig):
         self.config = config
         self.agent_id = str(uuid.uuid4())[:8]
-        self.logger = logging.getLogger(f"agent-{config.agent_type.value}-{self.agent_id}")
+        self.logger = logging.getLogger(
+            f"agent-{config.agent_type.value}-{self.agent_id}"
+        )
 
     @abstractmethod
     async def execute(self, input_data: Any) -> Any:
@@ -128,7 +130,9 @@ class InstantAgent(ABC):
         last_error = None
         for attempt in range(self.config.retry_count):
             try:
-                return await asyncio.wait_for(self.execute(input_data), timeout=self.config.timeout)
+                return await asyncio.wait_for(
+                    self.execute(input_data), timeout=self.config.timeout
+                )
             except asyncio.TimeoutError:
                 last_error = f"Timeout after {self.config.timeout}s"
                 self.logger.warning(f"Attempt {attempt + 1} timeout")
@@ -136,7 +140,9 @@ class InstantAgent(ABC):
                 last_error = str(e)
                 self.logger.warning(f"Attempt {attempt + 1} failed: {e}")
 
-        raise RuntimeError(f"All {self.config.retry_count} attempts failed: {last_error}")
+        raise RuntimeError(
+            f"All {self.config.retry_count} attempts failed: {last_error}"
+        )
 
 
 class AnalyzerAgent(InstantAgent):
@@ -252,7 +258,9 @@ class ParallelAgentPool:
         parallelism = parallelism or config.parallelism
         parallelism = min(parallelism, len(inputs), self.max_workers)
 
-        self.logger.info(f"Executing {len(inputs)} tasks with parallelism={parallelism}")
+        self.logger.info(
+            f"Executing {len(inputs)} tasks with parallelism={parallelism}"
+        )
 
         # Create agent instances
         agents = [agent_class(config) for _ in range(parallelism)]
@@ -266,7 +274,9 @@ class ParallelAgentPool:
                 return await agent.execute_with_retry(input_data)
 
         # Execute all tasks
-        tasks = [process_one(agents[i % parallelism], inp) for i, inp in enumerate(inputs)]
+        tasks = [
+            process_one(agents[i % parallelism], inp) for i, inp in enumerate(inputs)
+        ]
 
         results = await asyncio.gather(*tasks, return_exceptions=True)
 
@@ -292,7 +302,10 @@ class InstantPipeline:
     """
 
     def __init__(
-        self, name: str, stages: List[Dict[str, Any]], thresholds: Optional[LatencyThreshold] = None
+        self,
+        name: str,
+        stages: List[Dict[str, Any]],
+        thresholds: Optional[LatencyThreshold] = None,
     ):
         self.name = name
         self.stages = stages
@@ -359,7 +372,9 @@ class InstantPipeline:
                 error=str(e),
             )
 
-    async def _execute_stage(self, stage_config: Dict[str, Any], input_data: Any) -> StageResult:
+    async def _execute_stage(
+        self, stage_config: Dict[str, Any], input_data: Any
+    ) -> StageResult:
         """Execute a single pipeline stage"""
         stage_id = stage_config.get("name", str(uuid.uuid4())[:8])
         agent_type = stage_config.get("agent", AgentType.ANALYZER)
@@ -373,14 +388,20 @@ class InstantPipeline:
             # Get agent class
             agent_class = self._get_agent_class(agent_type)
             config = AgentConfig(
-                agent_type=agent_type if isinstance(agent_type, AgentType) else AgentType.ANALYZER,
+                agent_type=(
+                    agent_type
+                    if isinstance(agent_type, AgentType)
+                    else AgentType.ANALYZER
+                ),
                 parallelism=parallelism,
                 max_latency=max_latency,
             )
 
             # Execute
             if parallelism > 1 and isinstance(input_data, list):
-                results = await self.agent_pool.execute_parallel(agent_class, config, input_data)
+                results = await self.agent_pool.execute_parallel(
+                    agent_class, config, input_data
+                )
                 output = {"batch_results": results, "count": len(results)}
             else:
                 agent = agent_class(config)
@@ -481,9 +502,24 @@ def create_instant_feature_pipeline() -> InstantPipeline:
         name="instant-feature-delivery",
         stages=[
             {"name": "analysis", "agent": "analyzer", "latency": 5.0, "parallelism": 1},
-            {"name": "generation", "agent": "generator", "latency": 30.0, "parallelism": 64},
-            {"name": "validation", "agent": "validator", "latency": 10.0, "parallelism": 32},
-            {"name": "deployment", "agent": "deployer", "latency": 30.0, "parallelism": 32},
+            {
+                "name": "generation",
+                "agent": "generator",
+                "latency": 30.0,
+                "parallelism": 64,
+            },
+            {
+                "name": "validation",
+                "agent": "validator",
+                "latency": 10.0,
+                "parallelism": 32,
+            },
+            {
+                "name": "deployment",
+                "agent": "deployer",
+                "latency": 30.0,
+                "parallelism": 32,
+            },
         ],
     )
 
@@ -493,10 +529,25 @@ def create_instant_fix_pipeline() -> InstantPipeline:
     return InstantPipeline(
         name="instant-fix-delivery",
         stages=[
-            {"name": "detection", "agent": "analyzer", "latency": 1.0, "parallelism": 1},
-            {"name": "diagnosis", "agent": "analyzer", "latency": 2.0, "parallelism": 8},
+            {
+                "name": "detection",
+                "agent": "analyzer",
+                "latency": 1.0,
+                "parallelism": 1,
+            },
+            {
+                "name": "diagnosis",
+                "agent": "analyzer",
+                "latency": 2.0,
+                "parallelism": 8,
+            },
             {"name": "fix", "agent": "generator", "latency": 10.0, "parallelism": 16},
-            {"name": "deployment", "agent": "deployer", "latency": 30.0, "parallelism": 32},
+            {
+                "name": "deployment",
+                "agent": "deployer",
+                "latency": 30.0,
+                "parallelism": 32,
+            },
         ],
     )
 
@@ -507,8 +558,18 @@ def create_instant_optimization_pipeline() -> InstantPipeline:
         name="instant-optimization",
         stages=[
             {"name": "analysis", "agent": "analyzer", "latency": 5.0, "parallelism": 4},
-            {"name": "optimization", "agent": "generator", "latency": 15.0, "parallelism": 16},
-            {"name": "deployment", "agent": "deployer", "latency": 30.0, "parallelism": 16},
+            {
+                "name": "optimization",
+                "agent": "generator",
+                "latency": 15.0,
+                "parallelism": 16,
+            },
+            {
+                "name": "deployment",
+                "agent": "deployer",
+                "latency": 30.0,
+                "parallelism": 16,
+            },
         ],
     )
 
@@ -533,27 +594,35 @@ class InstantExecutionEngine:
         """Setup default pipelines"""
         self.executor.register_pipeline("feature", create_instant_feature_pipeline())
         self.executor.register_pipeline("fix", create_instant_fix_pipeline())
-        self.executor.register_pipeline("optimization", create_instant_optimization_pipeline())
+        self.executor.register_pipeline(
+            "optimization", create_instant_optimization_pipeline()
+        )
 
     def _setup_default_handlers(self):
         """Setup default event handlers"""
         # Git push handler
         self.executor.register_handler(
             "git_push",
-            lambda data: "feature" if data.get("branch") in ["main", "develop"] else None,
+            lambda data: (
+                "feature" if data.get("branch") in ["main", "develop"] else None
+            ),
         )
 
         # Issue created handler
         self.executor.register_handler(
             "issue_created",
-            lambda data: "feature" if "feature-request" in data.get("labels", []) else None,
+            lambda data: (
+                "feature" if "feature-request" in data.get("labels", []) else None
+            ),
         )
 
         # Error detected handler
         self.executor.register_handler("error_detected", lambda data: "fix")
 
         # Performance degradation handler
-        self.executor.register_handler("performance_degradation", lambda data: "optimization")
+        self.executor.register_handler(
+            "performance_degradation", lambda data: "optimization"
+        )
 
     async def execute_feature(self, requirements: Dict[str, Any]) -> PipelineResult:
         """Execute instant feature delivery"""

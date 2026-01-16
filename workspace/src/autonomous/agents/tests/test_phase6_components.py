@@ -11,27 +11,21 @@ Tests for all Phase 6 components:
 - GuardrailSystem (護欄系統)
 """
 
-from core.ai_constitution.policy_as_prompt import (
-    EnforcementAction,
-    PolicyAsPrompt,
-    PolicyType,
+import asyncio
+import os
+import sys
+
+import pytest
+from core.ai_constitution.adaptive_guidelines import (
+    AdaptiveGuidelineEngine,
+    ContextualGuideline,
+    DomainGuideline,
+    LearningGuideline,
 )
-from core.ai_constitution.operational_rules import (
-    CommunicationRule,
-    DataHandlingRule,
-    OperationalRuleEngine,
-    ResourceUsageRule,
-    RuleCategory,
-    RuleSeverity,
-    SystemAccessRule,
-)
-from core.ai_constitution.guardrails import (
-    ComplianceGuardrail,
-    EthicsGuardrail,
-    GuardrailSeverity,
-    GuardrailSystem,
-    GuardrailType,
-    SafetyGuardrail,
+from core.ai_constitution.constitution_engine import (
+    ActionProposal,
+    ConstitutionEngine,
+    VerdictType,
 )
 from core.ai_constitution.fundamental_laws import (
     EnforcementLevel,
@@ -42,22 +36,28 @@ from core.ai_constitution.fundamental_laws import (
     LawZero,
     ProposedAction,
 )
-from core.ai_constitution.constitution_engine import (
-    ActionProposal,
-    ConstitutionEngine,
-    VerdictType,
+from core.ai_constitution.guardrails import (
+    ComplianceGuardrail,
+    EthicsGuardrail,
+    GuardrailSeverity,
+    GuardrailSystem,
+    GuardrailType,
+    SafetyGuardrail,
 )
-from core.ai_constitution.adaptive_guidelines import (
-    AdaptiveGuidelineEngine,
-    ContextualGuideline,
-    DomainGuideline,
-    LearningGuideline,
+from core.ai_constitution.operational_rules import (
+    CommunicationRule,
+    DataHandlingRule,
+    OperationalRuleEngine,
+    ResourceUsageRule,
+    RuleCategory,
+    RuleSeverity,
+    SystemAccessRule,
 )
-import asyncio
-import os
-import sys
-
-import pytest
+from core.ai_constitution.policy_as_prompt import (
+    EnforcementAction,
+    PolicyAsPrompt,
+    PolicyType,
+)
 
 # Add the project root to the path
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", ".."))
@@ -240,7 +240,9 @@ class TestDataHandlingRule:
         }
         result = rule.check(operation)
         # May still have warnings but should pass critical checks
-        critical_violations = [v for v in result.violations if v.severity == RuleSeverity.CRITICAL]
+        critical_violations = [
+            v for v in result.violations if v.severity == RuleSeverity.CRITICAL
+        ]
         assert len(critical_violations) == 0
 
 
@@ -376,7 +378,9 @@ class TestLearningGuideline:
 
         # Record outcomes
         for i in range(12):
-            learning.record_outcome({"type": "backup", "method": "incremental"}, {"success": True})
+            learning.record_outcome(
+                {"type": "backup", "method": "incremental"}, {"success": True}
+            )
 
         recommendation = learning.get_recommendation("backup")
         # May or may not have recommendation depending on confidence
@@ -430,7 +434,10 @@ class TestConstitutionEngine:
         )
         verdict = await engine.evaluate(proposal)
         assert verdict is not None
-        assert verdict.verdict_type in [VerdictType.APPROVED, VerdictType.APPROVED_WITH_CONDITIONS]
+        assert verdict.verdict_type in [
+            VerdictType.APPROVED,
+            VerdictType.APPROVED_WITH_CONDITIONS,
+        ]
 
     @pytest.mark.asyncio
     async def test_engine_evaluate_harmful_action(self):

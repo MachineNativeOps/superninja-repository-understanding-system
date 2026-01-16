@@ -67,7 +67,9 @@ class ConstitutionVerdict:
     priority: VerdictPriority
 
     # 三層驗證結果
-    fundamental_law_results: dict[str, LawVerificationResult] = field(default_factory=dict)
+    fundamental_law_results: dict[str, LawVerificationResult] = field(
+        default_factory=dict
+    )
     operational_rule_results: dict[str, RuleCheckResult] = field(default_factory=dict)
     guideline_recommendations: dict[str, Any] = field(default_factory=dict)
 
@@ -235,7 +237,9 @@ class ConstitutionEngine:
         data = f"{proposal.proposal_id}{datetime.utcnow().isoformat()}"
         return f"VERDICT_{hashlib.sha256(data.encode()).hexdigest()[:12]}"
 
-    def _check_absolute_violations(self, results: dict[str, LawVerificationResult]) -> list[str]:
+    def _check_absolute_violations(
+        self, results: dict[str, LawVerificationResult]
+    ) -> list[str]:
         """檢查是否有絕對違規"""
         violations = []
 
@@ -245,7 +249,9 @@ class ConstitutionEngine:
 
         return violations
 
-    def _check_operational_rules(self, proposal: ActionProposal) -> dict[str, RuleCheckResult]:
+    def _check_operational_rules(
+        self, proposal: ActionProposal
+    ) -> dict[str, RuleCheckResult]:
         """檢查操作規則"""
         results = {}
 
@@ -259,7 +265,9 @@ class ConstitutionEngine:
             "requestor": proposal.requestor,
             "encrypted": proposal.parameters.get("encrypted", False),
             "access_logged": proposal.parameters.get("access_logged", False),
-            "authorization_verified": proposal.parameters.get("authorization_verified", False),
+            "authorization_verified": proposal.parameters.get(
+                "authorization_verified", False
+            ),
         }
 
         # 檢查所有適用規則
@@ -514,9 +522,12 @@ class ConstitutionEngine:
 
         if stats["total_verdicts"] > 0:
             stats["approval_rate"] = round(
-                (stats["approved"] + stats["modified"]) / stats["total_verdicts"] * 100, 2
+                (stats["approved"] + stats["modified"]) / stats["total_verdicts"] * 100,
+                2,
             )
-            stats["denial_rate"] = round(stats["denied"] / stats["total_verdicts"] * 100, 2)
+            stats["denial_rate"] = round(
+                stats["denied"] / stats["total_verdicts"] * 100, 2
+            )
         else:
             stats["approval_rate"] = 0
             stats["denial_rate"] = 0

@@ -241,10 +241,41 @@ class VirtualExpertTeam:
         combined_text = (query + " " + (code or "")).lower()
 
         domain_keywords = {
-            "security": ["password", "authentication", "injection", "xss", "csrf", "密碼", "安全"],
-            "database": ["sql", "query", "index", "transaction", "數據庫", "索引", "查詢"],
-            "performance": ["optimize", "performance", "slow", "cache", "性能", "優化", "緩存"],
-            "architecture": ["design", "pattern", "microservice", "架構", "設計", "模式"],
+            "security": [
+                "password",
+                "authentication",
+                "injection",
+                "xss",
+                "csrf",
+                "密碼",
+                "安全",
+            ],
+            "database": [
+                "sql",
+                "query",
+                "index",
+                "transaction",
+                "數據庫",
+                "索引",
+                "查詢",
+            ],
+            "performance": [
+                "optimize",
+                "performance",
+                "slow",
+                "cache",
+                "性能",
+                "優化",
+                "緩存",
+            ],
+            "architecture": [
+                "design",
+                "pattern",
+                "microservice",
+                "架構",
+                "設計",
+                "模式",
+            ],
             "ai": ["model", "prediction", "machine learning", "ml", "模型", "預測"],
             "deployment": ["deploy", "ci/cd", "docker", "kubernetes", "部署", "容器"],
             "nlp": ["intent", "language", "text", "意圖", "語言", "文本"],
@@ -296,7 +327,11 @@ class VirtualExpertTeam:
 
         # Synthesize results
         result = self._synthesize_results(
-            consultation, expert_responses, all_issues, all_suggestions, all_recommendations
+            consultation,
+            expert_responses,
+            all_issues,
+            all_suggestions,
+            all_recommendations,
         )
 
         # Update consultation status
@@ -317,7 +352,9 @@ class VirtualExpertTeam:
         }
 
         if consultation.type == ConsultationType.CODE_REVIEW and consultation.code:
-            review = expert.review_code(consultation.code, consultation.language or "python")
+            review = expert.review_code(
+                consultation.code, consultation.language or "python"
+            )
             response.update(review)
 
         elif consultation.type in [
@@ -356,22 +393,30 @@ class VirtualExpertTeam:
 
         # Sort issues by severity
         severity_order = {"critical": 0, "high": 1, "medium": 2, "low": 3}
-        unique_issues.sort(key=lambda x: severity_order.get(x.get("severity", "low"), 4))
+        unique_issues.sort(
+            key=lambda x: severity_order.get(x.get("severity", "low"), 4)
+        )
 
         # Deduplicate recommendations
         unique_recommendations = list(dict.fromkeys(all_recommendations))
 
         # Calculate quality score
         quality_scores = [
-            r.get("quality_score", 0.8) for r in expert_responses if "quality_score" in r
+            r.get("quality_score", 0.8)
+            for r in expert_responses
+            if "quality_score" in r
         ]
-        avg_quality = sum(quality_scores) / len(quality_scores) if quality_scores else 0.8
+        avg_quality = (
+            sum(quality_scores) / len(quality_scores) if quality_scores else 0.8
+        )
 
         # Generate summary
         summary = self._generate_summary(consultation, expert_responses, unique_issues)
 
         # Generate action items
-        action_items = self._generate_action_items(unique_issues, unique_recommendations)
+        action_items = self._generate_action_items(
+            unique_issues, unique_recommendations
+        )
 
         return ConsultationResult(
             consultation_id=consultation.id,

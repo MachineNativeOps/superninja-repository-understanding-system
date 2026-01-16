@@ -277,7 +277,7 @@ class EventBus:
 
         # Maintain max history size
         if len(self._history) > self.max_history:
-            self._history = self._history[-self.max_history :]
+            self._history = self._history[-self.max_history:]
 
     def get_history(
         self,

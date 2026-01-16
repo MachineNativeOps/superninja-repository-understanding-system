@@ -169,7 +169,9 @@ class NamespaceConverter:
                     print(f"✓ Updated {file_path}: {result.conversions} conversions")
             elif result.conversions > 0 and self.dry_run:
                 if self.verbose:
-                    print(f"⊡ Would update {file_path}: {result.conversions} conversions")
+                    print(
+                        f"⊡ Would update {file_path}: {result.conversions} conversions"
+                    )
 
         except Exception as e:
             error_msg = f"Error processing {file_path}: {e}"
@@ -278,7 +280,9 @@ class NamespaceConverter:
         report.append("=" * 80)
 
         if total_conversions == 0 and total_warnings == 0:
-            report.append("✓ All files are compliant with MachineNativeOps namespace standards")
+            report.append(
+                "✓ All files are compliant with MachineNativeOps namespace standards"
+            )
         elif total_errors == 0:
             report.append("✓ Conversion completed successfully")
         else:
@@ -288,7 +292,9 @@ class NamespaceConverter:
 
         return "\n".join(report)
 
-    def save_report(self, report: str, output_path: str = "namespace-conversion-report.txt"):
+    def save_report(
+        self, report: str, output_path: str = "namespace-conversion-report.txt"
+    ):
         """Save report to file."""
         try:
             with open(output_path, "w", encoding="utf-8") as f:
@@ -323,11 +329,19 @@ Examples:
 
     parser.add_argument("path", type=str, help="File or directory path to process")
     parser.add_argument(
-        "--dry-run", action="store_true", help="Show what would be changed without modifying files"
+        "--dry-run",
+        action="store_true",
+        help="Show what would be changed without modifying files",
     )
-    parser.add_argument("--verbose", "-v", action="store_true", help="Enable verbose output")
-    parser.add_argument("--validate", action="store_true", help="Validate only, do not convert")
-    parser.add_argument("--report", action="store_true", help="Generate detailed report file")
+    parser.add_argument(
+        "--verbose", "-v", action="store_true", help="Enable verbose output"
+    )
+    parser.add_argument(
+        "--validate", action="store_true", help="Validate only, do not convert"
+    )
+    parser.add_argument(
+        "--report", action="store_true", help="Generate detailed report file"
+    )
     parser.add_argument(
         "--report-path",
         type=str,
@@ -345,7 +359,9 @@ Examples:
 
     # Create converter
     converter = NamespaceConverter(
-        dry_run=args.dry_run or args.validate, verbose=args.verbose, validate_only=args.validate
+        dry_run=args.dry_run or args.validate,
+        verbose=args.verbose,
+        validate_only=args.validate,
     )
 
     # Load namespace config if available

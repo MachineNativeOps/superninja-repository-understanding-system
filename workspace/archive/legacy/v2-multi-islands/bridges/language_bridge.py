@@ -55,7 +55,10 @@ class LanguageBridge:
         return self._project_root
 
     def establish_bridge(
-        self, source_island: str, target_island: str, protocol: str = BridgeProtocol.REST
+        self,
+        source_island: str,
+        target_island: str,
+        protocol: str = BridgeProtocol.REST,
     ) -> bool:
         """
         建立島嶼間橋接
@@ -83,7 +86,9 @@ class LanguageBridge:
         print(f"[Bridge][SUCCESS] 橋接已建立: {bridge_id}")
         return True
 
-    def send_message(self, bridge_id: str, message: dict[str, Any]) -> dict[str, Any] | None:
+    def send_message(
+        self, bridge_id: str, message: dict[str, Any]
+    ) -> dict[str, Any] | None:
         """
         透過橋接發送訊息
 

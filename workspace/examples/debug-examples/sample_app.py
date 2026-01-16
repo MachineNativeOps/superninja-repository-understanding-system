@@ -22,13 +22,17 @@ class Calculator:
     def subtract(self, a: float, b: float) -> float:
         """減法"""
         result = a - b
-        self.history.append({"operation": "subtract", "operands": [a, b], "result": result})
+        self.history.append(
+            {"operation": "subtract", "operands": [a, b], "result": result}
+        )
         return result
 
     def multiply(self, a: float, b: float) -> float:
         """乘法"""
         result = a * b
-        self.history.append({"operation": "multiply", "operands": [a, b], "result": result})
+        self.history.append(
+            {"operation": "multiply", "operands": [a, b], "result": result}
+        )
         return result
 
     def divide(self, a: float, b: float) -> float:
@@ -39,7 +43,9 @@ class Calculator:
             raise ValueError("Cannot divide by zero")
 
         result = a / b
-        self.history.append({"operation": "divide", "operands": [a, b], "result": result})
+        self.history.append(
+            {"operation": "divide", "operands": [a, b], "result": result}
+        )
         return result
 
     def get_history(self) -> List[Dict]:

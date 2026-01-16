@@ -71,7 +71,9 @@ class AutomationEngine:
         self, name: str, description: str, tasks: List[WorkflowTask]
     ) -> Workflow:
         """創建工作流"""
-        workflow = Workflow(id=str(uuid.uuid4()), name=name, description=description, tasks=tasks)
+        workflow = Workflow(
+            id=str(uuid.uuid4()), name=name, description=description, tasks=tasks
+        )
 
         self.workflows[workflow.id] = workflow
         logger.info(f"📝 創建工作流: {name}")

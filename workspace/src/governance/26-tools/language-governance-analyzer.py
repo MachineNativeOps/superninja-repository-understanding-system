@@ -55,7 +55,9 @@ class LanguageGovernanceAnalyzer:
             with open(self.policy_file, encoding="utf-8") as f:
                 return yaml.safe_load(f)
         except Exception as e:
-            print(f"❌ Error loading policy file {self.policy_file}: {e}", file=sys.stderr)
+            print(
+                f"❌ Error loading policy file {self.policy_file}: {e}", file=sys.stderr
+            )
             sys.exit(1)
 
     def _get_language_from_extension(self, ext: str) -> str:
@@ -106,19 +108,22 @@ class LanguageGovernanceAnalyzer:
                 # Check if language is allowed
                 if not self._is_allowed_language(language, allowed_languages):
                     # Check if it's a data format
-                    data_formats = self.policy.get("global_policy", {}).get("data_formats", [])
+                    data_formats = self.policy.get("global_policy", {}).get(
+                        "data_formats", []
+                    )
                     if language not in data_formats:
                         self.violations.append(
                             {
                                 "type": "LANGUAGE_NOT_ALLOWED",
                                 "severity": "ERROR",
-                                "file": str(file_path.relative_to(self.repo_root)),
+                                "file": str(
+                                    file_path.relative_to(
+                                        self.repo_root)),
                                 "directory": dir_pattern,
                                 "language": language,
                                 "allowed": allowed_languages,
                                 "message": f"{language} is not allowed in {dir_pattern}",
-                            }
-                        )
+                            })
 
                 # Check forbidden patterns
                 for pattern in forbidden_patterns:
@@ -197,7 +202,9 @@ class LanguageGovernanceAnalyzer:
             lines.append("### ✅ No Language Governance Violations\n")
             lines.append("All files comply with the language policy.\n")
         else:
-            lines.append(f"### ⚠️ Language Governance Violations ({len(self.violations)})\n")
+            lines.append(
+                f"### ⚠️ Language Governance Violations ({len(self.violations)})\n"
+            )
 
             by_severity = defaultdict(list)
             for v in self.violations:
@@ -207,7 +214,9 @@ class LanguageGovernanceAnalyzer:
                 violations = by_severity.get(severity, [])
                 if violations:
                     icon = (
-                        "🔴" if severity == "CRITICAL" else ("⚠️" if severity == "ERROR" else "💡")
+                        "🔴"
+                        if severity == "CRITICAL"
+                        else ("⚠️" if severity == "ERROR" else "💡")
                     )
                     lines.append(f"\n#### {icon} {severity} ({len(violations)})\n")
 
@@ -229,9 +238,9 @@ class LanguageGovernanceAnalyzer:
             for directory, languages in sorted(self.stats.items()):
                 if languages:
                     lines.append(f"**{directory}**")
-                    for lang, count in sorted(languages.items(), key=lambda x: x[1], reverse=True)[
-                        :5
-                    ]:
+                    for lang, count in sorted(
+                        languages.items(), key=lambda x: x[1], reverse=True
+                    )[:5]:
                         lines.append(f"- {lang}: {count} files")
                     lines.append("")
 
@@ -276,7 +285,9 @@ class LanguageGovernanceAnalyzer:
             for severity in ["CRITICAL", "ERROR", "WARNING"]:
                 if severity in by_severity:
                     icon = (
-                        "🔴" if severity == "CRITICAL" else ("⚠️" if severity == "ERROR" else "💡")
+                        "🔴"
+                        if severity == "CRITICAL"
+                        else ("⚠️" if severity == "ERROR" else "💡")
                     )
                     print(f"  {icon} {severity}: {by_severity[severity]}")
 
@@ -301,7 +312,9 @@ class LanguageGovernanceAnalyzer:
 
 def main():
     """Main function"""
-    parser = argparse.ArgumentParser(description="Language Governance Analyzer for CI/CD")
+    parser = argparse.ArgumentParser(
+        description="Language Governance Analyzer for CI/CD"
+    )
     parser.add_argument("--config", required=True, help="Path to language-policy.yaml")
     parser.add_argument("--repo-root", default=".", help="Repository root directory")
     parser.add_argument(

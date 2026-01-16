@@ -88,7 +88,9 @@ class GovernanceValidator:
             if item.is_dir() and not item.name.startswith("."):
                 actual_dirs.add(item.name)
 
-        self.log(f"Found {len(actual_dirs)} directories in {self.governance_root}", "info")
+        self.log(
+            f"Found {len(actual_dirs)} directories in {self.governance_root}", "info"
+        )
         return actual_dirs
 
     def validate_dimension_structure(self, dimension: Dict) -> bool:
@@ -103,7 +105,9 @@ class GovernanceValidator:
         # Check for required dimension.yaml file
         dimension_file = path / "dimension.yaml"
         if not dimension_file.exists():
-            self.log(f"Dimension '{name}' missing required dimension.yaml file", "warning")
+            self.log(
+                f"Dimension '{name}' missing required dimension.yaml file", "warning"
+            )
 
         return True
 
@@ -134,10 +138,14 @@ class GovernanceValidator:
             # Unnumbered directory - should be shared resource
             return True, "shared"
 
-    def check_orphaned_directories(self, governance_map: Dict, actual_dirs: Set[str]) -> List[str]:
+    def check_orphaned_directories(
+        self, governance_map: Dict, actual_dirs: Set[str]
+    ) -> List[str]:
         """Find directories not registered in governance-map.yaml"""
         registered_dims = {d["name"] for d in governance_map.get("dimensions", [])}
-        registered_shared = {s["name"] for s in governance_map.get("shared_resources", [])}
+        registered_shared = {
+            s["name"] for s in governance_map.get("shared_resources", [])
+        }
         registered_all = registered_dims | registered_shared
 
         # Add known special directories
@@ -159,7 +167,8 @@ class GovernanceValidator:
             for dep in depends_on:
                 if dep not in all_dimensions:
                     self.log(
-                        f"Dimension '{name}' depends on non-existent dimension '{dep}'", "error"
+                        f"Dimension '{name}' depends on non-existent dimension '{dep}'",
+                        "error",
                     )
                     valid = False
 
@@ -178,16 +187,18 @@ class GovernanceValidator:
                     deadline = datetime.strptime(deadline_str, "%Y-%m-%d")
                     if deadline < datetime.now():
                         self.log(
-                            f"Migration overdue: {asset} (deadline: {deadline_str})", "warning"
+                            f"Migration overdue: {asset} (deadline: {deadline_str})",
+                            "warning",
                         )
                     else:
                         days_left = (deadline - datetime.now()).days
                         self.log(
-                            f"Migration pending: {asset} ({days_left} days until {deadline_str})",
-                            "info",
-                        )
+                            f"Migration pending: {asset} ({days_left} days until {deadline_str})", "info", )
                 except ValueError:
-                    self.log(f"Invalid deadline format for {asset}: {deadline_str}", "warning")
+                    self.log(
+                        f"Invalid deadline format for {asset}: {deadline_str}",
+                        "warning",
+                    )
 
     def validate(self) -> bool:
         """Run all validation checks"""
@@ -229,7 +240,10 @@ class GovernanceValidator:
         orphaned = self.check_orphaned_directories(governance_map, actual_dirs)
         if orphaned:
             for orphan in orphaned:
-                self.log(f"Orphaned directory not in governance-map.yaml: {orphan}", "warning")
+                self.log(
+                    f"Orphaned directory not in governance-map.yaml: {orphan}",
+                    "warning",
+                )
         else:
             self.log("No orphaned directories found", "success")
 
@@ -298,12 +312,16 @@ Examples:
         help="Path to governance root directory (default: governance)",
     )
 
-    parser.add_argument("--verbose", "-v", action="store_true", help="Enable verbose output")
+    parser.add_argument(
+        "--verbose", "-v", action="store_true", help="Enable verbose output"
+    )
 
     args = parser.parse_args()
 
     # Run validation
-    validator = GovernanceValidator(governance_root=args.governance_root, verbose=args.verbose)
+    validator = GovernanceValidator(
+        governance_root=args.governance_root, verbose=args.verbose
+    )
 
     success = validator.validate()
 

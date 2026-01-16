@@ -135,7 +135,13 @@ class ContextUnderstandingEngine:
                 "錯誤",
                 "問題",
             ],
-            IntentCategory.REFACTORING: ["重構", "refactor", "restructure", "clean", "整理"],
+            IntentCategory.REFACTORING: [
+                "重構",
+                "refactor",
+                "restructure",
+                "clean",
+                "整理",
+            ],
             IntentCategory.NEW_FEATURE: [
                 "新增",
                 "add",
@@ -153,15 +159,36 @@ class ContextUnderstandingEngine:
                 "漏洞",
                 "加密",
             ],
-            IntentCategory.DOCUMENTATION: ["文檔", "document", "readme", "說明", "註解", "comment"],
+            IntentCategory.DOCUMENTATION: [
+                "文檔",
+                "document",
+                "readme",
+                "說明",
+                "註解",
+                "comment",
+            ],
             IntentCategory.TESTING: ["測試", "test", "unit", "integration", "驗證"],
             IntentCategory.DEPLOYMENT: ["部署", "deploy", "release", "發布", "上線"],
-            IntentCategory.QUERY: ["查詢", "query", "find", "search", "get", "查找", "獲取"],
+            IntentCategory.QUERY: [
+                "查詢",
+                "query",
+                "find",
+                "search",
+                "get",
+                "查找",
+                "獲取",
+            ],
         }
 
         # 隱含需求模式
         self._implicit_patterns = {
-            "performance": ["大量數據", "high volume", "scalability", "concurrent", "並發"],
+            "performance": [
+                "大量數據",
+                "high volume",
+                "scalability",
+                "concurrent",
+                "並發",
+            ],
             "security": ["用戶資料", "user data", "password", "token", "敏感"],
             "reliability": ["生產環境", "production", "critical", "重要", "24/7"],
             "pagination": ["列表", "list", "all", "全部", "findMany"],
@@ -190,7 +217,9 @@ class ContextUnderstandingEngine:
         relevant_contexts = self._get_relevant_contexts(user_id, request)
 
         # 3. 識別隱含需求
-        implicit_requirements = self._identify_implicit_requirements(request, relevant_contexts)
+        implicit_requirements = self._identify_implicit_requirements(
+            request, relevant_contexts
+        )
         parsed_intent.implicit_requirements = implicit_requirements
 
         # 4. 檢測歧義
@@ -200,7 +229,9 @@ class ContextUnderstandingEngine:
         clarification_needed = self._generate_clarifications(ambiguities, parsed_intent)
 
         # 6. 推薦方案
-        recommended_approach = self._recommend_approach(parsed_intent, relevant_contexts)
+        recommended_approach = self._recommend_approach(
+            parsed_intent, relevant_contexts
+        )
 
         # 7. 計算理解置信度
         understanding_confidence = self._calculate_understanding_confidence(
@@ -239,12 +270,18 @@ class ContextUnderstandingEngine:
         # 排序找出主要和次要意圖
         sorted_intents = sorted(intent_scores.items(), key=lambda x: x[1], reverse=True)
 
-        primary_intent = sorted_intents[0][0] if sorted_intents[0][1] > 0 else IntentCategory.QUERY
-        secondary_intents = [intent for intent, score in sorted_intents[1:4] if score > 0]
+        primary_intent = (
+            sorted_intents[0][0] if sorted_intents[0][1] > 0 else IntentCategory.QUERY
+        )
+        secondary_intents = [
+            intent for intent, score in sorted_intents[1:4] if score > 0
+        ]
 
         # 計算置信度
         total_score = sum(intent_scores.values())
-        confidence = sorted_intents[0][1] / max(total_score, 1.0) if total_score > 0 else 0.5
+        confidence = (
+            sorted_intents[0][1] / max(total_score, 1.0) if total_score > 0 else 0.5
+        )
 
         # 提取實體
         entities = self._extract_entities(request)
@@ -269,7 +306,9 @@ class ContextUnderstandingEngine:
         entities: dict[str, Any] = {}
 
         # 提取系統/服務名稱
-        system_pattern = r"(舊|新|老|source|target|from|to)\s*(系統|system|service|服務)"
+        system_pattern = (
+            r"(舊|新|老|source|target|from|to)\s*(系統|system|service|服務)"
+        )
         matches = re.findall(system_pattern, request, re.IGNORECASE)
         if matches:
             entities["systems"] = [f"{m[0]}_{m[1]}" for m in matches]
@@ -287,7 +326,9 @@ class ContextUnderstandingEngine:
             entities["quantities"] = [{"value": m[0], "unit": m[1]} for m in matches]
 
         # 提取時間相關
-        time_pattern = r"(每\s*天|daily|每\s*小時|hourly|實時|real.?time|定期|scheduled)"
+        time_pattern = (
+            r"(每\s*天|daily|每\s*小時|hourly|實時|real.?time|定期|scheduled)"
+        )
         matches = re.findall(time_pattern, request, re.IGNORECASE)
         if matches:
             entities["timing"] = list(set(matches))
@@ -362,7 +403,9 @@ class ContextUnderstandingEngine:
 
         return implicit
 
-    def _detect_ambiguities(self, request: str, parsed_intent: ParsedIntent) -> list[str]:
+    def _detect_ambiguities(
+        self, request: str, parsed_intent: ParsedIntent
+    ) -> list[str]:
         """Detect ambiguities in the request (檢測請求中的歧義)"""
         ambiguities = []
 
@@ -383,7 +426,10 @@ class ContextUnderstandingEngine:
                 ambiguities.append("Timing/frequency of operation not specified")
 
         # 衝突的約束
-        if "fast" in parsed_intent.constraints and "validation" in parsed_intent.constraints:
+        if (
+            "fast" in parsed_intent.constraints
+            and "validation" in parsed_intent.constraints
+        ):
             ambiguities.append("Speed vs validation trade-off needs clarification")
 
         return ambiguities
@@ -414,7 +460,9 @@ class ContextUnderstandingEngine:
 
         return clarifications
 
-    def _recommend_approach(self, parsed_intent: ParsedIntent, contexts: list[ContextEntry]) -> str:
+    def _recommend_approach(
+        self, parsed_intent: ParsedIntent, contexts: list[ContextEntry]
+    ) -> str:
         """Recommend the best approach based on understanding (推薦最佳方案)"""
         intent = parsed_intent.primary_intent
 
@@ -456,7 +504,10 @@ class ContextUnderstandingEngine:
         return base_recommendation.strip()
 
     def _calculate_understanding_confidence(
-        self, parsed_intent: ParsedIntent, ambiguities: list[str], clarifications: list[str]
+        self,
+        parsed_intent: ParsedIntent,
+        ambiguities: list[str],
+        clarifications: list[str],
     ) -> float:
         """Calculate confidence in understanding (計算理解置信度)"""
         base_confidence = parsed_intent.confidence
@@ -489,7 +540,9 @@ class ContextUnderstandingEngine:
 
         # 過濾過期的上下文
         now = datetime.now()
-        valid_contexts = [c for c in user_contexts if c.expires_at is None or c.expires_at > now]
+        valid_contexts = [
+            c for c in user_contexts if c.expires_at is None or c.expires_at > now
+        ]
 
         # 按相關性排序
         # 這裡使用簡單的時間排序，實際可以使用更複雜的相關性計算
@@ -522,7 +575,9 @@ class ContextUnderstandingEngine:
 
         return context_id
 
-    def _record_conversation(self, user_id: str, request: str, parsed_intent: ParsedIntent) -> None:
+    def _record_conversation(
+        self, user_id: str, request: str, parsed_intent: ParsedIntent
+    ) -> None:
         """Record conversation for context memory (記錄對話用於上下文記憶)"""
         if user_id not in self._conversation_history:
             self._conversation_history[user_id] = []
@@ -537,7 +592,9 @@ class ContextUnderstandingEngine:
 
         # 保留最近 50 條對話
         if len(self._conversation_history[user_id]) > 50:
-            self._conversation_history[user_id] = self._conversation_history[user_id][-50:]
+            self._conversation_history[user_id] = self._conversation_history[user_id][
+                -50:
+            ]
 
     def add_project_context(self, user_id: str, project_info: dict[str, Any]) -> str:
         """Add project context (添加項目上下文)"""

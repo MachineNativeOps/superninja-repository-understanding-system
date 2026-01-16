@@ -101,7 +101,8 @@ def run_basic_verification(report: VerificationReport):
         checks = [
             config["spec"]["namespaces"]["primary"]["name"] == "machinenativeops",
             config["spec"]["domains"]["primary"] == "machinenativeops.io",
-            config["spec"]["domains"]["registry"]["host"] == "registry.machinenativeops.io",
+            config["spec"]["domains"]["registry"]["host"]
+            == "registry.machinenativeops.io",
             config["spec"]["filesystem"]["directories"]["certificates"]
             == "/etc/machinenativeops/pkl",
             config["spec"]["etcd"]["cluster_name"] == "super-agent-etcd-cluster",
@@ -109,11 +110,17 @@ def run_basic_verification(report: VerificationReport):
 
         if all(checks):
             report.add_result(
-                "basic", "Namespace consistency check", True, "All 5 namespace alignments verified"
+                "basic",
+                "Namespace consistency check",
+                True,
+                "All 5 namespace alignments verified",
             )
         else:
             report.add_result(
-                "basic", "Namespace consistency check", False, f"Only {sum(checks)}/5 checks passed"
+                "basic",
+                "Namespace consistency check",
+                False,
+                f"Only {sum(checks)}/5 checks passed",
             )
     except Exception as e:
         report.add_result("basic", "Namespace consistency check", False, str(e))
@@ -121,7 +128,12 @@ def run_basic_verification(report: VerificationReport):
     # 3. Conversion report check
     try:
         result = subprocess.run(
-            ["python3", "tools/namespace-converter.py", "--dry-run", "mno-namespace.yaml"],
+            [
+                "python3",
+                "tools/namespace-converter.py",
+                "--dry-run",
+                "mno-namespace.yaml",
+            ],
             capture_output=True,
             text=True,
             timeout=30,
@@ -138,10 +150,15 @@ def run_basic_verification(report: VerificationReport):
             )
         else:
             report.add_result(
-                "basic", "Conversion report (0 missing references)", False, "Converter failed"
+                "basic",
+                "Conversion report (0 missing references)",
+                False,
+                "Converter failed",
             )
     except Exception as e:
-        report.add_result("basic", "Conversion report (0 missing references)", False, str(e))
+        report.add_result(
+            "basic", "Conversion report (0 missing references)", False, str(e)
+        )
 
     # 4. Resource type standardization
     try:
@@ -204,7 +221,9 @@ def run_advanced_verification(report: VerificationReport):
                 f"Missing files: {', '.join(missing_files)}",
             )
     except Exception as e:
-        report.add_result("advanced", "Architecture pattern verification", False, str(e))
+        report.add_result(
+            "advanced", "Architecture pattern verification", False, str(e)
+        )
 
     # 2. Deployment configuration test
     try:
@@ -219,7 +238,10 @@ def run_advanced_verification(report: VerificationReport):
             )
         else:
             report.add_result(
-                "advanced", "Deployment configuration test", False, "setup.py is missing"
+                "advanced",
+                "Deployment configuration test",
+                False,
+                "setup.py is missing",
             )
     except Exception as e:
         report.add_result("advanced", "Deployment configuration test", False, str(e))
@@ -237,7 +259,10 @@ def run_advanced_verification(report: VerificationReport):
         )
 
         report.add_result(
-            "advanced", "Integration point check", True, "All modules import successfully"
+            "advanced",
+            "Integration point check",
+            True,
+            "All modules import successfully",
         )
     except Exception as e:
         report.add_result("advanced", "Integration point check", False, str(e))
@@ -306,7 +331,10 @@ def run_production_verification(report: VerificationReport):
             )
         else:
             report.add_result(
-                "production", "End-to-end functional testing", False, "App status check failed"
+                "production",
+                "End-to-end functional testing",
+                False,
+                "App status check failed",
             )
     except Exception as e:
         report.add_result("production", "End-to-end functional testing", False, str(e))
@@ -322,7 +350,9 @@ def run_production_verification(report: VerificationReport):
             r'secret\s*=\s*["\'][^"\']+["\']',
         ]
 
-        python_files = list(Path("engine/machinenativenops-auto-monitor/src").rglob("*.py"))
+        python_files = list(
+            Path("engine/machinenativenops-auto-monitor/src").rglob("*.py")
+        )
         found_secrets = []
 
         for py_file in python_files:
@@ -346,7 +376,9 @@ def run_production_verification(report: VerificationReport):
                 f"Potential secrets found in: {', '.join(found_secrets)}",
             )
     except Exception as e:
-        report.add_result("production", "Security scan (no hardcoded secrets)", False, str(e))
+        report.add_result(
+            "production", "Security scan (no hardcoded secrets)", False, str(e)
+        )
 
     # 3. Load test (simulated)
     try:
@@ -376,7 +408,9 @@ def run_production_verification(report: VerificationReport):
                 f"Too slow: {duration:.3f}s",
             )
     except Exception as e:
-        report.add_result("production", "Load test (1000 config creations)", False, str(e))
+        report.add_result(
+            "production", "Load test (1000 config creations)", False, str(e)
+        )
 
     # 4. Recovery test (error handling)
     try:
@@ -398,7 +432,10 @@ def run_production_verification(report: VerificationReport):
             )
         else:
             report.add_result(
-                "production", "Recovery test (error handling)", False, "Invalid config not detected"
+                "production",
+                "Recovery test (error handling)",
+                False,
+                "Invalid config not detected",
             )
     except Exception as e:
         # Exception during validation is also acceptable

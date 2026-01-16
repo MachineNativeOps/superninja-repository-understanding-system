@@ -270,7 +270,10 @@ class LanguageBridgeManager:
         return connection_id
 
     async def execute_cross_language(
-        self, connection_id: str, code_fragment: CodeFragment, timeout_seconds: float = 30.0
+        self,
+        connection_id: str,
+        code_fragment: CodeFragment,
+        timeout_seconds: float = 30.0,
     ) -> ExecutionResult:
         """
         Execute code across language boundary
@@ -306,12 +309,16 @@ class LanguageBridgeManager:
         try:
             # Convert types if needed
             converted_params = self._convert_types(
-                code_fragment.parameters, code_fragment.language, connection.target.language
+                code_fragment.parameters,
+                code_fragment.language,
+                connection.target.language,
             )
 
             # Simulate execution (in real implementation, would call actual
             # bridge)
-            output = await self._simulate_execution(code_fragment, connection.target.language)
+            output = await self._simulate_execution(
+                code_fragment, connection.target.language
+            )
 
             execution_time = (datetime.now() - start_time).total_seconds() * 1000
 
@@ -385,7 +392,9 @@ class LanguageBridgeManager:
             "bridge_type": connection.bridge_type.value,
             "status": connection.status.value,
             "established_at": (
-                connection.established_at.isoformat() if connection.established_at else None
+                connection.established_at.isoformat()
+                if connection.established_at
+                else None
             ),
             "metrics": connection.metrics,
         }
@@ -417,7 +426,9 @@ class LanguageBridgeManager:
             "executions_total": self.stats["executions_total"],
             "executions_successful": self.stats["executions_successful"],
             "success_rate": round(
-                self.stats["executions_successful"] / max(self.stats["executions_total"], 1) * 100,
+                self.stats["executions_successful"]
+                / max(self.stats["executions_total"], 1)
+                * 100,
                 2,
             ),
             "supported_languages": [lang.value for lang in Language],

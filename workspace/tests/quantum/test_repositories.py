@@ -7,7 +7,13 @@ import tempfile
 from pathlib import Path
 
 import pytest
-from backend.python.core.entities import Task, TaskStatus, TaskType, Workflow, WorkflowStatus
+from backend.python.core.entities import (
+    Task,
+    TaskStatus,
+    TaskType,
+    Workflow,
+    WorkflowStatus,
+)
 from backend.python.repositories.workflow_repository import WorkflowRepository
 
 
@@ -46,7 +52,11 @@ class TestWorkflowRepository:
     def test_get_workflow_by_id(self, repository):
         """Test retrieving a workflow by ID."""
         tasks = [
-            Task(id=0, type=TaskType.CLASSICAL, config={"operation": "preprocess", "data": [1.0]})
+            Task(
+                id=0,
+                type=TaskType.CLASSICAL,
+                config={"operation": "preprocess", "data": [1.0]},
+            )
         ]
         workflow = Workflow(id=None, name="Test Workflow", tasks=tasks)
 
@@ -64,7 +74,9 @@ class TestWorkflowRepository:
         for i in range(5):
             tasks = [
                 Task(
-                    id=0, type=TaskType.CLASSICAL, config={"operation": "preprocess", "data": [1.0]}
+                    id=0,
+                    type=TaskType.CLASSICAL,
+                    config={"operation": "preprocess", "data": [1.0]},
                 )
             ]
             workflow = Workflow(id=None, name=f"Workflow {i}", tasks=tasks)
@@ -76,7 +88,11 @@ class TestWorkflowRepository:
     def test_update_workflow(self, repository):
         """Test updating a workflow."""
         tasks = [
-            Task(id=0, type=TaskType.CLASSICAL, config={"operation": "preprocess", "data": [1.0]})
+            Task(
+                id=0,
+                type=TaskType.CLASSICAL,
+                config={"operation": "preprocess", "data": [1.0]},
+            )
         ]
         workflow = Workflow(id=None, name="Test Workflow", tasks=tasks)
 

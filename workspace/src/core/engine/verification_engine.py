@@ -175,7 +175,9 @@ class VerificationEngine:
                 check = VerificationCheck(
                     name=check_def.get("name", "custom_check"),
                     description=check_def.get("description", ""),
-                    strategy=VerificationStrategy(check_def.get("strategy", "exact_match")),
+                    strategy=VerificationStrategy(
+                        check_def.get("strategy", "exact_match")
+                    ),
                     expected=check_def.get("expected"),
                     actual=check_def.get("actual", actual),
                     severity=VerificationSeverity(check_def.get("severity", "error")),
@@ -188,7 +190,11 @@ class VerificationEngine:
         result.total_checks = len(result.checks)
         result.passed_checks = len([c for c in result.checks if c.passed])
         result.failed_checks = len(
-            [c for c in result.checks if not c.passed and c.severity == VerificationSeverity.ERROR]
+            [
+                c
+                for c in result.checks
+                if not c.passed and c.severity == VerificationSeverity.ERROR
+            ]
         )
         result.warning_checks = len(
             [
@@ -357,7 +363,9 @@ class VerificationEngine:
         # 檢查語義相似性
         # 這是簡化實現，實際應使用 NLP
         return (
-            actual_str == expected_str or expected_str in actual_str or actual_str in expected_str
+            actual_str == expected_str
+            or expected_str in actual_str
+            or actual_str in expected_str
         )
 
     def _statistical_match(self, actual: Any, expected: Any) -> bool:
@@ -400,7 +408,9 @@ class VerificationEngine:
 
         return False
 
-    def verify_output(self, output: Any, rules: List[Dict[str, Any]]) -> VerificationResult:
+    def verify_output(
+        self, output: Any, rules: List[Dict[str, Any]]
+    ) -> VerificationResult:
         """
         使用規則列表驗證輸出
 
@@ -504,7 +514,9 @@ class VerificationEngine:
             value = str(value)
 
         passed = bool(re.match(pattern, value))
-        message = f"Pattern check {'passed' if passed else 'failed'}: " f"pattern={pattern}"
+        message = (
+            f"Pattern check {'passed' if passed else 'failed'}: " f"pattern={pattern}"
+        )
         return passed, message
 
     def _validate_contains(self, value: Any, rule: Dict[str, Any]) -> tuple:
@@ -521,7 +533,8 @@ class VerificationEngine:
             passed = False
 
         message = (
-            f"Contains check {'passed' if passed else 'failed'}: " f"expected '{expected}' in value"
+            f"Contains check {'passed' if passed else 'failed'}: "
+            f"expected '{expected}' in value"
         )
         return passed, message
 

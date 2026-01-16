@@ -62,7 +62,9 @@ class Phase2Validator:
 
         # Check directory exists
         if not self.deliverables_path.exists():
-            self.errors.append(f"Deliverables directory not found: {self.deliverables_path}")
+            self.errors.append(
+                f"Deliverables directory not found: {self.deliverables_path}"
+            )
             return False, self._get_report()
 
         # Validate each deliverable
@@ -139,7 +141,9 @@ class Phase2Validator:
         required_sections = spec.get("required_sections", [])
         for section in required_sections:
             if section.lower() not in content.lower():
-                self.warnings.append(f"{filepath.name}: Missing recommended section: {section}")
+                self.warnings.append(
+                    f"{filepath.name}: Missing recommended section: {section}"
+                )
 
     def _check_integration_tests(self):
         """Check for integration test suites."""
@@ -195,11 +199,17 @@ class Phase2Validator:
 
 
 def main():
-    parser = argparse.ArgumentParser(description="Validate Phase 2 (Integration) deliverables")
-    parser.add_argument(
-        "--deliverables-path", required=True, help="Path to Phase 2 deliverables directory"
+    parser = argparse.ArgumentParser(
+        description="Validate Phase 2 (Integration) deliverables"
     )
-    parser.add_argument("--output", help="Output validation report to file (JSON format)")
+    parser.add_argument(
+        "--deliverables-path",
+        required=True,
+        help="Path to Phase 2 deliverables directory",
+    )
+    parser.add_argument(
+        "--output", help="Output validation report to file (JSON format)"
+    )
 
     args = parser.parse_args()
 

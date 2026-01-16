@@ -167,7 +167,9 @@ class ExecutionContext:
             "operations_count": len(self.operations),
             "child_contexts_count": len(self.child_contexts),
             "created_at": self.created_at.isoformat(),
-            "completed_at": self.completed_at.isoformat() if self.completed_at else None,
+            "completed_at": (
+                self.completed_at.isoformat() if self.completed_at else None
+            ),
             "metadata": self.metadata,
         }
 
@@ -240,9 +242,15 @@ class OperationValidator:
             ValidationLevel.DEEP: [],
             ValidationLevel.STRICT: [],
         }
-        self._stats = {"validations_performed": 0, "validations_passed": 0, "validations_failed": 0}
+        self._stats = {
+            "validations_performed": 0,
+            "validations_passed": 0,
+            "validations_failed": 0,
+        }
 
-    async def validate(self, operation: Operation, context: ExecutionContext) -> dict[str, Any]:
+    async def validate(
+        self, operation: Operation, context: ExecutionContext
+    ) -> dict[str, Any]:
         """
         Validate an operation before execution
 
@@ -264,7 +272,9 @@ class OperationValidator:
 
         try:
             # Always run shallow validation
-            await self._run_level_validation(ValidationLevel.SHALLOW, operation, context, results)
+            await self._run_level_validation(
+                ValidationLevel.SHALLOW, operation, context, results
+            )
 
             # Run standard validation if level is standard or higher
             if operation.validation_level in [
@@ -277,8 +287,13 @@ class OperationValidator:
                 )
 
             # Run deep validation if level is deep or strict
-            if operation.validation_level in [ValidationLevel.DEEP, ValidationLevel.STRICT]:
-                await self._run_level_validation(ValidationLevel.DEEP, operation, context, results)
+            if operation.validation_level in [
+                ValidationLevel.DEEP,
+                ValidationLevel.STRICT,
+            ]:
+                await self._run_level_validation(
+                    ValidationLevel.DEEP, operation, context, results
+                )
 
             # Run strict validation if level is strict
             if operation.validation_level == ValidationLevel.STRICT:
@@ -330,7 +345,9 @@ class OperationValidator:
                         )
                     else:
                         results["valid"] = False
-                        results["errors"].append(result.get("error", "Validation failed"))
+                        results["errors"].append(
+                            result.get("error", "Validation failed")
+                        )
                         results["checks"].append(
                             {
                                 "level": level.value,
@@ -342,7 +359,9 @@ class OperationValidator:
             except TimeoutError:
                 results["warnings"].append(f"Validator at {level.value} timed out")
             except Exception as e:
-                results["warnings"].append(f"Validator error at {level.value}: {str(e)}")
+                results["warnings"].append(
+                    f"Validator error at {level.value}: {str(e)}"
+                )
 
     async def _run_builtin_validations(
         self, operation: Operation, context: ExecutionContext, results: dict[str, Any]
@@ -354,7 +373,9 @@ class OperationValidator:
             results["errors"].append("Operation handler is not callable")
             return
 
-        results["checks"].append({"level": "builtin", "name": "handler_callable", "passed": True})
+        results["checks"].append(
+            {"level": "builtin", "name": "handler_callable", "passed": True}
+        )
 
         # Check context depth
         if context.depth_level >= self.config.max_context_depth:
@@ -364,14 +385,22 @@ class OperationValidator:
             )
             return
 
-        results["checks"].append({"level": "builtin", "name": "context_depth", "passed": True})
+        results["checks"].append(
+            {"level": "builtin", "name": "context_depth", "passed": True}
+        )
 
         # Check timeout is reasonable
         if operation.timeout_seconds <= 0:
-            results["warnings"].append("Operation timeout is not positive, using default")
+            results["warnings"].append(
+                "Operation timeout is not positive, using default"
+            )
 
         results["checks"].append(
-            {"level": "builtin", "name": "timeout_valid", "passed": operation.timeout_seconds > 0}
+            {
+                "level": "builtin",
+                "name": "timeout_valid",
+                "passed": operation.timeout_seconds > 0,
+            }
         )
 
     def add_validator(self, level: ValidationLevel, validator: Callable) -> None:
@@ -399,7 +428,11 @@ class OperationScheduler:
         self._running: dict[str, asyncio.Task] = {}
         self._completed: dict[str, OperationResult] = {}
         self._semaphore = asyncio.Semaphore(max_concurrent)
-        self._stats = {"operations_scheduled": 0, "operations_completed": 0, "operations_failed": 0}
+        self._stats = {
+            "operations_scheduled": 0,
+            "operations_completed": 0,
+            "operations_failed": 0,
+        }
 
     async def schedule(self, operation: Operation) -> None:
         """Schedule an operation for execution"""
@@ -435,7 +468,11 @@ class OperationScheduler:
     def get_stats(self) -> dict[str, Any]:
         """Get scheduler statistics"""
         queue_sizes = {p.name: self._queues[p].qsize() for p in OperationPriority}
-        return {**self._stats, "running_count": len(self._running), "queue_sizes": queue_sizes}
+        return {
+            **self._stats,
+            "running_count": len(self._running),
+            "queue_sizes": queue_sizes,
+        }
 
 
 class AuditLogger:
@@ -681,7 +718,9 @@ class DeepExecutionSystem:
             if parent:
                 depth_level = parent.depth_level + 1
                 if depth_level > self.config.max_context_depth:
-                    raise ValueError(f"Max context depth {self.config.max_context_depth} exceeded")
+                    raise ValueError(
+                        f"Max context depth {self.config.max_context_depth} exceeded"
+                    )
 
         context = ExecutionContext(
             context_id=f"ctx-{uuid4().hex[:8]}",
@@ -777,7 +816,10 @@ class DeepExecutionSystem:
         return result
 
     async def _execute_operation(
-        self, operation: Operation, context: ExecutionContext, user_id: str | None = None
+        self,
+        operation: Operation,
+        context: ExecutionContext,
+        user_id: str | None = None,
     ) -> OperationResult:
         """Execute a single operation"""
         start_time = datetime.now(UTC)
@@ -838,7 +880,12 @@ class DeepExecutionSystem:
             # Log audit entry for execution start
             if self.config.enable_audit_logging:
                 self.audit_logger.log(
-                    operation, context, "execute_start", OperationStatus.EXECUTING, None, user_id
+                    operation,
+                    context,
+                    "execute_start",
+                    OperationStatus.EXECUTING,
+                    None,
+                    user_id,
                 )
 
             # Add to rollback stack if rollback handler provided
@@ -850,7 +897,8 @@ class DeepExecutionSystem:
             try:
                 if asyncio.iscoroutinefunction(operation.handler):
                     output = await asyncio.wait_for(
-                        operation.handler(**operation.args), timeout=operation.timeout_seconds
+                        operation.handler(**operation.args),
+                        timeout=operation.timeout_seconds,
                     )
                 else:
                     output = operation.handler(**operation.args)
@@ -896,7 +944,12 @@ class DeepExecutionSystem:
             # Log final audit entry
             if self.config.enable_audit_logging:
                 result.audit_entry_id = self.audit_logger.log(
-                    operation, context, "execute_complete", result.status, result, user_id
+                    operation,
+                    context,
+                    "execute_complete",
+                    result.status,
+                    result,
+                    user_id,
                 )
 
             # Update scheduler
@@ -904,7 +957,9 @@ class DeepExecutionSystem:
 
         return result
 
-    async def _rollback_operation(self, operation: Operation, context: ExecutionContext) -> bool:
+    async def _rollback_operation(
+        self, operation: Operation, context: ExecutionContext
+    ) -> bool:
         """Rollback an operation"""
         if not operation.rollback_handler:
             return False
@@ -922,7 +977,12 @@ class DeepExecutionSystem:
             # Log rollback audit entry
             if self.config.enable_audit_logging:
                 self.audit_logger.log(
-                    operation, context, "rollback", OperationStatus.ROLLED_BACK, None, None
+                    operation,
+                    context,
+                    "rollback",
+                    OperationStatus.ROLLED_BACK,
+                    None,
+                    None,
                 )
 
             return True
@@ -1021,7 +1081,9 @@ class DeepExecutionSystem:
 
 
 # Factory function
-def create_deep_execution_system(config: DeepExecutionConfig | None = None) -> DeepExecutionSystem:
+def create_deep_execution_system(
+    config: DeepExecutionConfig | None = None,
+) -> DeepExecutionSystem:
     """Create a new DeepExecutionSystem instance"""
     return DeepExecutionSystem(config)
 

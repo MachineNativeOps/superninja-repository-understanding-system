@@ -22,7 +22,10 @@ class TestRecoverySystemIntegration(unittest.TestCase):
     def test_phoenix_agent_import(self):
         """Test that Phoenix Agent can be imported"""
         try:
-            from services.agents.recovery.phoenix_agent import OperatingMode, PhoenixAgent
+            from services.agents.recovery.phoenix_agent import (
+                OperatingMode,
+                PhoenixAgent,
+            )
 
             self.assertTrue(True)
         except ImportError as e:
@@ -50,7 +53,10 @@ class TestRecoverySystemIntegration(unittest.TestCase):
     def test_phoenix_agent_creation(self):
         """Test creating Phoenix Agent instance"""
         try:
-            from services.agents.recovery.phoenix_agent import OperatingMode, PhoenixAgent
+            from services.agents.recovery.phoenix_agent import (
+                OperatingMode,
+                PhoenixAgent,
+            )
 
             agent = PhoenixAgent(mode=OperatingMode.MANUAL)
             self.assertIsNotNone(agent)
@@ -88,17 +94,26 @@ class TestRecoverySystemIntegration(unittest.TestCase):
             / "profiles"
             / "recovery_expert.yaml"
         )
-        self.assertTrue(profile_path.exists(), f"Phoenix profile not found: {profile_path}")
+        self.assertTrue(
+            profile_path.exists(), f"Phoenix profile not found: {profile_path}"
+        )
 
     def test_recovery_config_exists(self):
         """Test that recovery system config exists"""
-        config_path = Path(__file__).parent.parent.parent / "config" / "recovery-system.yaml"
-        self.assertTrue(config_path.exists(), f"Recovery config not found: {config_path}")
+        config_path = (
+            Path(__file__).parent.parent.parent / "config" / "recovery-system.yaml"
+        )
+        self.assertTrue(
+            config_path.exists(), f"Recovery config not found: {config_path}"
+        )
 
     def test_phoenix_agent_status(self):
         """Test getting Phoenix Agent status"""
         try:
-            from services.agents.recovery.phoenix_agent import OperatingMode, PhoenixAgent
+            from services.agents.recovery.phoenix_agent import (
+                OperatingMode,
+                PhoenixAgent,
+            )
 
             agent = PhoenixAgent(mode=OperatingMode.MANUAL)
             status = agent.get_status()
@@ -128,7 +143,10 @@ class TestRecoverySystemAsync(unittest.IsolatedAsyncioTestCase):
     async def test_phoenix_start_stop(self):
         """Test starting and stopping Phoenix Agent"""
         try:
-            from services.agents.recovery.phoenix_agent import OperatingMode, PhoenixAgent
+            from services.agents.recovery.phoenix_agent import (
+                OperatingMode,
+                PhoenixAgent,
+            )
 
             agent = PhoenixAgent(mode=OperatingMode.MANUAL)
 

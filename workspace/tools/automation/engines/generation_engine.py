@@ -11,7 +11,6 @@ Generation Engine - 生成全自動化引擎
 Version: 1.0.0
 """
 
-from engine_base import BaseEngine, EngineConfig, EngineState, EngineType, ExecutionMode, TaskResult
 import asyncio
 import sys
 from datetime import datetime
@@ -19,6 +18,14 @@ from pathlib import Path
 from typing import Any, Dict, List, Optional
 
 import yaml
+from engine_base import (
+    BaseEngine,
+    EngineConfig,
+    EngineState,
+    EngineType,
+    ExecutionMode,
+    TaskResult,
+)
 
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
@@ -63,7 +70,9 @@ class GenerationEngine(BaseEngine):
             elif operation == "generate_all":
                 result = await self._generate_all()
             else:
-                return TaskResult(task_id=task_id, success=False, error=f"未知操作: {operation}")
+                return TaskResult(
+                    task_id=task_id, success=False, error=f"未知操作: {operation}"
+                )
 
             return TaskResult(task_id=task_id, success=True, result=result)
 
@@ -83,7 +92,9 @@ class GenerationEngine(BaseEngine):
                 "generate_all",
             ],
             "templates": (
-                list(self._templates_path.glob("*.md")) if self._templates_path.exists() else []
+                list(self._templates_path.glob("*.md"))
+                if self._templates_path.exists()
+                else []
             ),
         }
 
@@ -156,7 +167,9 @@ python tools/refactor/refactor_engine.py rollback --checkpoint latest
         target = Path(target_dir) if target_dir else self._target_path / "03_refactor"
 
         # 掃描 playbook 檔案
-        playbooks = list(target.glob("*__playbook.md")) + list(target.glob("*_playbook.md"))
+        playbooks = list(target.glob("*__playbook.md")) + list(
+            target.glob("*_playbook.md")
+        )
 
         clusters = []
         for pb in playbooks:
@@ -254,7 +267,9 @@ docs/refactor_playbooks/
         # 列出子目錄
         for item in sorted(target.iterdir()):
             if item.is_dir() and not item.name.startswith("."):
-                readme_content += f"- `{item.name}/` - {item.name.replace('_', ' ').title()}\n"
+                readme_content += (
+                    f"- `{item.name}/` - {item.name.replace('_', ' ').title()}\n"
+                )
 
         readme_content += """
 ## 使用方式

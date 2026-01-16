@@ -130,7 +130,10 @@ class RollbackManager:
                 "namespace": "default",
                 "timeout": 300,
             },
-            "docker": {"registry": os.getenv("DOCKER_REGISTRY", "docker.io"), "timeout": 180},
+            "docker": {
+                "registry": os.getenv("DOCKER_REGISTRY", "docker.io"),
+                "timeout": 180,
+            },
             "rollback": {
                 "default_timeout": 300,
                 "health_check_interval": 10,
@@ -158,7 +161,9 @@ class RollbackManager:
 
         if not logger.handlers:
             handler = logging.StreamHandler()
-            formatter = logging.Formatter("%(asctime)s - %(name)s - %(levelname)s - %(message)s")
+            formatter = logging.Formatter(
+                "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+            )
             handler.setFormatter(formatter)
             logger.addHandler(handler)
 
@@ -196,7 +201,9 @@ class RollbackManager:
         self.logger.info(f"創建部署快照: {deployment_id}")
 
         # 收集配置數據
-        config_data = self._collect_deployment_config(platform, environment, service_name)
+        config_data = self._collect_deployment_config(
+            platform, environment, service_name
+        )
 
         # 收集健康檢查配置
         health_checks = self._collect_health_checks(platform, service_name)
@@ -267,7 +274,9 @@ class RollbackManager:
                     break
 
             # 獲取 Service 配置
-            services = v1.list_namespaced_service(namespace=self.config["kubernetes"]["namespace"])
+            services = v1.list_namespaced_service(
+                namespace=self.config["kubernetes"]["namespace"]
+            )
 
             for service in services.items:
                 if service_name in service.metadata.name:
@@ -321,13 +330,20 @@ class RollbackManager:
 
         return config_data
 
-    def _collect_health_checks(self, platform: DeploymentPlatform, service_name: str) -> List[str]:
+    def _collect_health_checks(
+        self, platform: DeploymentPlatform, service_name: str
+    ) -> List[str]:
         """收集健康檢查配置"""
         health_checks = []
 
         if platform == DeploymentPlatform.KUBERNETES:
             # Kubernetes 健康檢查端點
-            health_checks = [f"/healthz", f"/health", f"/actuator/health", f"/api/health"]
+            health_checks = [
+                f"/healthz",
+                f"/health",
+                f"/actuator/health",
+                f"/api/health",
+            ]
         elif platform == DeploymentPlatform.DOCKER:
             # Docker 健康檢查
             health_checks = ["docker health check", "container status"]
@@ -499,16 +515,28 @@ class RollbackManager:
 
     def _generate_pre_rollback_checks(self, snapshot: DeploymentSnapshot) -> List[str]:
         """生成回滾前檢查"""
-        checks = ["驗證目標鏡像存在", "檢查資源可用性", "驗證配置文件完整性", "檢查網絡連接"]
+        checks = [
+            "驗證目標鏡像存在",
+            "檢查資源可用性",
+            "驗證配置文件完整性",
+            "檢查網絡連接",
+        ]
 
         if snapshot.platform == DeploymentPlatform.KUBERNETES:
-            checks.extend(["驗證 Kubernetes 集群狀態", "檢查命名空間資源配額", "驗證 RBAC 權限"])
+            checks.extend(
+                ["驗證 Kubernetes 集群狀態", "檢查命名空間資源配額", "驗證 RBAC 權限"]
+            )
 
         return checks
 
     def _generate_post_rollback_checks(self, snapshot: DeploymentSnapshot) -> List[str]:
         """生成回滾後檢查"""
-        checks = ["驗證服務啟動狀態", "執行健康檢查", "檢查日誌錯誤", "驗證 API 端點可訪問性"]
+        checks = [
+            "驗證服務啟動狀態",
+            "執行健康檢查",
+            "檢查日誌錯誤",
+            "驗證 API 端點可訪問性",
+        ]
 
         if snapshot.platform == DeploymentPlatform.KUBERNETES:
             checks.extend(["檢查 Pod 狀態", "驗證 Service 端點", "檢查資源使用情況"])
@@ -547,7 +575,9 @@ class RollbackManager:
 
             # 執行回滾步驟
             for step in plan.steps:
-                step_result = await self._execute_rollback_step(execution, step, snapshot)
+                step_result = await self._execute_rollback_step(
+                    execution, step, snapshot
+                )
                 execution.steps_executed.append(step_result)
 
                 if not step_result["success"]:
@@ -568,7 +598,9 @@ class RollbackManager:
 
         finally:
             execution.end_time = datetime.now()
-            execution.duration = (execution.end_time - execution.start_time).total_seconds()
+            execution.duration = (
+                execution.end_time - execution.start_time
+            ).total_seconds()
 
             # 保存執行記錄
             self.rollback_history[rollback_id] = execution
@@ -576,10 +608,14 @@ class RollbackManager:
             # 發送通知
             await self._send_rollback_notification(execution, plan)
 
-        self.logger.info(f"回滾執行完成: {rollback_id} - 狀態: {execution.status.value}")
+        self.logger.info(
+            f"回滾執行完成: {rollback_id} - 狀態: {execution.status.value}"
+        )
         return execution
 
-    async def _execute_pre_rollback_checks(self, execution: RollbackExecution, plan: RollbackPlan):
+    async def _execute_pre_rollback_checks(
+        self, execution: RollbackExecution, plan: RollbackPlan
+    ):
         """執行回滾前檢查"""
         execution.rollback_logs.append("開始執行回滾前檢查...")
 
@@ -588,14 +624,18 @@ class RollbackManager:
                 if "鏡像存在" in check:
                     success = await self._check_image_exists(plan.deployment_snapshot)
                 elif "資源可用性" in check:
-                    success = await self._check_resource_availability(plan.deployment_snapshot)
+                    success = await self._check_resource_availability(
+                        plan.deployment_snapshot
+                    )
                 elif "集群狀態" in check:
                     success = await self._check_cluster_status()
                 else:
                     success = True  # 默認通過
 
                 execution.health_check_results[check] = success
-                execution.rollback_logs.append(f"檢查 '{check}': {'通過' if success else '失敗'}")
+                execution.rollback_logs.append(
+                    f"檢查 '{check}': {'通過' if success else '失敗'}"
+                )
 
                 if not success:
                     raise Exception(f"回滾前檢查失敗: {check}")
@@ -607,7 +647,10 @@ class RollbackManager:
         execution.rollback_logs.append("回滾前檢查完成")
 
     async def _execute_rollback_step(
-        self, execution: RollbackExecution, step: Dict[str, Any], snapshot: DeploymentSnapshot
+        self,
+        execution: RollbackExecution,
+        step: Dict[str, Any],
+        snapshot: DeploymentSnapshot,
     ) -> Dict[str, Any]:
         """執行回滾步驟"""
         step_name = step["name"]
@@ -664,7 +707,9 @@ class RollbackManager:
                 "error": str(e),
             }
 
-            execution.rollback_logs.append(f"步驟 '{step_name}' 失敗: {e} (耗時: {duration:.2f}s)")
+            execution.rollback_logs.append(
+                f"步驟 '{step_name}' 失敗: {e} (耗時: {duration:.2f}s)"
+            )
 
             return result
 
@@ -685,7 +730,10 @@ class RollbackManager:
         """備份當前部署"""
         try:
             # 這裡實現當前部署的備份邏輯
-            backup_data = {"snapshot": asdict(snapshot), "backup_time": datetime.now().isoformat()}
+            backup_data = {
+                "snapshot": asdict(snapshot),
+                "backup_time": datetime.now().isoformat(),
+            }
 
             backup_file = (
                 Path(self.config["backup"]["backup_directory"])
@@ -766,7 +814,9 @@ class RollbackManager:
             self.logger.error(f"回滾狀態驗證失敗: {e}")
             return False
 
-    async def _perform_health_check(self, health_check: str, snapshot: DeploymentSnapshot) -> bool:
+    async def _perform_health_check(
+        self, health_check: str, snapshot: DeploymentSnapshot
+    ) -> bool:
         """執行健康檢查"""
         try:
             if health_check.startswith("/"):
@@ -784,7 +834,9 @@ class RollbackManager:
         except Exception:
             return False
 
-    async def _execute_post_rollback_checks(self, execution: RollbackExecution, plan: RollbackPlan):
+    async def _execute_post_rollback_checks(
+        self, execution: RollbackExecution, plan: RollbackPlan
+    ):
         """執行回滾後檢查"""
         execution.rollback_logs.append("開始執行回滾後檢查...")
 
@@ -793,21 +845,27 @@ class RollbackManager:
                 if "服務啟動" in check:
                     success = await self._check_service_status(plan.deployment_snapshot)
                 elif "健康檢查" in check:
-                    success = await self._verify_rollback_status(plan.deployment_snapshot)
+                    success = await self._verify_rollback_status(
+                        plan.deployment_snapshot
+                    )
                 elif "API 端點" in check:
                     success = await self._check_api_endpoints(plan.deployment_snapshot)
                 else:
                     success = True
 
                 execution.health_check_results[check] = success
-                execution.rollback_logs.append(f"檢查 '{check}': {'通過' if success else '失敗'}")
+                execution.rollback_logs.append(
+                    f"檢查 '{check}': {'通過' if success else '失敗'}"
+                )
 
             except Exception as e:
                 execution.rollback_logs.append(f"檢查 '{check}' 異常: {e}")
 
         execution.rollback_logs.append("回滾後檢查完成")
 
-    async def _send_rollback_notification(self, execution: RollbackExecution, plan: RollbackPlan):
+    async def _send_rollback_notification(
+        self, execution: RollbackExecution, plan: RollbackPlan
+    ):
         """發送回滾通知"""
         status_emoji = "✅" if execution.status == RollbackStatus.SUCCESS else "❌"
         message = f"""
@@ -843,7 +901,9 @@ class RollbackManager:
         history.sort(key=lambda x: x.start_time, reverse=True)
         return history[:limit]
 
-    def get_available_snapshots(self, service_name: str = None) -> List[DeploymentSnapshot]:
+    def get_available_snapshots(
+        self, service_name: str = None
+    ) -> List[DeploymentSnapshot]:
         """獲取可用快照"""
         snapshots = list(self.snapshots.values())
 

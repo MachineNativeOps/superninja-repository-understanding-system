@@ -119,7 +119,9 @@ class HallucinationDetector:
 
     def __init__(self) -> None:
         self._detection_history: list[HallucinationDetection] = []
-        self._custom_validators: list[Callable[[str], list[HallucinationDetection]]] = []
+        self._custom_validators: list[Callable[[str], list[HallucinationDetection]]] = (
+            []
+        )
         self._false_positive_hashes: set[str] = set()
         self._detection_count = 0
 
@@ -220,9 +222,9 @@ class HallucinationDetector:
                         location=f"Line containing: {match.group()[:50]}...",
                         suggested_fix="Use bcrypt or argon2 for password hashing",
                         confidence=0.85,
-                        metadata={"pattern": "PLAINTEXT_PASSWORD"},
-                    )
-                )
+                        metadata={
+                            "pattern": "PLAINTEXT_PASSWORD"},
+                    ))
 
         # 檢測 SQL 注入
         for pattern in SecurityPattern.SQL_INJECTION:
@@ -238,9 +240,9 @@ class HallucinationDetector:
                         location=f"Line containing: {match.group()[:50]}...",
                         suggested_fix="Use parameterized queries or ORM",
                         confidence=0.80,
-                        metadata={"pattern": "SQL_INJECTION"},
-                    )
-                )
+                        metadata={
+                            "pattern": "SQL_INJECTION"},
+                    ))
 
         # 檢測敏感數據暴露
         for pattern in SecurityPattern.SENSITIVE_DATA_EXPOSURE:
@@ -256,13 +258,15 @@ class HallucinationDetector:
                         location=f"Line containing: {match.group()[:50]}...",
                         suggested_fix="Remove sensitive data from logs or use redaction",
                         confidence=0.75,
-                        metadata={"pattern": "SENSITIVE_DATA_EXPOSURE"},
-                    )
-                )
+                        metadata={
+                            "pattern": "SENSITIVE_DATA_EXPOSURE"},
+                    ))
 
         return detections
 
-    def _detect_logic_errors(self, code: str, language: str) -> list[HallucinationDetection]:
+    def _detect_logic_errors(
+        self, code: str, language: str
+    ) -> list[HallucinationDetection]:
         """Detect logic errors (檢測邏輯錯誤)"""
         detections: list[HallucinationDetection] = []
 
@@ -301,8 +305,7 @@ class HallucinationDetector:
                         location=f"Line containing: {match.group()[:50]}...",
                         suggested_fix="Add a break condition or timeout",
                         confidence=0.70,
-                    )
-                )
+                    ))
 
         # 檢測未使用的變量（簡化版）
         if language == "python":
@@ -325,12 +328,13 @@ class HallucinationDetector:
                             description=f"Variable '{var_name}' may be unused (變量可能未使用)",
                             suggested_fix="Remove or use the variable",
                             confidence=0.60,
-                        )
-                    )
+                        ))
 
         return detections
 
-    def _detect_incomplete_implementation(self, code: str) -> list[HallucinationDetection]:
+    def _detect_incomplete_implementation(
+        self, code: str
+    ) -> list[HallucinationDetection]:
         """Detect incomplete implementations (檢測不完整實現)"""
         detections: list[HallucinationDetection] = []
 
@@ -415,8 +419,7 @@ class HallucinationDetector:
                         location=f"Line containing: {match.group()[:50]}...",
                         suggested_fix="Remove or verify the claim with tests",
                         confidence=0.80,
-                    )
-                )
+                    ))
 
         return detections
 
@@ -456,7 +459,9 @@ class HallucinationDetector:
 
         return max(0.0, 1.0 - min(total_penalty, 1.0))
 
-    def _generate_suggestions(self, detections: list[HallucinationDetection]) -> list[str]:
+    def _generate_suggestions(
+        self, detections: list[HallucinationDetection]
+    ) -> list[str]:
         """Generate improvement suggestions (生成改進建議)"""
         suggestions = []
 
@@ -465,22 +470,32 @@ class HallucinationDetector:
         high = [d for d in detections if d.severity == SeverityLevel.HIGH]
 
         if critical:
-            suggestions.append(f"⚠️ {len(critical)} critical issues require immediate attention")
+            suggestions.append(
+                f"⚠️ {len(critical)} critical issues require immediate attention"
+            )
         if high:
-            suggestions.append(f"🔴 {len(high)} high-priority issues should be addressed soon")
+            suggestions.append(
+                f"🔴 {len(high)} high-priority issues should be addressed soon"
+            )
 
         # 按類型提供建議
         security_issues = [
-            d for d in detections if d.hallucination_type == HallucinationType.SECURITY_FLAW
+            d
+            for d in detections
+            if d.hallucination_type == HallucinationType.SECURITY_FLAW
         ]
         if security_issues:
             suggestions.append("🔒 Security review recommended before deployment")
 
         incomplete_issues = [
-            d for d in detections if d.hallucination_type == HallucinationType.INCOMPLETE
+            d
+            for d in detections
+            if d.hallucination_type == HallucinationType.INCOMPLETE
         ]
         if incomplete_issues:
-            suggestions.append("📝 Complete all TODO items and placeholder implementations")
+            suggestions.append(
+                "📝 Complete all TODO items and placeholder implementations"
+            )
 
         return suggestions
 
@@ -491,7 +506,9 @@ class HallucinationDetector:
 
         for d in detections:
             type_key = d.hallucination_type.value
-            self._stats["by_type"][type_key] = self._stats["by_type"].get(type_key, 0) + 1
+            self._stats["by_type"][type_key] = (
+                self._stats["by_type"].get(type_key, 0) + 1
+            )
 
             severity_key = d.severity.value
             self._stats["by_severity"][severity_key] = (

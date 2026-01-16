@@ -167,7 +167,9 @@ class CloudProviderAdapter:
             result.result = execution_result
             result.status = "success"
             result.completed_at = datetime.now(UTC)
-            result.duration_ms = (result.completed_at - result.started_at).total_seconds() * 1000
+            result.duration_ms = (
+                result.completed_at - result.started_at
+            ).total_seconds() * 1000
 
             self._last_execution = datetime.now(UTC)
 
@@ -229,7 +231,9 @@ class CloudProviderAdapter:
             "execution_count": self._execution_count,
             "error_count": self._error_count,
             "error_rate": self._error_count / max(self._execution_count, 1),
-            "last_execution": self._last_execution.isoformat() if self._last_execution else None,
+            "last_execution": (
+                self._last_execution.isoformat() if self._last_execution else None
+            ),
             "config": self.config.to_dict(),
         }
 
@@ -305,7 +309,9 @@ class AWSLambdaAdapter(CloudProviderAdapter):
     """Adapter for AWS Lambda"""
 
     def __init__(self, name: str, region: str = "us-east-1", **kwargs):
-        config = ProviderConfig(name=name, provider_type=ProviderType.AWS, region=region, **kwargs)
+        config = ProviderConfig(
+            name=name, provider_type=ProviderType.AWS, region=region, **kwargs
+        )
         super().__init__(config)
 
 
@@ -317,7 +323,9 @@ class GCPCloudFunctionsAdapter(CloudProviderAdapter):
         if "runtime" not in kwargs:
             kwargs["runtime"] = "nodejs18"
 
-        config = ProviderConfig(name=name, provider_type=ProviderType.GCP, region=region, **kwargs)
+        config = ProviderConfig(
+            name=name, provider_type=ProviderType.GCP, region=region, **kwargs
+        )
         super().__init__(config)
 
 
@@ -350,6 +358,8 @@ def create_provider_adapter(
         return CloudProviderAdapter(config)
 
 
-def create_provider_config(name: str, provider_type: ProviderType, **kwargs) -> ProviderConfig:
+def create_provider_config(
+    name: str, provider_type: ProviderType, **kwargs
+) -> ProviderConfig:
     """Create a provider configuration"""
     return ProviderConfig(name=name, provider_type=provider_type, **kwargs)

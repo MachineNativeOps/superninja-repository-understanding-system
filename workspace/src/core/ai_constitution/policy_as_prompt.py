@@ -200,7 +200,9 @@ class PolicyEnforcer:
 
         # 按優先級排序護欄
         sorted_guardrails = sorted(
-            self._guardrails.values(), key=lambda g: g.policy_prompt.priority, reverse=True
+            self._guardrails.values(),
+            key=lambda g: g.policy_prompt.priority,
+            reverse=True,
         )
 
         for guardrail in sorted_guardrails:
@@ -217,7 +219,9 @@ class PolicyEnforcer:
                 # 根據執行動作決定處理
                 action = guardrail.policy_prompt.enforcement_action
                 if action == EnforcementAction.DENY:
-                    results["actions_taken"].append(f"拒絕: {guardrail.policy_prompt.policy_name}")
+                    results["actions_taken"].append(
+                        f"拒絕: {guardrail.policy_prompt.policy_name}"
+                    )
                     break  # 立即停止
                 elif action == EnforcementAction.WARN:
                     results["warnings"].extend(check_result["violations"])
@@ -264,7 +268,9 @@ class PolicyEnforcer:
                 1 for g in self._guardrails.values() if g.policy_prompt.enabled
             ),
             "total_checks": sum(g.check_count for g in self._guardrails.values()),
-            "total_violations": sum(g.violation_count for g in self._guardrails.values()),
+            "total_violations": sum(
+                g.violation_count for g in self._guardrails.values()
+            ),
         }
 
         if stats["total_checks"] > 0:
@@ -513,7 +519,9 @@ class PolicyAsPrompt:
         patterns.extend(prohibit_matches)
 
         # 查找英文關鍵詞
-        english_matches = re.findall(r"prohibit[ed]?\s+([a-zA-Z_]+)", document, re.IGNORECASE)
+        english_matches = re.findall(
+            r"prohibit[ed]?\s+([a-zA-Z_]+)", document, re.IGNORECASE
+        )
         patterns.extend(english_matches)
 
         return patterns
@@ -531,7 +539,9 @@ class PolicyAsPrompt:
         else:
             return EnforcementAction.WARN
 
-    def enforce_policies(self, content: str, context: Dict[str, Any] = None) -> Dict[str, Any]:
+    def enforce_policies(
+        self, content: str, context: Dict[str, Any] = None
+    ) -> Dict[str, Any]:
         """執行所有政策"""
         return self.enforcer.enforce(content, context)
 

@@ -52,7 +52,13 @@ class LicensePolicy:
         }
     )
     warning: set[str] = field(
-        default_factory=lambda: {"LGPL-2.1", "LGPL-3.0", "MPL-2.0", "EPL-1.0", "EPL-2.0"}
+        default_factory=lambda: {
+            "LGPL-2.1",
+            "LGPL-3.0",
+            "MPL-2.0",
+            "EPL-1.0",
+            "EPL-2.0",
+        }
     )
     blocked: set[str] = field(
         default_factory=lambda: {"GPL-2.0", "GPL-3.0", "AGPL-3.0", "SSPL-1.0"}

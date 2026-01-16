@@ -60,8 +60,13 @@ class ProductionVerification:
                     for pattern in sensitive_patterns:
                         if f"{pattern} =" in content or f"{pattern}=" in content:
                             # 檢查是否是硬編碼的值
-                            if f'"{pattern}"' not in content and f"'{pattern}'" not in content:
-                                self.warnings.append(f"可能包含敏感信息: {py_file} ({pattern})")
+                            if (
+                                f'"{pattern}"' not in content
+                                and f"'{pattern}'" not in content
+                            ):
+                                self.warnings.append(
+                                    f"可能包含敏感信息: {py_file} ({pattern})"
+                                )
 
             except Exception as e:
                 self.errors.append(f"安全掃描失敗 {py_file}: {e}")
@@ -91,7 +96,9 @@ class ProductionVerification:
                     # 檢查檔案大小合理性
                     size_kb = full_path.stat().st_size / 1024
                     if size_kb > 1000:  # 1MB
-                        self.warnings.append(f"模組過大: {module_path} ({size_kb:.1f}KB)")
+                        self.warnings.append(
+                            f"模組過大: {module_path} ({size_kb:.1f}KB)"
+                        )
 
             return True
 

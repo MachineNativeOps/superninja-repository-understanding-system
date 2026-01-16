@@ -82,8 +82,12 @@ class Connection:
             "status": self.status.value,
             "host": self.config.host,
             "port": self.config.port,
-            "last_activity": self.last_activity.isoformat() if self.last_activity else None,
-            "connect_time": self.connect_time.isoformat() if self.connect_time else None,
+            "last_activity": (
+                self.last_activity.isoformat() if self.last_activity else None
+            ),
+            "connect_time": (
+                self.connect_time.isoformat() if self.connect_time else None
+            ),
             "reconnect_count": self.reconnect_count,
             "error_count": self.error_count,
             "messages_sent": self.messages_sent,
@@ -207,7 +211,9 @@ class RealTimeConnector:
             Connection instance
         """
         conn_id = str(uuid4())
-        connection = Connection(id=conn_id, config=config, status=ConnectionStatus.CONNECTING)
+        connection = Connection(
+            id=conn_id, config=config, status=ConnectionStatus.CONNECTING
+        )
 
         self._connections[conn_id] = connection
 
@@ -277,7 +283,9 @@ class RealTimeConnector:
                 return conn
         return None
 
-    def list_connections(self, status: ConnectionStatus | None = None) -> list[Connection]:
+    def list_connections(
+        self, status: ConnectionStatus | None = None
+    ) -> list[Connection]:
         """List all connections, optionally filtered by status"""
         connections = list(self._connections.values())
         if status:
@@ -354,7 +362,9 @@ class RealTimeConnector:
         if connection.status != ConnectionStatus.CONNECTED:
             raise ConnectionError(f"Connection not active: {connection.status.value}")
 
-        message = Message(id=str(uuid4()), type="notification", method=method, params=params)
+        message = Message(
+            id=str(uuid4()), type="notification", method=method, params=params
+        )
 
         await self._send_message(connection, message)
         connection.messages_sent += 1
@@ -405,18 +415,24 @@ class RealTimeConnector:
             pass
 
         # Simulate sending
-        logger.debug(f"Sent message to {connection.config.server_name}: {message.method}")
+        logger.debug(
+            f"Sent message to {connection.config.server_name}: {message.method}"
+        )
 
         # Simulate response for requests
         if message.type == "request":
             asyncio.create_task(self._simulate_response(connection, message))
 
-    async def _simulate_response(self, connection: Connection, request: Message) -> None:
+    async def _simulate_response(
+        self, connection: Connection, request: Message
+    ) -> None:
         """Simulate a response for testing"""
         await asyncio.sleep(0.05)  # Simulate latency
 
         response = Message(
-            id=request.id, type="response", result={"status": "success", "method": request.method}
+            id=request.id,
+            type="response",
+            result={"status": "success", "method": request.method},
         )
 
         await self._handle_response(response)
@@ -427,7 +443,9 @@ class RealTimeConnector:
         future = self._pending_requests.get(message.id)
         if future and not future.done():
             if message.error:
-                future.set_exception(Exception(message.error.get("message", "Unknown error")))
+                future.set_exception(
+                    Exception(message.error.get("message", "Unknown error"))
+                )
             else:
                 future.set_result(message.result)
 
@@ -447,7 +465,9 @@ class RealTimeConnector:
                         connection.id, "ping", {"timestamp": datetime.now().isoformat()}
                     )
                 except Exception as e:
-                    logger.warning(f"Heartbeat failed for {connection.config.server_name}: {e}")
+                    logger.warning(
+                        f"Heartbeat failed for {connection.config.server_name}: {e}"
+                    )
                     connection.error_count += 1
 
                     if connection.error_count >= 3:
@@ -463,7 +483,9 @@ class RealTimeConnector:
     def _schedule_reconnect(self, connection: Connection) -> None:
         """Schedule a reconnection attempt"""
         if connection.reconnect_count >= connection.config.max_reconnect_attempts:
-            logger.error(f"Max reconnect attempts reached for {connection.config.server_name}")
+            logger.error(
+                f"Max reconnect attempts reached for {connection.config.server_name}"
+            )
             return
 
         connection.status = ConnectionStatus.RECONNECTING
@@ -483,7 +505,9 @@ class RealTimeConnector:
                 logger.info(f"Reconnected to {connection.config.server_name}")
 
             except Exception as e:
-                logger.error(f"Reconnect failed for {connection.config.server_name}: {e}")
+                logger.error(
+                    f"Reconnect failed for {connection.config.server_name}: {e}"
+                )
                 self._schedule_reconnect(connection)
 
         self._reconnect_tasks[connection.id] = asyncio.create_task(reconnect())

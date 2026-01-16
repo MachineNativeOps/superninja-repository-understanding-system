@@ -246,7 +246,9 @@ class SustainableAnalyzer:
 
         # 計算各項排放
         build_emissions = (
-            factors["base"] + factors["per_mb"] * size_mb + factors["per_dep"] * dependencies_count
+            factors["base"]
+            + factors["per_mb"] * size_mb
+            + factors["per_dep"] * dependencies_count
         )
 
         # 運行時排放（基於 CPU 和記憶體估算）
@@ -356,20 +358,28 @@ class SustainableAnalyzer:
         else:
             return EnergyGrade.F
 
-    def _generate_efficiency_recommendations(self, scores: Dict[str, float]) -> List[str]:
+    def _generate_efficiency_recommendations(
+        self, scores: Dict[str, float]
+    ) -> List[str]:
         """生成效率優化建議"""
         recommendations = []
 
         if scores["cpu"] < 70:
             recommendations.append("🔧 優化 CPU 使用：考慮使用更高效的算法或非同步處理")
         if scores["memory"] < 70:
-            recommendations.append("🔧 優化記憶體使用：檢查記憶體洩漏，使用串流處理大數據")
+            recommendations.append(
+                "🔧 優化記憶體使用：檢查記憶體洩漏，使用串流處理大數據"
+            )
         if scores["network"] < 70:
             recommendations.append("🔧 減少網路使用：啟用壓縮，使用快取，批量處理請求")
         if scores["storage"] < 70:
-            recommendations.append("🔧 優化存儲使用：清理不必要的依賴，使用更小的替代方案")
+            recommendations.append(
+                "🔧 優化存儲使用：清理不必要的依賴，使用更小的替代方案"
+            )
         if scores["lifecycle"] < 70:
-            recommendations.append("🔧 改善生命週期管理：更新過時依賴，移除未使用的依賴")
+            recommendations.append(
+                "🔧 改善生命週期管理：更新過時依賴，移除未使用的依賴"
+            )
 
         if not recommendations:
             recommendations.append("✅ 能源效率良好，繼續保持！")
@@ -405,9 +415,9 @@ class SustainableAnalyzer:
 
         # 計算能源分數（如果有評估）
         if self.energy_assessments:
-            energy_score = sum(ea.efficiency_score for ea in self.energy_assessments) / len(
-                self.energy_assessments
-            )
+            energy_score = sum(
+                ea.efficiency_score for ea in self.energy_assessments
+            ) / len(self.energy_assessments)
         else:
             energy_score = 70  # 默認值
 
@@ -420,7 +430,10 @@ class SustainableAnalyzer:
 
         # 計算總分
         overall_score = (
-            carbon_score * 0.3 + energy_score * 0.3 + resource_score * 0.2 + lifecycle_score * 0.2
+            carbon_score * 0.3
+            + energy_score * 0.3
+            + resource_score * 0.2
+            + lifecycle_score * 0.2
         )
 
         # ESG 合規評估
@@ -466,7 +479,9 @@ class SustainableAnalyzer:
                 ]
             )
         elif score >= 80:
-            certifications.extend(["🥈 Sustainable Software Badge", "🥈 Energy Star Partner Ready"])
+            certifications.extend(
+                ["🥈 Sustainable Software Badge", "🥈 Energy Star Partner Ready"]
+            )
         elif score >= 70:
             certifications.append("🥉 Green Coding Initiative Member")
 
@@ -512,9 +527,11 @@ class SustainableAnalyzer:
             f"  生命週期評分: {gs.lifecycle_score:.1f}",
             "",
             "📈 趨勢: "
-            + {"improving": "📈 改善中", "stable": "📊 穩定", "declining": "📉 下降中"}.get(
-                gs.trend, "📊 穩定"
-            ),
+            + {
+                "improving": "📈 改善中",
+                "stable": "📊 穩定",
+                "declining": "📉 下降中",
+            }.get(gs.trend, "📊 穩定"),
             "",
             "🔍 ESG 合規狀態",
             "-" * 40,

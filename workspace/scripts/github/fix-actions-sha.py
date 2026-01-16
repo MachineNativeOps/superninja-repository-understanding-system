@@ -94,7 +94,9 @@ def main():
 
     # Find all workflow files
     workflow_dir = Path(".github/workflows")
-    workflow_files = list(workflow_dir.glob("*.yml")) + list(workflow_dir.glob("*.yaml"))
+    workflow_files = list(workflow_dir.glob("*.yml")) + list(
+        workflow_dir.glob("*.yaml")
+    )
 
     print(f"📁 Found {len(workflow_files)} workflow files")
 

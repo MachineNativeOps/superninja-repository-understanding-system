@@ -91,7 +91,9 @@ class CombinationTemplateManager:
             for t in self._templates.values()
         ]
 
-    def recommend_template(self, stage: CompanyStage, priority: str) -> CombinationTemplate:
+    def recommend_template(
+        self, stage: CompanyStage, priority: str
+    ) -> CombinationTemplate:
         for t in self._templates.values():
             if stage in t.suitable_stages:
                 return t

@@ -89,7 +89,9 @@ class WatchdogEvent:
     """Watchdog event record"""
 
     timestamp: datetime
-    event_type: str  # process_down, process_restarted, heartbeat_timeout, phoenix_triggered
+    event_type: (
+        str  # process_down, process_restarted, heartbeat_timeout, phoenix_triggered
+    )
     process: str
     details: Dict[str, Any] = field(default_factory=dict)
 
@@ -148,7 +150,9 @@ class SystemWatchdog:
         ch.setLevel(logging.INFO)
 
         # Formatter
-        formatter = logging.Formatter("%(asctime)s - 🐕 Watchdog - %(levelname)s - %(message)s")
+        formatter = logging.Formatter(
+            "%(asctime)s - 🐕 Watchdog - %(levelname)s - %(message)s"
+        )
         fh.setFormatter(formatter)
         ch.setFormatter(formatter)
 
@@ -242,7 +246,9 @@ class SystemWatchdog:
 
                 # Record event
                 self._record_event(
-                    event_type="process_down", process=name, details={"pattern": pattern}
+                    event_type="process_down",
+                    process=name,
+                    details={"pattern": pattern},
                 )
 
                 # Auto restart if enabled
@@ -305,7 +311,9 @@ class SystemWatchdog:
             timeout = self.config["heartbeat_timeout"]
 
             if time_since > timeout:
-                self.logger.warning(f"⚠️  Heartbeat timeout: {time_since}s since last heartbeat")
+                self.logger.warning(
+                    f"⚠️  Heartbeat timeout: {time_since}s since last heartbeat"
+                )
 
                 # Record event
                 self._record_event(
@@ -315,12 +323,16 @@ class SystemWatchdog:
                 )
 
                 # Trigger Phoenix Agent
-                await self._trigger_phoenix_agent("automation_launcher", "heartbeat_timeout")
+                await self._trigger_phoenix_agent(
+                    "automation_launcher", "heartbeat_timeout"
+                )
 
         except Exception as e:
             self.logger.error(f"Error checking heartbeat: {e}")
 
-    async def _handle_process_down(self, name: str, pattern: str, status: ProcessStatus):
+    async def _handle_process_down(
+        self, name: str, pattern: str, status: ProcessStatus
+    ):
         """Handle a process that is down"""
         # Check restart cooldown
         if status.last_restart:
@@ -328,13 +340,17 @@ class SystemWatchdog:
             time_since_restart = (datetime.now() - status.last_restart).seconds
 
             if time_since_restart < cooldown:
-                self.logger.info(f"⏳ Restart cooldown: {cooldown - time_since_restart}s remaining")
+                self.logger.info(
+                    f"⏳ Restart cooldown: {cooldown - time_since_restart}s remaining"
+                )
                 return
 
         # Check max restart attempts
         max_attempts = self.config["max_restart_attempts"]
         if status.restart_count >= max_attempts:
-            self.logger.error(f"❌ Max restart attempts ({max_attempts}) reached for {name}")
+            self.logger.error(
+                f"❌ Max restart attempts ({max_attempts}) reached for {name}"
+            )
             return
 
         # Attempt restart
@@ -360,7 +376,9 @@ class SystemWatchdog:
                     },
                 )
 
-                self.logger.info(f"✅ Restarted {name} (attempt {status.restart_count})")
+                self.logger.info(
+                    f"✅ Restarted {name} (attempt {status.restart_count})"
+                )
 
         except Exception as e:
             self.logger.error(f"Failed to restart {name}: {e}")
@@ -394,7 +412,9 @@ class SystemWatchdog:
 
         # Record event
         self._record_event(
-            event_type="phoenix_triggered", process=component, details={"reason": reason}
+            event_type="phoenix_triggered",
+            process=component,
+            details={"reason": reason},
         )
 
         self.stats["phoenix_triggers"] += 1
@@ -406,7 +426,10 @@ class SystemWatchdog:
     def _record_event(self, event_type: str, process: str, details: Dict[str, Any]):
         """Record a watchdog event"""
         event = WatchdogEvent(
-            timestamp=datetime.now(), event_type=event_type, process=process, details=details
+            timestamp=datetime.now(),
+            event_type=event_type,
+            process=process,
+            details=details,
         )
 
         self.events.append(event)
@@ -433,13 +456,17 @@ class SystemWatchdog:
             state = {
                 "stats": self.stats,
                 "timestamp": datetime.now().isoformat(),
-                "uptime": str(datetime.now() - self.start_time) if self.start_time else "0",
+                "uptime": (
+                    str(datetime.now() - self.start_time) if self.start_time else "0"
+                ),
                 "process_status": {
                     name: {
                         "running": status.running,
                         "restart_count": status.restart_count,
                         "last_restart": (
-                            status.last_restart.isoformat() if status.last_restart else None
+                            status.last_restart.isoformat()
+                            if status.last_restart
+                            else None
                         ),
                     }
                     for name, status in self.process_status.items()
@@ -497,10 +524,13 @@ async def main():
     import argparse
 
     parser = argparse.ArgumentParser(
-        description="System Watchdog Service", formatter_class=argparse.RawDescriptionHelpFormatter
+        description="System Watchdog Service",
+        formatter_class=argparse.RawDescriptionHelpFormatter,
     )
 
-    parser.add_argument("command", choices=["start", "status", "stop"], help="Command to execute")
+    parser.add_argument(
+        "command", choices=["start", "status", "stop"], help="Command to execute"
+    )
 
     args = parser.parse_args()
 

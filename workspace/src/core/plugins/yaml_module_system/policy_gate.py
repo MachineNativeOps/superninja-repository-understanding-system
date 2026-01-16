@@ -104,7 +104,9 @@ class PolicyRule:
     remediation: str | None = None
     documentation_url: str | None = None
 
-    def evaluate(self, data: Any, context: dict[str, Any] | None = None) -> PolicyViolation | None:
+    def evaluate(
+        self, data: Any, context: dict[str, Any] | None = None
+    ) -> PolicyViolation | None:
         """
         評估數據是否符合策略
 
@@ -140,7 +142,9 @@ class PolicyRule:
 
         return None
 
-    def _evaluate_condition(self, data: Any, context: dict[str, Any] | None = None) -> bool:
+    def _evaluate_condition(
+        self, data: Any, context: dict[str, Any] | None = None
+    ) -> bool:
         """評估條件表達式"""
         # 簡單的條件評估
         # 支持: exists, equals, contains, matches, etc.
@@ -222,7 +226,9 @@ class PolicyEvaluationResult:
     @property
     def critical_count(self) -> int:
         """嚴重違規數量"""
-        return len([v for v in self.violations if v.severity == PolicySeverity.CRITICAL])
+        return len(
+            [v for v in self.violations if v.severity == PolicySeverity.CRITICAL]
+        )
 
     @property
     def high_count(self) -> int:
@@ -288,7 +294,9 @@ class PolicyGate:
             return True
         return False
 
-    def add_exception(self, rule_id: str, module_id: str, reason: str, approved_by: str) -> bool:
+    def add_exception(
+        self, rule_id: str, module_id: str, reason: str, approved_by: str
+    ) -> bool:
         """添加例外"""
         if rule_id not in self._rules:
             return False
@@ -304,7 +312,10 @@ class PolicyGate:
         return module_id in self._exceptions.get(rule_id, [])
 
     def evaluate(
-        self, data: Any, module_id: str | None = None, context: dict[str, Any] | None = None
+        self,
+        data: Any,
+        module_id: str | None = None,
+        context: dict[str, Any] | None = None,
     ) -> PolicyEvaluationResult:
         """
         評估數據是否符合所有策略
@@ -374,7 +385,9 @@ class PolicyGate:
         return result
 
     def get_rules(
-        self, category: PolicyCategory | None = None, severity: PolicySeverity | None = None
+        self,
+        category: PolicyCategory | None = None,
+        severity: PolicySeverity | None = None,
     ) -> list[PolicyRule]:
         """獲取策略規則列表"""
         rules = list(self._rules.values())

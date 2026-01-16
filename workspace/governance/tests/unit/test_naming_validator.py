@@ -39,13 +39,17 @@ class TestNamingValidator:
         assert result["valid"] is False
         assert len(result["errors"]) > 0
 
-    def test_validate_multiple_valid_names(self, mock_naming_validator, sample_resource_names):
+    def test_validate_multiple_valid_names(
+        self, mock_naming_validator, sample_resource_names
+    ):
         """Test validation of multiple valid names"""
         for name in sample_resource_names["valid"]:
             result = mock_naming_validator.validate(name)
             assert result["valid"] is True, f"Failed for: {name}"
 
-    def test_validate_multiple_invalid_names(self, mock_naming_validator, sample_resource_names):
+    def test_validate_multiple_invalid_names(
+        self, mock_naming_validator, sample_resource_names
+    ):
         """Test validation of multiple invalid names"""
         for name in sample_resource_names["invalid"]:
             result = mock_naming_validator.validate(name)

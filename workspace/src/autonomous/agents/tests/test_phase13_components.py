@@ -2,42 +2,18 @@
 Phase 13 Tests: Deep Verifiable YAML Module System
 """
 
-# Import Phase 13 components
-from core.yaml_module_system.yaml_schema_validator import (
-    SchemaRegistry,
-    ValidationError,
-    ValidationErrorType,
-    ValidationResult,
-    YAMLSchemaValidator,
-)
-from core.yaml_module_system.yaml_module_definition import (
-    ChangelogEntry,
-    LifecycleState,
-    ModuleLifecycle,
-    ModuleMetadata,
-    ModuleOwner,
-    TestVector,
-    TestVectorType,
-    YAMLModuleDefinition,
-)
-from core.yaml_module_system.slsa_compliance import (
-    SBOM,
-    ArtifactSigner,
-    SBOMGenerator,
-    SignatureAlgorithm,
-    SignedArtifact,
-    SLSALevel,
-    SLSAProvenance,
-    SLSAProvenanceGenerator,
-)
-from core.yaml_module_system.policy_gate import (
-    PolicyAction,
-    PolicyCategory,
-    PolicyEvaluationResult,
-    PolicyGate,
-    PolicyRule,
-    PolicySeverity,
-    PolicyViolation,
+import sys
+from datetime import datetime
+from typing import Any, Dict
+
+import pytest
+from core.yaml_module_system.audit_trail import (
+    AuditAction,
+    AuditEntry,
+    AuditLevel,
+    AuditLogger,
+    ChangeRecord,
+    ChangeTracker,
 )
 from core.yaml_module_system.ci_verification_pipeline import (
     CIVerificationPipeline,
@@ -49,19 +25,44 @@ from core.yaml_module_system.ci_verification_pipeline import (
     StageStatus,
     VerificationReport,
 )
-from core.yaml_module_system.audit_trail import (
-    AuditAction,
-    AuditEntry,
-    AuditLevel,
-    AuditLogger,
-    ChangeRecord,
-    ChangeTracker,
+from core.yaml_module_system.policy_gate import (
+    PolicyAction,
+    PolicyCategory,
+    PolicyEvaluationResult,
+    PolicyGate,
+    PolicyRule,
+    PolicySeverity,
+    PolicyViolation,
 )
-import sys
-from datetime import datetime
-from typing import Any, Dict
+from core.yaml_module_system.slsa_compliance import (
+    SBOM,
+    ArtifactSigner,
+    SBOMGenerator,
+    SignatureAlgorithm,
+    SignedArtifact,
+    SLSALevel,
+    SLSAProvenance,
+    SLSAProvenanceGenerator,
+)
+from core.yaml_module_system.yaml_module_definition import (
+    ChangelogEntry,
+    LifecycleState,
+    ModuleLifecycle,
+    ModuleMetadata,
+    ModuleOwner,
+    TestVector,
+    TestVectorType,
+    YAMLModuleDefinition,
+)
 
-import pytest
+# Import Phase 13 components
+from core.yaml_module_system.yaml_schema_validator import (
+    SchemaRegistry,
+    ValidationError,
+    ValidationErrorType,
+    ValidationResult,
+    YAMLSchemaValidator,
+)
 
 sys.path.insert(0, "/home/runner/work/SynergyMesh/SynergyMesh")
 
@@ -206,14 +207,20 @@ class TestYAMLSchemaValidator:
         result = validator.validate({"name": "test"}, schema)
         assert not result.valid
         assert any(
-            e.error_type == ValidationErrorType.REQUIRED_FIELD_MISSING for e in result.errors
+            e.error_type == ValidationErrorType.REQUIRED_FIELD_MISSING
+            for e in result.errors
         )
 
     def test_string_validation(self):
         """Test string validation"""
         validator = YAMLSchemaValidator()
 
-        schema = {"type": "string", "minLength": 3, "maxLength": 10, "pattern": "^[a-z]+$"}
+        schema = {
+            "type": "string",
+            "minLength": 3,
+            "maxLength": 10,
+            "pattern": "^[a-z]+$",
+        }
 
         # Valid
         result = validator.validate("hello", schema)
@@ -231,7 +238,12 @@ class TestYAMLSchemaValidator:
         """Test array validation"""
         validator = YAMLSchemaValidator()
 
-        schema = {"type": "array", "minItems": 1, "maxItems": 5, "items": {"type": "string"}}
+        schema = {
+            "type": "array",
+            "minItems": 1,
+            "maxItems": 5,
+            "items": {"type": "string"},
+        }
 
         # Valid
         result = validator.validate(["a", "b", "c"], schema)
@@ -326,7 +338,9 @@ class TestCIVerificationPipeline:
 
         assert report.passed
         assert len(report.stages) >= 4
-        assert all(s.status in [StageStatus.PASSED, StageStatus.SKIPPED] for s in report.stages)
+        assert all(
+            s.status in [StageStatus.PASSED, StageStatus.SKIPPED] for s in report.stages
+        )
 
     def test_stage_dependencies(self):
         """Test stage dependencies"""

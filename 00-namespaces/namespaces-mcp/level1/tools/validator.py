@@ -180,8 +180,7 @@ class MCPValidator:
             if not re.match(pattern, name):
                 errors.append(
                     f"Invalid name format: '{name}'. "
-                    f"Must match pattern: namespace/artifact-name (lowercase, hyphens allowed)"
-                )
+                    f"Must match pattern: namespace/artifact-name (lowercase, hyphens allowed)")
 
         # Validate version format (semver)
         if "version" in metadata:

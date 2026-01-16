@@ -825,7 +825,10 @@ async def get_products_optimized(cursor: str, limit: int = 20):
         return self.decision_examples.get(example_id)
 
     def search_examples(
-        self, query: str, category: Optional[ExampleCategory] = None, max_results: int = 5
+        self,
+        query: str,
+        category: Optional[ExampleCategory] = None,
+        max_results: int = 5,
     ) -> Dict[str, List[Any]]:
         """
         Search for relevant examples.
@@ -852,9 +855,9 @@ async def get_products_optimized(cursor: str, limit: int = 20):
 
         results["code_examples"] = [
             e
-            for e, _ in sorted(results["code_examples"], key=lambda x: x[1], reverse=True)[
-                :max_results
-            ]
+            for e, _ in sorted(
+                results["code_examples"], key=lambda x: x[1], reverse=True
+            )[:max_results]
         ]
 
         # Search scenario examples
@@ -870,9 +873,9 @@ async def get_products_optimized(cursor: str, limit: int = 20):
 
         results["scenario_examples"] = [
             e
-            for e, _ in sorted(results["scenario_examples"], key=lambda x: x[1], reverse=True)[
-                :max_results
-            ]
+            for e, _ in sorted(
+                results["scenario_examples"], key=lambda x: x[1], reverse=True
+            )[:max_results]
         ]
 
         # Search decision examples
@@ -888,9 +891,9 @@ async def get_products_optimized(cursor: str, limit: int = 20):
 
         results["decision_examples"] = [
             e
-            for e, _ in sorted(results["decision_examples"], key=lambda x: x[1], reverse=True)[
-                :max_results
-            ]
+            for e, _ in sorted(
+                results["decision_examples"], key=lambda x: x[1], reverse=True
+            )[:max_results]
         ]
 
         return results
@@ -912,10 +915,14 @@ async def get_products_optimized(cursor: str, limit: int = 20):
 
         return score
 
-    def get_examples_for_category(self, category: ExampleCategory) -> Dict[str, List[Any]]:
+    def get_examples_for_category(
+        self, category: ExampleCategory
+    ) -> Dict[str, List[Any]]:
         """Get all examples for a category."""
         return {
-            "code_examples": [e for e in self.code_examples.values() if e.category == category],
+            "code_examples": [
+                e for e in self.code_examples.values() if e.category == category
+            ],
             "scenario_examples": [
                 e for e in self.scenario_examples.values() if e.category == category
             ],

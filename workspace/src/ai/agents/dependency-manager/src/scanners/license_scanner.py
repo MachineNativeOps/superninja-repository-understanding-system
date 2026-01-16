@@ -53,7 +53,13 @@ class LicensePolicy:
         }
     )
     warning: Set[str] = field(
-        default_factory=lambda: {"LGPL-2.1", "LGPL-3.0", "MPL-2.0", "EPL-1.0", "EPL-2.0"}
+        default_factory=lambda: {
+            "LGPL-2.1",
+            "LGPL-3.0",
+            "MPL-2.0",
+            "EPL-1.0",
+            "EPL-2.0",
+        }
     )
     blocked: Set[str] = field(
         default_factory=lambda: {"GPL-2.0", "GPL-3.0", "AGPL-3.0", "SSPL-1.0"}
@@ -254,7 +260,9 @@ class LicenseScanner:
             package=dep.name, license_id=license_id, category=category, status=status
         )
 
-    async def _get_license(self, package_name: str, ecosystem: Ecosystem) -> Optional[str]:
+    async def _get_license(
+        self, package_name: str, ecosystem: Ecosystem
+    ) -> Optional[str]:
         """
         獲取套件的許可證
 

@@ -179,7 +179,12 @@ class CaseStudyEngine:
                     phase_type=PhaseType.GROWTH,
                     strategy=DevelopmentStrategy.HIGH_MARKET_RETURN,
                     description="大量投資內容授權，快速擴展用戶基數",
-                    key_actions=["擴大內容庫", "優化推薦系統", "國際化擴展", "提升串流品質"],
+                    key_actions=[
+                        "擴大內容庫",
+                        "優化推薦系統",
+                        "國際化擴展",
+                        "提升串流品質",
+                    ],
                     success_metrics={
                         "用戶增長": "年增長 > 30%",
                         "觀看時長": "月均 > 40 小時",
@@ -193,7 +198,12 @@ class CaseStudyEngine:
                     phase_type=PhaseType.MATURITY,
                     strategy=DevelopmentStrategy.HIGH_VALUE,
                     description="開發原創內容，建立品牌護城河",
-                    key_actions=["投資原創內容", "建立製作能力", "全球化內容策略", "建立 IP 資產"],
+                    key_actions=[
+                        "投資原創內容",
+                        "建立製作能力",
+                        "全球化內容策略",
+                        "建立 IP 資產",
+                    ],
                     success_metrics={
                         "原創內容佔比": "> 50%",
                         "獲獎數量": "艾美獎 > 100",
@@ -234,15 +244,27 @@ class CaseStudyEngine:
                         "設立獨立團隊探索新業務",
                         "設定明確的轉換里程碑",
                     ],
-                    common_mistakes=["過早放棄現有業務", "資源分配失衡", "忽視現有客戶需求"],
+                    common_mistakes=[
+                        "過早放棄現有業務",
+                        "資源分配失衡",
+                        "忽視現有客戶需求",
+                    ],
                 ),
                 LessonLearned(
                     category="技術投資",
                     title="推薦系統是核心競爭力",
                     description="個人化推薦減少用戶決策疲勞，提高黏著度",
                     applicability=["內容平台", "電商", "SaaS"],
-                    implementation_tips=["從簡單規則開始", "持續收集用戶反饋", "A/B 測試驗證效果"],
-                    common_mistakes=["過度依賴複雜演算法", "忽視冷啟動問題", "推薦同質化"],
+                    implementation_tips=[
+                        "從簡單規則開始",
+                        "持續收集用戶反饋",
+                        "A/B 測試驗證效果",
+                    ],
+                    common_mistakes=[
+                        "過度依賴複雜演算法",
+                        "忽視冷啟動問題",
+                        "推薦同質化",
+                    ],
                 ),
                 LessonLearned(
                     category="內容策略",
@@ -254,7 +276,11 @@ class CaseStudyEngine:
                         "與優秀創作者合作",
                         "建立數據驅動的製作流程",
                     ],
-                    common_mistakes=["盲目追求數量", "忽視本地化需求", "過度依賴明星效應"],
+                    common_mistakes=[
+                        "盲目追求數量",
+                        "忽視本地化需求",
+                        "過度依賴明星效應",
+                    ],
                 ),
             ],
             key_success_factors=[
@@ -337,7 +363,12 @@ class CaseStudyEngine:
                     phase_type=PhaseType.INNOVATION,
                     strategy=DevelopmentStrategy.INTELLIGENT,
                     description="整合 AI 驅動的庫存管理和銷售預測",
-                    key_actions=["AI 庫存優化", "智能定價建議", "銷售預測模型", "智能店面設計"],
+                    key_actions=[
+                        "AI 庫存優化",
+                        "智能定價建議",
+                        "銷售預測模型",
+                        "智能店面設計",
+                    ],
                     success_metrics={
                         "預測準確度": "> 85%",
                         "庫存週轉率": "提升 > 20%",
@@ -371,14 +402,22 @@ class CaseStudyEngine:
                         "提供開發者激勵計畫",
                         "建立品質審核機制",
                     ],
-                    common_mistakes=["API 設計不一致", "缺乏開發者支援", "平台抽成過高"],
+                    common_mistakes=[
+                        "API 設計不一致",
+                        "缺乏開發者支援",
+                        "平台抽成過高",
+                    ],
                 ),
                 LessonLearned(
                     category="變現策略",
                     title="支付整合是重要收入來源",
                     description="Shopify Payments 創造可預測的收入流",
                     applicability=["電商平台", "市集", "金融科技"],
-                    implementation_tips=["簡化支付流程", "提供有競爭力的費率", "確保合規性"],
+                    implementation_tips=[
+                        "簡化支付流程",
+                        "提供有競爭力的費率",
+                        "確保合規性",
+                    ],
                     common_mistakes=["忽視合規要求", "費率不透明", "支付體驗差"],
                 ),
             ],
@@ -405,7 +444,12 @@ class CaseStudyEngine:
                     phase_type=PhaseType.INITIAL,
                     strategy=DevelopmentStrategy.ADVANCED,
                     description="為開發者打造最簡單的支付 API",
-                    key_actions=["設計直觀的 API", "優質文檔撰寫", "簡化整合流程", "提供測試沙箱"],
+                    key_actions=[
+                        "設計直觀的 API",
+                        "優質文檔撰寫",
+                        "簡化整合流程",
+                        "提供測試沙箱",
+                    ],
                     success_metrics={
                         "整合時間": "< 1 小時",
                         "開發者滿意度": "> 4.5/5",
@@ -419,7 +463,12 @@ class CaseStudyEngine:
                     phase_type=PhaseType.GROWTH,
                     strategy=DevelopmentStrategy.ENTERPRISE_GRADE,
                     description="擴展到企業級功能，支援複雜支付場景",
-                    key_actions=["多幣種支援", "訂閱管理功能", "欺詐檢測系統", "合規工具"],
+                    key_actions=[
+                        "多幣種支援",
+                        "訂閱管理功能",
+                        "欺詐檢測系統",
+                        "合規工具",
+                    ],
                     success_metrics={
                         "支援貨幣數": "> 135",
                         "欺詐阻擋率": "> 99%",
@@ -452,7 +501,12 @@ class CaseStudyEngine:
                     phase_type=PhaseType.INNOVATION,
                     strategy=DevelopmentStrategy.NEXT_GEN,
                     description="探索下世代金融技術和全球擴展",
-                    key_actions=["加密貨幣支援", "嵌入式金融", "全球銀行連接", "即時支付網絡"],
+                    key_actions=[
+                        "加密貨幣支援",
+                        "嵌入式金融",
+                        "全球銀行連接",
+                        "即時支付網絡",
+                    ],
                     success_metrics={
                         "新市場進入": "> 10 國家/年",
                         "新產品收入": "> 20%",
@@ -474,7 +528,11 @@ class CaseStudyEngine:
                         "提供多語言 SDK",
                         "維護互動式文檔",
                     ],
-                    common_mistakes=["API 版本管理混亂", "文檔與代碼不同步", "錯誤訊息不清楚"],
+                    common_mistakes=[
+                        "API 版本管理混亂",
+                        "文檔與代碼不同步",
+                        "錯誤訊息不清楚",
+                    ],
                 ),
                 LessonLearned(
                     category="產品擴展",
@@ -489,7 +547,13 @@ class CaseStudyEngine:
                     common_mistakes=["過早多元化", "忽視核心產品", "整合不夠緊密"],
                 ),
             ],
-            key_success_factors=["開發者優先", "卓越的文檔", "持續創新", "合規先行", "全球化思維"],
+            key_success_factors=[
+                "開發者優先",
+                "卓越的文檔",
+                "持續創新",
+                "合規先行",
+                "全球化思維",
+            ],
             technology_stack=["Ruby", "Scala", "Go", "React", "AWS"],
             business_model="交易抽成 + 服務費",
             market_position="全球領先支付基礎設施",

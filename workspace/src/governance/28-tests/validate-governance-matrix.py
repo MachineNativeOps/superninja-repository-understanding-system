@@ -58,10 +58,14 @@ class GovernanceValidator:
 
     def validate_matrix_document(self) -> bool:
         """Validate core governance matrix document exists"""
-        matrix_path = self.repo_root / "governance" / "ARCHITECTURE_GOVERNANCE_MATRIX.md"
+        matrix_path = (
+            self.repo_root / "governance" / "ARCHITECTURE_GOVERNANCE_MATRIX.md"
+        )
 
         if not matrix_path.exists():
-            self.log_error("Core document missing: governance/ARCHITECTURE_GOVERNANCE_MATRIX.md")
+            self.log_error(
+                "Core document missing: governance/ARCHITECTURE_GOVERNANCE_MATRIX.md"
+            )
             return False
 
         self.log_info("✅ Core governance matrix document exists")
@@ -90,7 +94,9 @@ class GovernanceValidator:
 
     def validate_layers_domains(self) -> bool:
         """Validate layers and domains definition"""
-        layers_path = self.repo_root / "governance" / "architecture" / "layers-domains.yaml"
+        layers_path = (
+            self.repo_root / "governance" / "architecture" / "layers-domains.yaml"
+        )
 
         if not layers_path.exists():
             self.log_error("Missing: governance/architecture/layers-domains.yaml")
@@ -111,7 +117,12 @@ class GovernanceValidator:
 
         # Validate each layer has required fields
         for layer_name, layer_def in data.get("layers", {}).items():
-            required_fields = ["description", "responsibilities", "restrictions", "dependencies"]
+            required_fields = [
+                "description",
+                "responsibilities",
+                "restrictions",
+                "dependencies",
+            ]
             for field in required_fields:
                 if field not in layer_def:
                     self.log_warning(f"Layer '{layer_name}' missing field: {field}")
@@ -165,7 +176,9 @@ class GovernanceValidator:
         contract_files = list(contracts_dir.glob("*.yaml"))
 
         if len(contract_files) == 0:
-            self.log_warning("No behavior contracts found (expected at least 1 example)")
+            self.log_warning(
+                "No behavior contracts found (expected at least 1 example)"
+            )
         else:
             self.log_info(
                 f"✅ Behavior contracts directory exists ({len(contract_files)} contracts)"
@@ -206,14 +219,18 @@ class GovernanceValidator:
         ]
         for category in required_categories:
             if category not in data:
-                self.log_warning(f"architecture-health.yaml missing category: {category}")
+                self.log_warning(
+                    f"architecture-health.yaml missing category: {category}"
+                )
 
         self.log_info("✅ Architecture health metrics defined")
         return True
 
     def validate_architecture_policies(self) -> bool:
         """Validate architecture policy rules"""
-        policies_path = self.repo_root / "governance" / "policies" / "architecture-rules.yaml"
+        policies_path = (
+            self.repo_root / "governance" / "policies" / "architecture-rules.yaml"
+        )
 
         if not policies_path.exists():
             self.log_error("Missing: governance/policies/architecture-rules.yaml")
@@ -224,10 +241,16 @@ class GovernanceValidator:
             return False
 
         # Check for required policy categories
-        required_categories = ["language_policies", "security_policies", "dependency_anti_patterns"]
+        required_categories = [
+            "language_policies",
+            "security_policies",
+            "dependency_anti_patterns",
+        ]
         for category in required_categories:
             if category not in data:
-                self.log_warning(f"architecture-rules.yaml missing category: {category}")
+                self.log_warning(
+                    f"architecture-rules.yaml missing category: {category}"
+                )
 
         self.log_info("✅ Architecture policies defined")
         return True
@@ -246,7 +269,9 @@ class GovernanceValidator:
 
         # Check for directory categories
         if "directory_categories" not in data:
-            self.log_error("system-module-map.yaml missing 'directory_categories' section")
+            self.log_error(
+                "system-module-map.yaml missing 'directory_categories' section"
+            )
             return False
 
         self.log_info("✅ Module mapping exists")
@@ -338,7 +363,9 @@ def main():
     parser = argparse.ArgumentParser(
         description="Validate Architecture Governance Matrix completeness"
     )
-    parser.add_argument("--verbose", "-v", action="store_true", help="Enable verbose output")
+    parser.add_argument(
+        "--verbose", "-v", action="store_true", help="Enable verbose output"
+    )
     args = parser.parse_args()
 
     # Find repository root

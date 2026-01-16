@@ -176,7 +176,9 @@ class ARVRIntegration:
         self.mixed_reality_strategies: List[MixedReality] = []
         self.metaverse_platforms: List[MetaversePlatform] = []
 
-    def evaluate_immersive_experience(self, experience: ImmersiveExperience) -> ImmersiveExperience:
+    def evaluate_immersive_experience(
+        self, experience: ImmersiveExperience
+    ) -> ImmersiveExperience:
         """評估沉浸式體驗"""
         specs = self.HARDWARE_SPECS.get(experience.hardware_requirement, {})
         score = 0.0
@@ -201,14 +203,20 @@ class ARVRIntegration:
         score += xr_bonus.get(experience.xr_type, 10)
 
         experience.immersion_score = min(100, score)
-        experience.hardware_recommendations = self._get_hardware_recommendations(experience)
-        experience.development_frameworks = self.DEVELOPMENT_FRAMEWORKS.get(experience.xr_type, [])
+        experience.hardware_recommendations = self._get_hardware_recommendations(
+            experience
+        )
+        experience.development_frameworks = self.DEVELOPMENT_FRAMEWORKS.get(
+            experience.xr_type, []
+        )
         experience.user_experience_tips.extend(self._generate_ux_tips(experience))
 
         self.immersive_experiences.append(experience)
         return experience
 
-    def _get_hardware_recommendations(self, experience: ImmersiveExperience) -> List[str]:
+    def _get_hardware_recommendations(
+        self, experience: ImmersiveExperience
+    ) -> List[str]:
         """獲取硬體建議"""
         recommendations = []
 
@@ -224,10 +232,17 @@ class ARVRIntegration:
             recommendations.extend(["Meta Quest 3", "Pico 4", "HTC Vive XR Elite"])
         elif experience.hardware_requirement == HardwareRequirement.PC_TETHERED:
             recommendations.extend(
-                ["Valve Index", "HP Reverb G2", "HTC Vive Pro 2", "最低需求：RTX 3060, 16GB RAM"]
+                [
+                    "Valve Index",
+                    "HP Reverb G2",
+                    "HTC Vive Pro 2",
+                    "最低需求：RTX 3060, 16GB RAM",
+                ]
             )
         elif experience.hardware_requirement == HardwareRequirement.ENTERPRISE:
-            recommendations.extend(["Microsoft HoloLens 2", "Magic Leap 2", "Varjo XR-3"])
+            recommendations.extend(
+                ["Microsoft HoloLens 2", "Magic Leap 2", "Varjo XR-3"]
+            )
 
         return recommendations
 
@@ -244,7 +259,9 @@ class ARVRIntegration:
                 ]
             )
         elif experience.xr_type == XRType.AR:
-            tips.extend(["確保良好的光線追蹤", "提供清晰的 AR 物件放置引導", "考慮戶外使用場景"])
+            tips.extend(
+                ["確保良好的光線追蹤", "提供清晰的 AR 物件放置引導", "考慮戶外使用場景"]
+            )
         elif experience.xr_type in [XRType.MR, XRType.XR]:
             tips.extend(["平衡虛擬和現實元素", "考慮環境遮擋效果", "設計適應性 UI"])
 
@@ -363,7 +380,9 @@ class ARVRIntegration:
         platform.key_components = self._identify_key_components(platform)
 
         # 變現策略
-        platform.monetization_strategies = self._generate_monetization_strategies(platform)
+        platform.monetization_strategies = self._generate_monetization_strategies(
+            platform
+        )
 
         self.metaverse_platforms.append(platform)
         return platform
@@ -391,7 +410,9 @@ class ARVRIntegration:
 
         return components
 
-    def _generate_monetization_strategies(self, platform: MetaversePlatform) -> List[str]:
+    def _generate_monetization_strategies(
+        self, platform: MetaversePlatform
+    ) -> List[str]:
         """生成變現策略"""
         strategies = []
 
@@ -414,7 +435,9 @@ class ARVRIntegration:
         return {
             "generated_at": datetime.now().isoformat(),
             "immersive_experiences": [e.to_dict() for e in self.immersive_experiences],
-            "mixed_reality_strategies": [m.to_dict() for m in self.mixed_reality_strategies],
+            "mixed_reality_strategies": [
+                m.to_dict() for m in self.mixed_reality_strategies
+            ],
             "metaverse_platforms": [p.to_dict() for p in self.metaverse_platforms],
             "summary": {
                 "total_experiences": len(self.immersive_experiences),

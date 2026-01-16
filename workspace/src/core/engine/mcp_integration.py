@@ -122,7 +122,9 @@ class MCPToolProvider:
         count = 0
         for tool in tool_registry.list_all():
             mcp_tool = MCPTool(
-                name=tool.name, description=tool.description, input_schema=tool.input_schema
+                name=tool.name,
+                description=tool.description,
+                input_schema=tool.input_schema,
             )
             self.register_tool(mcp_tool, tool.execute)
             count += 1
@@ -140,13 +142,17 @@ class MCPToolProvider:
         """Handle a tool call request"""
         if call.name not in self._tools:
             return MCPToolResult(
-                call_id=call.call_id, success=False, error=f"Tool not found: {call.name}"
+                call_id=call.call_id,
+                success=False,
+                error=f"Tool not found: {call.name}",
             )
 
         handler = self._handlers.get(call.name)
         if not handler:
             return MCPToolResult(
-                call_id=call.call_id, success=False, error=f"No handler for tool: {call.name}"
+                call_id=call.call_id,
+                success=False,
+                error=f"No handler for tool: {call.name}",
             )
 
         try:
@@ -168,13 +174,21 @@ class MCPToolProvider:
         """Handle an incoming MCP message"""
         msg_type = message.get("type", "")
 
-        if msg_type == MCPMessageType.TOOL_LIST.value or message.get("method") == "tools/list":
+        if (
+            msg_type == MCPMessageType.TOOL_LIST.value
+            or message.get("method") == "tools/list"
+        ):
             return self.handle_list_tools()
 
-        elif msg_type == MCPMessageType.TOOL_CALL.value or message.get("method") == "tools/call":
+        elif (
+            msg_type == MCPMessageType.TOOL_CALL.value
+            or message.get("method") == "tools/call"
+        ):
             call = MCPToolCall(
                 name=message.get("name", message.get("params", {}).get("name", "")),
-                arguments=message.get("arguments", message.get("params", {}).get("arguments", {})),
+                arguments=message.get(
+                    "arguments", message.get("params", {}).get("arguments", {})
+                ),
                 call_id=message.get("id", str(uuid.uuid4())),
             )
             result = await self.handle_tool_call(call)
@@ -264,7 +278,9 @@ class MCPToolConsumer:
 
     def get_all_tools(self) -> Dict[str, List[MCPTool]]:
         """Get all tools from all servers"""
-        return {server: list(tools.values()) for server, tools in self._remote_tools.items()}
+        return {
+            server: list(tools.values()) for server, tools in self._remote_tools.items()
+        }
 
     def find_tool(self, tool_name: str) -> Optional[tuple[str, MCPTool]]:
         """Find a tool across all servers"""
@@ -315,7 +331,9 @@ class MCPBridge:
     """
 
     def __init__(
-        self, provider: Optional[MCPToolProvider] = None, consumer: Optional[MCPToolConsumer] = None
+        self,
+        provider: Optional[MCPToolProvider] = None,
+        consumer: Optional[MCPToolConsumer] = None,
     ):
         self.provider = provider or MCPToolProvider()
         self.consumer = consumer or MCPToolConsumer()
@@ -357,12 +375,17 @@ class MCPBridge:
             return await self.consumer.call_tool(server_name, tool_name, arguments)
 
         return MCPToolResult(
-            call_id=str(uuid.uuid4()), success=False, error=f"Tool not found: {tool_name}"
+            call_id=str(uuid.uuid4()),
+            success=False,
+            error=f"Tool not found: {tool_name}",
         )
 
     def get_all_tools(self) -> Dict[str, Any]:
         """Get all available tools (local and remote)"""
-        return {"local": self.provider.get_tool_list(), "remote": self.consumer.get_all_tools()}
+        return {
+            "local": self.provider.get_tool_list(),
+            "remote": self.consumer.get_all_tools(),
+        }
 
     def get_provider(self) -> MCPToolProvider:
         """Get the tool provider"""

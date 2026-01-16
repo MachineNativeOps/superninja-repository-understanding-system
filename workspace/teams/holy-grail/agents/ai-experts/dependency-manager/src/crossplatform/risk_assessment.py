@@ -330,7 +330,11 @@ class RiskAssessment:
         experience_risk = {"low": (8, 8), "medium": (5, 6), "high": (3, 4)}
         prob, imp = experience_risk.get(team_experience, (5, 5))
         risk = self.add_risk(
-            RiskType.TALENT_SCARCITY, "團隊經驗風險", f"團隊經驗等級: {team_experience}", prob, imp
+            RiskType.TALENT_SCARCITY,
+            "團隊經驗風險",
+            f"團隊經驗等級: {team_experience}",
+            prob,
+            imp,
         )
         assessed_risks.append(risk)
 
@@ -382,7 +386,9 @@ class RiskAssessment:
 
         # 加權平均，高風險權重更高
         weights = {RiskCategory.HIGH: 3, RiskCategory.MEDIUM: 2, RiskCategory.LOW: 1}
-        total_weighted_score = sum(r.risk_score * weights[r.category] for r in self.risks)
+        total_weighted_score = sum(
+            r.risk_score * weights[r.category] for r in self.risks
+        )
         total_weights = sum(weights[r.category] for r in self.risks)
 
         return total_weighted_score / total_weights if total_weights > 0 else 0.0
@@ -461,7 +467,9 @@ class RiskAssessment:
             "summary": {
                 "total": len(self.risks),
                 "high": len([r for r in self.risks if r.category == RiskCategory.HIGH]),
-                "medium": len([r for r in self.risks if r.category == RiskCategory.MEDIUM]),
+                "medium": len(
+                    [r for r in self.risks if r.category == RiskCategory.MEDIUM]
+                ),
                 "low": len([r for r in self.risks if r.category == RiskCategory.LOW]),
             },
         }

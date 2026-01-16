@@ -55,7 +55,8 @@ class TaskExecutor:
         except Exception as e:
             execution_time = time.time() - start_time
             logger.error(
-                f"Task {task.id} failed after {execution_time:.2f}s: {str(e)}", exc_info=True
+                f"Task {task.id} failed after {execution_time:.2f}s: {str(e)}",
+                exc_info=True,
             )
             raise TaskExecutionError(f"Task execution failed: {str(e)}")
 

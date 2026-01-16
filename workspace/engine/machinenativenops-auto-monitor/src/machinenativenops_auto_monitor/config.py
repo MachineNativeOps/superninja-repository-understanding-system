@@ -8,10 +8,8 @@ Configuration Module
 Manages configuration for the auto-monitor system.
 """
 
-from dataclasses import asdict, dataclass, field
-from typing import Dict, Optional
 import logging
-from dataclasses import dataclass, field
+from dataclasses import asdict, dataclass, field
 from pathlib import Path
 from typing import Any, Dict, Optional
 
@@ -281,7 +279,9 @@ def validate_config(config: MonitorConfig) -> bool:
     alert_rules = config.get("alerts", {}).get("alert_rules", {})
     for threshold_name, threshold_value in alert_rules.items():
         if not isinstance(threshold_value, (int, float)):
-            logger.error(f"Invalid threshold value for {threshold_name}: {threshold_value}")
+            logger.error(
+                f"Invalid threshold value for {threshold_name}: {threshold_value}"
+            )
             return False
         if threshold_value < 0 or threshold_value > 100:
             logger.warning(

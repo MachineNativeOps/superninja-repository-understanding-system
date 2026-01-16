@@ -131,7 +131,9 @@ class IndexScanner:
         for subdir in refactor_path.iterdir():
             if subdir.is_dir() and not subdir.name.startswith(("_", ".")):
                 # 檢查是否已有 playbook
-                existing = next((c for c in clusters if subdir.name in c.playbook_path), None)
+                existing = next(
+                    (c for c in clusters if subdir.name in c.playbook_path), None
+                )
                 if not existing:
                     clusters.append(
                         ClusterEntry(
@@ -215,7 +217,9 @@ class IndexScanner:
                 priority = "P3"
 
             return ClusterEntry(
-                cluster_id=pb_file.stem.replace("__playbook", "").replace("_playbook", ""),
+                cluster_id=pb_file.stem.replace("__playbook", "").replace(
+                    "_playbook", ""
+                ),
                 name=name,
                 description=description,
                 playbook_path=str(pb_file.relative_to(self.base_path)),
@@ -266,7 +270,11 @@ class IndexScanner:
 
     def _list_files(self, directory: Path) -> List[str]:
         """列出目錄中的檔案"""
-        return [str(f.relative_to(self.base_path)) for f in directory.rglob("*") if f.is_file()]
+        return [
+            str(f.relative_to(self.base_path))
+            for f in directory.rglob("*")
+            if f.is_file()
+        ]
 
 
 # ============================================================================
@@ -338,9 +346,11 @@ class IndexGenerator:
                 )
                 lines.append("")
                 for c in by_priority[priority]:
-                    status_emoji = {"pending": "⏳", "active": "🔄", "completed": "✅"}.get(
-                        c.status, "❓"
-                    )
+                    status_emoji = {
+                        "pending": "⏳",
+                        "active": "🔄",
+                        "completed": "✅",
+                    }.get(c.status, "❓")
                     if c.playbook_path != "_pending":
                         lines.append(f"- [{c.name}]({c.playbook_path}) {status_emoji}")
                     else:
@@ -442,7 +452,9 @@ class IndexVerifier:
         # 驗證 legacy_assets_index.yaml
         legacy_result = self._verify_legacy_index()
         errors.extend(legacy_result.get("errors", []))
-        sync_status["legacy_assets_index.yaml"] = len(legacy_result.get("errors", [])) == 0
+        sync_status["legacy_assets_index.yaml"] = (
+            len(legacy_result.get("errors", [])) == 0
+        )
 
         # 檢查孤立檔案
         orphan_files = self._find_orphan_files()
@@ -610,7 +622,11 @@ class IndexUpdater:
             INDEX_YAML_PATH.parent.mkdir(parents=True, exist_ok=True)
             with open(INDEX_YAML_PATH, "w", encoding="utf-8") as f:
                 yaml.dump(
-                    index_data, f, allow_unicode=True, default_flow_style=False, sort_keys=False
+                    index_data,
+                    f,
+                    allow_unicode=True,
+                    default_flow_style=False,
+                    sort_keys=False,
                 )
 
             print(f"   ✓ 已更新 ({len(clusters)} 叢集)")
@@ -650,7 +666,11 @@ class IndexUpdater:
             LEGACY_INDEX_PATH.parent.mkdir(parents=True, exist_ok=True)
             with open(LEGACY_INDEX_PATH, "w", encoding="utf-8") as f:
                 yaml.dump(
-                    index_data, f, allow_unicode=True, default_flow_style=False, sort_keys=False
+                    index_data,
+                    f,
+                    allow_unicode=True,
+                    default_flow_style=False,
+                    sort_keys=False,
                 )
 
             print(f"   ✓ 已更新 ({len(assets)} 資產)")
@@ -689,7 +709,9 @@ def main():
     human_parser = subparsers.add_parser("human", help="更新 INDEX.md")
 
     # legacy 命令
-    legacy_parser = subparsers.add_parser("legacy", help="更新 legacy_assets_index.yaml")
+    legacy_parser = subparsers.add_parser(
+        "legacy", help="更新 legacy_assets_index.yaml"
+    )
 
     # verify 命令
     verify_parser = subparsers.add_parser("verify", help="驗證索引")

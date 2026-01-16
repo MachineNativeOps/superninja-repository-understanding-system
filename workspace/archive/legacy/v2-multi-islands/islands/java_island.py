@@ -100,7 +100,11 @@ class JavaIsland(BaseIsland):
         for tool_name, cmd in tool_commands:
             try:
                 result = subprocess.run(cmd, capture_output=True, text=True, timeout=10)
-                version = result.stdout.strip().split("\n")[0] if result.returncode == 0 else None
+                version = (
+                    result.stdout.strip().split("\n")[0]
+                    if result.returncode == 0
+                    else None
+                )
                 tools[tool_name] = {
                     "available": result.returncode == 0,
                     "version": version,

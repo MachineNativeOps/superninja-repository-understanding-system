@@ -281,7 +281,9 @@ class ObjectStorage:
         """
         # Auto-detect content type
         if not content_type:
-            content_type = mimetypes.guess_type(filename)[0] or "application/octet-stream"
+            content_type = (
+                mimetypes.guess_type(filename)[0] or "application/octet-stream"
+            )
 
         # Build key
         key = self.artifact_path_template.format(

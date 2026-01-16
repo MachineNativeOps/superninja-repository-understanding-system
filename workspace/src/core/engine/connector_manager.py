@@ -164,7 +164,10 @@ class ConnectorManager:
         self._factories[ConnectorType.MESSAGE_QUEUE] = self._create_mq_connector
 
     async def create(
-        self, name: str, connector_type: ConnectorType, config: Optional[ConnectionConfig] = None
+        self,
+        name: str,
+        connector_type: ConnectorType,
+        config: Optional[ConnectionConfig] = None,
     ) -> Connector:
         """
         創建連接器
@@ -305,7 +308,9 @@ class ConnectorManager:
                 return True
 
             # 等待重試
-            delay = config.retry_delay_seconds * (config.retry_backoff_multiplier**attempt)
+            delay = config.retry_delay_seconds * (
+                config.retry_backoff_multiplier**attempt
+            )
             await asyncio.sleep(delay)
 
         return False
@@ -336,7 +341,11 @@ class ConnectorManager:
 
     def get_connected(self) -> List[Connector]:
         """獲取所有已連接的連接器"""
-        return [c for c in self._connectors.values() if c.status == ConnectionStatus.CONNECTED]
+        return [
+            c
+            for c in self._connectors.values()
+            if c.status == ConnectionStatus.CONNECTED
+        ]
 
     async def remove(self, name: str) -> bool:
         """
@@ -369,7 +378,9 @@ class ConnectorManager:
 
         return True
 
-    async def execute(self, name: str, operation: str, params: Dict[str, Any]) -> Dict[str, Any]:
+    async def execute(
+        self, name: str, operation: str, params: Dict[str, Any]
+    ) -> Dict[str, Any]:
         """
         通過連接器執行操作
 
@@ -412,7 +423,9 @@ class ConnectorManager:
             # 更新平均延遲
             total = connector.total_requests
             current_avg = connector.average_latency_ms
-            connector.average_latency_ms = (current_avg * (total - 1) + latency_ms) / total
+            connector.average_latency_ms = (
+                current_avg * (total - 1) + latency_ms
+            ) / total
 
             return {
                 "success": True,
@@ -525,23 +538,33 @@ class ConnectorManager:
 
         total = len(self._connectors)
         connected = len(
-            [c for c in self._connectors.values() if c.status == ConnectionStatus.CONNECTED]
+            [
+                c
+                for c in self._connectors.values()
+                if c.status == ConnectionStatus.CONNECTED
+            ]
         )
         healthy = len([c for c in self._connectors.values() if c.is_healthy])
 
         total_requests = sum(c.total_requests for c in self._connectors.values())
-        successful_requests = sum(c.successful_requests for c in self._connectors.values())
+        successful_requests = sum(
+            c.successful_requests for c in self._connectors.values()
+        )
 
         return {
             "total_connectors": total,
             "connected_connectors": connected,
             "healthy_connectors": healthy,
             "disconnected_connectors": total - connected,
-            "connectors_by_type": {t.value: len(names) for t, names in self._type_index.items()},
+            "connectors_by_type": {
+                t.value: len(names) for t, names in self._type_index.items()
+            },
             "total_requests": total_requests,
             "successful_requests": successful_requests,
             "success_rate": (
-                round(successful_requests / total_requests, 4) * 100 if total_requests > 0 else 0
+                round(successful_requests / total_requests, 4) * 100
+                if total_requests > 0
+                else 0
             ),
         }
 
@@ -570,7 +593,9 @@ class ConnectorManager:
 
     # ============ 默認連接工廠 ============
 
-    async def _create_database_connector(self, config: ConnectionConfig) -> Dict[str, Any]:
+    async def _create_database_connector(
+        self, config: ConnectionConfig
+    ) -> Dict[str, Any]:
         """創建數據庫連接器"""
         return {
             "type": "database",
@@ -587,7 +612,9 @@ class ConnectorManager:
             "timeout": config.read_timeout_seconds,
         }
 
-    async def _create_kubernetes_connector(self, config: ConnectionConfig) -> Dict[str, Any]:
+    async def _create_kubernetes_connector(
+        self, config: ConnectionConfig
+    ) -> Dict[str, Any]:
         """創建 Kubernetes 連接器"""
         return {
             "type": "kubernetes",
@@ -595,14 +622,18 @@ class ConnectorManager:
             "namespace": config.extra.get("namespace", "default"),
         }
 
-    async def _create_docker_connector(self, config: ConnectionConfig) -> Dict[str, Any]:
+    async def _create_docker_connector(
+        self, config: ConnectionConfig
+    ) -> Dict[str, Any]:
         """創建 Docker 連接器"""
         return {
             "type": "docker",
             "socket": config.extra.get("socket", "/var/run/docker.sock"),
         }
 
-    async def _create_filesystem_connector(self, config: ConnectionConfig) -> Dict[str, Any]:
+    async def _create_filesystem_connector(
+        self, config: ConnectionConfig
+    ) -> Dict[str, Any]:
         """創建文件系統連接器"""
         return {
             "type": "filesystem",

@@ -91,7 +91,9 @@ class TestSemanticVersionComparison(unittest.TestCase):
         # Verify each version is less than the next
         for i in range(len(versions) - 1):
             self.assertLess(
-                versions[i], versions[i + 1], f"{versions[i]} should be < {versions[i + 1]}"
+                versions[i],
+                versions[i + 1],
+                f"{versions[i]} should be < {versions[i + 1]}",
             )
 
     def test_equality_with_prerelease(self):
@@ -115,7 +117,9 @@ class TestSemanticVersionComparison(unittest.TestCase):
         self.assertGreaterEqual(v_normal, v_pre)
         self.assertLessEqual(v_pre, v_normal)
         self.assertLessEqual(
-            v_pre, v_normal, "Prerelease version should not be greater than normal version"
+            v_pre,
+            v_normal,
+            "Prerelease version should not be greater than normal version",
         )
         self.assertLess(v_pre, v_normal)
         self.assertGreater(v_normal, v_pre)

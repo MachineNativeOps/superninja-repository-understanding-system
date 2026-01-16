@@ -27,7 +27,9 @@ import sys
 from pathlib import Path
 
 
-def _import_kebab_module(module_alias: str, file_name: str, legacy_alias: str | None = None):
+def _import_kebab_module(
+    module_alias: str, file_name: str, legacy_alias: str | None = None
+):
     """
     Load kebab-case source files and expose them under underscore-based aliases.
 
@@ -81,7 +83,9 @@ def _import_kebab_module(module_alias: str, file_name: str, legacy_alias: str | 
 
 
 # Import base agent components
-_base_agent = _import_kebab_module("base_agent", "base-agent.py", legacy_alias="agents.base_agent")
+_base_agent = _import_kebab_module(
+    "base_agent", "base-agent.py", legacy_alias="agents.base_agent"
+)
 if _base_agent:
     BaseAgent = _base_agent.BaseAgent
     AgentStatus = _base_agent.AgentStatus

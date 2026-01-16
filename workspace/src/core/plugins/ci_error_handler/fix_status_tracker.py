@@ -407,13 +407,19 @@ class FixStatusTracker:
 
     def get_pending_fixes(self) -> list[TrackedFix]:
         """Get all pending fixes"""
-        pending_statuses = {FixStatus.PENDING, FixStatus.IN_PROGRESS, FixStatus.PR_CREATED}
+        pending_statuses = {
+            FixStatus.PENDING,
+            FixStatus.IN_PROGRESS,
+            FixStatus.PR_CREATED,
+        }
         return [f for f in self._tracked_fixes.values() if f.status in pending_statuses]
 
     def get_resolved_fixes(self) -> list[TrackedFix]:
         """Get all resolved fixes"""
         resolved_statuses = {FixStatus.VERIFIED, FixStatus.PR_MERGED}
-        return [f for f in self._tracked_fixes.values() if f.status in resolved_statuses]
+        return [
+            f for f in self._tracked_fixes.values() if f.status in resolved_statuses
+        ]
 
     def calculate_metrics(self, since: datetime | None = None) -> FixMetrics:
         """

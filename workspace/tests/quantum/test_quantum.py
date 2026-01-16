@@ -140,14 +140,21 @@ def test_pennylane_backend_cloud(mock_device, mock_env):
     mock_dev.name = "xanadu.cloud"
 
     backend = PennyLaneBackend()
-    config = {"circuit": "simple_variational", "shots": 100, "backend": "cloud", "params": [0.5]}
+    config = {
+        "circuit": "simple_variational",
+        "shots": 100,
+        "backend": "cloud",
+        "params": [0.5],
+    }
 
     result = backend.execute_pennylane_circuit(config)
 
     assert result is not None
     assert result["backend"] == "cloud"
     assert isinstance(result["result"], dict)
-    mock_device.assert_called_with("xanadu.cloud", wires=1, shots=100, api_key="test_pennylane_key")
+    mock_device.assert_called_with(
+        "xanadu.cloud", wires=1, shots=100, api_key="test_pennylane_key"
+    )
 
 
 def test_pennylane_backend_invalid_config(mock_env):

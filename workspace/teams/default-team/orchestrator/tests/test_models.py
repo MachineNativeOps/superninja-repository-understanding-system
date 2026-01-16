@@ -8,21 +8,12 @@ Tests cover:
 - Consensus voting models
 """
 
-from models.messages import (
-    MessageContext,
-    MessageEnvelope,
-    MessageMetadata,
-    MessageResponse,
-    MessageType,
-    Urgency,
-)
-from models.incidents import (
-    VALID_TRANSITIONS,
-    Incident,
-    IncidentHistory,
-    IncidentState,
-    IncidentTransition,
-)
+import os
+import sys
+from datetime import datetime
+from uuid import uuid4
+
+import pytest
 from models.consensus import (
     DEFAULT_AGENT_WEIGHTS,
     AgentWeight,
@@ -32,12 +23,21 @@ from models.consensus import (
     Vote,
     VoteType,
 )
-import os
-import sys
-from datetime import datetime
-from uuid import uuid4
-
-import pytest
+from models.incidents import (
+    VALID_TRANSITIONS,
+    Incident,
+    IncidentHistory,
+    IncidentState,
+    IncidentTransition,
+)
+from models.messages import (
+    MessageContext,
+    MessageEnvelope,
+    MessageMetadata,
+    MessageResponse,
+    MessageType,
+    Urgency,
+)
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 

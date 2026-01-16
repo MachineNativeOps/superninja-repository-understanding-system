@@ -95,7 +95,10 @@ tools = [
                         "type": "string",
                         "description": "The file path to write (relative to workspace)",
                     },
-                    "content": {"type": "string", "description": "The content to write"},
+                    "content": {
+                        "type": "string",
+                        "description": "The content to write",
+                    },
                 },
                 "required": ["file_path", "content"],
             },
@@ -108,7 +111,9 @@ tools = [
             "description": "Run a safe shell command (limited to: ls, cat, head, tail, wc, find, tree)",
             "parameters": {
                 "type": "object",
-                "properties": {"command": {"type": "string", "description": "The command to run"}},
+                "properties": {
+                    "command": {"type": "string", "description": "The command to run"}
+                },
                 "required": ["command"],
             },
         },
@@ -213,7 +218,12 @@ def run_command(command: str) -> str:
         return f"Command not allowed. Only these are permitted: {allowed}"
     try:
         result = subprocess.run(
-            cmd_parts, shell=False, capture_output=True, text=True, cwd=WORKSPACE, timeout=10
+            cmd_parts,
+            shell=False,
+            capture_output=True,
+            text=True,
+            cwd=WORKSPACE,
+            timeout=10,
         )
         output = result.stdout or result.stderr
         return output[:3000] if output else "Command executed (no output)"
@@ -290,7 +300,9 @@ When using tools, explain what you're doing and summarize the results clearly.""
         messages.append({"role": "user", "content": user_input})
 
         try:
-            response = chat_completion(model="gpt-4o-mini", messages=messages, tools=tools)
+            response = chat_completion(
+                model="gpt-4o-mini", messages=messages, tools=tools
+            )
 
             assistant_message = response.choices[0].message
 
@@ -306,10 +318,16 @@ When using tools, explain what you're doing and summarize the results clearly.""
                     result = execute_tool(tool_name, tool_args)
 
                     messages.append(
-                        {"role": "tool", "tool_call_id": tool_call.id, "content": result}
+                        {
+                            "role": "tool",
+                            "tool_call_id": tool_call.id,
+                            "content": result,
+                        }
                     )
 
-                response = chat_completion(model="gpt-4o-mini", messages=messages, tools=tools)
+                response = chat_completion(
+                    model="gpt-4o-mini", messages=messages, tools=tools
+                )
                 assistant_message = response.choices[0].message
 
             final_content = assistant_message.content

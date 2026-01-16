@@ -5,18 +5,19 @@ AI Agents Network for Instant Generation
 6個專業化AI代理實現並行處理，每個代理專注於特定領域
 """
 
-from .architecture_design_agent import ArchitectureDesignAgent
-from .testing_agent import TestingAgent
-from .optimization_agent import OptimizationAgent
-from .input_analysis_agent import InputAnalysisAgent
-from .deployment_agent import DeploymentAgent
-from .code_generation_agent import CodeGenerationAgent
 import asyncio
 import logging
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
 from enum import Enum
 from typing import Any, Dict, List, Optional
+
+from .architecture_design_agent import ArchitectureDesignAgent
+from .code_generation_agent import CodeGenerationAgent
+from .deployment_agent import DeploymentAgent
+from .input_analysis_agent import InputAnalysisAgent
+from .optimization_agent import OptimizationAgent
+from .testing_agent import TestingAgent
 
 
 class AgentType(Enum):
@@ -75,7 +76,9 @@ class BaseAgent(ABC):
     async def execute_with_timeout(self, task: AgentTask) -> AgentResult:
         """帶超時控制的任務執行"""
         try:
-            result = await asyncio.wait_for(self.process_task(task), timeout=task.timeout)
+            result = await asyncio.wait_for(
+                self.process_task(task), timeout=task.timeout
+            )
             return result
         except asyncio.TimeoutError:
             self.logger.error(f"Task {task.task_id} timed out")

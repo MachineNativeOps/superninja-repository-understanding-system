@@ -176,7 +176,9 @@ class MetaStrategist:
             confidence=self._calculate_confidence(gaps),
         )
 
-    def _map_metric_to_action(self, metric: str, gap: float) -> Tuple[str, Dict[str, Any]]:
+    def _map_metric_to_action(
+        self, metric: str, gap: float
+    ) -> Tuple[str, Dict[str, Any]]:
         """Map a metric gap to an action and layer."""
         # Mapping of metrics to responsible layers
         metric_layer_map = {

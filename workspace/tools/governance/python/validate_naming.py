@@ -102,7 +102,9 @@ class NamingValidator:
         # 提取命名模式
         pattern = policy["spec"].get("pattern", "")
         # 转换模板为正则表达式
-        regex_pattern = r"^(dev|staging|prod)-[a-z0-9-]+-deploy-v\d+\.\d+\.\d+(-[a-zA-Z0-9]+)?$"
+        regex_pattern = (
+            r"^(dev|staging|prod)-[a-z0-9-]+-deploy-v\d+\.\d+\.\d+(-[a-zA-Z0-9]+)?$"
+        )
 
         if not re.match(regex_pattern, name):
             violations.append(
@@ -154,7 +156,9 @@ class NamingValidator:
                         violations.extend(self.validate_k8s_deployment(doc, file_path))
 
         except Exception as e:
-            print(f"{Colors.YELLOW}Warning: Failed to parse {file_path}: {e}{Colors.RESET}")
+            print(
+                f"{Colors.YELLOW}Warning: Failed to parse {file_path}: {e}{Colors.RESET}"
+            )
 
         return violations
 
@@ -166,7 +170,9 @@ class NamingValidator:
 
         for file_path in files:
             if not file_path.exists():
-                print(f"{Colors.YELLOW}Warning: File not found: {file_path}{Colors.RESET}")
+                print(
+                    f"{Colors.YELLOW}Warning: File not found: {file_path}{Colors.RESET}"
+                )
                 continue
 
             total_files += 1
@@ -200,7 +206,9 @@ def generate_report(
         print(f"\n{Colors.BOLD}=== Naming Compliance Report ==={Colors.RESET}\n")
 
         # 摘要
-        compliance_rate = (compliant_files / total_files * 100) if total_files > 0 else 0
+        compliance_rate = (
+            (compliant_files / total_files * 100) if total_files > 0 else 0
+        )
         status_color = Colors.GREEN if not violations else Colors.RED
         status = "PASSED" if not violations else "FAILED"
 
@@ -224,7 +232,9 @@ def generate_report(
                 print()
 
         else:
-            print(f"{Colors.GREEN}✓ All resources comply with naming standards{Colors.RESET}\n")
+            print(
+                f"{Colors.GREEN}✓ All resources comply with naming standards{Colors.RESET}\n"
+            )
 
 
 def main():
@@ -233,26 +243,40 @@ def main():
     )
     parser.add_argument("--files", nargs="+", type=Path, help="Files to validate")
     parser.add_argument(
-        "--files-list", type=Path, help="File containing list of files to validate (one per line)"
+        "--files-list",
+        type=Path,
+        help="File containing list of files to validate (one per line)",
     )
     parser.add_argument(
-        "--policies", type=Path, required=True, help="Directory containing naming policies"
+        "--policies",
+        type=Path,
+        required=True,
+        help="Directory containing naming policies",
     )
     parser.add_argument(
-        "--schemas", type=Path, required=True, help="Directory containing validation schemas"
+        "--schemas",
+        type=Path,
+        required=True,
+        help="Directory containing validation schemas",
     )
-    parser.add_argument("--output", type=Path, help="Output file for report (JSON format)")
-    parser.add_argument("--format", choices=["text", "json"], default="text", help="Output format")
+    parser.add_argument(
+        "--output", type=Path, help="Output file for report (JSON format)"
+    )
+    parser.add_argument(
+        "--format", choices=["text", "json"], default="text", help="Output format"
+    )
     parser.add_argument(
         "--changed-files-only",
         action="store_true",
         help="Only validate changed files (requires git)",
     )
     parser.add_argument(
-        "--base-ref", help="Base git reference for diff (used with --changed-files-only)"
+        "--base-ref",
+        help="Base git reference for diff (used with --changed-files-only)",
     )
     parser.add_argument(
-        "--head-ref", help="Head git reference for diff (used with --changed-files-only)"
+        "--head-ref",
+        help="Head git reference for diff (used with --changed-files-only)",
     )
 
     args = parser.parse_args()
@@ -299,7 +323,9 @@ def main():
     validator = NamingValidator(args.policies, args.schemas)
 
     # 执行验证
-    violations, total_files, compliant_files = validator.validate_files(files_to_validate)
+    violations, total_files, compliant_files = validator.validate_files(
+        files_to_validate
+    )
 
     # 生成报告
     if args.output:

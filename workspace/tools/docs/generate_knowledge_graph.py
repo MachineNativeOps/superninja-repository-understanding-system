@@ -113,8 +113,11 @@ class KnowledgeGraphGenerator:
             "id": "unmanned-island-knowledge-graph",
             "title": "Unmanned Island System Knowledge Graph",
             "description": "Knowledge graph representation of the repository structure and entities",
-            "generated_at": datetime.now(UTC).isoformat().replace("+00:00", "Z"),
-            "source_repo": str(self.repo_root),
+            "generated_at": datetime.now(UTC).isoformat().replace(
+                "+00:00",
+                "Z"),
+            "source_repo": str(
+                self.repo_root),
             "nodes": self.nodes,
             "edges": self.edges,
             "statistics": stats,
@@ -199,7 +202,9 @@ class KnowledgeGraphGenerator:
             if item.is_dir():
                 self._process_directory(item, parent_id="system:unmanned-island")
 
-    def _process_directory(self, dir_path: Path, parent_id: str, depth: int = 0) -> None:
+    def _process_directory(
+        self, dir_path: Path, parent_id: str, depth: int = 0
+    ) -> None:
         """Process a directory and its contents."""
         if depth > 3:  # Limit depth
             return
@@ -237,7 +242,13 @@ class KnowledgeGraphGenerator:
 
                 if item.is_dir():
                     self._process_directory(item, node_id, depth + 1)
-                elif item.is_file() and item.suffix in [".py", ".ts", ".js", ".yaml", ".yml"]:
+                elif item.is_file() and item.suffix in [
+                    ".py",
+                    ".ts",
+                    ".js",
+                    ".yaml",
+                    ".yml",
+                ]:
                     self._process_file(item, node_id)
 
     def _process_file(self, file_path: Path, parent_id: str) -> None:
@@ -279,7 +290,9 @@ class KnowledgeGraphGenerator:
             for yaml_file in components_dir.glob("*.yaml"):
                 self._process_mndoc_file(yaml_file, "component", "元件")
 
-    def _process_mndoc_file(self, file_path: Path, default_type: str, label_zh: str) -> None:
+    def _process_mndoc_file(
+        self, file_path: Path, default_type: str, label_zh: str
+    ) -> None:
         """Process a single MN-DOC YAML file."""
         try:
             with open(file_path, encoding="utf-8") as f:
@@ -327,7 +340,9 @@ class KnowledgeGraphGenerator:
                     else f"capability:{cap.get('id', 'unknown')}"
                 )
                 cap_label = (
-                    cap if isinstance(cap, str) else cap.get("name", cap.get("id", "unknown"))
+                    cap
+                    if isinstance(cap, str)
+                    else cap.get("name", cap.get("id", "unknown"))
                 )
 
                 if self._add_node(

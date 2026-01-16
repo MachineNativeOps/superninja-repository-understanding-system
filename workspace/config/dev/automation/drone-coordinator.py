@@ -125,7 +125,9 @@ class DroneCoordinator:
                 analysis["tools"][tool] = {
                     "installed": result.returncode == 0,
                     "version": (
-                        result.stdout.strip().split("\n")[0] if result.returncode == 0 else None
+                        result.stdout.strip().split("\n")[0]
+                        if result.returncode == 0
+                        else None
                     ),
                 }
             except (FileNotFoundError, subprocess.TimeoutExpired):
@@ -191,7 +193,9 @@ class DroneCoordinator:
         print_info("🚀 自動啟動無人機...")
 
         # 按優先級排序
-        sorted_drones = sorted(self.drones.items(), key=lambda x: x[1].get("priority", 99))
+        sorted_drones = sorted(
+            self.drones.items(), key=lambda x: x[1].get("priority", 99)
+        )
 
         for drone_id, drone in sorted_drones:
             if drone.get("auto_start"):
@@ -295,7 +299,8 @@ class DroneCoordinator:
 def main() -> int:
     """主程式進入點"""
     parser = argparse.ArgumentParser(
-        description="SynergyMesh 無人機協調器", formatter_class=argparse.RawDescriptionHelpFormatter
+        description="SynergyMesh 無人機協調器",
+        formatter_class=argparse.RawDescriptionHelpFormatter,
     )
 
     parser.add_argument(

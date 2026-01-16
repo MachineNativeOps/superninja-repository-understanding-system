@@ -91,7 +91,9 @@ class SchemaRegistry:
         self._schemas: Dict[str, Dict[str, Any]] = {}
         self._schema_versions: Dict[str, List[str]] = {}
 
-    def register(self, schema_id: str, schema: Dict[str, Any], version: str = "1.0.0") -> None:
+    def register(
+        self, schema_id: str, schema: Dict[str, Any], version: str = "1.0.0"
+    ) -> None:
         """註冊 Schema"""
         full_id = f"{schema_id}@{version}"
         self._schemas[full_id] = schema
@@ -100,7 +102,9 @@ class SchemaRegistry:
             self._schema_versions[schema_id] = []
         self._schema_versions[schema_id].append(version)
 
-    def get(self, schema_id: str, version: Optional[str] = None) -> Optional[Dict[str, Any]]:
+    def get(
+        self, schema_id: str, version: Optional[str] = None
+    ) -> Optional[Dict[str, Any]]:
         """獲取 Schema"""
         if version:
             full_id = f"{schema_id}@{version}"
@@ -159,7 +163,9 @@ class YAMLSchemaValidator:
         """註冊自定義驗證器"""
         self._custom_validators[name] = validator
 
-    def validate(self, data: Any, schema: Dict[str, Any], path: str = "$") -> ValidationResult:
+    def validate(
+        self, data: Any, schema: Dict[str, Any], path: str = "$"
+    ) -> ValidationResult:
         """
         驗證數據是否符合 Schema
 
@@ -232,8 +238,7 @@ class YAMLSchemaValidator:
                             path=path,
                             error_type=ValidationErrorType.CUSTOM_VALIDATION_FAILED,
                             message=f"Custom validator '{validator_name}' failed: {str(e)}",
-                        )
-                    )
+                        ))
 
     def _validate_type(
         self, data: Any, expected_type: str, path: str, result: ValidationResult
@@ -300,8 +305,7 @@ class YAMLSchemaValidator:
                     message=f"String length {len(data)} is less than minimum {schema['minLength']}",
                     expected=f">= {schema['minLength']}",
                     actual=len(data),
-                )
-            )
+                ))
 
         # 最大長度
         if "maxLength" in schema and len(data) > schema["maxLength"]:
@@ -312,8 +316,7 @@ class YAMLSchemaValidator:
                     message=f"String length {len(data)} is greater than maximum {schema['maxLength']}",
                     expected=f"<= {schema['maxLength']}",
                     actual=len(data),
-                )
-            )
+                ))
 
         # 模式匹配
         if "pattern" in schema:
@@ -358,8 +361,7 @@ class YAMLSchemaValidator:
                             message=f"Value {data} must be greater than {schema['minimum']}",
                             expected=f"> {schema['minimum']}",
                             actual=data,
-                        )
-                    )
+                        ))
             elif data < schema["minimum"]:
                 result.add_error(
                     ValidationError(
@@ -368,8 +370,7 @@ class YAMLSchemaValidator:
                         message=f"Value {data} is less than minimum {schema['minimum']}",
                         expected=f">= {schema['minimum']}",
                         actual=data,
-                    )
-                )
+                    ))
 
         # 最大值
         if "maximum" in schema:
@@ -382,8 +383,7 @@ class YAMLSchemaValidator:
                             message=f"Value {data} must be less than {schema['maximum']}",
                             expected=f"< {schema['maximum']}",
                             actual=data,
-                        )
-                    )
+                        ))
             elif data > schema["maximum"]:
                 result.add_error(
                     ValidationError(
@@ -392,8 +392,7 @@ class YAMLSchemaValidator:
                         message=f"Value {data} is greater than maximum {schema['maximum']}",
                         expected=f"<= {schema['maximum']}",
                         actual=data,
-                    )
-                )
+                    ))
 
         # 倍數
         if "multipleOf" in schema:
@@ -405,8 +404,7 @@ class YAMLSchemaValidator:
                         message=f"Value {data} is not a multiple of {schema['multipleOf']}",
                         expected=f"multiple of {schema['multipleOf']}",
                         actual=data,
-                    )
-                )
+                    ))
 
     def _validate_array(
         self, data: list, schema: Dict[str, Any], path: str, result: ValidationResult
@@ -421,8 +419,7 @@ class YAMLSchemaValidator:
                     message=f"Array length {len(data)} is less than minimum {schema['minItems']}",
                     expected=f">= {schema['minItems']} items",
                     actual=len(data),
-                )
-            )
+                ))
 
         # 最大項目數
         if "maxItems" in schema and len(data) > schema["maxItems"]:
@@ -433,15 +430,16 @@ class YAMLSchemaValidator:
                     message=f"Array length {len(data)} is greater than maximum {schema['maxItems']}",
                     expected=f"<= {schema['maxItems']} items",
                     actual=len(data),
-                )
-            )
+                ))
 
         # 唯一性
         if schema.get("uniqueItems", False):
             seen = []
             for item in data:
                 item_json = (
-                    json.dumps(item, sort_keys=True) if isinstance(item, (dict, list)) else item
+                    json.dumps(item, sort_keys=True)
+                    if isinstance(item, (dict, list))
+                    else item
                 )
                 if item_json in seen:
                     result.add_error(
@@ -510,8 +508,7 @@ class YAMLSchemaValidator:
                     message=f"Object has {len(data)} properties, minimum is {schema['minProperties']}",
                     expected=f">= {schema['minProperties']} properties",
                     actual=len(data),
-                )
-            )
+                ))
 
         if "maxProperties" in schema and len(data) > schema["maxProperties"]:
             result.add_error(
@@ -521,5 +518,4 @@ class YAMLSchemaValidator:
                     message=f"Object has {len(data)} properties, maximum is {schema['maxProperties']}",
                     expected=f"<= {schema['maxProperties']} properties",
                     actual=len(data),
-                )
-            )
+                ))

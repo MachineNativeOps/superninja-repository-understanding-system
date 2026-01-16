@@ -170,14 +170,25 @@ class EmergencyModeManager:
         }
 
         # 狀態轉換邏輯
-        if level == EmergencyLevel.EMERGENCY and previous_level != EmergencyLevel.EMERGENCY:
+        if (
+            level == EmergencyLevel.EMERGENCY
+            and previous_level != EmergencyLevel.EMERGENCY
+        ):
             self._activate_emergency(health, "Multiple critical conditions detected")
             response["action_taken"] = "emergency_activated"
-        elif level == EmergencyLevel.CRITICAL and previous_level == EmergencyLevel.NORMAL:
-            self._activate_fallback(FallbackStrategy.LIGHTWEIGHT, "Critical condition detected")
+        elif (
+            level == EmergencyLevel.CRITICAL and previous_level == EmergencyLevel.NORMAL
+        ):
+            self._activate_fallback(
+                FallbackStrategy.LIGHTWEIGHT, "Critical condition detected"
+            )
             response["action_taken"] = "fallback_activated"
-        elif level == EmergencyLevel.WARNING and previous_level == EmergencyLevel.NORMAL:
-            self._activate_fallback(FallbackStrategy.STANDBY, "Warning conditions detected")
+        elif (
+            level == EmergencyLevel.WARNING and previous_level == EmergencyLevel.NORMAL
+        ):
+            self._activate_fallback(
+                FallbackStrategy.STANDBY, "Warning conditions detected"
+            )
             response["action_taken"] = "standby_activated"
         elif level == EmergencyLevel.NORMAL and previous_level != EmergencyLevel.NORMAL:
             self._attempt_recovery()
@@ -198,7 +209,9 @@ class EmergencyModeManager:
 
         self.state.level = EmergencyLevel.EMERGENCY
         self.state.strategy = FallbackStrategy.CLASSIC_AGGRESSIVE
-        self.state.activated_at = datetime.now(timezone.utc).isoformat().replace("+00:00", "Z")
+        self.state.activated_at = (
+            datetime.now(timezone.utc).isoformat().replace("+00:00", "Z")
+        )
         self.state.reason = reason
         self.state.recovery_attempts = 0
 
@@ -208,7 +221,9 @@ class EmergencyModeManager:
 
         self.state.level = EmergencyLevel.WARNING
         self.state.strategy = strategy
-        self.state.activated_at = datetime.now(timezone.utc).isoformat().replace("+00:00", "Z")
+        self.state.activated_at = (
+            datetime.now(timezone.utc).isoformat().replace("+00:00", "Z")
+        )
         self.state.reason = reason
 
     def _attempt_recovery(self):
@@ -220,7 +235,9 @@ class EmergencyModeManager:
         self.state.recovery_attempts += 1
 
         if self.state.recovery_attempts >= self.state.max_recovery_attempts:
-            logger.warning(f"Max recovery attempts ({self.state.max_recovery_attempts}) reached")
+            logger.warning(
+                f"Max recovery attempts ({self.state.max_recovery_attempts}) reached"
+            )
             return
 
         logger.info(
@@ -288,18 +305,26 @@ def run_demo():
     # 場景 1：正常狀態
     print("\n📗 場景 1：正常運行")
     print("-" * 50)
-    health_normal = SystemHealth(coherence=0.85, noise_level=0.10, error_rate=0.01, latency_ms=150)
+    health_normal = SystemHealth(
+        coherence=0.85, noise_level=0.10, error_rate=0.01, latency_ms=150
+    )
     result = manager.check_and_respond(health_normal)
-    print(f"健康評估: coherence={health_normal.coherence}, noise={health_normal.noise_level}")
+    print(
+        f"健康評估: coherence={health_normal.coherence}, noise={health_normal.noise_level}"
+    )
     print(f"行動: {result['action_taken']}")
     print(f"等級: {result['current_level']}")
 
     # 場景 2：警告狀態
     print("\n📙 場景 2：警告條件")
     print("-" * 50)
-    health_warning = SystemHealth(coherence=0.76, noise_level=0.16, error_rate=0.02, latency_ms=200)
+    health_warning = SystemHealth(
+        coherence=0.76, noise_level=0.16, error_rate=0.02, latency_ms=200
+    )
     result = manager.check_and_respond(health_warning)
-    print(f"健康評估: coherence={health_warning.coherence}, noise={health_warning.noise_level}")
+    print(
+        f"健康評估: coherence={health_warning.coherence}, noise={health_warning.noise_level}"
+    )
     print(f"行動: {result['action_taken']}")
     print(f"等級: {result['current_level']}")
 
@@ -310,7 +335,9 @@ def run_demo():
         coherence=0.65, noise_level=0.25, error_rate=0.08, latency_ms=900
     )
     result = manager.check_and_respond(health_emergency)
-    print(f"健康評估: coherence={health_emergency.coherence}, noise={health_emergency.noise_level}")
+    print(
+        f"健康評估: coherence={health_emergency.coherence}, noise={health_emergency.noise_level}"
+    )
     print(f"行動: {result['action_taken']}")
     print(f"等級: {result['current_level']}")
 
@@ -321,7 +348,9 @@ def run_demo():
         coherence=0.82, noise_level=0.12, error_rate=0.02, latency_ms=180
     )
     result = manager.check_and_respond(health_recovered)
-    print(f"健康評估: coherence={health_recovered.coherence}, noise={health_recovered.noise_level}")
+    print(
+        f"健康評估: coherence={health_recovered.coherence}, noise={health_recovered.noise_level}"
+    )
     print(f"行動: {result['action_taken']}")
     print(f"等級: {result['current_level']}")
 
@@ -336,7 +365,9 @@ def main():
     """主函數"""
     import argparse
 
-    parser = argparse.ArgumentParser(description="緊急模式管理器 - MachineNativeOps 驗證系統")
+    parser = argparse.ArgumentParser(
+        description="緊急模式管理器 - MachineNativeOps 驗證系統"
+    )
     parser.add_argument(
         "command",
         nargs="?",
@@ -344,7 +375,9 @@ def main():
         default="status",
         help="執行的命令",
     )
-    parser.add_argument("--reason", default="Manual activation", help="啟用緊急模式的原因")
+    parser.add_argument(
+        "--reason", default="Manual activation", help="啟用緊急模式的原因"
+    )
     parser.add_argument("--json", action="store_true", help="以 JSON 格式輸出")
 
     args = parser.parse_args()

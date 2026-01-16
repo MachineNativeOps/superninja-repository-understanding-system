@@ -121,7 +121,9 @@ class Plugin:
             self.last_cleanup = time.time()
 
             # Backup scheduling
-            self.full_backup_interval = config.get("full_backup_interval", 7 * 24 * 3600)  # 7 days
+            self.full_backup_interval = config.get(
+                "full_backup_interval", 7 * 24 * 3600
+            )  # 7 days
             self.incremental_backup_interval = config.get(
                 "incremental_backup_interval", 3600
             )  # 1 hour
@@ -146,7 +148,11 @@ class Plugin:
             dict: Execution result with backup metrics
         """
         if not self.initialized:
-            return {"status": "FAILED", "error": "Plugin not initialized", "timestamp": time.time()}
+            return {
+                "status": "FAILED",
+                "error": "Plugin not initialized",
+                "timestamp": time.time(),
+            }
 
         try:
             start_time = time.time()
@@ -378,7 +384,8 @@ class Plugin:
             # Get current file state
             current_files = self._scan_directory(source_path)
             current_metadata = {
-                str(path): self._get_file_metadata(path, backup_id) for path in current_files
+                str(path): self._get_file_metadata(path, backup_id)
+                for path in current_files
             }
 
             # Get previous backup state
@@ -492,11 +499,14 @@ class Plugin:
             # Get current file state
             current_files = self._scan_directory(source_path)
             current_metadata = {
-                str(path): self._get_file_metadata(path, backup_id) for path in current_files
+                str(path): self._get_file_metadata(path, backup_id)
+                for path in current_files
             }
 
             # Get full backup state
-            full_backup_metadata = self._get_backup_metadata(last_full_backup["backup_id"])
+            full_backup_metadata = self._get_backup_metadata(
+                last_full_backup["backup_id"]
+            )
 
             # Find new and modified files
             for file_path, metadata in current_metadata.items():
@@ -558,7 +568,9 @@ class Plugin:
                 shutil.rmtree(backup_dir)
             raise e
 
-    def _backup_file(self, source_file: Path, backup_dir: Path) -> Optional[Dict[str, Any]]:
+    def _backup_file(
+        self, source_file: Path, backup_dir: Path
+    ) -> Optional[Dict[str, Any]]:
         """Backup a single file"""
         try:
             # Calculate file hash
@@ -933,8 +945,12 @@ class Plugin:
                     shutil.rmtree(backup_dir)
 
                 # Delete from database
-                cursor.execute("DELETE FROM backup_sessions WHERE backup_id = ?", (backup_id,))
-                cursor.execute("DELETE FROM file_metadata WHERE backup_id = ?", (backup_id,))
+                cursor.execute(
+                    "DELETE FROM backup_sessions WHERE backup_id = ?", (backup_id,)
+                )
+                cursor.execute(
+                    "DELETE FROM file_metadata WHERE backup_id = ?", (backup_id,)
+                )
 
                 deleted_count += 1
                 logger.info(f"Deleted backup: {backup_id}")
@@ -1054,8 +1070,12 @@ class Plugin:
 
             # Remove from database
             cursor = self.db_connection.cursor()
-            cursor.execute("DELETE FROM backup_sessions WHERE backup_id = ?", (backup_id,))
-            cursor.execute("DELETE FROM file_metadata WHERE backup_id = ?", (backup_id,))
+            cursor.execute(
+                "DELETE FROM backup_sessions WHERE backup_id = ?", (backup_id,)
+            )
+            cursor.execute(
+                "DELETE FROM file_metadata WHERE backup_id = ?", (backup_id,)
+            )
             self.db_connection.commit()
 
         except Exception as e:

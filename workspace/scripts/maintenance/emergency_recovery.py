@@ -155,7 +155,11 @@ class EmergencyRecovery:
             if not path.exists():
                 self.log(f"   ❌ Missing directory: {directory}", "ERROR")
                 self.issues_found.append(
-                    {"type": "missing_directory", "directory": directory, "path": str(path)}
+                    {
+                        "type": "missing_directory",
+                        "directory": directory,
+                        "path": str(path),
+                    }
                 )
             else:
                 self.log(f"   ✅ Directory exists: {directory}")
@@ -181,7 +185,9 @@ class EmergencyRecovery:
     def check_processes(self):
         """Check if critical processes are running"""
         try:
-            result = subprocess.run(["ps", "aux"], capture_output=True, text=True, timeout=10)
+            result = subprocess.run(
+                ["ps", "aux"], capture_output=True, text=True, timeout=10
+            )
 
             processes = result.stdout
 
@@ -244,7 +250,10 @@ class EmergencyRecovery:
             if issue_type == "missing_directory":
                 self.repair_missing_directory(issue)
             elif issue_type == "missing_file":
-                self.log(f"   ⚠️  Cannot auto-fix missing file: {issue['component']}", "WARNING")
+                self.log(
+                    f"   ⚠️  Cannot auto-fix missing file: {issue['component']}",
+                    "WARNING",
+                )
             elif issue_type == "missing_module":
                 self.repair_missing_module(issue)
             elif issue_type == "process_not_running":
@@ -293,12 +302,22 @@ class EmergencyRecovery:
         except subprocess.CalledProcessError as e:
             self.log(f"   ❌ Failed to install {module}: {e}", "ERROR")
             self.fixes_applied.append(
-                {"type": "installed_module", "module": module, "success": False, "error": str(e)}
+                {
+                    "type": "installed_module",
+                    "module": module,
+                    "success": False,
+                    "error": str(e),
+                }
             )
         except Exception as e:
             self.log(f"   ❌ Error installing {module}: {e}", "ERROR")
             self.fixes_applied.append(
-                {"type": "installed_module", "module": module, "success": False, "error": str(e)}
+                {
+                    "type": "installed_module",
+                    "module": module,
+                    "success": False,
+                    "error": str(e),
+                }
             )
 
     def recover_services(self):
@@ -307,7 +326,8 @@ class EmergencyRecovery:
 
         # Try to start automation_launcher
         if any(
-            issue["type"] == "process_not_running" and issue["process"] == "automation_launcher.py"
+            issue["type"] == "process_not_running"
+            and issue["process"] == "automation_launcher.py"
             for issue in self.issues_found
         ):
             self.start_automation_launcher()
@@ -317,7 +337,8 @@ class EmergencyRecovery:
 
         # Try to start watchdog
         if any(
-            issue["type"] == "process_not_running" and issue["process"] == "system_watchdog.py"
+            issue["type"] == "process_not_running"
+            and issue["process"] == "system_watchdog.py"
             for issue in self.issues_found
         ):
             self.start_watchdog()
@@ -327,7 +348,9 @@ class EmergencyRecovery:
         launcher_path = self.base_path / "automation_launcher.py"
 
         if not launcher_path.exists():
-            self.log("   ❌ Cannot start automation_launcher.py - file not found", "ERROR")
+            self.log(
+                "   ❌ Cannot start automation_launcher.py - file not found", "ERROR"
+            )
             return
 
         self.log("   🔄 Starting automation_launcher.py...")
@@ -342,7 +365,11 @@ class EmergencyRecovery:
             )
             self.log("   ✅ Started automation_launcher.py")
             self.fixes_applied.append(
-                {"type": "started_service", "service": "automation_launcher.py", "success": True}
+                {
+                    "type": "started_service",
+                    "service": "automation_launcher.py",
+                    "success": True,
+                }
             )
         except Exception as e:
             self.log(f"   ❌ Failed to start automation_launcher.py: {e}", "ERROR")
@@ -375,7 +402,11 @@ class EmergencyRecovery:
             )
             self.log("   ✅ Started system_watchdog.py")
             self.fixes_applied.append(
-                {"type": "started_service", "service": "system_watchdog.py", "success": True}
+                {
+                    "type": "started_service",
+                    "service": "system_watchdog.py",
+                    "success": True,
+                }
             )
         except Exception as e:
             self.log(f"   ❌ Failed to start system_watchdog.py: {e}", "ERROR")
@@ -456,7 +487,9 @@ class EmergencyRecovery:
 
     def save_report(self, success: bool):
         """Save recovery report"""
-        report_path = self.base_path / ".automation_logs" / "emergency_recovery_report.json"
+        report_path = (
+            self.base_path / ".automation_logs" / "emergency_recovery_report.json"
+        )
 
         report = {
             "timestamp": datetime.now().isoformat(),

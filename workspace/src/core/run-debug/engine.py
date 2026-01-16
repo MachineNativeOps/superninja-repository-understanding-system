@@ -135,7 +135,9 @@ class DebugSession:
         """移除斷點"""
         if breakpoint_id in self.breakpoints:
             bp = self.breakpoints.pop(breakpoint_id)
-            self.logger.info(f"Breakpoint {breakpoint_id} removed from {bp.file}:{bp.line}")
+            self.logger.info(
+                f"Breakpoint {breakpoint_id} removed from {bp.file}:{bp.line}"
+            )
             self._emit_event("breakpoint_removed", bp)
             return True
         return False
@@ -280,7 +282,9 @@ class DebugEngine:
             return True
         return False
 
-    async def evaluate_expression(self, session_id: str, expression: str) -> Optional[Variable]:
+    async def evaluate_expression(
+        self, session_id: str, expression: str
+    ) -> Optional[Variable]:
         """評估表達式"""
         session = self.sessions.get(session_id)
         if not session or session.state != DebugState.PAUSED:
@@ -302,7 +306,9 @@ class DebugEngine:
             return await adapter.get_stack_trace(session)
         return []
 
-    async def get_variables(self, session_id: str, scope: str = "local") -> List[Variable]:
+    async def get_variables(
+        self, session_id: str, scope: str = "local"
+    ) -> List[Variable]:
         """取得變數"""
         session = self.sessions.get(session_id)
         if not session or session.state != DebugState.PAUSED:
@@ -375,7 +381,9 @@ class DebugAdapter:
         """單步執行（跳出）"""
         raise NotImplementedError
 
-    async def evaluate(self, session: DebugSession, expression: str) -> Optional[Variable]:
+    async def evaluate(
+        self, session: DebugSession, expression: str
+    ) -> Optional[Variable]:
         """評估表達式"""
         raise NotImplementedError
 

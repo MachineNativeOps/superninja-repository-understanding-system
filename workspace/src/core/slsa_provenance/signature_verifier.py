@@ -104,7 +104,9 @@ class SignatureResult:
     verified_claims: Dict[str, Any] = field(default_factory=dict)
     errors: List[str] = field(default_factory=list)
     warnings: List[str] = field(default_factory=list)
-    verification_time: datetime = field(default_factory=lambda: datetime.now(timezone.utc))
+    verification_time: datetime = field(
+        default_factory=lambda: datetime.now(timezone.utc)
+    )
     metadata: Dict[str, Any] = field(default_factory=dict)
 
     def to_dict(self) -> Dict[str, Any]:
@@ -262,7 +264,9 @@ class SignatureVerifier:
                 result.verified_claims = verify_result.get("claims", {})
             else:
                 result.status = VerificationStatus.INVALID
-                result.errors.append(verify_result.get("error", "Signature verification failed"))
+                result.errors.append(
+                    verify_result.get("error", "Signature verification failed")
+                )
 
         except Exception as e:
             result.status = VerificationStatus.INVALID
@@ -347,7 +351,9 @@ class SignatureVerifier:
                     log_index=entry.get("logIndex", 0),
                     log_id=entry.get("logId", {}).get("keyId", ""),
                     integrated_time=datetime.fromisoformat(
-                        entry.get("integratedTime", datetime.now(timezone.utc).isoformat())
+                        entry.get(
+                            "integratedTime", datetime.now(timezone.utc).isoformat()
+                        )
                     ),
                     body=entry.get("canonicalizedBody", ""),
                     inclusion_proof=entry.get("inclusionProof"),
@@ -437,7 +443,9 @@ class SignatureVerifier:
         # Extract from SAN or subject
         return cert.subject
 
-    def _verify_policy(self, result: SignatureResult, policy: VerificationPolicy) -> Dict[str, Any]:
+    def _verify_policy(
+        self, result: SignatureResult, policy: VerificationPolicy
+    ) -> Dict[str, Any]:
         """Verify against policy requirements"""
         errors = []
 
@@ -486,7 +494,9 @@ class SignatureVerifier:
             log_index=12345,
             log_id="rekor.sigstore.dev",
             integrated_time=datetime.now(timezone.utc),
-            body=base64.b64encode(f"{artifact_digest}:{signature[:20]}".encode()).decode(),
+            body=base64.b64encode(
+                f"{artifact_digest}:{signature[:20]}".encode()
+            ).decode(),
         )
 
     def _cryptographic_verify(
@@ -525,7 +535,8 @@ class SignatureVerifier:
 
 # Factory functions
 def create_signature_verifier(
-    rekor_url: str = "https://rekor.sigstore.dev", fulcio_url: str = "https://fulcio.sigstore.dev"
+    rekor_url: str = "https://rekor.sigstore.dev",
+    fulcio_url: str = "https://fulcio.sigstore.dev",
 ) -> SignatureVerifier:
     """Create a new SignatureVerifier instance"""
     return SignatureVerifier(rekor_url, fulcio_url)

@@ -218,7 +218,10 @@ class AutonomousTrustEngine:
         default_nets = [
             SafetyNet(
                 name="cascade_failure_prevention",
-                trigger_conditions=["multiple_failures_in_succession", "error_rate_spike"],
+                trigger_conditions=[
+                    "multiple_failures_in_succession",
+                    "error_rate_spike",
+                ],
                 action_on_trigger="pause_all_operations",
                 auto_rollback=True,
             ),
@@ -236,7 +239,10 @@ class AutonomousTrustEngine:
             ),
             SafetyNet(
                 name="security_boundary",
-                trigger_conditions=["privilege_escalation_attempt", "unauthorized_access"],
+                trigger_conditions=[
+                    "privilege_escalation_attempt",
+                    "unauthorized_access",
+                ],
                 action_on_trigger="lockdown",
                 auto_rollback=True,
             ),
@@ -267,7 +273,9 @@ class AutonomousTrustEngine:
 
         return RiskLevel.CRITICAL if trust >= 95 else RiskLevel.MINIMAL
 
-    async def make_autonomous_decision(self, action: ProposedAction) -> AutonomousDecision:
+    async def make_autonomous_decision(
+        self, action: ProposedAction
+    ) -> AutonomousDecision:
         """
         Make fully autonomous decision without human approval
 
@@ -289,7 +297,9 @@ class AutonomousTrustEngine:
         risk_assessment = self._assess_risk(action)
 
         # Get domain-specific trust
-        domain_trust = self.trust_score.domains.get(action.domain, self.trust_score.overall)
+        domain_trust = self.trust_score.domains.get(
+            action.domain, self.trust_score.overall
+        )
 
         # Calculate combined trust score
         combined_trust = (self.trust_score.overall * 0.6) + (domain_trust * 0.4)
@@ -308,7 +318,9 @@ class AutonomousTrustEngine:
             self.stats["auto_rejected"] += 1
         elif can_auto_approve:
             outcome = DecisionOutcome.APPROVED_AUTO
-            reasoning = self._generate_approval_reasoning(action, risk_assessment, combined_trust)
+            reasoning = self._generate_approval_reasoning(
+                action, risk_assessment, combined_trust
+            )
             confidence = min(combined_trust / 100, 0.99)
             self.stats["auto_approved"] += 1
         else:
@@ -318,8 +330,7 @@ class AutonomousTrustEngine:
             reasoning = (
                 f"Risk level {action.estimated_risk.value} exceeds current acceptable level "
                 f"{acceptable_risk.value}. System will attempt alternative approach or "
-                f"break down into lower-risk operations."
-            )
+                f"break down into lower-risk operations.")
             confidence = combined_trust / 100
 
         decision = AutonomousDecision(
@@ -408,7 +419,9 @@ class AutonomousTrustEngine:
             return "consider_alternatives"
         return "high_risk_action"
 
-    def _suggest_mitigations(self, action: ProposedAction, composite_risk: float) -> List[str]:
+    def _suggest_mitigations(
+        self, action: ProposedAction, composite_risk: float
+    ) -> List[str]:
         """Suggest risk mitigations"""
         mitigations = []
 
@@ -458,13 +471,17 @@ class AutonomousTrustEngine:
 
         if condition == "privilege_escalation_attempt":
             return (
-                action.domain == TrustDomain.SECURITY and "escalate" in action.action_type.lower()
+                action.domain == TrustDomain.SECURITY
+                and "escalate" in action.action_type.lower()
             )
 
         return False
 
     def _generate_approval_reasoning(
-        self, action: ProposedAction, risk_assessment: Dict[str, Any], trust_score: float
+        self,
+        action: ProposedAction,
+        risk_assessment: Dict[str, Any],
+        trust_score: float,
     ) -> str:
         """Generate human-readable reasoning for approval"""
         parts = [
@@ -481,7 +498,9 @@ class AutonomousTrustEngine:
 
         return " ".join(parts)
 
-    async def execute_decision(self, decision: AutonomousDecision) -> AutonomousDecision:
+    async def execute_decision(
+        self, decision: AutonomousDecision
+    ) -> AutonomousDecision:
         """
         Execute an approved decision
 
@@ -497,7 +516,9 @@ class AutonomousTrustEngine:
             DecisionOutcome.APPROVED_AUTO,
             DecisionOutcome.APPROVED_ESCALATED,
         ]:
-            logger.warning(f"Cannot execute non-approved decision: {decision.decision_id}")
+            logger.warning(
+                f"Cannot execute non-approved decision: {decision.decision_id}"
+            )
             return decision
 
         self.stats["executions"] += 1
@@ -581,7 +602,9 @@ class AutonomousTrustEngine:
         adjustment = self.TRUST_ADJUSTMENTS.get(event_type, 0)
 
         # Update overall trust
-        self.trust_score.overall = max(0, min(100, self.trust_score.overall + adjustment))
+        self.trust_score.overall = max(
+            0, min(100, self.trust_score.overall + adjustment)
+        )
 
         # Update domain-specific trust
         if domain in self.trust_score.domains:
@@ -620,7 +643,8 @@ class AutonomousTrustEngine:
         return {
             "overall_trust": round(self.trust_score.overall, 2),
             "domain_trust": {
-                domain.value: round(score, 2) for domain, score in self.trust_score.domains.items()
+                domain.value: round(score, 2)
+                for domain, score in self.trust_score.domains.items()
             },
             "autonomy_level": self.get_current_autonomy_level().value,
             "acceptable_risk": self.get_acceptable_risk_level().name,
@@ -630,20 +654,27 @@ class AutonomousTrustEngine:
 
     def get_statistics(self) -> Dict[str, Any]:
         """Get engine statistics"""
-        success_rate = self.stats["successful_executions"] / max(self.stats["executions"], 1) * 100
+        success_rate = (
+            self.stats["successful_executions"] / max(self.stats["executions"], 1) * 100
+        )
 
         return {
             "total_decisions": self.stats["total_decisions"],
             "auto_approved": self.stats["auto_approved"],
             "auto_rejected": self.stats["auto_rejected"],
             "approval_rate": round(
-                self.stats["auto_approved"] / max(self.stats["total_decisions"], 1) * 100, 2
+                self.stats["auto_approved"]
+                / max(self.stats["total_decisions"], 1)
+                * 100,
+                2,
             ),
             "executions": self.stats["executions"],
             "successful_executions": self.stats["successful_executions"],
             "success_rate": round(success_rate, 2),
             "rollbacks": self.stats["rollbacks"],
-            "safety_nets_active": len([net for net in self.safety_nets.values() if net.enabled]),
+            "safety_nets_active": len(
+                [net for net in self.safety_nets.values() if net.enabled]
+            ),
         }
 
     def get_decision_history(

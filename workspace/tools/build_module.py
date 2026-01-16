@@ -11,7 +11,9 @@ import yaml
 
 
 def run(cmd, cwd=None):
-    p = subprocess.run(cmd, cwd=cwd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True)
+    p = subprocess.run(
+        cmd, cwd=cwd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True
+    )
     print(p.stdout)
     if p.returncode != 0:
         raise RuntimeError(f"Command failed: {' '.join(cmd)}")

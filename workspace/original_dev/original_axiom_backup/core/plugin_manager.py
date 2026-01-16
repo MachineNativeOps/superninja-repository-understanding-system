@@ -84,7 +84,9 @@ class AxiomPluginManager:
 
     def _load_interface_spec(self) -> dict:
         """Load plugin interface specification"""
-        spec_path = Path(__file__).parent.parent / "standards" / "plugin_interface_v1.yaml"
+        spec_path = (
+            Path(__file__).parent.parent / "standards" / "plugin_interface_v1.yaml"
+        )
         try:
             with open(spec_path, "r") as f:
                 return yaml.safe_load(f)
@@ -158,7 +160,9 @@ class AxiomPluginManager:
                 self._update_dependency_graph(plugin_id, metadata.dependencies)
 
                 load_time = time.time() - start_time
-                logger.info(f"Plugin {plugin_id} loaded successfully in {load_time:.3f}s")
+                logger.info(
+                    f"Plugin {plugin_id} loaded successfully in {load_time:.3f}s"
+                )
 
                 return True
 
@@ -291,7 +295,9 @@ class AxiomPluginManager:
                 plugin_id=plugin_id,
                 status="FAILED",
                 result={},
-                execution_time=time.time() - start_time if "start_time" in locals() else 0.0,
+                execution_time=(
+                    time.time() - start_time if "start_time" in locals() else 0.0
+                ),
                 error=str(e),
             )
 
@@ -319,7 +325,9 @@ class AxiomPluginManager:
                 # Parallel execution for independent plugins
                 futures = {}
                 for plugin_id in execution_order[0]:
-                    future = self.executor.submit(self.execute_plugin, plugin_id, context.copy())
+                    future = self.executor.submit(
+                        self.execute_plugin, plugin_id, context.copy()
+                    )
                     futures[plugin_id] = future
 
                 for plugin_id, future in futures.items():
@@ -335,7 +343,9 @@ class AxiomPluginManager:
 
                         # Stop on failure
                         if result.status == "FAILED":
-                            logger.error(f"Stopping execution chain due to failure in {plugin_id}")
+                            logger.error(
+                                f"Stopping execution chain due to failure in {plugin_id}"
+                            )
                             break
 
             return results
@@ -452,7 +462,9 @@ class AxiomPluginManager:
         # Validate version format
         version = config["version"]
         if not isinstance(version, str) or not self._is_valid_semver(version):
-            raise PluginValidationError("Invalid version format, expected semver (x.y.z)")
+            raise PluginValidationError(
+                "Invalid version format, expected semver (x.y.z)"
+            )
 
         # Validate priority range
         priority = config["priority"]
@@ -568,7 +580,9 @@ class AxiomPluginManager:
 
         # Check for circular dependencies
         if in_degree:
-            raise PluginValidationError(f"Circular dependency detected: {list(in_degree.keys())}")
+            raise PluginValidationError(
+                f"Circular dependency detected: {list(in_degree.keys())}"
+            )
 
         return execution_levels
 
@@ -579,7 +593,9 @@ class AxiomPluginManager:
         with self.lock:
             # Unload all plugins in reverse dependency order
             try:
-                execution_order = self._resolve_execution_order(list(self.plugins.keys()))
+                execution_order = self._resolve_execution_order(
+                    list(self.plugins.keys())
+                )
                 for level in reversed(execution_order):
                     for plugin_id in level:
                         self._unload_plugin_internal(plugin_id)

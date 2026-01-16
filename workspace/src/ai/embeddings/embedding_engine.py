@@ -98,7 +98,7 @@ class EmbeddingEngine:
         """Generate embeddings for multiple texts."""
         results = []
         for i in range(0, len(texts), self.config.batch_size):
-            batch = texts[i : i + self.config.batch_size]
+            batch = texts[i: i + self.config.batch_size]
             for text in batch:
                 result = await self.embed(text)
                 results.append(result)
@@ -117,7 +117,9 @@ class EmbeddingEngine:
         self, query_vec: np.ndarray, candidates: List[np.ndarray], top_k: int = 10
     ) -> List[tuple]:
         """Find most similar vectors."""
-        similarities = [(i, self.similarity(query_vec, vec)) for i, vec in enumerate(candidates)]
+        similarities = [
+            (i, self.similarity(query_vec, vec)) for i, vec in enumerate(candidates)
+        ]
         similarities.sort(key=lambda x: x[1], reverse=True)
         return similarities[:top_k]
 

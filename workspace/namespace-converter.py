@@ -85,9 +85,13 @@ class NamespaceConverter:
                     with open(file_path, "w", encoding="utf-8") as f:
                         f.write(converted_content)
                     if self.verbose:
-                        print(f"✅ Updated {file_path}: {file_conversions} conversion(s)")
+                        print(
+                            f"✅ Updated {file_path}: {file_conversions} conversion(s)"
+                        )
                 else:
-                    print(f"🔍 Would update {file_path}: {file_conversions} conversion(s)")
+                    print(
+                        f"🔍 Would update {file_path}: {file_conversions} conversion(s)"
+                    )
             elif self.verbose:
                 print(f"⏭️  No changes needed: {file_path}")
 
@@ -142,7 +146,9 @@ class NamespaceConverter:
         if self.stats["conversions_by_rule"]:
             report += "🔧 Conversions by Rule:\n"
             for pattern, count in sorted(
-                self.stats["conversions_by_rule"].items(), key=lambda x: x[1], reverse=True
+                self.stats["conversions_by_rule"].items(),
+                key=lambda x: x[1],
+                reverse=True,
             ):
                 report += f"  {pattern[:40]:40} → {count:4} conversion(s)\n"
         else:
@@ -182,7 +188,9 @@ Examples:
     parser.add_argument(
         "--dry-run", action="store_true", help="Preview changes without applying them"
     )
-    parser.add_argument("--verbose", action="store_true", help="Show detailed output for all files")
+    parser.add_argument(
+        "--verbose", action="store_true", help="Show detailed output for all files"
+    )
     parser.add_argument("--report", help="Save conversion report to file")
 
     args = parser.parse_args()

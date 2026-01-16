@@ -147,7 +147,10 @@ class DelegationManager:
     """
 
     def __init__(
-        self, config: DelegationConfig, router: Any | None = None, load_balancer: Any | None = None
+        self,
+        config: DelegationConfig,
+        router: Any | None = None,
+        load_balancer: Any | None = None,
     ):
         """
         Initialize the delegation manager
@@ -344,7 +347,9 @@ class DelegationManager:
         tasks = list(self._tasks.values())
 
         if status:
-            task_ids = [tid for tid, result in self._results.items() if result.status == status]
+            task_ids = [
+                tid for tid, result in self._results.items() if result.status == status
+            ]
             tasks = [t for t in tasks if t.id in task_ids]
 
         if task_type:
@@ -362,7 +367,9 @@ class DelegationManager:
         provider_counts = {}
         for result in self._results.values():
             if result.provider:
-                provider_counts[result.provider] = provider_counts.get(result.provider, 0) + 1
+                provider_counts[result.provider] = (
+                    provider_counts.get(result.provider, 0) + 1
+                )
 
         total_duration = sum(r.duration_ms for r in self._results.values())
         avg_duration = total_duration / max(len(self._results), 1)
@@ -397,7 +404,9 @@ class DelegationManager:
             attempts = 0
             last_error = None
 
-            while attempts < (self.config.max_retries if self.config.retry_enabled else 1):
+            while attempts < (
+                self.config.max_retries if self.config.retry_enabled else 1
+            ):
                 attempts += 1
                 result.attempts = attempts
 
@@ -416,7 +425,9 @@ class DelegationManager:
                     self._running_tasks[task.id] = exec_task
 
                     # Wait with timeout
-                    execution_result = await asyncio.wait_for(exec_task, timeout=task.timeout)
+                    execution_result = await asyncio.wait_for(
+                        exec_task, timeout=task.timeout
+                    )
 
                     result.result = execution_result
                     result.status = DelegationStatus.COMPLETED
@@ -425,7 +436,9 @@ class DelegationManager:
                         result.completed_at - result.started_at
                     ).total_seconds() * 1000
 
-                    await self._emit_event("task_completed", {"result": result.to_dict()})
+                    await self._emit_event(
+                        "task_completed", {"result": result.to_dict()}
+                    )
                     break
 
                 except TimeoutError:

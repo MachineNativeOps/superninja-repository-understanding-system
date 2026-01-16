@@ -73,7 +73,9 @@ class LanguageIslandOrchestrator:
     def load_config(self) -> bool:
         """載入配置"""
         try:
-            config_module = importlib.import_module("bridges.language-islands.config.island-config")
+            config_module = importlib.import_module(
+                "bridges.language-islands.config.island-config"
+            )
             IslandConfig = config_module.IslandConfig
             island_config = IslandConfig.load()
             self.config = {
@@ -203,11 +205,15 @@ class LanguageIslandOrchestrator:
 
         for lang, (cmd, arg) in language_tools.items():
             try:
-                result = subprocess.run([cmd, arg], capture_output=True, text=True, timeout=5)
+                result = subprocess.run(
+                    [cmd, arg], capture_output=True, text=True, timeout=5
+                )
                 analysis["tools"][lang] = {
                     "installed": result.returncode == 0,
                     "version": (
-                        result.stdout.strip().split("\n")[0] if result.returncode == 0 else None
+                        result.stdout.strip().split("\n")[0]
+                        if result.returncode == 0
+                        else None
                     ),
                 }
             except (FileNotFoundError, subprocess.TimeoutExpired):

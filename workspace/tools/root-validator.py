@@ -47,7 +47,9 @@ class RootValidator:
                 "timestamp": datetime.utcnow().isoformat(),
                 "validator_version": "v1.0.0",
                 "root_directory": str(self.root_dir),
-                "schema_version": self.schema.get("metadata", {}).get("version", "unknown"),
+                "schema_version": self.schema.get("metadata", {}).get(
+                    "version", "unknown"
+                ),
             },
             "file_results": [],
             "consistency_results": [],
@@ -64,7 +66,10 @@ class RootValidator:
         logging.basicConfig(
             level=logging.INFO,
             format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
-            handlers=[logging.FileHandler(log_dir / "root-validator.log"), logging.StreamHandler()],
+            handlers=[
+                logging.FileHandler(log_dir / "root-validator.log"),
+                logging.StreamHandler(),
+            ],
         )
         self.logger = logging.getLogger("RootValidator")
 
@@ -85,7 +90,9 @@ class RootValidator:
         self.logger.info("Stage 1: File existence check")
 
         required_files = []
-        for category, files in self.schema.get("spec", {}).get("root_file_types", {}).items():
+        for category, files in (
+            self.schema.get("spec", {}).get("root_file_types", {}).items()
+        ):
             required_files.extend(files)
 
         results = []
@@ -95,15 +102,12 @@ class RootValidator:
                 # Handle wildcard patterns
                 matching_files = list(self.root_dir.glob(file_pattern))
                 if not matching_files:
-                    results.append(
-                        {
-                            "stage": "file_existence",
-                            "file": file_pattern,
-                            "status": "FAILED",
-                            "error_code": "ERR_FILE_NOT_FOUND",
-                            "message": f"No files found matching pattern: {file_pattern}",
-                        }
-                    )
+                    results.append({"stage": "file_existence",
+                                    "file": file_pattern,
+                                    "status": "FAILED",
+                                    "error_code": "ERR_FILE_NOT_FOUND",
+                                    "message": f"No files found matching pattern: {file_pattern}",
+                                    })
                     self.stats["errors"] += 1
                 else:
                     for file_path in matching_files:
@@ -163,7 +167,9 @@ class RootValidator:
                 }
 
             # Check required universal metadata
-            universal_metadata = self.schema.get("spec", {}).get("universal_metadata", {})
+            universal_metadata = self.schema.get("spec", {}).get(
+                "universal_metadata", {}
+            )
             required_fields = universal_metadata.get("required_fields", [])
 
             for field in required_fields:
@@ -263,7 +269,9 @@ class RootValidator:
 
         return results
 
-    def check_circular_dependencies(self, dependency_graph: Dict[str, List[str]]) -> Dict[str, Any]:
+    def check_circular_dependencies(
+        self, dependency_graph: Dict[str, List[str]]
+    ) -> Dict[str, Any]:
         """Check for circular dependencies using DFS"""
 
         def dfs(node, visited, rec_stack):
@@ -366,7 +374,9 @@ class RootValidator:
                 hash_lock["files"][file_pattern] = {
                     "hash": file_hash,
                     "size": file_path.stat().st_size,
-                    "modified": datetime.fromtimestamp(file_path.stat().st_mtime).isoformat(),
+                    "modified": datetime.fromtimestamp(
+                        file_path.stat().st_mtime
+                    ).isoformat(),
                 }
 
         return hash_lock
@@ -380,7 +390,10 @@ class RootValidator:
             "files_failed": self.stats["failed_files"],
             "total_errors": self.stats["errors"],
             "total_warnings": self.stats["warnings"],
-            "success_rate": (self.stats["passed_files"] / max(self.stats["total_files"], 1)) * 100,
+            "success_rate": (
+                self.stats["passed_files"] / max(self.stats["total_files"], 1)
+            )
+            * 100,
             "overall_status": "PASSED" if self.stats["errors"] == 0 else "FAILED",
         }
 
@@ -438,7 +451,9 @@ class RootValidator:
 
 
 def main():
-    parser = argparse.ArgumentParser(description="MachineNativeOps Root Layer Validator")
+    parser = argparse.ArgumentParser(
+        description="MachineNativeOps Root Layer Validator"
+    )
     parser.add_argument("--root-dir", default=".", help="Root directory to validate")
     parser.add_argument("--verbose", "-v", action="store_true", help="Verbose logging")
 
@@ -471,7 +486,9 @@ def main():
     else:
         print(f"\n✅ All validations passed!")
         if "hash_lock" in results:
-            print(f"🔐 Hash lock generated for {len(results['hash_lock']['files'])} files")
+            print(
+                f"🔐 Hash lock generated for {len(results['hash_lock']['files'])} files"
+            )
         sys.exit(0)
 
 

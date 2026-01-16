@@ -18,7 +18,10 @@ from typing import Any, Dict, List
 try:
     import yaml
 except ImportError:
-    print("Error: PyYAML is required. Install it with: pip install pyyaml", file=sys.stderr)
+    print(
+        "Error: PyYAML is required. Install it with: pip install pyyaml",
+        file=sys.stderr,
+    )
     sys.exit(1)
 
 # Language extensions mapping
@@ -63,7 +66,9 @@ def load_policy(config_path: str) -> Dict:
         sys.exit(1)
 
 
-def scan_directory(repo_root: str, exclude_dirs: List[str] = None) -> Dict[str, Dict[str, int]]:
+def scan_directory(
+    repo_root: str, exclude_dirs: List[str] = None
+) -> Dict[str, Dict[str, int]]:
     """Scan repository and count files by language in each directory"""
     if exclude_dirs is None:
         exclude_dirs = [
@@ -115,7 +120,9 @@ def scan_directory(repo_root: str, exclude_dirs: List[str] = None) -> Dict[str, 
     return dict(stats)
 
 
-def check_violations(stats: Dict[str, Dict[str, int]], policy: Dict) -> List[Dict[str, Any]]:
+def check_violations(
+    stats: Dict[str, Dict[str, int]], policy: Dict
+) -> List[Dict[str, Any]]:
     """Check for language policy violations"""
     violations = []
     directory_rules = policy.get("directory_rules", {})
@@ -158,7 +165,11 @@ def check_violations(stats: Dict[str, Dict[str, int]], policy: Dict) -> List[Dic
                 config_formats = ["YAML", "JSON", "Markdown", "TOML", "XML"]
 
                 # Check if language is allowed
-                if allowed and language not in allowed and language not in config_formats:
+                if (
+                    allowed
+                    and language not in allowed
+                    and language not in config_formats
+                ):
                     violations.append(
                         {
                             "severity": "ERROR",
@@ -168,8 +179,7 @@ def check_violations(stats: Dict[str, Dict[str, int]], policy: Dict) -> List[Dic
                             "message": f"在 {directory} 中使用了未授權的語言 {language}",
                             "rule": f'directory_rules.{directory.rstrip("/")}.allowed_languages',
                             "allowed": allowed,
-                        }
-                    )
+                        })
 
     return violations
 
@@ -217,9 +227,13 @@ def generate_markdown_report(report: Dict) -> str:
         lines.append("\n## Violations\n")
         for v in report["violations"]:
             icon = (
-                "🔴" if v["severity"] == "CRITICAL" else "⚠️" if v["severity"] == "ERROR" else "💡"
+                "🔴"
+                if v["severity"] == "CRITICAL"
+                else "⚠️" if v["severity"] == "ERROR" else "💡"
             )
-            lines.append(f"- {icon} **{v['severity']}** in `{v['directory']}`: {v['message']}")
+            lines.append(
+                f"- {icon} **{v['severity']}** in `{v['directory']}`: {v['message']}"
+            )
             if "count" in v:
                 lines.append(f" ({v['count']} files)\n")
             else:
@@ -231,7 +245,9 @@ def generate_markdown_report(report: Dict) -> str:
     for directory, languages in sorted(report["stats"].items()):
         if languages:
             lines.append(f"\n### {directory}\n")
-            for lang, count in sorted(languages.items(), key=lambda x: x[1], reverse=True):
+            for lang, count in sorted(
+                languages.items(), key=lambda x: x[1], reverse=True
+            ):
                 lines.append(f"- {lang}: {count} files\n")
 
     return "".join(lines)
@@ -260,7 +276,9 @@ def generate_text_report(report: Dict) -> str:
 
 def main():
     parser = argparse.ArgumentParser(description="Language Governance Analyzer")
-    parser.add_argument("--config", required=True, help="Path to language policy YAML file")
+    parser.add_argument(
+        "--config", required=True, help="Path to language policy YAML file"
+    )
     parser.add_argument("--repo-root", required=True, help="Repository root directory")
     parser.add_argument(
         "--output-format",

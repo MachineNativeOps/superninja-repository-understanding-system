@@ -29,7 +29,9 @@ class RealModuleLauncher:
     """Real module launcher that starts and manages actual processes"""
 
     def __init__(self):
-        self.root_dir = Path(os.getenv("ROOT_DIR", "/workspace/machine-native-ops-aaps"))
+        self.root_dir = Path(
+            os.getenv("ROOT_DIR", "/workspace/machine-native-ops-aaps")
+        )
         self.modules_dir = self.root_dir / "modules"
         self.running_modules = {}
         self.module_configs = {}
@@ -158,7 +160,9 @@ class RealModuleLauncher:
             health_check = module_config.get("health_check", {})
 
             # Determine health check endpoint
-            port = int(os.getenv(f"{module_name.upper().replace('-', '_')}_PORT", "8081"))
+            port = int(
+                os.getenv(f"{module_name.upper().replace('-', '_')}_PORT", "8081")
+            )
             if module_name == "config-manager":
                 port = 8081  # We know this from our test
 
@@ -183,7 +187,9 @@ class RealModuleLauncher:
             logger.error(f"Module {module_name} health check error: {str(e)}")
             return False
         except Exception as e:
-            logger.error(f"Module {module_name} health check unexpected error: {str(e)}")
+            logger.error(
+                f"Module {module_name} health check unexpected error: {str(e)}"
+            )
             return False
 
     def wait_for_ready(self, module_name: str, timeout: int = None) -> bool:
@@ -196,7 +202,9 @@ class RealModuleLauncher:
             logger.error(f"Module {module_name} not found in running modules")
             return False
 
-        logger.info(f"Waiting for module {module_name} to become ready (timeout: {timeout}s)")
+        logger.info(
+            f"Waiting for module {module_name} to become ready (timeout: {timeout}s)"
+        )
 
         start_time = time.time()
 
@@ -237,7 +245,9 @@ class RealModuleLauncher:
                 process.wait(timeout=10)
                 logger.info(f"Module {module_name} stopped gracefully")
             except subprocess.TimeoutExpired:
-                logger.warning(f"Module {module_name} did not stop gracefully, forcing termination")
+                logger.warning(
+                    f"Module {module_name} did not stop gracefully, forcing termination"
+                )
                 process.kill()
                 process.wait()
 
@@ -288,7 +298,12 @@ class RealModuleLauncher:
 
         except Exception as e:
             logger.error(f"Error getting status for module {module_name}: {str(e)}")
-            return {"name": module_name, "status": "error", "running": False, "error": str(e)}
+            return {
+                "name": module_name,
+                "status": "error",
+                "running": False,
+                "error": str(e),
+            }
 
     def get_all_status(self) -> Dict[str, Any]:
         """Get status of all modules"""

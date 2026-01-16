@@ -149,5 +149,9 @@ class RuleEngine:
         except Exception as e:
             logger.error(f"Error applying fixes: {e}")
             return RepairResult(
-                file_path=file_path, rules_applied=[], changes_made=0, success=False, message=str(e)
+                file_path=file_path,
+                rules_applied=[],
+                changes_made=0,
+                success=False,
+                message=str(e),
             )

@@ -125,7 +125,11 @@ class NamingGenerator:
 
             if "value_from" in label_spec:
                 # 從參數映射值
-                value_mapping = {"environment": environment, "app": app, "version": version}
+                value_mapping = {
+                    "environment": environment,
+                    "app": app,
+                    "version": version,
+                }
                 value = value_mapping.get(label_spec["value_from"], "")
             elif "default" in label_spec:
                 value = label_spec["default"]
@@ -165,7 +169,11 @@ class NamingGenerator:
                     "metadata": {"labels": labels},
                     "spec": {
                         "containers": [
-                            {"name": app, "image": image, "ports": [{"containerPort": 80}]}
+                            {
+                                "name": app,
+                                "image": image,
+                                "ports": [{"containerPort": 80}],
+                            }
                         ]
                     },
                 },
@@ -200,7 +208,9 @@ class NamingGenerator:
 def main():
     """主函數"""
     parser = argparse.ArgumentParser(description="命名生成器 v1.0.0")
-    parser.add_argument("--spec", default="config/machine-spec.yaml", help="命名規範文件路徑")
+    parser.add_argument(
+        "--spec", default="config/machine-spec.yaml", help="命名規範文件路徑"
+    )
     parser.add_argument(
         "--environment",
         required=True,
@@ -220,7 +230,9 @@ def main():
     parser.add_argument("--replicas", type=int, default=3, help="副本數量")
     parser.add_argument("--image", default="nginx:latest", help="容器鏡像")
     parser.add_argument("--output", help="輸出文件路徑")
-    parser.add_argument("--format", choices=["yaml", "json"], default="yaml", help="輸出格式")
+    parser.add_argument(
+        "--format", choices=["yaml", "json"], default="yaml", help="輸出格式"
+    )
 
     args = parser.parse_args()
 

@@ -111,11 +111,15 @@ class NamespaceValidator:
             for rule_id, rule in self.validation_rules.items():
                 # Check forbidden patterns
                 if "forbidden_pattern" in rule:
-                    self._check_forbidden_pattern(content, lines, file_path, rule_id, rule, result)
+                    self._check_forbidden_pattern(
+                        content, lines, file_path, rule_id, rule, result
+                    )
 
                 # Check required patterns (only for YAML/JSON files)
                 if "pattern" in rule and file_path.suffix in {".yaml", ".yml", ".json"}:
-                    self._check_required_pattern(content, file_path, rule_id, rule, result)
+                    self._check_required_pattern(
+                        content, file_path, rule_id, rule, result
+                    )
 
                 # Check with custom function
                 if "check_function" in rule:
@@ -166,7 +170,12 @@ class NamespaceValidator:
                 )
 
     def _check_required_pattern(
-        self, content: str, file_path: Path, rule_id: str, rule: Dict, result: ValidationResult
+        self,
+        content: str,
+        file_path: Path,
+        rule_id: str,
+        rule: Dict,
+        result: ValidationResult,
     ):
         """Check for required patterns in YAML/JSON files."""
         pattern = rule["pattern"]
@@ -217,8 +226,7 @@ class NamespaceValidator:
                                 severity=rule["severity"],
                                 message=f"Resource name '{name}' does not use kebab-case",
                                 suggestion="Use lowercase letters, numbers, and hyphens only",
-                            )
-                        )
+                            ))
 
     def _validate_yaml_keys(
         self,
@@ -255,8 +263,7 @@ class NamespaceValidator:
                             severity=rule["severity"],
                             message=f"YAML key '{key}' does not use snake_case",
                             suggestion="Use lowercase letters, numbers, and underscores only",
-                        )
-                    )
+                        ))
 
     def should_process_file(self, file_path: Path) -> bool:
         """Determine if a file should be validated."""
@@ -302,10 +309,12 @@ class NamespaceValidator:
         total_files = len(self.results)
         total_issues = sum(len(r.issues) for r in self.results)
         total_errors = sum(
-            len([i for i in r.issues if i.severity == Severity.ERROR]) for r in self.results
+            len([i for i in r.issues if i.severity == Severity.ERROR])
+            for r in self.results
         )
         total_warnings = sum(
-            len([i for i in r.issues if i.severity == Severity.WARNING]) for r in self.results
+            len([i for i in r.issues if i.severity == Severity.WARNING])
+            for r in self.results
         )
         files_passed = sum(1 for r in self.results if r.passed)
 
@@ -358,7 +367,9 @@ class NamespaceValidator:
         report.append("=" * 80)
 
         if total_errors == 0 and total_warnings == 0:
-            report.append("✓ All files comply with MachineNativeOps namespace standards")
+            report.append(
+                "✓ All files comply with MachineNativeOps namespace standards"
+            )
         elif total_errors == 0:
             report.append(f"⚠ Validation completed with {total_warnings} warnings")
         else:
@@ -368,7 +379,9 @@ class NamespaceValidator:
 
         return "\n".join(report)
 
-    def save_report(self, report: str, output_path: str = "namespace-validation-report.txt"):
+    def save_report(
+        self, report: str, output_path: str = "namespace-validation-report.txt"
+    ):
         """Save report to file."""
         try:
             with open(output_path, "w", encoding="utf-8") as f:
@@ -399,9 +412,15 @@ Examples:
     )
 
     parser.add_argument("path", type=str, help="File or directory path to validate")
-    parser.add_argument("--strict", action="store_true", help="Enable strict validation mode")
-    parser.add_argument("--verbose", "-v", action="store_true", help="Enable verbose output")
-    parser.add_argument("--report", action="store_true", help="Generate detailed report file")
+    parser.add_argument(
+        "--strict", action="store_true", help="Enable strict validation mode"
+    )
+    parser.add_argument(
+        "--verbose", "-v", action="store_true", help="Enable verbose output"
+    )
+    parser.add_argument(
+        "--report", action="store_true", help="Generate detailed report file"
+    )
     parser.add_argument(
         "--report-path",
         type=str,
@@ -441,6 +460,7 @@ Examples:
 
     # Exit with appropriate code
     total_errors = sum(
-        len([i for i in r.issues if i.severity == Severity.ERROR]) for r in validator.results
+        len([i for i in r.issues if i.severity == Severity.ERROR])
+        for r in validator.results
     )
     sys.exit(1 if total_errors > 0 else 0)

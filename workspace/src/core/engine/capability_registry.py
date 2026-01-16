@@ -315,7 +315,9 @@ class CapabilityRegistry:
     def get_by_category(self, category: str) -> List[Capability]:
         """按類別獲取能力"""
         names = self._category_index.get(category, set())
-        return [self._capabilities[name] for name in names if name in self._capabilities]
+        return [
+            self._capabilities[name] for name in names if name in self._capabilities
+        ]
 
     def get_all(self) -> List[Capability]:
         """獲取所有能力"""
@@ -324,7 +326,9 @@ class CapabilityRegistry:
     def get_available(self) -> List[Capability]:
         """獲取所有可用能力"""
         return [
-            cap for cap in self._capabilities.values() if cap.status == CapabilityStatus.AVAILABLE
+            cap
+            for cap in self._capabilities.values()
+            if cap.status == CapabilityStatus.AVAILABLE
         ]
 
     def check_requirements(self, name: str) -> Dict[str, Any]:
@@ -446,7 +450,11 @@ class CapabilityRegistry:
 
         total = len(self._capabilities)
         available = len(
-            [c for c in self._capabilities.values() if c.status == CapabilityStatus.AVAILABLE]
+            [
+                c
+                for c in self._capabilities.values()
+                if c.status == CapabilityStatus.AVAILABLE
+            ]
         )
 
         return {

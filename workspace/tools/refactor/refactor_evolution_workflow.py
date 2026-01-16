@@ -163,14 +163,18 @@ class RefactorEvolutionWorkflow:
         for dir_key in ["reports_dir", "plans_dir", "logs_dir", "backup_dir"]:
             dir_path = Path(self.config["output"].get(dir_key, ""))
             if dir_path:
-                dir_path = BASE_PATH / dir_path if not dir_path.is_absolute() else dir_path
+                dir_path = (
+                    BASE_PATH / dir_path if not dir_path.is_absolute() else dir_path
+                )
                 dir_path.mkdir(parents=True, exist_ok=True)
 
     def _initialize_engines(self):
         """Initialize refactor and evolution engines"""
         try:
             # Check refactor engine exists
-            refactor_engine_path = BASE_PATH / self.config["engines"]["refactor_engine"]["path"]
+            refactor_engine_path = (
+                BASE_PATH / self.config["engines"]["refactor_engine"]["path"]
+            )
             if not refactor_engine_path.exists():
                 print(f"❌ Refactor engine not found: {refactor_engine_path}")
                 return False
@@ -179,7 +183,9 @@ class RefactorEvolutionWorkflow:
             print("✅ Refactor engine found")
 
             # Check evolution engine exists
-            evolution_engine_path = BASE_PATH / self.config["engines"]["evolution_engine"]["path"]
+            evolution_engine_path = (
+                BASE_PATH / self.config["engines"]["evolution_engine"]["path"]
+            )
             if not evolution_engine_path.exists():
                 print(f"⚠️  Evolution engine not found: {evolution_engine_path}")
                 self.evolution_engine = None
@@ -242,7 +248,10 @@ class RefactorEvolutionWorkflow:
         try:
             if check == "git_status_clean":
                 result = subprocess.run(
-                    ["git", "status", "--porcelain"], cwd=BASE_PATH, capture_output=True, text=True
+                    ["git", "status", "--porcelain"],
+                    cwd=BASE_PATH,
+                    capture_output=True,
+                    text=True,
                 )
                 return len(result.stdout.strip()) == 0
 
@@ -269,7 +278,9 @@ class RefactorEvolutionWorkflow:
                 # Basic syntax check for Python files
                 py_files = [str(p) for p in BASE_PATH.glob("**/*.py")]
                 result = subprocess.run(
-                    ["python", "-m", "py_compile"] + py_files, cwd=BASE_PATH, capture_output=True
+                    ["python", "-m", "py_compile"] + py_files,
+                    cwd=BASE_PATH,
+                    capture_output=True,
                 )
                 return result.returncode == 0
 
@@ -329,7 +340,11 @@ class RefactorEvolutionWorkflow:
             traceback.print_exc()
 
             return PhaseResult(
-                phase=phase, success=False, duration_seconds=duration, output={}, error=str(e)
+                phase=phase,
+                success=False,
+                duration_seconds=duration,
+                output={},
+                error=str(e),
             )
 
     async def _run_analysis_phase(self) -> Dict[str, Any]:
@@ -382,7 +397,9 @@ class RefactorEvolutionWorkflow:
             "metrics": self._extract_analysis_metrics(results),
         }
 
-    def _analyze_target(self, target_path: Path, focus_areas: List[str]) -> Dict[str, Any]:
+    def _analyze_target(
+        self, target_path: Path, focus_areas: List[str]
+    ) -> Dict[str, Any]:
         """Analyze a specific target directory"""
         analysis = {
             "path": str(target_path),
@@ -411,7 +428,9 @@ class RefactorEvolutionWorkflow:
 
             # Simple structure analysis
             subdirs = [
-                d for d in target_path.iterdir() if d.is_dir() and not d.name.startswith(".")
+                d
+                for d in target_path.iterdir()
+                if d.is_dir() and not d.name.startswith(".")
             ]
             analysis["subdirectories"] = len(subdirs)
 
@@ -429,7 +448,9 @@ class RefactorEvolutionWorkflow:
                         "High number of subdirectories - consider consolidation"
                     )
                 if analysis["file_counts"]["total"] > max_threshold:
-                    analysis["issues"].append("Large number of files - consider modularization")
+                    analysis["issues"].append(
+                        "Large number of files - consider modularization"
+                    )
 
             if "organization" in focus_areas:
                 has_init = (target_path / "__init__.py").exists()
@@ -437,13 +458,17 @@ class RefactorEvolutionWorkflow:
                 if not has_init and analysis["file_counts"]["python"] > 0:
                     analysis["issues"].append("Missing __init__.py for Python package")
                 if not has_readme:
-                    analysis["recommendations"].append("Add README.md for documentation")
+                    analysis["recommendations"].append(
+                        "Add README.md for documentation"
+                    )
 
         return analysis
 
     def _summarize_analysis(self, results: List[Dict]) -> Dict[str, Any]:
         """Create summary of analysis results"""
-        total_issues = sum(len(r.get("analysis", {}).get("issues", [])) for r in results)
+        total_issues = sum(
+            len(r.get("analysis", {}).get("issues", [])) for r in results
+        )
         total_recommendations = sum(
             len(r.get("analysis", {}).get("recommendations", [])) for r in results
         )
@@ -460,9 +485,12 @@ class RefactorEvolutionWorkflow:
         return {
             "targets_analyzed": len(results),
             "total_files": sum(
-                r.get("analysis", {}).get("file_counts", {}).get("total", 0) for r in results
+                r.get("analysis", {}).get("file_counts", {}).get("total", 0)
+                for r in results
             ),
-            "total_issues": sum(len(r.get("analysis", {}).get("issues", [])) for r in results),
+            "total_issues": sum(
+                len(r.get("analysis", {}).get("issues", [])) for r in results
+            ),
         }
 
     async def _run_planning_phase(self) -> Dict[str, Any]:
@@ -551,14 +579,20 @@ class RefactorEvolutionWorkflow:
 
         # Collect learning data
         learning_data = {
-            "execution_results": [r for r in self.results if r.phase == WorkflowPhase.EXECUTION],
+            "execution_results": [
+                r for r in self.results if r.phase == WorkflowPhase.EXECUTION
+            ],
             "metrics": {
                 "total_phases": len(self.results),
                 "successful_phases": len([r for r in self.results if r.success]),
             },
         }
 
-        return {"success": True, "insights_collected": 0, "metrics": learning_data["metrics"]}
+        return {
+            "success": True,
+            "insights_collected": 0,
+            "metrics": learning_data["metrics"],
+        }
 
     async def _run_evolution_phase(self) -> Dict[str, Any]:
         """Run evolution phase to identify improvements"""
@@ -655,7 +689,9 @@ class RefactorEvolutionWorkflow:
                     WorkflowPhase.ANALYSIS,
                     WorkflowPhase.VALIDATION,
                 ]:
-                    print(f"\n❌ Critical phase {phase.value} failed, aborting workflow")
+                    print(
+                        f"\n❌ Critical phase {phase.value} failed, aborting workflow"
+                    )
                     self.state.status = WorkflowStatus.FAILED
                     self.state.error = f"Phase {phase.value} failed"
                     break
@@ -663,7 +699,9 @@ class RefactorEvolutionWorkflow:
         # Finalize
         self.state.end_time = datetime.now()
         self.state.status = (
-            WorkflowStatus.COMPLETED if not self.state.failed_phases else WorkflowStatus.FAILED
+            WorkflowStatus.COMPLETED
+            if not self.state.failed_phases
+            else WorkflowStatus.FAILED
         )
         self.state.current_phase = None
 
@@ -675,10 +713,14 @@ class RefactorEvolutionWorkflow:
             f"{'✅' if self.state.status == WorkflowStatus.COMPLETED else '❌'} Workflow {self.state.status.value}"
         )
         print(f"{'='*70}")
-        print(f"Duration: {(self.state.end_time - self.state.start_time).total_seconds():.2f}s")
+        print(
+            f"Duration: {(self.state.end_time - self.state.start_time).total_seconds():.2f}s"
+        )
         print(f"Phases completed: {len(self.state.completed_phases)}/{len(phases)}")
         if self.state.failed_phases:
-            print(f"Phases failed: {', '.join(p.value for p in self.state.failed_phases)}")
+            print(
+                f"Phases failed: {', '.join(p.value for p in self.state.failed_phases)}"
+            )
         print()
 
         return {
@@ -693,7 +735,9 @@ class RefactorEvolutionWorkflow:
         report = {
             "workflow_id": self.state.workflow_id,
             "status": self.state.status.value,
-            "duration_seconds": (self.state.end_time - self.state.start_time).total_seconds(),
+            "duration_seconds": (
+                self.state.end_time - self.state.start_time
+            ).total_seconds(),
             "phases": {
                 "total": len(self.results),
                 "completed": len(self.state.completed_phases),
@@ -710,9 +754,13 @@ class RefactorEvolutionWorkflow:
                 for r in self.results
             ],
             "summary": {
-                "total_duration": (self.state.end_time - self.state.start_time).total_seconds(),
+                "total_duration": (
+                    self.state.end_time - self.state.start_time
+                ).total_seconds(),
                 "success_rate": (
-                    len(self.state.completed_phases) / len(self.results) if self.results else 0
+                    len(self.state.completed_phases) / len(self.results)
+                    if self.results
+                    else 0
                 ),
             },
         }
@@ -790,7 +838,9 @@ Examples:
         return
 
     # Initialize workflow
-    config_path = Path(args.config) if hasattr(args, "config") and args.config else CONFIG_PATH
+    config_path = (
+        Path(args.config) if hasattr(args, "config") and args.config else CONFIG_PATH
+    )
     workflow = RefactorEvolutionWorkflow(config_path)
 
     # Execute command

@@ -44,10 +44,14 @@ def save_yaml(path: str, data: dict[str, Any]):
     """儲存 YAML 檔案"""
     os.makedirs(os.path.dirname(path), exist_ok=True)
     with open(path, "w", encoding="utf-8") as f:
-        yaml.dump(data, f, default_flow_style=False, allow_unicode=True, sort_keys=False)
+        yaml.dump(
+            data, f, default_flow_style=False, allow_unicode=True, sort_keys=False
+        )
 
 
-def update_knowledge_health_report(event: str, description: str, metrics: dict[str, Any] = None):
+def update_knowledge_health_report(
+    event: str, description: str, metrics: dict[str, Any] = None
+):
     """更新知識庫健康報告"""
     report_path = "docs/knowledge-health-report.yaml"
     now = datetime.datetime.utcnow().isoformat() + "Z"
@@ -194,13 +198,19 @@ For knowledge graph visualization, see `docs/knowledge-graph.yaml`.
 
 
 def main():
-    parser = argparse.ArgumentParser(description="Update Living Knowledge Base after Auto-Fix")
+    parser = argparse.ArgumentParser(
+        description="Update Living Knowledge Base after Auto-Fix"
+    )
     parser.add_argument(
         "--event", required=True, help="Event type (e.g., 'auto-fix', 'manual-fix')"
     )
     parser.add_argument("--description", required=True, help="Event description")
-    parser.add_argument("--violations-fixed", type=int, help="Number of violations fixed")
-    parser.add_argument("--health-score", type=float, help="Current health score (0-100)")
+    parser.add_argument(
+        "--violations-fixed", type=int, help="Number of violations fixed"
+    )
+    parser.add_argument(
+        "--health-score", type=float, help="Current health score (0-100)"
+    )
     parser.add_argument("--files-changed", type=int, help="Number of files changed")
 
     args = parser.parse_args()
@@ -217,7 +227,9 @@ def main():
         metrics["files_changed"] = args.files_changed
 
     # 更新知識庫健康報告
-    update_knowledge_health_report(args.event, args.description, metrics if metrics else None)
+    update_knowledge_health_report(
+        args.event, args.description, metrics if metrics else None
+    )
 
     # 準備知識圖譜節點
     nodes = [

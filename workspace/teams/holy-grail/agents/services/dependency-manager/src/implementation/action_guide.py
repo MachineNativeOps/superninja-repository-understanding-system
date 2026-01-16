@@ -134,8 +134,16 @@ class StrategyEvaluator:
             "description": "採用核心-衛星模式分散風險",
             "weight": 0.2,
         },
-        "agility": {"name": "動態調整", "description": "建立敏捷的策略調整機制", "weight": 0.2},
-        "risk_control": {"name": "風險管控", "description": "制定完善的應急預案", "weight": 0.2},
+        "agility": {
+            "name": "動態調整",
+            "description": "建立敏捷的策略調整機制",
+            "weight": 0.2,
+        },
+        "risk_control": {
+            "name": "風險管控",
+            "description": "制定完善的應急預案",
+            "weight": 0.2,
+        },
     }
 
     def __init__(self):
@@ -283,13 +291,21 @@ class ActionGuide:
             "id": "agility",
             "name": "動態調整",
             "description": "建立敏捷的策略調整機制",
-            "actions": ["設定關鍵績效指標", "建立監控和預警系統", "制定調整觸發條件和流程"],
+            "actions": [
+                "設定關鍵績效指標",
+                "建立監控和預警系統",
+                "制定調整觸發條件和流程",
+            ],
         },
         {
             "id": "risk_control",
             "name": "風險管控",
             "description": "制定完善的應急預案",
-            "actions": ["識別潛在風險", "制定 Plan A/B/C 應急策略", "定期演練和更新預案"],
+            "actions": [
+                "識別潛在風險",
+                "制定 Plan A/B/C 應急策略",
+                "定期演練和更新預案",
+            ],
         },
     ]
 
@@ -465,11 +481,15 @@ class ActionGuide:
         """添加行動項目"""
         self.action_items.append(action)
 
-    def get_recommendations_by_type(self, rec_type: RecommendationType) -> list[Recommendation]:
+    def get_recommendations_by_type(
+        self, rec_type: RecommendationType
+    ) -> list[Recommendation]:
         """根據類型獲取建議"""
         return [r for r in self.recommendations if r.type == rec_type]
 
-    def get_recommendations_by_priority(self, priority: ActionPriority) -> list[Recommendation]:
+    def get_recommendations_by_priority(
+        self, priority: ActionPriority
+    ) -> list[Recommendation]:
         """根據優先級獲取建議"""
         return [r for r in self.recommendations if r.priority == priority]
 
@@ -533,9 +553,12 @@ class ActionGuide:
         lines.extend(["---", "", "## 核心建議", ""])
 
         for rec in self.recommendations:
-            priority_icon = {"critical": "🔴", "high": "🟠", "medium": "🟡", "low": "🟢"}[
-                rec.priority.value
-            ]
+            priority_icon = {
+                "critical": "🔴",
+                "high": "🟠",
+                "medium": "🟡",
+                "low": "🟢",
+            }[rec.priority.value]
 
             lines.append(f"### {priority_icon} {rec.title}")
             lines.append(f"**類型：** {rec.type.value}")

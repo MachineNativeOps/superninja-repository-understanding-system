@@ -284,7 +284,9 @@ class AutonomyValidator:
             )
 
         # Check agent pool for auto-restart
-        pool_config = self.config.get("spec", {}).get("agentPool", {}).get("poolConfig", {})
+        pool_config = (
+            self.config.get("spec", {}).get("agentPool", {}).get("poolConfig", {})
+        )
 
         if pool_config.get("autoRestart", False):
             check["details"].append(
@@ -417,7 +419,9 @@ class AutonomyValidator:
                 status_color = (
                     Colors.OKGREEN
                     if detail["status"] == "PASS"
-                    else Colors.WARNING if detail["status"] == "WARNING" else Colors.FAIL
+                    else (
+                        Colors.WARNING if detail["status"] == "WARNING" else Colors.FAIL
+                    )
                 )
                 print(
                     f"  - {detail['criterion']}: {detail['value']} "
@@ -429,9 +433,13 @@ class AutonomyValidator:
         print(f"\n{Colors.BOLD}{'='*70}{Colors.ENDC}\n")
 
         if self.results["passed"]:
-            print(f"{Colors.OKGREEN}{Colors.BOLD}✅ AUTONOMY VALIDATION PASSED{Colors.ENDC}\n")
+            print(
+                f"{Colors.OKGREEN}{Colors.BOLD}✅ AUTONOMY VALIDATION PASSED{Colors.ENDC}\n"
+            )
         else:
-            print(f"{Colors.FAIL}{Colors.BOLD}❌ AUTONOMY VALIDATION FAILED{Colors.ENDC}\n")
+            print(
+                f"{Colors.FAIL}{Colors.BOLD}❌ AUTONOMY VALIDATION FAILED{Colors.ENDC}\n"
+            )
             print(f"{Colors.WARNING}Action: escalate-to-governance{Colors.ENDC}\n")
 
     def get_results_json(self) -> str:
@@ -454,7 +462,9 @@ Examples:
 
     parser.add_argument("--config", "-c", help="Path to pipeline configuration file")
 
-    parser.add_argument("--verbose", "-v", action="store_true", help="Enable verbose output")
+    parser.add_argument(
+        "--verbose", "-v", action="store_true", help="Enable verbose output"
+    )
 
     parser.add_argument("--output", "-o", help="Output results to JSON file")
 

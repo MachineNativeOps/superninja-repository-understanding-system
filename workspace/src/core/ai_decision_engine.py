@@ -131,7 +131,12 @@ class AIDecisionEngine:
     """
 
     # Decision weights for different criteria
-    DEFAULT_WEIGHTS = {"benefit": 0.4, "risk": 0.3, "confidence": 0.2, "prerequisites_met": 0.1}
+    DEFAULT_WEIGHTS = {
+        "benefit": 0.4,
+        "risk": 0.3,
+        "confidence": 0.2,
+        "prerequisites_met": 0.1,
+    }
 
     def __init__(self):
         """Initialize the AI Decision Engine"""
@@ -203,7 +208,7 @@ class AIDecisionEngine:
             decision_type=decision_type,
             priority=priority,
             selected_option=best_option,
-            alternatives=scored_options[1 : self.config["max_alternatives"]],
+            alternatives=scored_options[1: self.config["max_alternatives"]],
             reasoning=reasoning,
             confidence_level=confidence_level,
             metadata={
@@ -259,7 +264,9 @@ class AIDecisionEngine:
 
         return scored_options
 
-    def _check_prerequisites(self, option: DecisionOption, context: DecisionContext) -> bool:
+    def _check_prerequisites(
+        self, option: DecisionOption, context: DecisionContext
+    ) -> bool:
         """Check if all prerequisites are met"""
         if not option.prerequisites:
             return True
@@ -281,7 +288,9 @@ class AIDecisionEngine:
 
         patterns = self.learned_patterns[domain]
         similar_decisions = [
-            p for p in patterns if p.get("option_name") == option.name and p.get("success", False)
+            p
+            for p in patterns
+            if p.get("option_name") == option.name and p.get("success", False)
         ]
 
         if not similar_decisions:
@@ -303,7 +312,10 @@ class AIDecisionEngine:
         return ConfidenceLevel.UNCERTAIN
 
     def _generate_reasoning(
-        self, context: DecisionContext, selected: DecisionOption, alternatives: List[DecisionOption]
+        self,
+        context: DecisionContext,
+        selected: DecisionOption,
+        alternatives: List[DecisionOption],
     ) -> str:
         """Generate human-readable reasoning for decision"""
         parts = [
@@ -320,7 +332,9 @@ class AIDecisionEngine:
             )
 
         if context.objectives:
-            parts.append(f"- Aligns with objectives: {', '.join(context.objectives[:3])}")
+            parts.append(
+                f"- Aligns with objectives: {', '.join(context.objectives[:3])}"
+            )
 
         return "\n".join(parts)
 
@@ -344,7 +358,9 @@ class AIDecisionEngine:
             confidence_level=ConfidenceLevel.UNCERTAIN,
         )
 
-    def _learn_from_decision(self, context: DecisionContext, decision: Decision) -> None:
+    def _learn_from_decision(
+        self, context: DecisionContext, decision: Decision
+    ) -> None:
         """Learn from decision for future improvements"""
         if context.domain not in self.learned_patterns:
             self.learned_patterns[context.domain] = []
@@ -362,7 +378,10 @@ class AIDecisionEngine:
         self.stats["learning_cycles"] += 1
 
     async def predict_outcome(
-        self, current_state: Dict[str, Any], prediction_type: str, horizon: str = "short_term"
+        self,
+        current_state: Dict[str, Any],
+        prediction_type: str,
+        horizon: str = "short_term",
     ) -> PredictionResult:
         """
         Predict future outcome based on current state
@@ -386,7 +405,9 @@ class AIDecisionEngine:
         probability = self._calculate_prediction_probability(factors)
 
         # Generate recommendations
-        recommendations = self._generate_recommendations(prediction_type, probability, factors)
+        recommendations = self._generate_recommendations(
+            prediction_type, probability, factors
+        )
 
         # Determine predicted outcome
         predicted_outcome = {
@@ -429,7 +450,9 @@ class AIDecisionEngine:
                 "value": value,
                 "impact": self._calculate_factor_impact(key, value, prediction_type),
                 "direction": (
-                    "positive" if isinstance(value, (int, float)) and value > 0 else "neutral"
+                    "positive"
+                    if isinstance(value, (int, float)) and value > 0
+                    else "neutral"
                 ),
             }
             factors.append(factor)
@@ -492,13 +515,20 @@ class AIDecisionEngine:
     def _assess_impact(self, prediction_type: str, probability: float) -> str:
         """Assess the impact level of prediction"""
         if probability > 0.8:
-            return "high_positive" if "success" in prediction_type.lower() else "high_negative"
+            return (
+                "high_positive"
+                if "success" in prediction_type.lower()
+                else "high_negative"
+            )
         elif probability > 0.5:
             return "moderate"
         return "low"
 
     def record_outcome(
-        self, decision_id: str, success: bool, outcome_data: Optional[Dict[str, Any]] = None
+        self,
+        decision_id: str,
+        success: bool,
+        outcome_data: Optional[Dict[str, Any]] = None,
     ) -> None:
         """
         Record the outcome of a decision for learning
@@ -533,7 +563,10 @@ class AIDecisionEngine:
             "predictions_made": self.stats["predictions_made"],
             "successful_decisions": self.stats["successful_decisions"],
             "success_rate": round(
-                self.stats["successful_decisions"] / max(self.stats["decisions_made"], 1) * 100, 2
+                self.stats["successful_decisions"]
+                / max(self.stats["decisions_made"], 1)
+                * 100,
+                2,
             ),
             "learning_cycles": self.stats["learning_cycles"],
             "domains_learned": list(self.learned_patterns.keys()),

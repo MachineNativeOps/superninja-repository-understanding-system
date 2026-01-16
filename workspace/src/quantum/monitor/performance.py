@@ -38,7 +38,9 @@ class PerformanceMonitor:
     def _init_db(self) -> None:
         """Initialize SQLite table for performance metrics."""
         try:
-            self.conn = sqlite3.connect(str(self.db_path), check_same_thread=False, timeout=30.0)
+            self.conn = sqlite3.connect(
+                str(self.db_path), check_same_thread=False, timeout=30.0
+            )
             self.conn.row_factory = sqlite3.Row
 
             cursor = self.conn.cursor()

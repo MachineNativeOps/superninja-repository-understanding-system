@@ -71,9 +71,9 @@ class RootSpecsValidator:
     def load_root_files(self):
         """Load all root.*.yaml files"""
         for file_path in self.repo_root.glob("root.*.yaml"):
-            if not file_path.name.startswith("root.specs.") and not file_path.name.startswith(
-                "root.registry."
-            ):
+            if not file_path.name.startswith(
+                "root.specs."
+            ) and not file_path.name.startswith("root.registry."):
                 self.root_files[file_path.name] = self.load_yaml(file_path)
 
     def validate_naming_spec(self) -> List[str]:
@@ -91,18 +91,24 @@ class RootSpecsValidator:
             # Check file name format
             file_pattern = naming_rules.get("file_names", {}).get("pattern", "")
             if file_pattern and not re.match(file_pattern, file_name):
-                errors.append(f"File name '{file_name}' does not match pattern: {file_pattern}")
+                errors.append(
+                    f"File name '{file_name}' does not match pattern: {file_pattern}"
+                )
 
             # Check YAML keys
             if content and isinstance(content, dict):
-                errors.extend(self._validate_yaml_keys(content, file_name, naming_rules))
+                errors.extend(
+                    self._validate_yaml_keys(content, file_name, naming_rules)
+                )
 
             # Check apiVersion format
             api_version = content.get("apiVersion", "")
             if api_version:
                 api_pattern = naming_rules.get("api_version", {}).get("pattern", "")
                 if api_pattern and not re.match(api_pattern, api_version):
-                    errors.append(f"{file_name}: apiVersion '{api_version}' does not match pattern")
+                    errors.append(
+                        f"{file_name}: apiVersion '{api_version}' does not match pattern"
+                    )
 
             # Check kind format
             kind = content.get("kind", "")
@@ -159,13 +165,17 @@ class RootSpecsValidator:
 
                 # Recurse into nested structures
                 errors.extend(
-                    self._validate_yaml_keys(value, file_name, naming_rules, current_path)
+                    self._validate_yaml_keys(
+                        value, file_name, naming_rules, current_path
+                    )
                 )
 
         elif isinstance(data, list):
             for i, item in enumerate(data):
                 errors.extend(
-                    self._validate_yaml_keys(item, file_name, naming_rules, f"{path}[{i}]")
+                    self._validate_yaml_keys(
+                        item, file_name, naming_rules, f"{path}[{i}]"
+                    )
                 )
 
         return errors
@@ -195,7 +205,9 @@ class RootSpecsValidator:
                 for urn_entry in urns:
                     urn = urn_entry.get("urn", "")
                     if urn and urn_pattern and not re.match(urn_pattern, urn):
-                        errors.append(f"URN '{urn}' does not match pattern: {urn_pattern}")
+                        errors.append(
+                            f"URN '{urn}' does not match pattern: {urn_pattern}"
+                        )
 
         # Check for duplicate URNs
         all_urns = []
@@ -258,7 +270,9 @@ class RootSpecsValidator:
             for module in modules:
                 module_id = module.get("id", "")
                 dependencies = module.get("dependencies", [])
-                dependency_graph[module_id] = [dep.get("module_id", "") for dep in dependencies]
+                dependency_graph[module_id] = [
+                    dep.get("module_id", "") for dep in dependencies
+                ]
 
             # Detect cycles using DFS
             cycles = self._detect_cycles(dependency_graph)
@@ -357,7 +371,9 @@ class RootSpecsValidator:
         report.append("## Summary\n")
         report.append(f"- **Total Errors:** {len(self.errors)}\n")
         report.append(f"- **Total Warnings:** {len(self.warnings)}\n")
-        report.append(f"- **Status:** {'❌ FAILED' if self.errors else '✅ PASSED'}\n\n")
+        report.append(
+            f"- **Status:** {'❌ FAILED' if self.errors else '✅ PASSED'}\n\n"
+        )
 
         # Errors
         if self.errors:

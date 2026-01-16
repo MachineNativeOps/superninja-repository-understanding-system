@@ -67,7 +67,9 @@ class PythonSyntaxValidator:
             )
             return False
         except Exception as e:
-            self.log_error(f"Error parsing {file_path.relative_to(self.repo_root)}: {str(e)}")
+            self.log_error(
+                f"Error parsing {file_path.relative_to(self.repo_root)}: {str(e)}"
+            )
             return False
 
     def _validate_all_with_ast(self, file_path: Path, tree: ast.AST) -> bool:
@@ -84,16 +86,14 @@ class PythonSyntaxValidator:
                                 if isinstance(elt, ast.JoinedStr):
                                     self.log_error(
                                         f"Unexpected string concatenation in __all__ at "
-                                        f"{file_path.relative_to(self.repo_root)}:line {elt.lineno}"
-                                    )
+                                        f"{file_path.relative_to(self.repo_root)}:line {elt.lineno}")
                                     return False
                                 # Check if element is a BinOp (also
                                 # concatenation)
                                 elif isinstance(elt, ast.BinOp):
                                     self.log_error(
                                         f"String concatenation in __all__ (missing comma?) at "
-                                        f"{file_path.relative_to(self.repo_root)}:line {elt.lineno}"
-                                    )
+                                        f"{file_path.relative_to(self.repo_root)}:line {elt.lineno}")
                                     return False
         return True
 
@@ -132,7 +132,9 @@ class PythonSyntaxValidator:
                             combined_lines = line + " " + next_line
                             # Pattern: string followed by another string
                             # without comma
-                            if re.search(r'["\'][^"\']*["\']\s+["\'][^"\']*["\']', combined_lines):
+                            if re.search(
+                                r'["\'][^"\']*["\']\s+["\'][^"\']*["\']', combined_lines
+                            ):
                                 self.log_error(
                                     f"Possible missing comma in __all__ list "
                                     f"(or unintended string concatenation) at "
@@ -221,8 +223,7 @@ class PythonSyntaxValidator:
             if missing:
                 self.log_warning(
                     f"{file_path.relative_to(self.repo_root)}: "
-                    f"__all__ items not explicitly imported: {', '.join(sorted(missing))}"
-                )
+                    f"__all__ items not explicitly imported: {', '.join(sorted(missing))}")
 
             return True
 
@@ -336,7 +337,9 @@ class PythonSyntaxValidator:
 
 def main() -> int:
     """Main entry point."""
-    parser = argparse.ArgumentParser(description="Validate Python syntax in SynergyMesh repository")
+    parser = argparse.ArgumentParser(
+        description="Validate Python syntax in SynergyMesh repository"
+    )
     parser.add_argument(
         "--target",
         type=str,

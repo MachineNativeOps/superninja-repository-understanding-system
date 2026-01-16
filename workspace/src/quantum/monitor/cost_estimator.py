@@ -67,7 +67,9 @@ class CostEstimator:
             if backend not in self.pricing_models:
                 raise ValidationError(f"Unsupported backend: {backend}")
             if backend_type not in self.pricing_models[backend]:
-                raise ValidationError(f"Unsupported backend type: {backend_type} for {backend}")
+                raise ValidationError(
+                    f"Unsupported backend type: {backend_type} for {backend}"
+                )
 
             # Calculate cost
             pricing = self.pricing_models[backend][backend_type]

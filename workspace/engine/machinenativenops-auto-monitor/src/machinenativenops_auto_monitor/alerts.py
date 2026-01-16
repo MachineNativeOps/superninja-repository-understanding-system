@@ -129,7 +129,11 @@ class AlertManager:
                 state=AlertState.FIRING,
                 message=f"{metric_name} is at {value:.1f}% (threshold: {threshold}%)",
                 source="auto-monitor",
-                metadata={"metric": metric_name, "value": value, "threshold": threshold},
+                metadata={
+                    "metric": metric_name,
+                    "value": value,
+                    "threshold": threshold,
+                },
             )
             return alert
 
@@ -157,7 +161,9 @@ class AlertManager:
             existing.timestamp = alert.timestamp
             existing.metadata = alert.metadata
         else:
-            logger.info(f"New alert: {alert.name} - {alert.severity.value} - {alert.message}")
+            logger.info(
+                f"New alert: {alert.name} - {alert.severity.value} - {alert.message}"
+            )
             self.active_alerts.append(alert)
             self._notify_alert(alert)
 
@@ -349,7 +355,9 @@ class AlertManager:
         self.active_alerts[rule.name] = alert
         self.alert_history.append(alert)
 
-        self.logger.warning(f"ALERT FIRED: {alert.name} [{alert.severity.value}] - {alert.message}")
+        self.logger.warning(
+            f"ALERT FIRED: {alert.name} [{alert.severity.value}] - {alert.message}"
+        )
 
         # Send notification (would integrate with actual notification system)
         self._send_notification(alert)
@@ -385,7 +393,9 @@ class AlertManager:
         """
         # In production, this would integrate with notification channels
         # (email, Slack, PagerDuty, etc.)
-        self.logger.info(f"Notification sent for alert: {alert.name} ({alert.state.value})")
+        self.logger.info(
+            f"Notification sent for alert: {alert.name} ({alert.state.value})"
+        )
 
     def get_active_alerts(self) -> List[Alert]:
         """Get list of active alerts."""

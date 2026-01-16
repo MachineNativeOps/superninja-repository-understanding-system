@@ -136,7 +136,10 @@ class DataHandlingRule:
                         rule_name="加密要求",
                         severity=RuleSeverity.CRITICAL,
                         description=f"敏感數據 {data_type} 必須加密",
-                        context={"data_type": data_type, "category": sensitive_category},
+                        context={
+                            "data_type": data_type,
+                            "category": sensitive_category,
+                        },
                     )
                 )
                 auto_corrections.append("auto_encrypt_data")
@@ -169,7 +172,8 @@ class DataHandlingRule:
 
         result = RuleCheckResult(
             rule_id=self.RULE_ID,
-            passed=len([v for v in violations if v.severity == RuleSeverity.CRITICAL]) == 0,
+            passed=len([v for v in violations if v.severity == RuleSeverity.CRITICAL])
+            == 0,
             violations=violations,
             warnings=warnings,
             auto_corrections=auto_corrections,
@@ -188,7 +192,9 @@ class DataHandlingRule:
                 return category
         return None
 
-    def apply_auto_correction(self, correction: str, data: Dict[str, Any]) -> Dict[str, Any]:
+    def apply_auto_correction(
+        self, correction: str, data: Dict[str, Any]
+    ) -> Dict[str, Any]:
         """應用自動修正"""
         if correction == "auto_encrypt_data":
             # 模擬加密
@@ -196,7 +202,9 @@ class DataHandlingRule:
             data["encryption_algorithm"] = "AES-256-GCM"
         elif correction == "enable_access_logging":
             data["access_logged"] = True
-            data["log_id"] = hashlib.sha256(str(datetime.utcnow()).encode()).hexdigest()[:16]
+            data["log_id"] = hashlib.sha256(
+                str(datetime.utcnow()).encode()
+            ).hexdigest()[:16]
 
         return data
 
@@ -285,8 +293,7 @@ class SystemAccessRule:
                         "max_allowed": max_allowed,
                         "resource_category": resource_category,
                     },
-                )
-            )
+                ))
             # 建議降級存取
             auto_corrections.append(f"downgrade_to_level_{max_allowed}")
 
@@ -295,7 +302,8 @@ class SystemAccessRule:
 
         result = RuleCheckResult(
             rule_id=self.RULE_ID,
-            passed=len([v for v in violations if v.severity == RuleSeverity.CRITICAL]) == 0,
+            passed=len([v for v in violations if v.severity == RuleSeverity.CRITICAL])
+            == 0,
             violations=violations,
             warnings=warnings,
             auto_corrections=auto_corrections,
@@ -308,7 +316,10 @@ class SystemAccessRule:
     def _is_prohibited_resource(self, resource: str) -> bool:
         """檢查是否為禁止資源"""
         resource_lower = resource.lower()
-        return any(prohibited.lower() in resource_lower for prohibited in self.PROHIBITED_RESOURCES)
+        return any(
+            prohibited.lower() in resource_lower
+            for prohibited in self.PROHIBITED_RESOURCES
+        )
 
     def _categorize_resource(self, resource: str) -> str:
         """分類資源"""
@@ -429,8 +440,7 @@ class ResourceUsageRule:
                         "current": current,
                         "limit": adjusted_limit,
                     },
-                )
-            )
+                ))
             # 建議減少資源使用
             safe_amount = max(0, adjusted_limit - current)
             auto_corrections.append(f"reduce_to_{safe_amount}")
@@ -441,7 +451,8 @@ class ResourceUsageRule:
 
         result = RuleCheckResult(
             rule_id=self.RULE_ID,
-            passed=len([v for v in violations if v.severity == RuleSeverity.CRITICAL]) == 0,
+            passed=len([v for v in violations if v.severity == RuleSeverity.CRITICAL])
+            == 0,
             violations=violations,
             warnings=warnings,
             auto_corrections=auto_corrections,
@@ -549,9 +560,9 @@ class CommunicationRule:
                     rule_name="訊息過大",
                     severity=RuleSeverity.MEDIUM,
                     description=f"訊息大小 {content_size_kb:.1f}KB 超過限制 {self.LIMITS['max_message_size_kb']}KB",
-                    context={"size_kb": content_size_kb},
-                )
-            )
+                    context={
+                        "size_kb": content_size_kb},
+                ))
             auto_corrections.append("compress_or_split_message")
 
         # 檢查收件人數量
@@ -562,9 +573,9 @@ class CommunicationRule:
                     rule_name="收件人過多",
                     severity=RuleSeverity.MEDIUM,
                     description=f"收件人數量 {len(recipients)} 超過限制 {self.LIMITS['max_recipients']}",
-                    context={"count": len(recipients)},
-                )
-            )
+                    context={
+                        "count": len(recipients)},
+                ))
             auto_corrections.append("batch_recipients")
 
         # 記錄通訊
@@ -573,7 +584,8 @@ class CommunicationRule:
 
         result = RuleCheckResult(
             rule_id=self.RULE_ID,
-            passed=len([v for v in violations if v.severity == RuleSeverity.CRITICAL]) == 0,
+            passed=len([v for v in violations if v.severity == RuleSeverity.CRITICAL])
+            == 0,
             violations=violations,
             warnings=warnings,
             auto_corrections=auto_corrections,
@@ -591,9 +603,9 @@ class CommunicationRule:
             "recipient_count": len(communication.get("recipients", [])),
             "content_size": len(communication.get("content", "")),
             "timestamp": datetime.utcnow().isoformat(),
-            "log_id": hashlib.sha256(f"{communication}{datetime.utcnow()}".encode()).hexdigest()[
-                :16
-            ],
+            "log_id": hashlib.sha256(
+                f"{communication}{datetime.utcnow()}".encode()
+            ).hexdigest()[:16],
         }
         self._communication_log.append(safe_comm)
 
@@ -632,7 +644,9 @@ class OperationalRuleEngine:
             RuleCategory.COMMUNICATION: self.communication,
         }
 
-    def check_operation(self, category: RuleCategory, operation: Dict[str, Any]) -> RuleCheckResult:
+    def check_operation(
+        self, category: RuleCategory, operation: Dict[str, Any]
+    ) -> RuleCheckResult:
         """檢查特定類別的操作"""
         rule = self._all_rules.get(category)
         if rule:

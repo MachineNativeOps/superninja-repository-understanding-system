@@ -26,7 +26,11 @@ class TestQuantumWorkflowE2E:
         assert entanglement >= 0.95
 
         # Step 4: Observability injection
-        metrics = {"coherence": coherence, "entanglement": entanglement, "decoherence_rate": 0.0001}
+        metrics = {
+            "coherence": coherence,
+            "entanglement": entanglement,
+            "decoherence_rate": 0.0001,
+        }
         assert all(v is not None for v in metrics.values())
 
         # Step 5: Auto-repair

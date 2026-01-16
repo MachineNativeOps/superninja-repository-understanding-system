@@ -298,7 +298,8 @@ class CommercialAnalytics:
             costs.append(
                 CostItem(
                     category=CostCategory.SECURITY,
-                    amount=has_vulnerabilities * self.DEFAULT_COSTS[CostCategory.SECURITY],
+                    amount=has_vulnerabilities
+                    * self.DEFAULT_COSTS[CostCategory.SECURITY],
                     period="one-time",
                     description=f"{dependency_name} 安全修復成本 ({has_vulnerabilities} 個漏洞)",
                     confidence=0.8,
@@ -354,7 +355,9 @@ class CommercialAnalytics:
                 type_key = item.debt_type.value
                 by_type[type_key] = by_type.get(type_key, 0) + item.total_debt
 
-                by_severity[item.severity] = by_severity.get(item.severity, 0) + item.total_debt
+                by_severity[item.severity] = (
+                    by_severity.get(item.severity, 0) + item.total_debt
+                )
 
         return {
             "total_principal": total_principal,
@@ -526,7 +529,9 @@ class CommercialAnalytics:
                     debt_items.append(debt)
 
                 if dep.get("vulnerabilities", 0) > 0:
-                    severity = "critical" if dep.get("vulnerabilities", 0) >= 3 else "high"
+                    severity = (
+                        "critical" if dep.get("vulnerabilities", 0) >= 3 else "high"
+                    )
                     debt = TechDebtItem(
                         debt_type=TechDebtType.SECURITY_VULNERABILITY,
                         dependency_name=dep.get("name", "unknown"),
@@ -554,7 +559,8 @@ class CommercialAnalytics:
 
         # 分析自動化價值
         automation_values = self.analyze_automation_value(
-            dependencies_count=len(dependencies), monthly_manual_hours=automation_hours_saved
+            dependencies_count=len(dependencies),
+            monthly_manual_hours=automation_hours_saved,
         )
         total_values.extend(automation_values)
 

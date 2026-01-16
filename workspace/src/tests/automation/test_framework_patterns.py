@@ -41,7 +41,9 @@ class TestSuiteRunner:
         }
         self.repo_root = Path.cwd()
 
-    def log_test_result(self, test_name: str, status: str, message: str, details: Dict = None):
+    def log_test_result(
+        self, test_name: str, status: str, message: str, details: Dict = None
+    ):
         """Log test result"""
         result = {
             "test_name": test_name,
@@ -73,7 +75,9 @@ class TestSuiteRunner:
             # Exclude certain directories
             excluded_dirs = {".git", "node_modules", "dist", ".github-private"}
             yaml_files = [
-                f for f in yaml_files if not any(excluded in f.parts for excluded in excluded_dirs)
+                f
+                for f in yaml_files
+                if not any(excluded in f.parts for excluded in excluded_dirs)
             ]
 
             if len(yaml_files) == 0:
@@ -156,7 +160,9 @@ class TestSuiteRunner:
                 return True
             else:
                 self.log_test_result(
-                    "code_quality_checks", "FAIL", f"Too many code quality issues: {len(issues)}"
+                    "code_quality_checks",
+                    "FAIL",
+                    f"Too many code quality issues: {len(issues)}",
                 )
                 return False
 
@@ -196,7 +202,11 @@ class TestSuiteRunner:
     def test_configuration_files(self) -> bool:
         """Test configuration files existence"""
         try:
-            required_configs = ["machinenativeops.yaml", "package.json", "pyproject.toml"]
+            required_configs = [
+                "machinenativeops.yaml",
+                "package.json",
+                "pyproject.toml",
+            ]
             legacy_aliases = {}
 
             missing_configs = []
@@ -215,7 +225,11 @@ class TestSuiteRunner:
                     "configuration_files",
                     "INFO" if legacy_used else "PASS",
                     "All required configuration files present"
-                    + (f" (using legacy aliases for: {legacy_used})" if legacy_used else ""),
+                    + (
+                        f" (using legacy aliases for: {legacy_used})"
+                        if legacy_used
+                        else ""
+                    ),
                 )
                 return True
             else:
@@ -248,7 +262,9 @@ class TestSuiteRunner:
             try:
                 test_method()
             except Exception as e:
-                self.log_test_result(test_method.__name__, "FAIL", f"Unexpected error: {str(e)}")
+                self.log_test_result(
+                    test_method.__name__, "FAIL", f"Unexpected error: {str(e)}"
+                )
 
         # Calculate overall results
         success_rate = (

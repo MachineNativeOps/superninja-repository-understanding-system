@@ -168,14 +168,18 @@ async def demo_fault_tolerance():
 
     # 執行會失敗的任務
     print("\n❌ 執行會失敗的任務:")
-    result = await orchestrator.execute_with_retry(failing_task, "test_component", tenant_id)
+    result = await orchestrator.execute_with_retry(
+        failing_task, "test_component", tenant_id
+    )
     print(f"  狀態: {result.status.value}")
     print(f"  重試次數: {result.retry_count}")
     print(f"  執行時間: {result.duration_ms:.0f} ms")
 
     # 執行成功的任務
     print("\n✅ 執行成功的任務:")
-    result = await orchestrator.execute_with_retry(success_task, "success_component", tenant_id)
+    result = await orchestrator.execute_with_retry(
+        success_task, "success_component", tenant_id
+    )
     print(f"  狀態: {result.status.value}")
     print(f"  重試次數: {result.retry_count}")
     print(f"  輸出: {result.output}")
@@ -197,7 +201,9 @@ async def demo_resource_management():
     # 創建不同配額的租戶
     basic_tenant = orchestrator.create_tenant("基礎計劃客戶", TenantTier.BASIC)
 
-    enterprise_tenant = orchestrator.create_tenant("企業計劃客戶", TenantTier.ENTERPRISE)
+    enterprise_tenant = orchestrator.create_tenant(
+        "企業計劃客戶", TenantTier.ENTERPRISE
+    )
 
     # 檢查配額
     print("\n📊 基礎計劃配額:")

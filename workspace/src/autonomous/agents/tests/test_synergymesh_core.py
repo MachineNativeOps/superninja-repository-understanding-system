@@ -9,27 +9,17 @@ Tests for:
 - EcosystemOrchestrator
 """
 
-from machinenativeops_core.orchestration_layer import (
-    IntentUnderstandingEngine,
-    TaskOrchestrationEngine,
-    TaskType,
-    WorkflowStatus,
-)
-from machinenativeops_core.nli_layer import (
-    InteractionMode,
-    NaturalLanguageInteractionLayer,
-    UserIntent,
-)
-from machinenativeops_core.self_evolution_engine import (
-    EvolutionPhase,
-    LearningType,
-    OptimizationType,
-    SelfEvolutionEngine,
-)
-from machinenativeops_core.natural_language_processor import (
-    IntentType,
-    NaturalLanguageProcessor,
-    ParsedIntent,
+import asyncio
+import os
+import sys
+from datetime import datetime
+
+import pytest
+from machinenativeops_core.autonomous_coordinator import (
+    AutonomousCoordinator,
+    SystemHealth,
+    TaskPriority,
+    TaskStatus,
 )
 from machinenativeops_core.ecosystem_orchestrator import (
     EcosystemOrchestrator,
@@ -38,18 +28,28 @@ from machinenativeops_core.ecosystem_orchestrator import (
     SubsystemStatus,
     SubsystemType,
 )
-from machinenativeops_core.autonomous_coordinator import (
-    AutonomousCoordinator,
-    SystemHealth,
-    TaskPriority,
-    TaskStatus,
+from machinenativeops_core.natural_language_processor import (
+    IntentType,
+    NaturalLanguageProcessor,
+    ParsedIntent,
 )
-import asyncio
-import os
-import sys
-from datetime import datetime
-
-import pytest
+from machinenativeops_core.nli_layer import (
+    InteractionMode,
+    NaturalLanguageInteractionLayer,
+    UserIntent,
+)
+from machinenativeops_core.orchestration_layer import (
+    IntentUnderstandingEngine,
+    TaskOrchestrationEngine,
+    TaskType,
+    WorkflowStatus,
+)
+from machinenativeops_core.self_evolution_engine import (
+    EvolutionPhase,
+    LearningType,
+    OptimizationType,
+    SelfEvolutionEngine,
+)
 
 # Add the intelligent-automation directory to path for imports
 _current_dir = os.path.dirname(os.path.abspath(__file__))
@@ -276,7 +276,10 @@ class TestAutonomousCoordinator:
         await coordinator.start()
 
         task_id = coordinator.schedule_task(
-            name="Execute Test", description="Test execution", task_type="execute_test", params={}
+            name="Execute Test",
+            description="Test execution",
+            task_type="execute_test",
+            params={},
         )
 
         # Wait for task to complete
@@ -488,7 +491,8 @@ class TestEcosystemOrchestrator:
         assert subsystem_id not in orchestrator.subsystems
         assert (
             "temp_capability" not in orchestrator._capability_index
-            or subsystem_id not in orchestrator._capability_index.get("temp_capability", set())
+            or subsystem_id
+            not in orchestrator._capability_index.get("temp_capability", set())
         )
 
     def test_find_subsystems_by_capability(self, orchestrator):
@@ -536,7 +540,9 @@ class TestEcosystemOrchestrator:
             name="Status Test", subsystem_type=SubsystemType.CUSTOM, capabilities=[]
         )
 
-        result = orchestrator.update_subsystem_status(subsystem_id, SubsystemStatus.ACTIVE)
+        result = orchestrator.update_subsystem_status(
+            subsystem_id, SubsystemStatus.ACTIVE
+        )
 
         assert result is True
         assert orchestrator.subsystems[subsystem_id].status == SubsystemStatus.ACTIVE
@@ -585,7 +591,9 @@ class TestEcosystemOrchestrator:
     def test_get_subsystem_info(self, orchestrator):
         """Test getting subsystem info"""
         subsystem_id = orchestrator.register_subsystem(
-            name="Info Test", subsystem_type=SubsystemType.CODE_ANALYZER, capabilities=["analysis"]
+            name="Info Test",
+            subsystem_type=SubsystemType.CODE_ANALYZER,
+            capabilities=["analysis"],
         )
 
         info = orchestrator.get_subsystem_info(subsystem_id)
@@ -644,7 +652,9 @@ class TestSynergyMeshIntegration:
         await orchestrator.start()
 
         # Process a natural language request
-        result = await nlp.process_natural_request("I need to analyze and optimize this code")
+        result = await nlp.process_natural_request(
+            "I need to analyze and optimize this code"
+        )
 
         assert result["status"] == "success"
 
@@ -744,7 +754,9 @@ class TestNaturalLanguageInteractionLayer:
     def test_register_visual_component(self, nli):
         """Test registering visual components"""
         comp_id = nli.register_visual_component(
-            component_type="source", label="Data Source", description="Source connection"
+            component_type="source",
+            label="Data Source",
+            description="Source connection",
         )
 
         assert comp_id.startswith("comp-")
@@ -833,7 +845,9 @@ class TestIntentUnderstandingEngine:
 
     def test_priority_detection(self, intent_engine):
         """Test priority detection"""
-        intent = intent_engine.parse_intent("Urgent: deploy the application immediately")
+        intent = intent_engine.parse_intent(
+            "Urgent: deploy the application immediately"
+        )
 
         assert intent.priority == "high"
 

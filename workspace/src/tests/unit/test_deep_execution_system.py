@@ -6,7 +6,6 @@ Test suite for Deep Execution System
 import asyncio
 
 import pytest
-
 from core.unified_integration.deep_execution_system import (
     AuditLogger,
     DeepExecutionConfig,
@@ -66,7 +65,9 @@ class TestDeepExecutionSystem:
     def test_create_nested_context(self, system):
         """Test nested context creation"""
         parent = system.create_context("parent-context")
-        child = system.create_context("child-context", parent_context_id=parent.context_id)
+        child = system.create_context(
+            "child-context", parent_context_id=parent.context_id
+        )
 
         assert child.parent_context_id == parent.context_id
         assert child.depth_level == 1
@@ -79,8 +80,12 @@ class TestDeepExecutionSystem:
         limited_system = DeepExecutionSystem(config)
 
         ctx1 = limited_system.create_context("level-0")
-        ctx2 = limited_system.create_context("level-1", parent_context_id=ctx1.context_id)
-        ctx3 = limited_system.create_context("level-2", parent_context_id=ctx2.context_id)
+        ctx2 = limited_system.create_context(
+            "level-1", parent_context_id=ctx1.context_id
+        )
+        ctx3 = limited_system.create_context(
+            "level-2", parent_context_id=ctx2.context_id
+        )
 
         # Should raise error when exceeding max depth
         with pytest.raises(ValueError, match="Max context depth"):
@@ -191,7 +196,9 @@ class TestDeepExecutionSystem:
 
         try:
             result = await system.execute(
-                name="high-priority-op", handler=lambda: "done", priority=OperationPriority.HIGH
+                name="high-priority-op",
+                handler=lambda: "done",
+                priority=OperationPriority.HIGH,
             )
 
             assert result.status == OperationStatus.COMPLETED
@@ -227,9 +234,14 @@ class TestDeepExecutionSystem:
                 raise ValueError("Intentional failure")
 
             # Configure with no retries for this test
-            result = await system.execute(name="failing-op", handler=failing_handler, args={})
+            result = await system.execute(
+                name="failing-op", handler=failing_handler, args={}
+            )
 
-            assert result.status in [OperationStatus.FAILED, OperationStatus.ROLLED_BACK]
+            assert result.status in [
+                OperationStatus.FAILED,
+                OperationStatus.ROLLED_BACK,
+            ]
             assert result.error is not None
         finally:
             await system.stop()
@@ -250,7 +262,9 @@ class TestDeepExecutionSystem:
                 rollback_called["value"] = True
 
             result = await system.execute(
-                name="rollbackable-op", handler=failing_handler, rollback_handler=rollback_handler
+                name="rollbackable-op",
+                handler=failing_handler,
+                rollback_handler=rollback_handler,
             )
 
             assert result.status == OperationStatus.ROLLED_BACK
@@ -331,7 +345,9 @@ class TestDeepExecutionSystem:
             context = system.create_context("audited-context")
 
             await system.execute(
-                name="audited-op", handler=lambda: "audited", context_id=context.context_id
+                name="audited-op",
+                handler=lambda: "audited",
+                context_id=context.context_id,
             )
 
             entries = system.get_audit_entries(context_id=context.context_id)
@@ -381,7 +397,9 @@ class TestOperationValidator:
         return ExecutionContext(context_id="test-ctx-001", name="test-context")
 
     @pytest.mark.asyncio
-    async def test_validate_valid_operation(self, validator, sample_operation, sample_context):
+    async def test_validate_valid_operation(
+        self, validator, sample_operation, sample_context
+    ):
         """Test validation of valid operation"""
         result = await validator.validate(sample_operation, sample_context)
 
@@ -408,7 +426,9 @@ class TestOperationValidator:
     async def test_validate_exceeds_context_depth(self, validator, sample_operation):
         """Test validation catches excessive context depth"""
         deep_context = ExecutionContext(
-            context_id="deep-ctx", name="deep-context", depth_level=15  # Exceeds default max of 10
+            context_id="deep-ctx",
+            name="deep-context",
+            depth_level=15,  # Exceeds default max of 10
         )
 
         result = await validator.validate(sample_operation, deep_context)
@@ -505,7 +525,9 @@ class TestOperationScheduler:
     def test_can_execute_with_satisfied_dependency(self, scheduler):
         """Test can_execute with satisfied dependency"""
         # Mark a dependency as completed
-        dep_result = OperationResult(operation_id="dep-op", status=OperationStatus.COMPLETED)
+        dep_result = OperationResult(
+            operation_id="dep-op", status=OperationStatus.COMPLETED
+        )
         scheduler.mark_completed("dep-op", dep_result)
 
         dependent_op = Operation(
@@ -519,7 +541,9 @@ class TestOperationScheduler:
 
     def test_mark_completed(self, scheduler):
         """Test marking operation as completed"""
-        result = OperationResult(operation_id="completed-op", status=OperationStatus.COMPLETED)
+        result = OperationResult(
+            operation_id="completed-op", status=OperationStatus.COMPLETED
+        )
 
         scheduler.mark_completed("completed-op", result)
 
@@ -539,7 +563,9 @@ class TestAuditLogger:
     def sample_operation(self):
         """Create a sample operation"""
         return Operation(
-            operation_id="audit-op-001", name="audited-operation", handler=lambda: "result"
+            operation_id="audit-op-001",
+            name="audited-operation",
+            handler=lambda: "result",
         )
 
     @pytest.fixture
@@ -566,7 +592,11 @@ class TestAuditLogger:
         )
 
         entry_id = logger.log(
-            sample_operation, sample_context, "execute", OperationStatus.COMPLETED, result=result
+            sample_operation,
+            sample_context,
+            "execute",
+            OperationStatus.COMPLETED,
+            result=result,
         )
 
         entries = logger.get_entries(operation_id=sample_operation.operation_id)
@@ -579,7 +609,11 @@ class TestAuditLogger:
             operation_id="sensitive-op",
             name="sensitive",
             handler=lambda: None,
-            args={"username": "user123", "password": "secret123", "api_token": "abc123"},
+            args={
+                "username": "user123",
+                "password": "secret123",
+                "api_token": "abc123",
+            },
         )
 
         logger.log(sensitive_op, sample_context, "execute", OperationStatus.COMPLETED)
@@ -596,7 +630,9 @@ class TestAuditLogger:
         """Test getting entries with filters"""
         # Log multiple entries
         logger.log(sample_operation, sample_context, "start", OperationStatus.EXECUTING)
-        logger.log(sample_operation, sample_context, "complete", OperationStatus.COMPLETED)
+        logger.log(
+            sample_operation, sample_context, "complete", OperationStatus.COMPLETED
+        )
 
         # Filter by operation
         op_entries = logger.get_entries(operation_id=sample_operation.operation_id)
@@ -617,7 +653,10 @@ class TestAuditLogger:
         # Log more entries than retention allows
         for i in range(10):
             small_logger.log(
-                sample_operation, sample_context, f"action-{i}", OperationStatus.COMPLETED
+                sample_operation,
+                sample_context,
+                f"action-{i}",
+                OperationStatus.COMPLETED,
             )
 
         entries = small_logger.get_entries()
@@ -706,17 +745,23 @@ class TestIntegrationFlow:
 
             # Execute in parent
             parent_result = await system.execute(
-                name="parent-op", handler=lambda: "parent-done", context_id=parent.context_id
+                name="parent-op",
+                handler=lambda: "parent-done",
+                context_id=parent.context_id,
             )
             assert parent_result.status == OperationStatus.COMPLETED
 
             # Create child context
-            child = system.create_context("child-workflow", parent_context_id=parent.context_id)
+            child = system.create_context(
+                "child-workflow", parent_context_id=parent.context_id
+            )
             assert child.depth_level == 1
 
             # Execute in child
             child_result = await system.execute(
-                name="child-op", handler=lambda: "child-done", context_id=child.context_id
+                name="child-op",
+                handler=lambda: "child-done",
+                context_id=child.context_id,
             )
             assert child_result.status == OperationStatus.COMPLETED
 

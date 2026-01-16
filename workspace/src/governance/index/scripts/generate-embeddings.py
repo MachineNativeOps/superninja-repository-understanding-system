@@ -158,7 +158,9 @@ def main():
     print(f"  Dimensions: {len(dimensions)}")
     print(f"  Shared resources: {len(shared)}")
     print(f"  Embedding dimension: {dimension}")
-    print(f"  Method: {'ML (sentence-transformers)' if model else 'Deterministic (hash-based)'}")
+    print(
+        f"  Method: {'ML (sentence-transformers)' if model else 'Deterministic (hash-based)'}"
+    )
     print("=" * 60)
     print("\nThe index is now IMMEDIATELY operational.")
 

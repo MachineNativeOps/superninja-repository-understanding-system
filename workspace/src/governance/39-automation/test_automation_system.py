@@ -143,10 +143,18 @@ async def test_integrated_launcher():
 
 async def main():
     """Run all tests."""
-    print("\n╔════════════════════════════════════════════════════════════════════════════╗")
-    print("║  GOVERNANCE AUTOMATION SYSTEM - COMPREHENSIVE TEST SUITE                  ║")
-    print("║  治理自動化系統 - 綜合測試套件                                              ║")
-    print("╚════════════════════════════════════════════════════════════════════════════╝")
+    print(
+        "\n╔════════════════════════════════════════════════════════════════════════════╗"
+    )
+    print(
+        "║  GOVERNANCE AUTOMATION SYSTEM - COMPREHENSIVE TEST SUITE                  ║"
+    )
+    print(
+        "║  治理自動化系統 - 綜合測試套件                                              ║"
+    )
+    print(
+        "╚════════════════════════════════════════════════════════════════════════════╝"
+    )
 
     tests = [
         ("Main Launcher", test_main_launcher),

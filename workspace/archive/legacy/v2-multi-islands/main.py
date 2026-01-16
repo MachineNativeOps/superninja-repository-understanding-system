@@ -5,12 +5,13 @@ SynergyMesh v2-multi-islands 主執行入口
 多語言自動化無人之島系統的主要入口點，提供命令行介面。
 """
 
-from utils import Colors, print_error, print_info, print_success
-from orchestrator import IslandOrchestrator
-from islands import GoIsland, JavaIsland, PythonIsland, RustIsland, TypeScriptIsland
 import argparse
 import sys
 from pathlib import Path
+
+from islands import GoIsland, JavaIsland, PythonIsland, RustIsland, TypeScriptIsland
+from orchestrator import IslandOrchestrator
+from utils import Colors, print_error, print_info, print_success
 
 # 確保可以導入本地模組
 _current_dir = Path(__file__).resolve().parent

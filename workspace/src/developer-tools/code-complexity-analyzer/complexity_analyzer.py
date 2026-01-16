@@ -113,9 +113,24 @@ class CodeComplexityAnalyzer:
             # 默認配置
             return {
                 "thresholds": {
-                    "cyclomatic": {"low": 5, "moderate": 10, "high": 15, "very_high": 20},
-                    "cognitive": {"low": 8, "moderate": 15, "high": 25, "very_high": 40},
-                    "maintainability": {"excellent": 85, "good": 70, "moderate": 50, "poor": 30},
+                    "cyclomatic": {
+                        "low": 5,
+                        "moderate": 10,
+                        "high": 15,
+                        "very_high": 20,
+                    },
+                    "cognitive": {
+                        "low": 8,
+                        "moderate": 15,
+                        "high": 25,
+                        "very_high": 40,
+                    },
+                    "maintainability": {
+                        "excellent": 85,
+                        "good": 70,
+                        "moderate": 50,
+                        "poor": 30,
+                    },
                 },
                 "exclude_patterns": [
                     "test_*.py",
@@ -193,7 +208,9 @@ class CodeComplexityAnalyzer:
 
         return python_files
 
-    def _should_exclude_file(self, file_path: Path, exclude_patterns: List[str]) -> bool:
+    def _should_exclude_file(
+        self, file_path: Path, exclude_patterns: List[str]
+    ) -> bool:
         """判斷文件是否應該被排除"""
         file_str = str(file_path)
 
@@ -222,20 +239,28 @@ class CodeComplexityAnalyzer:
         # 分析函數
         functions = []
         for func in cc_results:
-            function_complexity = self._analyze_function(func, file_path, content, halstead_results)
+            function_complexity = self._analyze_function(
+                func, file_path, content, halstead_results
+            )
             functions.append(function_complexity)
 
         # 計算文件級別指標
         total_lines = len(content.splitlines())
         code_lines = lizard_result.nloc
-        comment_lines = len([line for line in content.splitlines() if line.strip().startswith("#")])
+        comment_lines = len(
+            [line for line in content.splitlines() if line.strip().startswith("#")]
+        )
         blank_lines = total_lines - code_lines - comment_lines
 
         # 計算平均複雜度
-        avg_complexity = np.mean([f.cyclomatic_complexity for f in functions]) if functions else 0
+        avg_complexity = (
+            np.mean([f.cyclomatic_complexity for f in functions]) if functions else 0
+        )
 
         # 獲取可維護性指數
-        maintainability_index = mi_results if isinstance(mi_results, (int, float)) else 70.0
+        maintainability_index = (
+            mi_results if isinstance(mi_results, (int, float)) else 70.0
+        )
 
         # 計算風險等級
         risk_level = self._calculate_file_risk_level(functions)
@@ -268,7 +293,9 @@ class CodeComplexityAnalyzer:
         halstead_metrics = self._get_halstead_metrics(func, halstead_results)
 
         # 可維護性指數
-        maintainability = self._calculate_function_maintainability(func, halstead_metrics)
+        maintainability = self._calculate_function_maintainability(
+            func, halstead_metrics
+        )
 
         # 代碼行數
         lines_of_code = func.endlineno - func.lineno + 1
@@ -348,7 +375,9 @@ class CodeComplexityAnalyzer:
         # 簡化實現
         return min(5, func.complexity // 3)
 
-    def _calculate_function_risk_level(self, cyclomatic: int, cognitive: int) -> RiskLevel:
+    def _calculate_function_risk_level(
+        self, cyclomatic: int, cognitive: int
+    ) -> RiskLevel:
         """計算函數風險等級"""
         thresholds = self.config["thresholds"]["cyclomatic"]
 
@@ -394,7 +423,9 @@ class CodeComplexityAnalyzer:
 
         return recommendations
 
-    def _calculate_file_risk_level(self, functions: List[FunctionComplexity]) -> RiskLevel:
+    def _calculate_file_risk_level(
+        self, functions: List[FunctionComplexity]
+    ) -> RiskLevel:
         """計算文件風險等級"""
         if not functions:
             return RiskLevel.LOW
@@ -440,7 +471,9 @@ class CodeComplexityAnalyzer:
 
         # 平均複雜度
         avg_complexity = (
-            np.mean([f.cyclomatic_complexity for f in total_functions]) if total_functions else 0
+            np.mean([f.cyclomatic_complexity for f in total_functions])
+            if total_functions
+            else 0
         )
 
         # 複雜度分佈
@@ -454,7 +487,9 @@ class CodeComplexityAnalyzer:
         # 技術債務總結
         tech_debt_summary = {
             "total_hours": sum(f.technical_debt for f in file_complexities),
-            "files_with_debt": len([f for f in file_complexities if f.technical_debt > 0]),
+            "files_with_debt": len(
+                [f for f in file_complexities if f.technical_debt > 0]
+            ),
             "functions_requiring_refactor": len(
                 [
                     f
@@ -465,7 +500,9 @@ class CodeComplexityAnalyzer:
         }
 
         # 項目建議
-        recommendations = self._generate_project_recommendations(file_complexities, total_functions)
+        recommendations = self._generate_project_recommendations(
+            file_complexities, total_functions
+        )
 
         return ProjectComplexity(
             project_name=project_name,
@@ -492,23 +529,31 @@ class CodeComplexityAnalyzer:
         return distribution
 
     def _generate_project_recommendations(
-        self, file_complexities: List[FileComplexity], total_functions: List[FunctionComplexity]
+        self,
+        file_complexities: List[FileComplexity],
+        total_functions: List[FunctionComplexity],
     ) -> List[str]:
         """生成項目級別建議"""
         recommendations = []
 
         # 統計高複雜度函數
         high_complexity_funcs = [
-            f for f in total_functions if f.risk_level in [RiskLevel.HIGH, RiskLevel.VERY_HIGH]
+            f
+            for f in total_functions
+            if f.risk_level in [RiskLevel.HIGH, RiskLevel.VERY_HIGH]
         ]
 
-        if len(high_complexity_funcs) > len(total_functions) * 0.2:  # 超過20%的函數是高複雜度
+        if (
+            len(high_complexity_funcs) > len(total_functions) * 0.2
+        ):  # 超過20%的函數是高複雜度
             recommendations.append("項目中有太多高複雜度函數，建議制定重構計劃")
 
         # 統計技術債務
         total_debt = sum(f.technical_debt for f in file_complexities)
         if total_debt > 40:  # 超過40小時
-            recommendations.append(f"技術債務過高（{total_debt:.1f}小時），需要優先處理")
+            recommendations.append(
+                f"技術債務過高（{total_debt:.1f}小時），需要優先處理"
+            )
 
         # 統計文件大小
         large_files = [f for f in file_complexities if f.total_lines > 500]
@@ -526,7 +571,8 @@ class CodeComplexityAnalyzer:
     def _save_historical_data(self, project_complexity: ProjectComplexity):
         """保存歷史數據"""
         historical_file = (
-            Path(self.config.get("output_directory", "reports/complexity")) / "historical_data.json"
+            Path(self.config.get("output_directory", "reports/complexity"))
+            / "historical_data.json"
         )
         historical_file.parent.mkdir(parents=True, exist_ok=True)
 
@@ -544,7 +590,9 @@ class CodeComplexityAnalyzer:
             "total_functions": project_complexity.total_functions,
             "average_complexity": project_complexity.average_complexity,
             "total_lines": project_complexity.total_lines,
-            "technical_debt_hours": project_complexity.technical_debt_summary["total_hours"],
+            "technical_debt_hours": project_complexity.technical_debt_summary[
+                "total_hours"
+            ],
         }
 
         historical_data.append(data_point)
@@ -559,7 +607,8 @@ class CodeComplexityAnalyzer:
     def _analyze_trends(self) -> List[Dict[str, Any]]:
         """分析趨勢"""
         historical_file = (
-            Path(self.config.get("output_directory", "reports/complexity")) / "historical_data.json"
+            Path(self.config.get("output_directory", "reports/complexity"))
+            / "historical_data.json"
         )
 
         if not historical_file.exists():
@@ -574,10 +623,17 @@ class CodeComplexityAnalyzer:
         trends = []
 
         # 計算各項指標的趨勢
-        metrics = ["total_functions", "average_complexity", "total_lines", "technical_debt_hours"]
+        metrics = [
+            "total_functions",
+            "average_complexity",
+            "total_lines",
+            "technical_debt_hours",
+        ]
 
         for metric in metrics:
-            values = [point[metric] for point in historical_data[-10:]]  # 最近10個數據點
+            values = [
+                point[metric] for point in historical_data[-10:]
+            ]  # 最近10個數據點
 
             if len(values) >= 2:
                 # 計算趨勢（簡單線性回歸）
@@ -606,13 +662,16 @@ class CodeComplexityAnalyzer:
     ) -> str:
         """生成複雜度分析報告"""
         # 創建輸出目錄
-        output_dir = Path(output_path or self.config.get("output_directory", "reports/complexity"))
+        output_dir = Path(
+            output_path or self.config.get("output_directory", "reports/complexity")
+        )
         output_dir.mkdir(parents=True, exist_ok=True)
 
         # 生成 HTML 報告
         html_report = self._generate_html_report(project_complexity)
         html_file = (
-            output_dir / f"complexity_report_{datetime.now().strftime('%Y%m%d_%H%M%S')}.html"
+            output_dir
+            / f"complexity_report_{datetime.now().strftime('%Y%m%d_%H%M%S')}.html"
         )
 
         with open(html_file, "w", encoding="utf-8") as f:
@@ -620,14 +679,18 @@ class CodeComplexityAnalyzer:
 
         # 生成 JSON 報告
         json_report = asdict(project_complexity)
-        json_file = output_dir / f"complexity_data_{datetime.now().strftime('%Y%m%d_%H%M%S')}.json"
+        json_file = (
+            output_dir
+            / f"complexity_data_{datetime.now().strftime('%Y%m%d_%H%M%S')}.json"
+        )
 
         with open(json_file, "w", encoding="utf-8") as f:
             json.dump(json_report, f, indent=2, ensure_ascii=False, default=str)
 
         # 生成 CSV 報告
         csv_file = (
-            output_dir / f"complexity_functions_{datetime.now().strftime('%Y%m%d_%H%M%S')}.csv"
+            output_dir
+            / f"complexity_functions_{datetime.now().strftime('%Y%m%d_%H%M%S')}.csv"
         )
         self._generate_csv_report(project_complexity, csv_file)
 
@@ -829,7 +892,9 @@ class CodeComplexityAnalyzer:
             most_complex_files_rows=most_complex_files_rows,
         )
 
-    def _generate_csv_report(self, project_complexity: ProjectComplexity, csv_file: Path):
+    def _generate_csv_report(
+        self, project_complexity: ProjectComplexity, csv_file: Path
+    ):
         """生成 CSV 格式的報告"""
         # 這裡需要收集所有函數數據並生成 CSV
         # 簡化實現
@@ -865,7 +930,9 @@ def main():
     print(f"總文件: {project_complexity.total_files}")
     print(f"總函數: {project_complexity.total_functions}")
     print(f"平均複雜度: {project_complexity.average_complexity:.2f}")
-    print(f"技術債務: {project_complexity.technical_debt_summary['total_hours']:.1f} 小時")
+    print(
+        f"技術債務: {project_complexity.technical_debt_summary['total_hours']:.1f} 小時"
+    )
     print(f"報告: {report_path}")
 
 

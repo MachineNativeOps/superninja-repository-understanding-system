@@ -3,18 +3,21 @@ MachineNativeOps Core Demo
 核心功能演示
 """
 
-from core.new import core
-import logging
 import asyncio
+import logging
 import os
 import sys
+
+from core.new import core
 
 # 添加路徑以便導入
 sys.path.append(os.path.dirname(__file__))
 
 
 # 設置日誌
-logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
+logging.basicConfig(
+    level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
+)
 logger = logging.getLogger(__name__)
 
 
@@ -42,7 +45,9 @@ async def demo_basic_functionality():
         logger.info(f"📋 執行任務: {message}")
         return f"任務完成: {message}"
 
-    task_id = await core.submit_task("demo_task", demo_task, {"message": "Hello MachineNativeOps!"})
+    task_id = await core.submit_task(
+        "demo_task", demo_task, {"message": "Hello MachineNativeOps!"}
+    )
     logger.info(f"✅ 任務已提交: {task_id}")
 
     # 4. 工作流創建演示

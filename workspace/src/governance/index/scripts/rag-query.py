@@ -149,12 +149,20 @@ class GovernanceRAG:
             List of SearchResult objects
         """
         if VECTOR_SEARCH_AVAILABLE and self.model and self.embeddings_cache:
-            return self._vector_search(query, top_k, include_compliance, security_filter)
+            return self._vector_search(
+                query, top_k, include_compliance, security_filter
+            )
         else:
-            return self._keyword_search(query, top_k, include_compliance, security_filter)
+            return self._keyword_search(
+                query, top_k, include_compliance, security_filter
+            )
 
     def _vector_search(
-        self, query: str, top_k: int, include_compliance: bool, security_filter: Optional[str]
+        self,
+        query: str,
+        top_k: int,
+        include_compliance: bool,
+        security_filter: Optional[str],
     ) -> List[SearchResult]:
         """Perform vector similarity search."""
         query_embedding = self.model.encode(query, convert_to_tensor=True)
@@ -176,7 +184,9 @@ class GovernanceRAG:
                 score=similarity,
                 semantic_text=data.get("semantic_text", ""),
                 keywords=data.get("keywords", []),
-                compliance_tags=data.get("compliance_tags", []) if include_compliance else [],
+                compliance_tags=(
+                    data.get("compliance_tags", []) if include_compliance else []
+                ),
                 security_level=data.get("security_level", "unknown"),
                 path=self._get_dimension_path(data.get("id", key)),
                 type=cached["type"],
@@ -188,7 +198,11 @@ class GovernanceRAG:
         return results[:top_k]
 
     def _keyword_search(
-        self, query: str, top_k: int, include_compliance: bool, security_filter: Optional[str]
+        self,
+        query: str,
+        top_k: int,
+        include_compliance: bool,
+        security_filter: Optional[str],
     ) -> List[SearchResult]:
         """Perform keyword-based search as fallback."""
         query_terms = set(query.lower().split())
@@ -218,7 +232,9 @@ class GovernanceRAG:
                     score=score,
                     semantic_text=dim.get("semantic_text", ""),
                     keywords=dim.get("keywords", []),
-                    compliance_tags=dim.get("compliance_tags", []) if include_compliance else [],
+                    compliance_tags=(
+                        dim.get("compliance_tags", []) if include_compliance else []
+                    ),
                     security_level=dim.get("security_level", "unknown"),
                     path=self._get_dimension_path(dim.get("id", "")),
                     type="dimension",
@@ -263,7 +279,9 @@ class GovernanceRAG:
 
     def get_compliance_info(self, dimension_id: str) -> Dict:
         """Get compliance framework information for a dimension."""
-        matrix = self.compliance_data.get("compliance_matrix", {}).get("by_dimension", {})
+        matrix = self.compliance_data.get("compliance_matrix", {}).get(
+            "by_dimension", {}
+        )
         frameworks = matrix.get(dimension_id, [])
 
         result = {"dimension": dimension_id, "frameworks": frameworks, "details": []}
@@ -322,7 +340,9 @@ class GovernanceRAG:
                 if result.keywords:
                     output.append(f"   Keywords: {', '.join(result.keywords[:5])}")
                 if result.compliance_tags:
-                    output.append(f"   Compliance: {', '.join(result.compliance_tags[:3])}")
+                    output.append(
+                        f"   Compliance: {', '.join(result.compliance_tags[:3])}"
+                    )
 
             output.append("")
 
@@ -344,9 +364,15 @@ Examples:
     )
 
     parser.add_argument("query", nargs="?", help="Search query")
-    parser.add_argument("--query", "-q", dest="query_opt", help="Search query (alternative)")
-    parser.add_argument("--top-k", "-k", type=int, default=5, help="Number of results (default: 5)")
-    parser.add_argument("--verbose", "-v", action="store_true", help="Show detailed results")
+    parser.add_argument(
+        "--query", "-q", dest="query_opt", help="Search query (alternative)"
+    )
+    parser.add_argument(
+        "--top-k", "-k", type=int, default=5, help="Number of results (default: 5)"
+    )
+    parser.add_argument(
+        "--verbose", "-v", action="store_true", help="Show detailed results"
+    )
     parser.add_argument(
         "--security-filter",
         "-s",
@@ -354,12 +380,20 @@ Examples:
         help="Filter by security level",
     )
     parser.add_argument(
-        "--compliance", "-c", action="store_true", help="Show compliance info for top result"
+        "--compliance",
+        "-c",
+        action="store_true",
+        help="Show compliance info for top result",
     )
     parser.add_argument(
-        "--dependencies", "-d", action="store_true", help="Show dependencies for top result"
+        "--dependencies",
+        "-d",
+        action="store_true",
+        help="Show dependencies for top result",
     )
-    parser.add_argument("--interactive", "-i", action="store_true", help="Run in interactive mode")
+    parser.add_argument(
+        "--interactive", "-i", action="store_true", help="Run in interactive mode"
+    )
     parser.add_argument("--index-path", type=Path, help="Path to index directory")
 
     args = parser.parse_args()
@@ -383,7 +417,9 @@ Examples:
                 if not query:
                     continue
 
-                results = rag.search(query, args.top_k, security_filter=args.security_filter)
+                results = rag.search(
+                    query, args.top_k, security_filter=args.security_filter
+                )
                 print(rag.format_results(results, args.verbose))
 
             except KeyboardInterrupt:

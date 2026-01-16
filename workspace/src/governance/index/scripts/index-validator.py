@@ -285,7 +285,10 @@ class GovernanceIndexValidator:
             )
 
         return ValidationResult(
-            check="dag_orphans", passed=True, message="No orphan dimensions found", severity="info"
+            check="dag_orphans",
+            passed=True,
+            message="No orphan dimensions found",
+            severity="info",
         )
 
     def validate_execution_order(self) -> ValidationResult:
@@ -393,7 +396,9 @@ class GovernanceIndexValidator:
                 # Check latency format
                 latency = event.get("latency", "")
                 if latency and not latency.startswith("<="):
-                    issues.append(f"Event {event.get('id')} has invalid latency format: {latency}")
+                    issues.append(
+                        f"Event {event.get('id')} has invalid latency format: {latency}"
+                    )
 
         if issues:
             return ValidationResult(
@@ -425,7 +430,8 @@ class GovernanceIndexValidator:
         required_dims = {
             dim.get("id")
             for dim in dim_data
-            if dim.get("execution") == "required" and dim.get("status") in ["production", "active"]
+            if dim.get("execution") == "required"
+            and dim.get("status") in ["production", "active"]
         }
 
         vec_data = self.data["vectors"].get("dimensions", [])
@@ -522,7 +528,9 @@ class GovernanceIndexValidator:
             result = validator()
             self.report.add(result)
 
-            status = "✓" if result.passed else ("⚠" if result.severity == "warning" else "✗")
+            status = (
+                "✓" if result.passed else ("⚠" if result.severity == "warning" else "✗")
+            )
             print(f"{status} {name}: {result.message}")
 
             if self.verbose and result.details:

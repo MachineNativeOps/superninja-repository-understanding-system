@@ -9,7 +9,9 @@ import asyncio
 import sys
 from pathlib import Path
 
-from src.core.machinenativenops.run_debug.adapters.python_adapter import PythonDebugAdapter
+from src.core.machinenativenops.run_debug.adapters.python_adapter import (
+    PythonDebugAdapter,
+)
 from src.core.machinenativenops.run_debug.chat_interface import ChatDebugInterface
 from src.core.machinenativenops.run_debug.engine import (
     BreakpointType,

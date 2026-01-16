@@ -4,12 +4,12 @@ MachineNativeOps Database Migration Script
 數據庫遷移腳本
 """
 
-from src.new.config import load_config
 import asyncio
 import sys
 from pathlib import Path
 
 import asyncpg
+from src.new.config import load_config
 
 # 添加項目根目錄到 Python 路徑
 sys.path.insert(0, str(Path(__file__).parent.parent))
@@ -31,7 +31,9 @@ async def create_database():
 
     try:
         # 檢查數據庫是否存在
-        exists = await conn.fetchval("SELECT 1 FROM pg_database WHERE datname = $1", db_config.name)
+        exists = await conn.fetchval(
+            "SELECT 1 FROM pg_database WHERE datname = $1", db_config.name
+        )
 
         if not exists:
             # 創建數據庫
@@ -164,17 +166,29 @@ async def create_tables():
         print("🔧 創建索引...")
 
         # 項目索引
-        await conn.execute("CREATE INDEX IF NOT EXISTS idx_projects_owner ON projects(owner)")
-        await conn.execute("CREATE INDEX IF NOT EXISTS idx_projects_status ON projects(status)")
+        await conn.execute(
+            "CREATE INDEX IF NOT EXISTS idx_projects_owner ON projects(owner)"
+        )
+        await conn.execute(
+            "CREATE INDEX IF NOT EXISTS idx_projects_status ON projects(status)"
+        )
         await conn.execute(
             "CREATE INDEX IF NOT EXISTS idx_projects_created_at ON projects(created_at)"
         )
 
         # 任務索引
-        await conn.execute("CREATE INDEX IF NOT EXISTS idx_tasks_project_id ON tasks(project_id)")
-        await conn.execute("CREATE INDEX IF NOT EXISTS idx_tasks_assignee ON tasks(assignee)")
-        await conn.execute("CREATE INDEX IF NOT EXISTS idx_tasks_status ON tasks(status)")
-        await conn.execute("CREATE INDEX IF NOT EXISTS idx_tasks_priority ON tasks(priority)")
+        await conn.execute(
+            "CREATE INDEX IF NOT EXISTS idx_tasks_project_id ON tasks(project_id)"
+        )
+        await conn.execute(
+            "CREATE INDEX IF NOT EXISTS idx_tasks_assignee ON tasks(assignee)"
+        )
+        await conn.execute(
+            "CREATE INDEX IF NOT EXISTS idx_tasks_status ON tasks(status)"
+        )
+        await conn.execute(
+            "CREATE INDEX IF NOT EXISTS idx_tasks_priority ON tasks(priority)"
+        )
 
         # 工作流執行索引
         await conn.execute(
@@ -185,7 +199,9 @@ async def create_tables():
         )
 
         # 用戶索引
-        await conn.execute("CREATE INDEX IF NOT EXISTS idx_users_username ON users(username)")
+        await conn.execute(
+            "CREATE INDEX IF NOT EXISTS idx_users_username ON users(username)"
+        )
         await conn.execute("CREATE INDEX IF NOT EXISTS idx_users_email ON users(email)")
 
         print("✅ 數據表創建成功")
@@ -212,7 +228,9 @@ async def insert_default_data():
         print("🔧 插入默認數據...")
 
         # 插入默認用戶 (admin/admin123)
-        admin_exists = await conn.fetchval("SELECT 1 FROM users WHERE username = 'admin'")
+        admin_exists = await conn.fetchval(
+            "SELECT 1 FROM users WHERE username = 'admin'"
+        )
 
         if not admin_exists:
             # 實際應用中應使用 bcrypt 哈希密碼

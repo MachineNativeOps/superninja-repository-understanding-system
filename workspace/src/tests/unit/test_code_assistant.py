@@ -41,7 +41,11 @@ def test_code_assistant_run_command_safety(monkeypatch, tmp_path):
 
 def test_chat_app_chat_turn_uses_stubbed_completion(monkeypatch):
     stub_response = SimpleNamespace(
-        choices=[SimpleNamespace(message=SimpleNamespace(content="hello back", tool_calls=None))]
+        choices=[
+            SimpleNamespace(
+                message=SimpleNamespace(content="hello back", tool_calls=None)
+            )
+        ]
     )
 
     def _fake_completion(**kwargs):

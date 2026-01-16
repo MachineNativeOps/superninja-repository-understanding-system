@@ -170,7 +170,19 @@ class Histogram:
     description: str = ""
     labels: list[str] = field(default_factory=list)
     buckets: list[float] = field(
-        default_factory=lambda: [0.005, 0.01, 0.025, 0.05, 0.1, 0.25, 0.5, 1.0, 2.5, 5.0, 10.0]
+        default_factory=lambda: [
+            0.005,
+            0.01,
+            0.025,
+            0.05,
+            0.1,
+            0.25,
+            0.5,
+            1.0,
+            2.5,
+            5.0,
+            10.0,
+        ]
     )
     _backend: MetricsBackend | None = None
 
@@ -464,7 +476,9 @@ class MetricsCollector:
         findings_count: int = 0,
     ) -> None:
         """Record that a run has completed"""
-        labels = MetricLabels(org_id=org_id, repo=repo, run_type=run_type, status=status)
+        labels = MetricLabels(
+            org_id=org_id, repo=repo, run_type=run_type, status=status
+        )
         self.runs_total.inc(1, labels)
         self.runs_in_progress.dec(1, MetricLabels(org_id=org_id, run_type=run_type))
         self.runs_duration_seconds.observe(
@@ -496,7 +510,9 @@ class MetricsCollector:
         else:
             self.gate_failed_total.inc(1, labels)
 
-        self.gate_duration_seconds.observe(duration_seconds, MetricLabels(org_id=org_id))
+        self.gate_duration_seconds.observe(
+            duration_seconds, MetricLabels(org_id=org_id)
+        )
 
     def record_error(
         self,

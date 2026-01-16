@@ -162,7 +162,9 @@ class GovernanceMatrixValidator:
             if dim_path.exists():
                 has_readme = (dim_path / "README.md").exists()
                 has_automation = (dim_path / "automation_engine.py").exists()
-                print(f"  ✅ {dimension:<30} (README: {has_readme}, automation: {has_automation})")
+                print(
+                    f"  ✅ {dimension:<30} (README: {has_readme}, automation: {has_automation})"
+                )
             else:
                 print(f"  ❌ {dimension:<30} (NOT FOUND)")
 
@@ -203,7 +205,9 @@ class GovernanceMatrixValidator:
         """Format matrix for display"""
         formatted = {}
         for dimension, statuses in self.matrix.items():
-            formatted[dimension] = {meta: status.value for meta, status in statuses.items()}
+            formatted[dimension] = {
+                meta: status.value for meta, status in statuses.items()
+            }
         return formatted
 
     def _calculate_compliance_percentage(self) -> float:
@@ -223,7 +227,9 @@ class GovernanceMatrixValidator:
 
         for dimension, statuses in self.matrix.items():
             missing = [
-                meta for meta, status in statuses.items() if status != ComplianceStatus.COMPLIANT
+                meta
+                for meta, status in statuses.items()
+                if status != ComplianceStatus.COMPLIANT
             ]
             if missing:
                 gaps[dimension] = missing

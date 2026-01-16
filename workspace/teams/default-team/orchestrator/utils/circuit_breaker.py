@@ -193,7 +193,9 @@ class CircuitBreaker:
             "total_failures": self._total_failures,
             "total_successes": self._total_successes,
             "failure_rate": (
-                self._total_failures / self._total_requests * 100 if self._total_requests > 0 else 0
+                self._total_failures / self._total_requests * 100
+                if self._total_requests > 0
+                else 0
             ),
             "last_failure": (
                 datetime.fromtimestamp(self._last_failure_time).isoformat()

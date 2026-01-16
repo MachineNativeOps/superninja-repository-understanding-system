@@ -51,7 +51,14 @@ class IntelligentFileRouter:
                         "execution",
                         "transformation",
                     ],
-                    "medium": ["goal", "direction", "future", "plan", "initiative", "target"],
+                    "medium": [
+                        "goal",
+                        "direction",
+                        "future",
+                        "plan",
+                        "initiative",
+                        "target",
+                    ],
                 },
                 "patterns": [
                     r"strategic\s+(?:plan|goal|objective)",
@@ -87,14 +94,27 @@ class IntelligentFileRouter:
             },
             "02-decision": {
                 "keywords": {
-                    "high": ["decision", "choice", "alternative", "evaluation", "criteria"],
+                    "high": [
+                        "decision",
+                        "choice",
+                        "alternative",
+                        "evaluation",
+                        "criteria",
+                    ],
                     "medium": ["select", "option", "rationale", "justification"],
                 },
                 "patterns": [r"decision\s+(?:record|log|matrix)", r"adr\s*\d+"],
             },
             "05-compliance": {
                 "keywords": {
-                    "high": ["compliance", "regulation", "gdpr", "sox", "hipaa", "standard"],
+                    "high": [
+                        "compliance",
+                        "regulation",
+                        "gdpr",
+                        "sox",
+                        "hipaa",
+                        "standard",
+                    ],
                     "medium": ["regulatory", "requirement", "mandate", "legal"],
                 },
                 "patterns": [
@@ -189,7 +209,13 @@ class IntelligentFileRouter:
             },
             "34-config": {
                 "keywords": {
-                    "high": ["config", "configuration", "settings", "parameters", "env"],
+                    "high": [
+                        "config",
+                        "configuration",
+                        "settings",
+                        "parameters",
+                        "env",
+                    ],
                     "medium": ["setup", "preference", "option", "property"],
                 },
                 "patterns": [
@@ -203,7 +229,10 @@ class IntelligentFileRouter:
                     "high": ["behavior", "contract", "agreement", "covenant", "sla"],
                     "medium": ["expectation", "guarantee", "promise", "commitment"],
                 },
-                "patterns": [r"(?:behavior|behavioral)\s+contract", r"sla\s+definition"],
+                "patterns": [
+                    r"(?:behavior|behavioral)\s+contract",
+                    r"sla\s+definition",
+                ],
             },
             "39-automation": {
                 "keywords": {
@@ -286,7 +315,9 @@ class IntelligentFileRouter:
 
         return scores
 
-    def classify_file(self, filepath: str) -> Tuple[Optional[str], float, List[Tuple[str, float]]]:
+    def classify_file(
+        self, filepath: str
+    ) -> Tuple[Optional[str], float, List[Tuple[str, float]]]:
         """
         Classify file and return best dimension match with confidence.
 
@@ -350,7 +381,9 @@ class IntelligentFileRouter:
                         f"\n{CYAN}Analyzing: {os.path.relpath(filepath, self.governance_dir)}{RESET}"
                     )
                     print(f"Current: {current_dim or 'root'}")
-                    print(f"Recommended: {recommended_dim} (confidence: {confidence:.1f}%)")
+                    print(
+                        f"Recommended: {recommended_dim} (confidence: {confidence:.1f}%)"
+                    )
 
                 # Check for misplacement
                 if recommended_dim and confidence >= 50:
@@ -365,7 +398,9 @@ class IntelligentFileRouter:
                                     "recommended": recommended_dim,
                                     "confidence": confidence,
                                     "all_matches": all_matches,
-                                    "severity": "HIGH" if confidence >= 90 else "MEDIUM",
+                                    "severity": (
+                                        "HIGH" if confidence >= 90 else "MEDIUM"
+                                    ),
                                 }
                             )
 
@@ -402,7 +437,9 @@ class IntelligentFileRouter:
         print(f"{BOLD}{BLUE}{'='*70}{RESET}\n")
 
         if not misplacements:
-            print(f"{GREEN}✅ No misplacements detected! All files are correctly placed.{RESET}\n")
+            print(
+                f"{GREEN}✅ No misplacements detected! All files are correctly placed.{RESET}\n"
+            )
             return
 
         # Group by severity
@@ -451,15 +488,18 @@ def main():
     import argparse
 
     parser = argparse.ArgumentParser(
-        description="Intelligent File Router - Analyze content and route to correct dimension"
-    )
+        description="Intelligent File Router - Analyze content and route to correct dimension")
     parser.add_argument("--file", help="Analyze single file")
-    parser.add_argument("--scan-all", action="store_true", help="Scan all governance files")
+    parser.add_argument(
+        "--scan-all", action="store_true", help="Scan all governance files"
+    )
     parser.add_argument(
         "--detect-misplacements", action="store_true", help="Detect misplaced files"
     )
     parser.add_argument(
-        "--suggest-moves", action="store_true", help="Generate move commands for misplaced files"
+        "--suggest-moves",
+        action="store_true",
+        help="Generate move commands for misplaced files",
     )
     parser.add_argument("--verbose", "-v", action="store_true", help="Verbose output")
 
@@ -491,7 +531,8 @@ def main():
             commands = router.suggest_moves(misplacements)
             for cmd in commands:
                 print(
-                    f"# {cmd['file']}: {cmd['from']} → {cmd['to']} " f"({cmd['confidence']:.1f}%)"
+                    f"# {cmd['file']}: {cmd['from']} → {cmd['to']} "
+                    f"({cmd['confidence']:.1f}%)"
                 )
                 print(f"{cmd['command']}\n")
 

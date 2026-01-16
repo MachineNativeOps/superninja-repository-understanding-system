@@ -172,7 +172,10 @@ def store_change_record(
     knowledge_artifacts: dict,
 ) -> str:
     """Store complete change record."""
-    records_dir = repo_root / "src/governance/dimensions/99-metadata/knl-pack/state/change-records"
+    records_dir = (
+        repo_root
+        / "src/governance/dimensions/99-metadata/knl-pack/state/change-records"
+    )
     records_dir.mkdir(parents=True, exist_ok=True)
 
     sha = commit_metadata["commit_sha"][:8]
@@ -199,7 +202,10 @@ def store_change_record(
 
 def update_governance_index(repo_root: Path, changes: dict) -> dict[str, Any]:
     """Update governance index with new/modified artifacts."""
-    index_file = repo_root / "src/governance/dimensions/99-metadata/knl-pack/governance/index.json"
+    index_file = (
+        repo_root
+        / "src/governance/dimensions/99-metadata/knl-pack/governance/index.json"
+    )
 
     if not index_file.exists():
         print("⚠️  Governance index not found, skipping update")

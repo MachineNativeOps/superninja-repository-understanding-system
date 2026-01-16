@@ -79,7 +79,9 @@ class CircuitBreaker(Generic[T]):
         self._last_failure_time: Optional[float] = None
         self._last_state_change_time = time.time()
         self._metrics = CircuitBreakerMetrics()
-        self._listeners: List[Callable[[CircuitBreakerState, CircuitBreakerState], None]] = []
+        self._listeners: List[
+            Callable[[CircuitBreakerState, CircuitBreakerState], None]
+        ] = []
         self._lock = asyncio.Lock()
 
     @property
@@ -209,7 +211,9 @@ class CircuitBreaker(Generic[T]):
                 self._metrics.rejected_calls += 1
                 if fallback:
                     return fallback()
-                raise CircuitBreakerOpenError(f"Circuit breaker '{self.config.name}' is OPEN")
+                raise CircuitBreakerOpenError(
+                    f"Circuit breaker '{self.config.name}' is OPEN"
+                )
 
             # Execute the operation
             start_time = time.time()
@@ -277,7 +281,9 @@ class CircuitBreakerRegistry:
     def __init__(self):
         self._breakers: Dict[str, CircuitBreaker] = {}
 
-    def register(self, name: str, config: Optional[CircuitBreakerConfig] = None) -> CircuitBreaker:
+    def register(
+        self, name: str, config: Optional[CircuitBreakerConfig] = None
+    ) -> CircuitBreaker:
         """Register a new circuit breaker"""
         if config is None:
             config = CircuitBreakerConfig(name=name)
@@ -301,7 +307,10 @@ class CircuitBreakerRegistry:
         return self._breakers[name]
 
     async def execute(
-        self, name: str, operation: Callable[[], T], fallback: Optional[Callable[[], T]] = None
+        self,
+        name: str,
+        operation: Callable[[], T],
+        fallback: Optional[Callable[[], T]] = None,
     ) -> T:
         """Execute operation through named circuit breaker"""
         breaker = self.get_or_create(name)

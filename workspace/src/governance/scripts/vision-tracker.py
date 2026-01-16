@@ -112,7 +112,9 @@ class VisionTracker:
         """Check if latency thresholds are properly configured."""
         check = {"name": "latency_compliance", "passed": True, "details": []}
 
-        thresholds = self.config.get("spec", {}).get("latencyThresholds", self.DEFAULT_THRESHOLDS)
+        thresholds = self.config.get("spec", {}).get(
+            "latencyThresholds", self.DEFAULT_THRESHOLDS
+        )
 
         # Validate instant threshold
         instant = thresholds.get("instant", 0)
@@ -387,7 +389,9 @@ class VisionTracker:
                 status_color = (
                     Colors.OKGREEN
                     if detail["status"] == "PASS"
-                    else Colors.WARNING if detail["status"] == "WARNING" else Colors.FAIL
+                    else (
+                        Colors.WARNING if detail["status"] == "WARNING" else Colors.FAIL
+                    )
                 )
                 print(
                     f"  - {detail['criterion']}: {detail['value']} "
@@ -423,7 +427,9 @@ Examples:
 
     parser.add_argument("--config", "-c", help="Path to pipeline configuration file")
 
-    parser.add_argument("--verbose", "-v", action="store_true", help="Enable verbose output")
+    parser.add_argument(
+        "--verbose", "-v", action="store_true", help="Enable verbose output"
+    )
 
     parser.add_argument("--output", "-o", help="Output results to JSON file")
 

@@ -127,7 +127,10 @@ class RetryPolicy:
             delay = self._apply_jitter(delay)
 
         # Apply risk factor if risk-adaptive is enabled
-        if self.config.risk_adaptive and self.config.strategy != RetryStrategy.RISK_ADAPTIVE:
+        if (
+            self.config.risk_adaptive
+            and self.config.strategy != RetryStrategy.RISK_ADAPTIVE
+        ):
             delay = self._apply_risk_factor(delay, risk_score)
 
         # Cap at maximum delay
@@ -169,7 +172,10 @@ class RetryPolicy:
                     attempts=attempts + 1,
                     total_delay_ms=total_delay_ms,
                     success=True,
-                    metadata={"result": result, "elapsed_ms": self._elapsed_ms(start_time)},
+                    metadata={
+                        "result": result,
+                        "elapsed_ms": self._elapsed_ms(start_time),
+                    },
                 )
 
             except Exception as e:
@@ -177,7 +183,10 @@ class RetryPolicy:
                 attempts += 1
 
                 logger.warning(
-                    "Attempt %d/%d failed: %s", attempts, self.config.max_attempts, last_error
+                    "Attempt %d/%d failed: %s",
+                    attempts,
+                    self.config.max_attempts,
+                    last_error,
                 )
 
                 # Check if we should retry
@@ -224,7 +233,9 @@ class RetryPolicy:
 
     def _exponential_delay(self, attempt: int) -> int:
         """Calculate exponential backoff delay."""
-        return int(self.config.base_delay_ms * (self.config.backoff_multiplier**attempt))
+        return int(
+            self.config.base_delay_ms * (self.config.backoff_multiplier**attempt)
+        )
 
     def _linear_delay(self, attempt: int) -> int:
         """Calculate linear backoff delay."""

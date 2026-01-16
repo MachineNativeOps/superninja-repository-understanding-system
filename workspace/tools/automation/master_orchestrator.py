@@ -209,7 +209,7 @@ class EventBus:
         # 記錄歷史
         self._history.append(event)
         if len(self._history) > self._max_history:
-            self._history = self._history[-self._max_history :]
+            self._history = self._history[-self._max_history:]
 
     def subscribe(self, event_type: str, handler: Callable):
         """訂閱事件"""
@@ -247,7 +247,9 @@ class EventBus:
             except Exception as e:
                 self._logger.error(f"事件處理錯誤: {e}")
 
-    def get_history(self, event_type: str = None, limit: int = 100) -> List[EngineEvent]:
+    def get_history(
+        self, event_type: str = None, limit: int = 100
+    ) -> List[EngineEvent]:
         """獲取事件歷史"""
         events = self._history
         if event_type:
@@ -368,7 +370,9 @@ class EngineRegistry:
         """註冊引擎實例"""
         registration.registered_at = datetime.now().isoformat()
         self._engines[registration.engine_id] = registration
-        self._logger.info(f"引擎已註冊: {registration.engine_name} ({registration.engine_id})")
+        self._logger.info(
+            f"引擎已註冊: {registration.engine_name} ({registration.engine_id})"
+        )
 
     def unregister_engine(self, engine_id: str):
         """取消註冊引擎"""
@@ -654,7 +658,9 @@ class EngineRegistry:
                         {
                             "class_name": name,
                             "module_path": str(module_path),
-                            "engine_type": getattr(obj, "ENGINE_TYPE", EngineType.EXECUTION).value,
+                            "engine_type": getattr(
+                                obj, "ENGINE_TYPE", EngineType.EXECUTION
+                            ).value,
                         }
                     )
 
@@ -691,7 +697,9 @@ class EngineScheduler:
         """停止調度器"""
         self._running = False
 
-    async def schedule_task(self, task: Dict[str, Any], priority: Priority = Priority.NORMAL):
+    async def schedule_task(
+        self, task: Dict[str, Any], priority: Priority = Priority.NORMAL
+    ):
         """調度任務"""
         await self._task_queue.put((priority.value, task))
 
@@ -752,7 +760,9 @@ class PipelineExecutor:
         self._pipelines[config.pipeline_id] = config
         self._logger.info(f"管道已註冊: {config.name}")
 
-    async def execute_pipeline(self, pipeline_id: str, input_data: Dict = None) -> Dict[str, Any]:
+    async def execute_pipeline(
+        self, pipeline_id: str, input_data: Dict = None
+    ) -> Dict[str, Any]:
         """執行管道"""
         pipeline = self._pipelines.get(pipeline_id)
         if not pipeline:
@@ -805,7 +815,9 @@ class PipelineExecutor:
                 "results": results,
             }
 
-    async def _execute_stage(self, stage: Dict[str, Any], input_data: Dict) -> Dict[str, Any]:
+    async def _execute_stage(
+        self, stage: Dict[str, Any], input_data: Dict
+    ) -> Dict[str, Any]:
         """執行單一階段"""
         engine_id = stage.get("engine_id")
         engine_type = stage.get("engine_type")
@@ -1093,7 +1105,9 @@ class MasterOrchestrator:
 
         try:
             # 動態載入模組
-            spec = importlib.util.spec_from_file_location(Path(module_path).stem, module_path)
+            spec = importlib.util.spec_from_file_location(
+                Path(module_path).stem, module_path
+            )
             module = importlib.util.module_from_spec(spec)
             spec.loader.exec_module(module)
 
@@ -1205,7 +1219,9 @@ class MasterOrchestrator:
     # 任務調度
     # ========================================================================
 
-    async def submit_task(self, task: Dict[str, Any], priority: Priority = Priority.NORMAL):
+    async def submit_task(
+        self, task: Dict[str, Any], priority: Priority = Priority.NORMAL
+    ):
         """提交任務"""
         await self.scheduler.schedule_task(task, priority)
 
@@ -1255,7 +1271,9 @@ class MasterOrchestrator:
 
 
 async def main():
-    parser = argparse.ArgumentParser(description="SynergyMesh Master Orchestrator - 主控引擎啟動器")
+    parser = argparse.ArgumentParser(
+        description="SynergyMesh Master Orchestrator - 主控引擎啟動器"
+    )
 
     subparsers = parser.add_subparsers(dest="command", help="可用命令")
 
@@ -1308,7 +1326,9 @@ async def main():
     elif args.command == "list":
         await orchestrator.start()
         for engine in orchestrator.registry.get_all_engines():
-            print(f"- {engine.engine_name} ({engine.engine_id}): {engine.engine_type.value}")
+            print(
+                f"- {engine.engine_name} ({engine.engine_id}): {engine.engine_type.value}"
+            )
         await orchestrator.stop()
 
     elif args.command == "execute":

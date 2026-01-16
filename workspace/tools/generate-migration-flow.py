@@ -76,7 +76,11 @@ def classify_violation_type(reason: str) -> str:
 
     if "forbidden" in reason_lower or "not allowed" in reason_lower:
         return "forbidden"
-    elif "cross-layer" in reason_lower or "layer" in reason_lower or "wrong layer" in reason_lower:
+    elif (
+        "cross-layer" in reason_lower
+        or "layer" in reason_lower
+        or "wrong layer" in reason_lower
+    ):
         return "layer_violation"
     elif "security" in reason_lower or "vulnerability" in reason_lower:
         return "security"
@@ -148,7 +152,9 @@ def parse_governance_report(report_path: Path) -> list[dict[str, Any]]:
     lines = content.split("\n")
     for line in lines:
         if "—" in line and "**" in line:
-            match = re.match(r"-\s*\*\*(.*?)\*\*\s*—\s*(.*?)(?:\(Layer:\s*(.*?)\))?$", line)
+            match = re.match(
+                r"-\s*\*\*(.*?)\*\*\s*—\s*(.*?)(?:\(Layer:\s*(.*?)\))?$", line
+            )
             if match:
                 file_path = match.group(1).strip()
                 reason = match.group(2).strip()
@@ -189,7 +195,11 @@ def parse_migration_history(history_path: Path) -> list[dict[str, Any]]:
             details = event.get("details", "")
 
             # Look for migration/rewrite patterns
-            if event_type == "fix" or "rewrite" in details.lower() or "move" in details.lower():
+            if (
+                event_type == "fix"
+                or "rewrite" in details.lower()
+                or "move" in details.lower()
+            ):
                 # Try to parse migration info from details
                 # Example: "Moved services/old.cpp to autonomous/new.cpp"
                 # Example: "Rewrote core/util.js to core/util.ts"
@@ -256,7 +266,9 @@ def build_migration_edges(
 
     # Convert to edge list
     for (source, target, edge_type), count in edge_counts.items():
-        edges.append({"source": source, "target": target, "count": count, "type": edge_type})
+        edges.append(
+            {"source": source, "target": target, "count": count, "type": edge_type}
+        )
 
     # Sort by count (highest first)
     edges.sort(key=lambda x: x["count"], reverse=True)
@@ -331,7 +343,9 @@ def generate_migration_flow_data():
     # Calculate statistics
     total_migrations = sum(edge["count"] for edge in edges)
     history_count = sum(edge["count"] for edge in edges if edge["type"] == "history")
-    suggested_count = sum(edge["count"] for edge in edges if edge["type"] == "suggested")
+    suggested_count = sum(
+        edge["count"] for edge in edges if edge["type"] == "suggested"
+    )
 
     # Most common source
     source_counts = defaultdict(int)
@@ -404,9 +418,7 @@ def generate_migration_flow_data():
 """
 
     for edge in edges[:20]:  # Top 20
-        mermaid_content += (
-            f"| `{edge['source']}` | `{edge['target']}` | {edge['count']} | {edge['type']} |\n"
-        )
+        mermaid_content += f"| `{edge['source']}` | `{edge['target']}` | {edge['count']} | {edge['type']} |\n"
 
     mermaid_content += """
 ---

@@ -8,13 +8,11 @@ Metric Collectors
 Collects various metrics from the system and services.
 """
 
-from typing import Dict, List, Optional
-from dataclasses import asdict, dataclass
 import logging
 import platform
 import subprocess
 from abc import ABC, abstractmethod
-from dataclasses import dataclass
+from dataclasses import asdict, dataclass
 from datetime import datetime
 from typing import Any, Dict, List, Optional
 
@@ -256,7 +254,9 @@ class MetricsCollector:
                 all_metrics.update(collector_metrics)
 
             except Exception as e:
-                self.logger.error(f"Error collecting from {collector.__class__.__name__}: {e}")
+                self.logger.error(
+                    f"Error collecting from {collector.__class__.__name__}: {e}"
+                )
 
         return all_metrics
 
@@ -276,7 +276,9 @@ class MetricsCollector:
         Args:
             collector_class: Class of collector to remove
         """
-        self.collectors = [c for c in self.collectors if not isinstance(c, collector_class)]
+        self.collectors = [
+            c for c in self.collectors if not isinstance(c, collector_class)
+        ]
 
 
 logger = logging.getLogger(__name__)
@@ -385,7 +387,9 @@ class ServiceCollector(MetricCollector):
 
         return service_metrics
 
-    def _check_service(self, service_name: str, config: Dict[str, Any]) -> Dict[str, Any]:
+    def _check_service(
+        self, service_name: str, config: Dict[str, Any]
+    ) -> Dict[str, Any]:
         """Check individual service health"""
         check_type = config.get("type", "process")
 
@@ -399,7 +403,9 @@ class ServiceCollector(MetricCollector):
             logger.warning(f"Unknown service check type: {check_type}")
             return {"healthy": False, "error": "unknown check type"}
 
-    def _check_process(self, service_name: str, config: Dict[str, Any]) -> Dict[str, Any]:
+    def _check_process(
+        self, service_name: str, config: Dict[str, Any]
+    ) -> Dict[str, Any]:
         """Check if a process is running"""
         process_name = config.get("process_name", service_name)
 
@@ -424,7 +430,9 @@ class ServiceCollector(MetricCollector):
             logger.error(f"Error checking process {process_name}: {e}")
             return {"healthy": False, "status": "error", "error": str(e)}
 
-    def _check_http_endpoint(self, service_name: str, config: Dict[str, Any]) -> Dict[str, Any]:
+    def _check_http_endpoint(
+        self, service_name: str, config: Dict[str, Any]
+    ) -> Dict[str, Any]:
         """Check HTTP endpoint health"""
         # TODO: Implement HTTP health check
         logger.warning(f"HTTP health check not implemented for {service_name}")
@@ -567,7 +575,9 @@ class MetricsCollector:
                 "memory_mb": process.memory_info().rss / (1024**2),
                 "num_threads": process.num_threads(),
                 "status": process.status(),
-                "create_time": datetime.fromtimestamp(process.create_time()).isoformat(),
+                "create_time": datetime.fromtimestamp(
+                    process.create_time()
+                ).isoformat(),
             }
         except Exception as e:
             logger.error(f"Error collecting process metrics: {e}")
@@ -636,7 +646,9 @@ class EventCollector:
                 severity="warning",
             )
 
-    def add_event(self, type: str, description: str, severity: str, metadata: Dict = None):
+    def add_event(
+        self, type: str, description: str, severity: str, metadata: Dict = None
+    ):
         """Add an event to the buffer."""
         event = Event(
             type=type,
@@ -772,7 +784,9 @@ class SystemCollector:
                     "load_average": load_avg,
                     "os_info": {
                         "system": os.name,
-                        "platform": os.uname().sysname if hasattr(os, "uname") else None,
+                        "platform": (
+                            os.uname().sysname if hasattr(os, "uname") else None
+                        ),
                         "release": os.uname().release if hasattr(os, "uname") else None,
                         "version": os.uname().version if hasattr(os, "uname") else None,
                     },
@@ -789,7 +803,9 @@ class SystemCollector:
             self.logger.error(f"Failed to collect system metrics: {e}")
             raise
 
-    def _flatten_metrics(self, metrics: Dict[str, Any], prefix: str = "") -> Dict[str, Any]:
+    def _flatten_metrics(
+        self, metrics: Dict[str, Any], prefix: str = ""
+    ) -> Dict[str, Any]:
         """Flatten nested metrics dictionary"""
         flat = {}
 
@@ -850,7 +866,11 @@ class QuantumCollector:
         """Get quantum fidelity (simulated)"""
         # In real implementation, this would query quantum hardware
         return max(
-            0.0, min(1.0, self.config.fidelity_threshold + (hash(time.time()) % 100 - 50) / 1000)
+            0.0,
+            min(
+                1.0,
+                self.config.fidelity_threshold + (hash(time.time()) % 100 - 50) / 1000,
+            ),
         )
 
     def _get_quantum_coherence_time(self) -> float:
@@ -861,7 +881,9 @@ class QuantumCollector:
     def _get_quantum_error_rate(self) -> float:
         """Get quantum error rate (simulated)"""
         # In real implementation, this would measure actual error rates
-        return max(0.0, self.config.error_rate_threshold - (hash(time.time()) % 100) / 10000)
+        return max(
+            0.0, self.config.error_rate_threshold - (hash(time.time()) % 100) / 10000
+        )
 
     def _get_active_qubits(self) -> int:
         """Get number of active qubits (simulated)"""
@@ -1013,7 +1035,9 @@ class KubernetesCollector:
                         )
 
                     # Check if deployment is ready
-                    if (deploy.status.ready_replicas or 0) == (deploy.spec.replicas or 0):
+                    if (deploy.status.ready_replicas or 0) == (
+                        deploy.spec.replicas or 0
+                    ):
                         ready_deployments += 1
 
                     deployments.append(deployment_info)

@@ -101,7 +101,12 @@ class TestWorkflowAPI:
         # Create a workflow first
         workflow_data = {
             "name": "Test Workflow",
-            "tasks": [{"type": "classical", "config": {"operation": "preprocess", "data": [1.0]}}],
+            "tasks": [
+                {
+                    "type": "classical",
+                    "config": {"operation": "preprocess", "data": [1.0]},
+                }
+            ],
         }
         await client.post("/api/workflows", json=workflow_data)
 
@@ -118,7 +123,12 @@ class TestWorkflowAPI:
         # Create a workflow
         workflow_data = {
             "name": "Test Workflow",
-            "tasks": [{"type": "classical", "config": {"operation": "preprocess", "data": [1.0]}}],
+            "tasks": [
+                {
+                    "type": "classical",
+                    "config": {"operation": "preprocess", "data": [1.0]},
+                }
+            ],
         }
         create_response = await client.post("/api/workflows", json=workflow_data)
         workflow_id = create_response.json()["workflow_id"]
@@ -162,7 +172,10 @@ class TestWorkflowIntegration:
         """Test creating and executing a workflow end-to-end."""
         # Create workflow
         tasks = [
-            {"type": "classical", "config": {"operation": "preprocess", "data": [1.0, 2.0, 3.0]}},
+            {
+                "type": "classical",
+                "config": {"operation": "preprocess", "data": [1.0, 2.0, 3.0]},
+            },
             {
                 "type": "quantum",
                 "config": {

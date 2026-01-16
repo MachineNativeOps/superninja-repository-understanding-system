@@ -437,7 +437,7 @@ class MemoryManager:
         if len(cache) > self._context_max_size:
             # Remove oldest entries
             cache.sort(key=lambda e: e.created_at)
-            self._context_cache[session_id] = cache[-self._context_max_size :]
+            self._context_cache[session_id] = cache[-self._context_max_size:]
 
     async def clear_session(self, session_id: str) -> int:
         """

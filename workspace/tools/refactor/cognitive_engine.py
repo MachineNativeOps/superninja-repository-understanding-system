@@ -221,7 +221,9 @@ class UnderstandingLayer:
         # 從結構化輸入提取
         if isinstance(raw_input, dict):
             if "target" in raw_input:
-                entities.append({"type": "path", "value": raw_input["target"], "confidence": 1.0})
+                entities.append(
+                    {"type": "path", "value": raw_input["target"], "confidence": 1.0}
+                )
             if "files" in raw_input:
                 for f in raw_input["files"]:
                     entities.append({"type": "path", "value": f, "confidence": 1.0})
@@ -474,7 +476,9 @@ class ReasoningLayer:
             alternatives=[],
         )
 
-    def _infer_missing_information(self, understanding: UnderstandingResult) -> ReasoningStep:
+    def _infer_missing_information(
+        self, understanding: UnderstandingResult
+    ) -> ReasoningStep:
         """推斷缺失信息"""
         hypothesis = "嘗試推斷缺失的關鍵信息"
 
@@ -498,12 +502,16 @@ class ReasoningLayer:
             step_id=len(self.reasoning_trace) + 1,
             hypothesis=hypothesis,
             evidence=evidence,
-            conclusion="; ".join(inferences) if inferences else "無法有效推斷，需要更多信息",
+            conclusion=(
+                "; ".join(inferences) if inferences else "無法有效推斷，需要更多信息"
+            ),
             confidence=0.6 if inferences else 0.3,
             alternatives=["請求用戶提供更多細節"],
         )
 
-    def _reason_intent_clarification(self, understanding: UnderstandingResult) -> ReasoningStep:
+    def _reason_intent_clarification(
+        self, understanding: UnderstandingResult
+    ) -> ReasoningStep:
         """推理意圖澄清"""
         hypothesis = f"用戶意圖 '{understanding.intent}' 的具體含義"
 
@@ -540,7 +548,10 @@ class ReasoningLayer:
 
         # 識別衝突
         conflicts = []
-        if "scope_limited" in understanding.constraints and len(understanding.entities) == 0:
+        if (
+            "scope_limited" in understanding.constraints
+            and len(understanding.entities) == 0
+        ):
             conflicts.append("範圍限制但未指定具體目標")
 
         if conflicts:
@@ -623,11 +634,13 @@ class ReasoningLayer:
         # 選擇最優路徑
         if paths:
             optimal = min(
-                paths, key=lambda p: ({"low": 0, "medium": 1, "high": 2}[p["risk"]], p["phases"])
+                paths,
+                key=lambda p: (
+                    {"low": 0, "medium": 1, "high": 2}[p["risk"]],
+                    p["phases"],
+                ),
             )
-            conclusion = (
-                f"推薦策略: {optimal['name']} ({optimal['phases']} 階段, {optimal['risk']} 風險)"
-            )
+            conclusion = f"推薦策略: {optimal['name']} ({optimal['phases']} 階段, {optimal['risk']} 風險)"
         else:
             conclusion = "使用默認執行策略"
             optimal = None
@@ -646,7 +659,9 @@ class ReasoningLayer:
         if not self.reasoning_trace:
             return ConfidenceLevel.INSUFFICIENT
 
-        avg_confidence = sum(s.confidence for s in self.reasoning_trace) / len(self.reasoning_trace)
+        avg_confidence = sum(s.confidence for s in self.reasoning_trace) / len(
+            self.reasoning_trace
+        )
 
         if avg_confidence >= 0.8:
             return ConfidenceLevel.HIGH
@@ -659,7 +674,10 @@ class ReasoningLayer:
 
     def needs_external_search(self) -> bool:
         """判斷是否需要外部搜尋"""
-        if self.get_confidence_level() in [ConfidenceLevel.LOW, ConfidenceLevel.INSUFFICIENT]:
+        if self.get_confidence_level() in [
+            ConfidenceLevel.LOW,
+            ConfidenceLevel.INSUFFICIENT,
+        ]:
             return True
 
         # 檢查是否有未解決的歧義
@@ -690,7 +708,9 @@ class SearchLayer:
         self.config = config or {}
         self.search_results: List[Dict] = []
 
-    def search(self, queries: List[SearchQuery], context: Optional[Dict] = None) -> List[Dict]:
+    def search(
+        self, queries: List[SearchQuery], context: Optional[Dict] = None
+    ) -> List[Dict]:
         """執行搜尋"""
         self.search_results = []
 
@@ -736,7 +756,10 @@ class SearchLayer:
                     )
 
                 # 內容搜尋 (限制於小檔案)
-                if file.suffix in [".md", ".yaml", ".yml", ".py"] and file.stat().st_size < 100000:
+                if (
+                    file.suffix in [".md", ".yaml", ".yml", ".py"]
+                    and file.stat().st_size < 100000
+                ):
                     try:
                         content = file.read_text(encoding="utf-8")
                         if search_term in content.lower():
@@ -919,8 +942,12 @@ class IntegrationLayer:
         """綜合理解"""
         return {
             "confirmed_intent": understanding.intent,
-            "validated_entities": [e for e in understanding.entities if e["confidence"] > 0.7],
-            "resolved_ambiguities": self._resolve_ambiguities(understanding, search_results),
+            "validated_entities": [
+                e for e in understanding.entities if e["confidence"] > 0.7
+            ],
+            "resolved_ambiguities": self._resolve_ambiguities(
+                understanding, search_results
+            ),
             "enriched_context": self._enrich_context(understanding, search_results),
         }
 
@@ -932,13 +959,17 @@ class IntegrationLayer:
 
         for ambiguity in understanding.ambiguities:
             # 嘗試從搜尋結果中找到解答
-            relevant_results = [r for r in search_results if ambiguity.lower() in str(r).lower()]
+            relevant_results = [
+                r for r in search_results if ambiguity.lower() in str(r).lower()
+            ]
 
             if relevant_results:
                 resolutions.append(
                     {
                         "ambiguity": ambiguity,
-                        "resolution": relevant_results[0].get("content", "已找到相關信息"),
+                        "resolution": relevant_results[0].get(
+                            "content", "已找到相關信息"
+                        ),
                         "confidence": 0.7,
                     }
                 )
@@ -1029,7 +1060,9 @@ class IntegrationLayer:
         if risk_dim.get("data_loss") in ["medium", "high"]:
             risks["factors"].append("潛在數據丟失")
             risks["mitigations"].append("執行前創建完整備份")
-            risks["overall_level"] = "medium" if risks["overall_level"] == "low" else "high"
+            risks["overall_level"] = (
+                "medium" if risks["overall_level"] == "low" else "high"
+            )
 
         # 從推理中識別風險
         for step in reasoning:
@@ -1049,7 +1082,9 @@ class IntegrationLayer:
         return {
             "understanding_confidence": understanding.completeness_score,
             "reasoning_confidence": (
-                sum(s.confidence for s in reasoning) / len(reasoning) if reasoning else 0.0
+                sum(s.confidence for s in reasoning) / len(reasoning)
+                if reasoning
+                else 0.0
             ),
             "search_confidence": (
                 sum(r.get("relevance", 0) for r in search_results) / len(search_results)
@@ -1100,7 +1135,9 @@ class CognitiveEngine:
         self.search_layer = SearchLayer(config)
         self.integration_layer = IntegrationLayer(config)
 
-    def process(self, raw_input: Dict, context: Optional[Dict] = None) -> CognitiveContext:
+    def process(
+        self, raw_input: Dict, context: Optional[Dict] = None
+    ) -> CognitiveContext:
         """執行完整認知處理"""
         # 初始化上下文
         ctx = CognitiveContext(
@@ -1140,7 +1177,10 @@ class CognitiveEngine:
             print("🔄 階段4: 再推理...")
             # 更新理解
             for result in search_results:
-                if result.get("source") == "local" and result.get("type") == "file_match":
+                if (
+                    result.get("source") == "local"
+                    and result.get("type") == "file_match"
+                ):
                     understanding.entities.append(
                         {
                             "type": "discovered_file",
@@ -1209,7 +1249,9 @@ class CognitiveEngine:
             "action_plan": action_plan,
             "requires_confirmation": not can_auto_execute,
             "confirmation_points": (
-                [amb for amb in understanding.ambiguities] if not can_auto_execute else []
+                [amb for amb in understanding.ambiguities]
+                if not can_auto_execute
+                else []
             ),
             "risk_summary": integration.risk_assessment["overall_level"],
             "mitigations": integration.risk_assessment["mitigations"],
@@ -1233,7 +1275,9 @@ def quick_reason(understanding: UnderstandingResult) -> List[ReasoningStep]:
     return layer.reason(understanding)
 
 
-def full_cognitive_process(raw_input: Dict, context: Optional[Dict] = None) -> CognitiveContext:
+def full_cognitive_process(
+    raw_input: Dict, context: Optional[Dict] = None
+) -> CognitiveContext:
     """完整認知處理"""
     engine = CognitiveEngine()
     return engine.process(raw_input, context)
@@ -1284,7 +1328,9 @@ def main():
         output["full_reasoning_trace"] = result.reasoning_trace
         output["integration_result"] = result.integration_result
 
-    output_str = yaml.dump(output, allow_unicode=True, default_flow_style=False, sort_keys=False)
+    output_str = yaml.dump(
+        output, allow_unicode=True, default_flow_style=False, sort_keys=False
+    )
 
     if args.output:
         with open(args.output, "w", encoding="utf-8") as f:

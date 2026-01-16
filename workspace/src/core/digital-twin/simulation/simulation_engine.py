@@ -84,7 +84,9 @@ class SimulationEngine:
         self.config = config or {}
         self.mode = SimulationMode.DISCRETE
         self._time_step = (
-            timedelta(seconds=config.get("time_step", 1)) if config else timedelta(seconds=1)
+            timedelta(seconds=config.get("time_step", 1))
+            if config
+            else timedelta(seconds=1)
         )
         self._models: Dict[str, Callable] = {}
         self._current_state: Optional[SimulationState] = None
@@ -185,7 +187,9 @@ class SimulationEngine:
         for name, model in self._models.items():
             await model(self._current_state, scenario)
 
-    async def _model_load(self, state: SimulationState, scenario: SimulationScenario) -> None:
+    async def _model_load(
+        self, state: SimulationState, scenario: SimulationScenario
+    ) -> None:
         """Model load changes over time."""
         noise = random.gauss(0, 0.02)
         for component in state.components.values():
@@ -193,22 +197,32 @@ class SimulationEngine:
             # Mean reversion with noise
             component["load"] = max(0, min(1, load + noise))
 
-    async def _model_latency(self, state: SimulationState, scenario: SimulationScenario) -> None:
+    async def _model_latency(
+        self, state: SimulationState, scenario: SimulationScenario
+    ) -> None:
         """Model latency based on load."""
-        avg_load = sum(c.get("load", 0) for c in state.components.values()) / len(state.components)
+        avg_load = sum(c.get("load", 0) for c in state.components.values()) / len(
+            state.components
+        )
 
         # Latency increases with load
         base_latency = 50
         state.metrics["latency_p50"] = base_latency * (1 + avg_load)
         state.metrics["latency_p99"] = state.metrics["latency_p50"] * 4
 
-    async def _model_resource(self, state: SimulationState, scenario: SimulationScenario) -> None:
+    async def _model_resource(
+        self, state: SimulationState, scenario: SimulationScenario
+    ) -> None:
         """Model resource usage."""
-        avg_load = sum(c.get("load", 0) for c in state.components.values()) / len(state.components)
+        avg_load = sum(c.get("load", 0) for c in state.components.values()) / len(
+            state.components
+        )
         state.metrics["cpu_usage"] = 0.2 + avg_load * 0.6
         state.metrics["memory_usage"] = 0.3 + avg_load * 0.4
 
-    async def _model_failure(self, state: SimulationState, scenario: SimulationScenario) -> None:
+    async def _model_failure(
+        self, state: SimulationState, scenario: SimulationScenario
+    ) -> None:
         """Model failure probability."""
         # Higher load = higher failure probability
         for name, component in state.components.items():
@@ -259,11 +273,15 @@ class SimulationEngine:
 
         # Check resource usage
         if metrics.get("cpu_usage", {}).get("max", 0) > 0.8:
-            recommendations.append("CPU usage peaked high - consider horizontal scaling")
+            recommendations.append(
+                "CPU usage peaked high - consider horizontal scaling"
+            )
 
         # Check failures
         if len(events) > 0:
-            recommendations.append(f"Detected {len(events)} failure events - review resilience")
+            recommendations.append(
+                f"Detected {len(events)} failure events - review resilience"
+            )
 
         return recommendations
 

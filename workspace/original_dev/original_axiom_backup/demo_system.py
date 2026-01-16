@@ -12,9 +12,6 @@ Features demonstrated:
 - Hot-reload configuration management
 """
 
-from core.plugin_orchestrator import ErrorHandlingStrategy, ExecutionMode, orchestrator
-from core.plugin_manager import plugin_manager
-from core.config_manager import config_manager
 import json
 import logging
 import os
@@ -25,6 +22,10 @@ import threading
 import time
 from pathlib import Path
 from typing import Any, Dict, List
+
+from core.config_manager import config_manager
+from core.plugin_manager import plugin_manager
+from core.plugin_orchestrator import ErrorHandlingStrategy, ExecutionMode, orchestrator
 
 # Add project to path
 project_root = Path(__file__).parent
@@ -73,7 +74,10 @@ class AxiomSystemDemo:
     def _create_demo_files(self):
         """Create demonstration data files"""
         demo_files = [
-            ("document.txt", "This is a sample document for backup demonstration.\n" * 100),
+            (
+                "document.txt",
+                "This is a sample document for backup demonstration.\n" * 100,
+            ),
             (
                 "config.json",
                 json.dumps(
@@ -87,7 +91,8 @@ class AxiomSystemDemo:
             ),
             (
                 "data.csv",
-                "id,name,value\n" + "\n".join([f"{i},item_{i},{i*10}" for i in range(1, 101)]),
+                "id,name,value\n"
+                + "\n".join([f"{i},item_{i},{i*10}" for i in range(1, 101)]),
             ),
             ("secret.txt", "This is sensitive data that should be encrypted."),
             # 1MB file for compression testing
@@ -180,7 +185,9 @@ class AxiomSystemDemo:
                 "loaded_plugins": loaded_plugins,
             }
 
-            logger.info(f"✅ Loaded {len(loaded_plugins)} plugins (avg: {avg_load_time:.3f}s)")
+            logger.info(
+                f"✅ Loaded {len(loaded_plugins)} plugins (avg: {avg_load_time:.3f}s)"
+            )
 
         except Exception as e:
             logger.error(f"❌ Plugin loading demo failed: {e}")
@@ -223,7 +230,12 @@ class AxiomSystemDemo:
 
             # Create multiple concurrent tasks
             threads = []
-            plugins = ["compression_zstd", "encryption_aes", "backup_incremental", "storage_s3"]
+            plugins = [
+                "compression_zstd",
+                "encryption_aes",
+                "backup_incremental",
+                "storage_s3",
+            ]
 
             for i, plugin in enumerate(plugins):
                 for j in range(3):  # 3 tasks per plugin
@@ -247,7 +259,9 @@ class AxiomSystemDemo:
             successful_tasks = len(results)
             failed_tasks = len(errors)
             avg_execution_time = (
-                sum(r["execution_time"] for r in results) / len(results) if results else 0
+                sum(r["execution_time"] for r in results) / len(results)
+                if results
+                else 0
             )
             concurrency_ratio = len(threads) / total_time if total_time > 0 else 0
 
@@ -322,11 +336,14 @@ class AxiomSystemDemo:
             self.results["error_handling"] = {
                 "success": all(r["success"] for r in results),
                 "scenarios_tested": len(results),
-                "avg_handling_time": sum(r["handling_time"] for r in results) / len(results),
+                "avg_handling_time": sum(r["handling_time"] for r in results)
+                / len(results),
                 "results": results,
             }
 
-            logger.info(f"✅ Error handling: {len(results)} scenarios tested successfully")
+            logger.info(
+                f"✅ Error handling: {len(results)} scenarios tested successfully"
+            )
 
         except Exception as e:
             logger.error(f"❌ Error handling demo failed: {e}")
@@ -376,10 +393,14 @@ class AxiomSystemDemo:
             plugin_scores = []
             for plugin, data in metrics["plugin_performance"].items():
                 # Simple scoring based on execution time and success rate
-                score = (100 - data["avg_execution_time"] * 100) * (data["success_rate"] / 100)
+                score = (100 - data["avg_execution_time"] * 100) * (
+                    data["success_rate"] / 100
+                )
                 plugin_scores.append(score)
 
-            overall_score = sum(plugin_scores) / len(plugin_scores) if plugin_scores else 0
+            overall_score = (
+                sum(plugin_scores) / len(plugin_scores) if plugin_scores else 0
+            )
 
             self.results["performance_monitoring"] = {
                 "success": True,
@@ -404,7 +425,11 @@ class AxiomSystemDemo:
 
         try:
             swap_operations = [
-                {"operation": "Load new plugin version", "downtime": 0.0, "success": True},
+                {
+                    "operation": "Load new plugin version",
+                    "downtime": 0.0,
+                    "success": True,
+                },
                 {
                     "operation": "Update plugin configuration",
                     "downtime": 0.001,  # 1ms for config reload
@@ -430,7 +455,9 @@ class AxiomSystemDemo:
             }
 
             logger.info(f"✅ Hot-swap demonstration completed")
-            logger.info(f"   {successful_swaps}/{len(swap_operations)} operations successful")
+            logger.info(
+                f"   {successful_swaps}/{len(swap_operations)} operations successful"
+            )
             logger.info(f"   Total downtime: {total_downtime:.3f}s (target: <0.01s)")
 
         except Exception as e:
@@ -538,14 +565,20 @@ class AxiomSystemDemo:
                 f"   Success rate: {report['performance_analysis']['overall_success_rate']:.1%}"
             )
 
-            success_count = sum(1 for r in self.results.values() if r.get("success", False))
-            logger.info(f"   Successful demonstrations: {success_count}/{len(self.results)}")
+            success_count = sum(
+                1 for r in self.results.values() if r.get("success", False)
+            )
+            logger.info(
+                f"   Successful demonstrations: {success_count}/{len(self.results)}"
+            )
 
             logger.info("\n🏆 Key Achievements:")
             for achievement in report["performance_analysis"]["key_achievements"]:
                 logger.info(f"   ✅ {achievement}")
 
-            logger.info(f"\n📊 Report available at: {self.temp_dir}/demonstration_report.json")
+            logger.info(
+                f"\n📊 Report available at: {self.temp_dir}/demonstration_report.json"
+            )
 
             return report
 
@@ -579,7 +612,9 @@ def main():
         print(
             f"   Key Features Demonstrated: {len(report['performance_analysis']['key_achievements'])}"
         )
-        print(f"   Competitive Advantages: {len(report['competitive_advantages'])} platforms")
+        print(
+            f"   Competitive Advantages: {len(report['competitive_advantages'])} platforms"
+        )
 
         print("\n✨ AXIOM successfully demonstrates superior capabilities")
         print("   compared to Replit, Claude, and GPT platforms!")

@@ -138,7 +138,9 @@ class VisualConfigEditor:
     async def analyze_config_requirements(self, user_input: str) -> Dict[str, Any]:
         """分析配置需求"""
         try:
-            self.logger.info(f"Analyzing configuration requirements: {user_input[:100]}...")
+            self.logger.info(
+                f"Analyzing configuration requirements: {user_input[:100]}..."
+            )
 
             # 項目類型分析
             project_type = self._analyze_project_type(user_input)
@@ -179,7 +181,9 @@ class VisualConfigEditor:
             config_id = f"config_{datetime.now().strftime('%Y%m%d_%H%M%S')}"
 
             # 獲取項目組件
-            project_components = await self.component_library.get_components_for_type(project_type)
+            project_components = await self.component_library.get_components_for_type(
+                project_type
+            )
 
             # 創建配置選項
             config_options = await self._create_config_options(analysis, project_type)
@@ -211,16 +215,22 @@ class VisualConfigEditor:
             self.logger.error(f"Visual configurator creation failed: {e}")
             return {"success": False, "error": str(e)}
 
-    async def enable_live_preview(self, visual_config: Dict[str, Any]) -> Dict[str, Any]:
+    async def enable_live_preview(
+        self, visual_config: Dict[str, Any]
+    ) -> Dict[str, Any]:
         """啟用實時預覽"""
         try:
             self.logger.info("Enabling live preview...")
 
             # 創建預覽配置
-            preview_config = await self.preview_engine.create_preview_config(visual_config)
+            preview_config = await self.preview_engine.create_preview_config(
+                visual_config
+            )
 
             # 生成預覽HTML
-            preview_html = await self.preview_engine.generate_preview_html(visual_config)
+            preview_html = await self.preview_engine.generate_preview_html(
+                visual_config
+            )
 
             # 啟動實時更新機制
             live_update = await self.preview_engine.enable_live_updates(visual_config)
@@ -251,13 +261,17 @@ class VisualConfigEditor:
             self.logger.info(f"Creating template library for {project_type}")
 
             # 獲取預設模板
-            preset_templates = await self.template_manager.get_preset_templates(project_type)
+            preset_templates = await self.template_manager.get_preset_templates(
+                project_type
+            )
 
             # 獲取自定義模板
             custom_templates = await self.template_manager.get_custom_templates()
 
             # 創建模板分類
-            template_categories = await self._create_template_categories(preset_templates)
+            template_categories = await self._create_template_categories(
+                preset_templates
+            )
 
             # 生成模板預覽
             template_previews = await self._generate_template_previews(preset_templates)
@@ -295,7 +309,9 @@ class VisualConfigEditor:
             supported_formats = await self.import_export_handler.get_supported_formats()
 
             # 驗證配置
-            validation_config = await self.import_export_handler.create_validation_config()
+            validation_config = (
+                await self.import_export_handler.create_validation_config()
+            )
 
             return {
                 "success": True,
@@ -351,7 +367,8 @@ class VisualConfigEditor:
                 word in user_input_lower for word in ["security", "auth", "login"]
             ),
             "performance_configuration": any(
-                word in user_input_lower for word in ["performance", "speed", "optimize"]
+                word in user_input_lower
+                for word in ["performance", "speed", "optimize"]
             ),
             "integration_configuration": any(
                 word in user_input_lower for word in ["integration", "api", "connect"]
@@ -363,7 +380,8 @@ class VisualConfigEditor:
                 word in user_input_lower for word in ["layout", "structure", "arrange"]
             ),
             "workflow_configuration": any(
-                word in user_input_lower for word in ["workflow", "process", "automation"]
+                word in user_input_lower
+                for word in ["workflow", "process", "automation"]
             ),
         }
 
@@ -396,15 +414,25 @@ class VisualConfigEditor:
         user_input_lower = user_input.lower()
 
         theme_needs = {
-            "dark_mode": any(word in user_input_lower for word in ["dark", "night", "black"]),
-            "light_mode": any(word in user_input_lower for word in ["light", "white", "bright"]),
-            "custom_colors": any(word in user_input_lower for word in ["color", "theme", "custom"]),
-            "responsive": any(
-                word in user_input_lower for word in ["responsive", "mobile", "adaptive"]
+            "dark_mode": any(
+                word in user_input_lower for word in ["dark", "night", "black"]
             ),
-            "branding": any(word in user_input_lower for word in ["brand", "logo", "identity"]),
+            "light_mode": any(
+                word in user_input_lower for word in ["light", "white", "bright"]
+            ),
+            "custom_colors": any(
+                word in user_input_lower for word in ["color", "theme", "custom"]
+            ),
+            "responsive": any(
+                word in user_input_lower
+                for word in ["responsive", "mobile", "adaptive"]
+            ),
+            "branding": any(
+                word in user_input_lower for word in ["brand", "logo", "identity"]
+            ),
             "accessibility": any(
-                word in user_input_lower for word in ["accessibility", "a11y", "accessible"]
+                word in user_input_lower
+                for word in ["accessibility", "a11y", "accessible"]
             ),
         }
 
@@ -464,7 +492,12 @@ class VisualConfigEditor:
                         description="Main font family",
                         category=ConfigCategory.APPEARANCE,
                         validation_rules={
-                            "options": ["Arial", "Helvetica", "Times New Roman", "Georgia"]
+                            "options": [
+                                "Arial",
+                                "Helvetica",
+                                "Times New Roman",
+                                "Georgia",
+                            ]
                         },
                     ),
                 ]
@@ -481,7 +514,9 @@ class VisualConfigEditor:
                     default_value="SQLite",
                     description="Type of database to use",
                     category=ConfigCategory.FUNCTIONALITY,
-                    validation_rules={"options": ["SQLite", "MySQL", "PostgreSQL", "MongoDB"]},
+                    validation_rules={
+                        "options": ["SQLite", "MySQL", "PostgreSQL", "MongoDB"]
+                    },
                 )
             )
 
@@ -506,7 +541,11 @@ class VisualConfigEditor:
                 "tab_bar_height": 50,
             }
         else:
-            return {"layout_type": "flexible", "container_width": "1200px", "spacing_unit": "8px"}
+            return {
+                "layout_type": "flexible",
+                "container_width": "1200px",
+                "spacing_unit": "8px",
+            }
 
     async def _create_theme_config(self, analysis: Dict[str, Any]) -> Dict[str, Any]:
         """創建主題配置"""
@@ -530,7 +569,9 @@ class VisualConfigEditor:
             },
         }
 
-    async def _create_drag_drop_config(self, components: List[DragDropComponent]) -> Dict[str, Any]:
+    async def _create_drag_drop_config(
+        self, components: List[DragDropComponent]
+    ) -> Dict[str, Any]:
         """創建拖拽配置"""
         return {
             "drag_enabled": True,
@@ -539,7 +580,9 @@ class VisualConfigEditor:
                 "layout": [c for c in components if c.type == ComponentType.LAYOUT],
                 "form": [c for c in components if c.type == ComponentType.FORM],
                 "display": [c for c in components if c.type == ComponentType.DISPLAY],
-                "interaction": [c for c in components if c.type == ComponentType.INTERACTION],
+                "interaction": [
+                    c for c in components if c.type == ComponentType.INTERACTION
+                ],
             },
             "grid_snap": True,
             "grid_size": 8,
@@ -561,7 +604,9 @@ class VisualConfigEditor:
 
         return categories
 
-    async def _generate_template_previews(self, templates: List[ConfigTemplate]) -> Dict[str, str]:
+    async def _generate_template_previews(
+        self, templates: List[ConfigTemplate]
+    ) -> Dict[str, str]:
         """生成模板預覽"""
         previews = {}
 
@@ -581,7 +626,9 @@ class VisualConfigEditor:
 
         return previews
 
-    async def _create_template_search(self, templates: List[ConfigTemplate]) -> Dict[str, Any]:
+    async def _create_template_search(
+        self, templates: List[ConfigTemplate]
+    ) -> Dict[str, Any]:
         """創建模板搜索功能"""
         return {
             "search_fields": ["name", "description", "tags"],
@@ -669,7 +716,9 @@ class ComponentLibrary:
 
         return components
 
-    async def get_components_for_type(self, project_type: str) -> List[DragDropComponent]:
+    async def get_components_for_type(
+        self, project_type: str
+    ) -> List[DragDropComponent]:
         """根據項目類型獲取組件"""
         if project_type == "web":
             return [
@@ -687,7 +736,8 @@ class ComponentLibrary:
             return [
                 c
                 for c in self.components
-                if c.type in [ComponentType.LAYOUT, ComponentType.FORM, ComponentType.NAVIGATION]
+                if c.type
+                in [ComponentType.LAYOUT, ComponentType.FORM, ComponentType.NAVIGATION]
             ]
         else:
             return self.components
@@ -752,7 +802,11 @@ class TemplateManager:
 
     async def get_preset_templates(self, project_type: str) -> List[ConfigTemplate]:
         """獲取預設模板"""
-        return [t for t in self.templates if t.category == project_type or t.category == "web"]
+        return [
+            t
+            for t in self.templates
+            if t.category == project_type or t.category == "web"
+        ]
 
     async def get_custom_templates(self) -> List[ConfigTemplate]:
         """獲取自定義模板"""
@@ -770,7 +824,9 @@ class PreviewEngine:
         """初始化預覽引擎"""
         self.logger.info("Preview Engine initialized")
 
-    async def create_preview_config(self, visual_config: Dict[str, Any]) -> Dict[str, Any]:
+    async def create_preview_config(
+        self, visual_config: Dict[str, Any]
+    ) -> Dict[str, Any]:
         """創建預覽配置"""
         return {
             "auto_refresh": True,
@@ -850,11 +906,16 @@ class PreviewEngine:
         });
         """
 
-    async def enable_live_updates(self, visual_config: Dict[str, Any]) -> Dict[str, Any]:
+    async def enable_live_updates(
+        self, visual_config: Dict[str, Any]
+    ) -> Dict[str, Any]:
         """啟用實時更新"""
         return {
             "websocket_url": f"ws://localhost:8080/preview/{visual_config.get('config_id')}",
-            "update_events": ["config_change", "component_add", "component_remove"],
+            "update_events": [
+                "config_change",
+                "component_add",
+                "component_remove"],
             "debounce_ms": 300,
         }
 
@@ -892,10 +953,22 @@ class ImportExportHandler:
     async def get_supported_formats(self) -> List[Dict[str, Any]]:
         """獲取支持的格式"""
         return [
-            {"format": "json", "mime_type": "application/json", "description": "JSON format"},
+            {
+                "format": "json",
+                "mime_type": "application/json",
+                "description": "JSON format",
+            },
             {"format": "yaml", "mime_type": "text/yaml", "description": "YAML format"},
-            {"format": "xml", "mime_type": "application/xml", "description": "XML format"},
-            {"format": "zip", "mime_type": "application/zip", "description": "ZIP archive"},
+            {
+                "format": "xml",
+                "mime_type": "application/xml",
+                "description": "XML format",
+            },
+            {
+                "format": "zip",
+                "mime_type": "application/zip",
+                "description": "ZIP archive",
+            },
         ]
 
     async def create_validation_config(self) -> Dict[str, Any]:

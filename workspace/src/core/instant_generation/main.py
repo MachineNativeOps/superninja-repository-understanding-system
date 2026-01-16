@@ -88,7 +88,10 @@ class InstantGenerationSystem:
             )
 
             # 執行自我修復（如果需要）
-            if not workflow_result.get("success", False) and self.config["self_healing_enabled"]:
+            if (
+                not workflow_result.get("success", False)
+                and self.config["self_healing_enabled"]
+            ):
                 self.logger.info("Attempting self-healing...")
                 healing_result = await self.self_healing.heal_workflow(
                     workflow_result, user_input, context
@@ -97,13 +100,20 @@ class InstantGenerationSystem:
                     workflow_result = healing_result
 
             # 性能優化
-            if workflow_result.get("success", False) and self.config["optimization_enabled"]:
+            if (
+                workflow_result.get("success", False)
+                and self.config["optimization_enabled"]
+            ):
                 self.logger.info("Optimizing generated system...")
-                optimization_result = await self.optimizer.optimize_system(workflow_result)
+                optimization_result = await self.optimizer.optimize_system(
+                    workflow_result
+                )
                 workflow_result["optimization"] = optimization_result
 
             # 生成最終輸出
-            final_output = await self._generate_final_output(workflow_result, generation_id)
+            final_output = await self._generate_final_output(
+                workflow_result, generation_id
+            )
 
             # 更新統計
             execution_time = time.time() - start_time
@@ -120,13 +130,16 @@ class InstantGenerationSystem:
                 },
             )
 
-            self.logger.info(f"Generation {generation_id} completed in {execution_time:.2f}s")
+            self.logger.info(
+                f"Generation {generation_id} completed in {execution_time:.2f}s"
+            )
 
             return {
                 "success": True,
                 "generation_id": generation_id,
                 "execution_time_seconds": execution_time,
-                "target_time_met": execution_time <= (self.config["target_time_minutes"] * 60),
+                "target_time_met": execution_time
+                <= (self.config["target_time_minutes"] * 60),
                 "output": final_output,
                 "workflow_result": workflow_result,
             }
@@ -141,7 +154,10 @@ class InstantGenerationSystem:
                 "generation_id": generation_id,
                 "execution_time_seconds": execution_time,
                 "error": str(e),
-                "debug_info": {"config": self.config, "system_status": self.get_system_status()},
+                "debug_info": {
+                    "config": self.config,
+                    "system_status": self.get_system_status(),
+                },
             }
 
         finally:
@@ -172,22 +188,36 @@ class InstantGenerationSystem:
                 "complexity": analysis_result.get("output_data", {}).get(
                     "complexity_score", "medium"
                 ),
-                "generated_files": code_result.get("output_data", {}).get("generated_files", 0),
+                "generated_files": code_result.get("output_data", {}).get(
+                    "generated_files", 0
+                ),
             },
             "generated_components": {
-                "source_code": code_result.get("output_data", {}).get("code_components", {}),
-                "configuration": code_result.get("output_data", {}).get("config_files", {}),
-                "documentation": code_result.get("output_data", {}).get("documentation", {}),
+                "source_code": code_result.get("output_data", {}).get(
+                    "code_components", {}
+                ),
+                "configuration": code_result.get("output_data", {}).get(
+                    "config_files", {}
+                ),
+                "documentation": code_result.get("output_data", {}).get(
+                    "documentation", {}
+                ),
             },
             "deployment_info": {
-                "manifest": code_result.get("output_data", {}).get("deployment_manifest", {}),
+                "manifest": code_result.get("output_data", {}).get(
+                    "deployment_manifest", {}
+                ),
                 "deployment_status": deployment_result.get("output_data", {}).get(
                     "deployment_status", "ready"
                 ),
-                "access_urls": deployment_result.get("output_data", {}).get("access_urls", []),
+                "access_urls": deployment_result.get("output_data", {}).get(
+                    "access_urls", []
+                ),
             },
             "performance_metrics": {
-                "code_quality": code_result.get("output_data", {}).get("code_quality_score", 0),
+                "code_quality": code_result.get("output_data", {}).get(
+                    "code_quality_score", 0
+                ),
                 "optimization_applied": optimization_result.get("success", False),
                 "performance_improvements": optimization_result.get("improvements", []),
             },
@@ -226,7 +256,9 @@ class InstantGenerationSystem:
             "is_running": self.is_running,
             "start_time": self.start_time.isoformat() if self.start_time else None,
             "uptime_seconds": (
-                (datetime.now() - self.start_time).total_seconds() if self.start_time else 0
+                (datetime.now() - self.start_time).total_seconds()
+                if self.start_time
+                else 0
             ),
             "statistics": self.stats.copy(),
             "workflow_stats": self.workflow_engine.get_stats(),
@@ -273,7 +305,9 @@ class InstantGenerationSystem:
 
         return health_status
 
-    async def save_output(self, output: Dict[str, Any], output_dir: str = "output") -> str:
+    async def save_output(
+        self, output: Dict[str, Any], output_dir: str = "output"
+    ) -> str:
         """保存生成結果到文件"""
         output_path = Path(output_dir)
         output_path.mkdir(exist_ok=True)
@@ -290,12 +324,16 @@ class InstantGenerationSystem:
         if "output" in output and "generated_components" in output["output"]:
             code_dir = output_path / f"{generation_id}_{timestamp}_code"
             code_dir.mkdir(exist_ok=True)
-            await self._save_code_files(output["output"]["generated_components"], code_dir)
+            await self._save_code_files(
+                output["output"]["generated_components"], code_dir
+            )
 
         self.logger.info(f"Output saved to {main_file}")
         return str(main_file)
 
-    async def _save_code_files(self, components: Dict[str, Any], base_dir: Path) -> None:
+    async def _save_code_files(
+        self, components: Dict[str, Any], base_dir: Path
+    ) -> None:
         """保存代碼文件到目錄結構"""
         import os
 
@@ -330,7 +368,9 @@ def get_system(config: Dict[str, Any] = None) -> InstantGenerationSystem:
 # 便捷函數
 
 
-async def generate_system(user_input: str, context: Dict[str, Any] = None) -> Dict[str, Any]:
+async def generate_system(
+    user_input: str, context: Dict[str, Any] = None
+) -> Dict[str, Any]:
     """便捷函數：生成系統"""
     system = get_system()
     return await system.generate_system(user_input, context)

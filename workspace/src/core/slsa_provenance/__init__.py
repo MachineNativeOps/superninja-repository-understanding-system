@@ -17,7 +17,12 @@ Key Components:
 
 from .artifact_verifier import ArtifactMetadata, ArtifactVerifier, VerificationResult
 from .attestation_manager import Attestation, AttestationManager, AttestationType
-from .provenance_generator import BuildDefinition, Provenance, ProvenanceGenerator, SLSALevel
+from .provenance_generator import (
+    BuildDefinition,
+    Provenance,
+    ProvenanceGenerator,
+    SLSALevel,
+)
 from .signature_verifier import (
     SignatureResult,
     SignatureType,

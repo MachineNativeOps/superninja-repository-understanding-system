@@ -107,7 +107,9 @@ class AutoDiagnosisEngine:
     """
 
     def __init__(self):
-        self._diagnosis_rules: Dict[str, Callable[[DiagnosisContext], List[RootCause]]] = {}
+        self._diagnosis_rules: Dict[
+            str, Callable[[DiagnosisContext], List[RootCause]]
+        ] = {}
         self._component_dependencies: Dict[str, List[str]] = {}
         self._history: List[DiagnosisResult] = []
 
@@ -117,14 +119,23 @@ class AutoDiagnosisEngine:
         """Register a diagnosis rule"""
         self._diagnosis_rules[name] = rule
 
-    def set_component_dependencies(self, component: str, dependencies: List[str]) -> None:
+    def set_component_dependencies(
+        self, component: str, dependencies: List[str]
+    ) -> None:
         """Set dependencies for a component"""
         self._component_dependencies[component] = dependencies
 
     def _analyze_logs(self, logs: List[str]) -> List[str]:
         """Analyze logs for evidence"""
         evidence = []
-        error_keywords = ["error", "exception", "failed", "timeout", "refused", "unavailable"]
+        error_keywords = [
+            "error",
+            "exception",
+            "failed",
+            "timeout",
+            "refused",
+            "unavailable",
+        ]
 
         for log in logs:
             log_lower = log.lower()
@@ -154,12 +165,13 @@ class AutoDiagnosisEngine:
                                 confidence=RootCauseConfidence.MEDIUM,
                                 evidence=[f"{name} = {value:.1f}%"],
                                 related_metrics=[name],
-                            )
-                        )
+                            ))
 
         return causes
 
-    def _analyze_dependencies(self, component: str, context: DiagnosisContext) -> List[RootCause]:
+    def _analyze_dependencies(
+        self, component: str, context: DiagnosisContext
+    ) -> List[RootCause]:
         """Analyze component dependencies"""
         causes = []
         dependencies = self._component_dependencies.get(component, [])
@@ -192,7 +204,9 @@ class AutoDiagnosisEngine:
         start_time = time.time()
 
         result = DiagnosisResult(
-            anomaly_id=context.anomaly_id, status=DiagnosisStatus.IN_PROGRESS, context=context
+            anomaly_id=context.anomaly_id,
+            status=DiagnosisStatus.IN_PROGRESS,
+            context=context,
         )
 
         try:
@@ -226,7 +240,9 @@ class AutoDiagnosisEngine:
 
             # Analyze dependencies
             component = (
-                context.metric_name.split(".")[0] if "." in context.metric_name else "unknown"
+                context.metric_name.split(".")[0]
+                if "." in context.metric_name
+                else "unknown"
             )
             dep_causes = self._analyze_dependencies(component, context)
             root_causes.extend(dep_causes)
@@ -248,7 +264,9 @@ class AutoDiagnosisEngine:
                 top_cause = root_causes[0]
                 result.summary = f"Most likely cause: {top_cause.description} (confidence: {top_cause.confidence.value})"
             else:
-                result.summary = "No root cause identified. Further investigation needed."
+                result.summary = (
+                    "No root cause identified. Further investigation needed."
+                )
 
             # Generate recommendations
             result.recommendations = RecommendationGenerator().generate(result)
@@ -301,7 +319,11 @@ class RecommendationGenerator:
                 "Check database connections",
                 "Optimize database indexes",
             ],
-            "default": ["Review system logs", "Check recent changes", "Monitor the situation"],
+            "default": [
+                "Review system logs",
+                "Check recent changes",
+                "Monitor the situation",
+            ],
         }
 
     def generate(self, diagnosis: DiagnosisResult) -> List[str]:

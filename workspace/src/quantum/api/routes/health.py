@@ -52,7 +52,11 @@ async def readiness_check() -> Dict[str, str]:
         }
     except Exception as e:
         logger.error(f"Readiness check failed: {str(e)}")
-        return {"status": "not_ready", "timestamp": datetime.utcnow().isoformat(), "error": str(e)}
+        return {
+            "status": "not_ready",
+            "timestamp": datetime.utcnow().isoformat(),
+            "error": str(e),
+        }
 
 
 @router.get("/health/live")

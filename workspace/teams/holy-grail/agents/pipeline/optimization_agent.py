@@ -28,7 +28,12 @@ class OptimizationAgent(BaseAgent):
 
     def validate_input(self, input_data: Dict[str, Any]) -> bool:
         """驗證輸入數據格式"""
-        required_fields = ["deployment", "testing", "code_generation", "architecture_design"]
+        required_fields = [
+            "deployment",
+            "testing",
+            "code_generation",
+            "architecture_design",
+        ]
         return all(field in input_data for field in required_fields)
 
     async def process_task(self, task: AgentTask) -> AgentResult:
@@ -39,7 +44,9 @@ class OptimizationAgent(BaseAgent):
             # 提取相關數據
             deployment = task.input_data.get("deployment", {}).get("output_data", {})
             testing = task.input_data.get("testing", {}).get("output_data", {})
-            code_generation = task.input_data.get("code_generation", {}).get("output_data", {})
+            code_generation = task.input_data.get("code_generation", {}).get(
+                "output_data", {}
+            )
             architecture_design = task.input_data.get("architecture_design", {}).get(
                 "output_data", {}
             )
@@ -57,20 +64,24 @@ class OptimizationAgent(BaseAgent):
                     optimization_results[opt_type] = {"success": False, "error": str(e)}
 
             # 生成優化報告
-            optimization_report = await self._generate_optimization_report(optimization_results)
+            optimization_report = await self._generate_optimization_report(
+                optimization_results
+            )
 
             # 創建優化建議
-            optimization_recommendations = await self._create_optimization_recommendations(
-                optimization_results
+            optimization_recommendations = (
+                await self._create_optimization_recommendations(optimization_results)
             )
 
             # 生成持續優化計劃
-            continuous_optimization_plan = await self._create_continuous_optimization_plan(
-                optimization_results
+            continuous_optimization_plan = (
+                await self._create_continuous_optimization_plan(optimization_results)
             )
 
             # 計算整體改進指標
-            improvement_metrics = await self._calculate_improvement_metrics(optimization_results)
+            improvement_metrics = await self._calculate_improvement_metrics(
+                optimization_results
+            )
 
             end_time = datetime.now()
             execution_time = (end_time - start_time).total_seconds()
@@ -86,7 +97,11 @@ class OptimizationAgent(BaseAgent):
                     "continuous_optimization_plan": continuous_optimization_plan,
                     "improvement_metrics": improvement_metrics,
                     "optimizations_applied": len(
-                        [r for r in optimization_results.values() if r.get("success", False)]
+                        [
+                            r
+                            for r in optimization_results.values()
+                            if r.get("success", False)
+                        ]
                     ),
                     "expected_improvements": self._calculate_expected_improvements(
                         optimization_results
@@ -211,7 +226,9 @@ class OptimizationAgent(BaseAgent):
                 },
             },
             "security_improvements": {
-                "vulnerabilities_fixed": len([k for k, v in security_checks.items() if not v]),
+                "vulnerabilities_fixed": len(
+                    [k for k, v in security_checks.items() if not v]
+                ),
                 "security_score": "+25%",
                 "compliance_level": "Enhanced",
             },
@@ -285,9 +302,13 @@ class OptimizationAgent(BaseAgent):
             },
         }
 
-    async def _generate_optimization_report(self, results: Dict[str, Any]) -> Dict[str, Any]:
+    async def _generate_optimization_report(
+        self, results: Dict[str, Any]
+    ) -> Dict[str, Any]:
         """生成優化報告"""
-        successful_optimizations = [k for k, v in results.items() if v.get("success", False)]
+        successful_optimizations = [
+            k for k, v in results.items() if v.get("success", False)
+        ]
 
         return {
             "summary": {
@@ -348,7 +369,9 @@ class OptimizationAgent(BaseAgent):
 
         return recommendations
 
-    async def _create_continuous_optimization_plan(self, results: Dict[str, Any]) -> Dict[str, Any]:
+    async def _create_continuous_optimization_plan(
+        self, results: Dict[str, Any]
+    ) -> Dict[str, Any]:
         """創建持續優化計劃"""
         return {
             "daily": [
@@ -373,7 +396,9 @@ class OptimizationAgent(BaseAgent):
             ],
         }
 
-    async def _calculate_improvement_metrics(self, results: Dict[str, Any]) -> Dict[str, Any]:
+    async def _calculate_improvement_metrics(
+        self, results: Dict[str, Any]
+    ) -> Dict[str, Any]:
         """計算改進指標"""
         metrics = {
             "performance_improvement": 0,
@@ -390,7 +415,9 @@ class OptimizationAgent(BaseAgent):
                 if isinstance(improvements, dict):
                     for key, value in improvements.items():
                         if "performance" in key.lower() or "response" in key.lower():
-                            metrics["performance_improvement"] += abs(int(value.replace("%", "")))
+                            metrics["performance_improvement"] += abs(
+                                int(value.replace("%", ""))
+                            )
                         elif "cost" in key.lower():
                             metrics["cost_savings"] += abs(int(value.replace("%", "")))
                         elif "security" in key.lower():
@@ -398,11 +425,15 @@ class OptimizationAgent(BaseAgent):
                                 int(value.replace("%", ""))
                             )
                         elif "scalability" in key.lower():
-                            metrics["scalability_increase"] += abs(int(value.replace("%", "")))
+                            metrics["scalability_increase"] += abs(
+                                int(value.replace("%", ""))
+                            )
 
         return metrics
 
-    def _calculate_expected_improvements(self, results: Dict[str, Any]) -> Dict[str, str]:
+    def _calculate_expected_improvements(
+        self, results: Dict[str, Any]
+    ) -> Dict[str, str]:
         """計算預期改進"""
         return {
             "performance": "30-50% faster response times",

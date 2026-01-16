@@ -73,8 +73,12 @@ def main():
         result["errors"].append(str(e))
 
     graph = {"nodes": list(mods.keys()), "edges": edges}
-    out_graph.write_text(json.dumps(graph, ensure_ascii=False, indent=2), encoding="utf-8")
-    out_report.write_text(json.dumps(result, ensure_ascii=False, indent=2), encoding="utf-8")
+    out_graph.write_text(
+        json.dumps(graph, ensure_ascii=False, indent=2), encoding="utf-8"
+    )
+    out_report.write_text(
+        json.dumps(result, ensure_ascii=False, indent=2), encoding="utf-8"
+    )
     print(json.dumps(result, ensure_ascii=False, indent=2))
     return 0 if result["result"] == "pass" else 2
 

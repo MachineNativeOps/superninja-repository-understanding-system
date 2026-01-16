@@ -33,7 +33,9 @@ class TypeScriptIsland(BaseIsland):
 
     def __init__(self) -> None:
         super().__init__(
-            name="⚡ TypeScript 全棧開發島", island_id="typescript", language="typescript"
+            name="⚡ TypeScript 全棧開發島",
+            island_id="typescript",
+            language="typescript",
         )
         self.capabilities = [
             "web_dashboard",
@@ -92,7 +94,9 @@ class TypeScriptIsland(BaseIsland):
     def _check_node(self) -> bool:
         """檢查 Node.js"""
         try:
-            result = subprocess.run(["node", "--version"], capture_output=True, timeout=5)
+            result = subprocess.run(
+                ["node", "--version"], capture_output=True, timeout=5
+            )
             return result.returncode == 0
         except (FileNotFoundError, subprocess.TimeoutExpired):
             return False
@@ -114,7 +118,9 @@ class TypeScriptIsland(BaseIsland):
                 tools[tool_name] = {
                     "available": result.returncode == 0,
                     "version": (
-                        result.stdout.strip().split("\n")[0] if result.returncode == 0 else None
+                        result.stdout.strip().split("\n")[0]
+                        if result.returncode == 0
+                        else None
                     ),
                 }
             except (FileNotFoundError, subprocess.TimeoutExpired):
@@ -144,5 +150,9 @@ class TypeScriptIsland(BaseIsland):
             print(f"    {status} {tool}: {version}")
 
         print("\n  專案:")
-        print(f"    package.json: {'✅' if result['project_info']['has_package_json'] else '❌'}")
-        print(f"    tsconfig.json: {'✅' if result['project_info']['has_tsconfig'] else '❌'}")
+        print(
+            f"    package.json: {'✅' if result['project_info']['has_package_json'] else '❌'}"
+        )
+        print(
+            f"    tsconfig.json: {'✅' if result['project_info']['has_tsconfig'] else '❌'}"
+        )

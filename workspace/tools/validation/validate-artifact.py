@@ -31,7 +31,9 @@ import yaml
 class ValidationResult:
     """Validation result container with enhanced details"""
 
-    def __init__(self, level: str, status: str, message: str, details: Optional[Dict] = None):
+    def __init__(
+        self, level: str, status: str, message: str, details: Optional[Dict] = None
+    ):
         self.level = level
         self.status = status  # pass, fail, warning
         self.message = message
@@ -53,7 +55,10 @@ class ArtifactValidator:
     """Artifact validator with complete 5-level validation pipeline"""
 
     def __init__(
-        self, artifact_paths: List[str], validation_level: str = "all", strict: bool = False
+        self,
+        artifact_paths: List[str],
+        validation_level: str = "all",
+        strict: bool = False,
     ):
         self.artifact_paths = artifact_paths
         self.validation_level = validation_level
@@ -182,7 +187,9 @@ class ArtifactValidator:
         warnings = [r for r in self.results if r.status == "warning"]
 
         if failures:
-            print(f"\n❌ Validation FAILED: {len(failures)} error(s), {len(warnings)} warning(s)")
+            print(
+                f"\n❌ Validation FAILED: {len(failures)} error(s), {len(warnings)} warning(s)"
+            )
             for failure in failures:
                 print(f"   - [{failure.level}] {failure.message}")
                 if failure.details.get("path"):
@@ -233,8 +240,7 @@ class ArtifactValidator:
                             "missing_keys": missing_keys,
                             "expected": required_keys,
                         },
-                    )
-                )
+                    ))
                 continue
 
             # Validate apiVersion format
@@ -250,8 +256,7 @@ class ArtifactValidator:
                             "value": api_version,
                             "expected_pattern": "domain/vN (e.g., machinenativeops.io/v1)",
                         },
-                    )
-                )
+                    ))
 
             # Validate metadata structure
             metadata = artifact.get("metadata", {})
@@ -261,7 +266,10 @@ class ArtifactValidator:
                         level="structural",
                         status="fail",
                         message="metadata must be an object",
-                        details={"path": artifact_path, "type": type(metadata).__name__},
+                        details={
+                            "path": artifact_path,
+                            "type": type(metadata).__name__,
+                        },
                     )
                 )
                 continue
@@ -281,8 +289,7 @@ class ArtifactValidator:
                             "missing_fields": missing_metadata,
                             "section": "metadata",
                         },
-                    )
-                )
+                    ))
 
             # Validate spec structure
             spec = artifact.get("spec", {})
@@ -302,7 +309,8 @@ class ArtifactValidator:
 
             # If all checks passed for this artifact
             if not any(
-                r.status == "fail" and r.details.get("path") == artifact_path for r in self.results
+                r.status == "fail" and r.details.get("path") == artifact_path
+                for r in self.results
             ):
                 self.results.append(
                     ValidationResult(
@@ -385,7 +393,9 @@ class ArtifactValidator:
                     level="semantic",
                     status="warning",
                     message="Semantic root not loaded, skipping semantic validation",
-                    details={"note": "Place semantic root at root/.root.semantic-root.yaml"},
+                    details={
+                        "note": "Place semantic root at root/.root.semantic-root.yaml"
+                    },
                 )
             )
             print("     ⚠️  Semantic root not found, skipping")
@@ -424,11 +434,12 @@ class ArtifactValidator:
                             "path": artifact_path,
                             "recommendation": "Add machinenativeops.io/semantic-root annotation",
                         },
-                    )
-                )
+                    ))
             else:
                 # Validate version compatibility
-                semantic_root_version = self.semantic_root.get("metadata", {}).get("version", "")
+                semantic_root_version = self.semantic_root.get("metadata", {}).get(
+                    "version", ""
+                )
                 if semantic_root_ref != semantic_root_version:
                     self.results.append(
                         ValidationResult(
@@ -445,7 +456,9 @@ class ArtifactValidator:
 
             # Validate concepts if present
             spec = artifact.get("spec", {})
-            artifact_concepts = spec.get("generation", {}).get("forward", {}).get("concepts", [])
+            artifact_concepts = (
+                spec.get("generation", {}).get("forward", {}).get("concepts", [])
+            )
 
             if artifact_concepts:
                 for concept in artifact_concepts:
@@ -454,7 +467,10 @@ class ArtifactValidator:
 
                     if extends:
                         # Check if parent concept exists
-                        if extends not in base_concepts and extends not in derived_concepts:
+                        if (
+                            extends not in base_concepts
+                            and extends not in derived_concepts
+                        ):
                             self.results.append(
                                 ValidationResult(
                                     level="semantic",
@@ -464,10 +480,10 @@ class ArtifactValidator:
                                         "path": artifact_path,
                                         "concept": concept_name,
                                         "parent": extends,
-                                        "available_base": list(base_concepts.keys()),
+                                        "available_base": list(
+                                            base_concepts.keys()),
                                     },
-                                )
-                            )
+                                ))
                         else:
                             # Concept traceability is valid
                             self.results.append(
@@ -480,12 +496,13 @@ class ArtifactValidator:
                                         "concept": concept_name,
                                         "parent": extends,
                                     },
-                                )
-                            )
+                                ))
 
                     # Validate concept definition completeness
                     required_concept_fields = ["name", "definition"]
-                    missing_fields = [f for f in required_concept_fields if not concept.get(f)]
+                    missing_fields = [
+                        f for f in required_concept_fields if not concept.get(f)
+                    ]
 
                     if missing_fields:
                         self.results.append(
@@ -498,8 +515,7 @@ class ArtifactValidator:
                                     "concept": concept_name,
                                     "missing_fields": missing_fields,
                                 },
-                            )
-                        )
+                            ))
 
             # Check if artifact passed semantic validation
             artifact_failures = [
@@ -611,8 +627,7 @@ class ArtifactValidator:
                                 "version": dep_version,
                                 "expected": "Semantic version or constraint (e.g., '1.2.3', '>=1.0.0')",
                             },
-                        )
-                    )
+                        ))
 
         # Detect circular dependencies using DFS
         if dependency_graph:
@@ -625,9 +640,10 @@ class ArtifactValidator:
                             level="dependency",
                             status="fail",
                             message=f"Circular dependency detected: {' -> '.join(cycle)}",
-                            details={"cycle": cycle, "cycle_length": len(cycle)},
-                        )
-                    )
+                            details={
+                                "cycle": cycle,
+                                "cycle_length": len(cycle)},
+                        ))
             else:
                 self.results.append(
                     ValidationResult(
@@ -637,11 +653,9 @@ class ArtifactValidator:
                         details={
                             "artifacts_checked": len(dependency_graph),
                             "total_dependencies": sum(
-                                len(deps) for deps in dependency_graph.values()
-                            ),
+                                len(deps) for deps in dependency_graph.values()),
                         },
-                    )
-                )
+                    ))
 
         print("     ✅ Dependency validation complete")
 
@@ -660,7 +674,9 @@ class ArtifactValidator:
         ]
         return any(re.match(pattern, version.replace(" ", "")) for pattern in patterns)
 
-    def _detect_circular_dependencies(self, graph: Dict[str, List[str]]) -> List[List[str]]:
+    def _detect_circular_dependencies(
+        self, graph: Dict[str, List[str]]
+    ) -> List[List[str]]:
         """Detect circular dependencies using DFS-based cycle detection"""
         cycles = []
         visited = set()
@@ -711,8 +727,7 @@ class ArtifactValidator:
                     status="warning",
                     message="Semantic root not loaded, using default naming conventions",
                     details={},
-                )
-            )
+                ))
 
         # Get naming conventions from semantic root
         naming_conventions = {}
@@ -740,12 +755,13 @@ class ArtifactValidator:
                                 "path": artifact_path,
                                 "name": artifact_name,
                                 "pattern": name_pattern,
-                                "examples": naming_conventions.get("artifact_naming", {}).get(
-                                    "examples", []
-                                ),
+                                "examples": naming_conventions.get(
+                                    "artifact_naming",
+                                    {}).get(
+                                    "examples",
+                                    []),
                             },
-                        )
-                    )
+                        ))
 
             # Validate version convention
             version = metadata.get("version", "")
@@ -763,9 +779,9 @@ class ArtifactValidator:
                                 "path": artifact_path,
                                 "version": version,
                                 "pattern": version_pattern,
-                                "examples": naming_conventions.get("version_naming", {}).get(
-                                    "examples", []
-                                ),
+                                "examples": naming_conventions.get(
+                                    "version_naming", {}
+                                ).get("examples", []),
                             },
                         )
                     )
@@ -787,8 +803,7 @@ class ArtifactValidator:
                                 "namespace": namespace,
                                 "pattern": namespace_pattern,
                             },
-                        )
-                    )
+                        ))
 
             # Check documentation completeness
             spec = artifact.get("spec", {})
@@ -804,12 +819,13 @@ class ArtifactValidator:
                             "path": artifact_path,
                             "recommendation": "Add spec.documentation with overview and usage examples",
                         },
-                    )
-                )
+                    ))
             else:
                 # Check required documentation fields
                 required_doc_fields = ["overview"]
-                missing_doc = [f for f in required_doc_fields if not documentation.get(f)]
+                missing_doc = [
+                    f for f in required_doc_fields if not documentation.get(f)
+                ]
 
                 if missing_doc:
                     self.results.append(
@@ -817,9 +833,11 @@ class ArtifactValidator:
                             level="governance",
                             status="warning",
                             message=f"Documentation missing recommended fields: {', '.join(missing_doc)}",
-                            details={"path": artifact_path, "missing_fields": missing_doc},
-                        )
-                    )
+                            details={
+                                "path": artifact_path,
+                                "missing_fields": missing_doc,
+                            },
+                        ))
 
             # Check attestation configuration
             attestation = spec.get("attestation", {})
@@ -915,7 +933,9 @@ class ArtifactValidator:
 
             if not all_closures_passed:
                 failed_closures = [
-                    level for level, status in closure_status.items() if status == "fail"
+                    level
+                    for level, status in closure_status.items()
+                    if status == "fail"
                 ]
 
                 self.results.append(
@@ -925,14 +945,17 @@ class ArtifactValidator:
                         message=f"Closure validation failed: {', '.join(failed_closures)} closure not achieved",
                         details={
                             "path": artifact_path,
-                            "dependency_closure": "pass" if dependency_closure_passed else "fail",
-                            "semantic_closure": "pass" if semantic_closure_passed else "fail",
-                            "governance_closure": "pass" if governance_closure_passed else "fail",
-                            "structural_closure": "pass" if structural_closure_passed else "fail",
+                            "dependency_closure": (
+                                "pass" if dependency_closure_passed else "fail"),
+                            "semantic_closure": (
+                                "pass" if semantic_closure_passed else "fail"),
+                            "governance_closure": (
+                                "pass" if governance_closure_passed else "fail"),
+                            "structural_closure": (
+                                "pass" if structural_closure_passed else "fail"),
                             "failed_levels": failed_closures,
                         },
-                    )
-                )
+                    ))
             else:
                 # Check bi-directional reconciliation
                 if generation and not has_reconciliation:
@@ -945,8 +968,7 @@ class ArtifactValidator:
                                 "path": artifact_path,
                                 "recommendation": "Add spec.generation.backward.reconciliation",
                             },
-                        )
-                    )
+                        ))
 
                 self.results.append(
                     ValidationResult(
@@ -1004,7 +1026,9 @@ class ArtifactValidator:
                 # Detailed validation results by level
                 "validation_results": {
                     "structural": {
-                        "status": self._get_level_status(results_by_level.get("structural", [])),
+                        "status": self._get_level_status(
+                            results_by_level.get("structural", [])
+                        ),
                         "checks": len(results_by_level.get("structural", [])),
                         "passed": len(
                             [
@@ -1027,16 +1051,28 @@ class ArtifactValidator:
                                 if r.status == "warning"
                             ]
                         ),
-                        "details": [r.to_dict() for r in results_by_level.get("structural", [])],
+                        "details": [
+                            r.to_dict() for r in results_by_level.get("structural", [])
+                        ],
                     },
                     "semantic": {
-                        "status": self._get_level_status(results_by_level.get("semantic", [])),
+                        "status": self._get_level_status(
+                            results_by_level.get("semantic", [])
+                        ),
                         "checks": len(results_by_level.get("semantic", [])),
                         "passed": len(
-                            [r for r in results_by_level.get("semantic", []) if r.status == "pass"]
+                            [
+                                r
+                                for r in results_by_level.get("semantic", [])
+                                if r.status == "pass"
+                            ]
                         ),
                         "failed": len(
-                            [r for r in results_by_level.get("semantic", []) if r.status == "fail"]
+                            [
+                                r
+                                for r in results_by_level.get("semantic", [])
+                                if r.status == "fail"
+                            ]
                         ),
                         "warnings": len(
                             [
@@ -1045,10 +1081,14 @@ class ArtifactValidator:
                                 if r.status == "warning"
                             ]
                         ),
-                        "details": [r.to_dict() for r in results_by_level.get("semantic", [])],
+                        "details": [
+                            r.to_dict() for r in results_by_level.get("semantic", [])
+                        ],
                     },
                     "dependency": {
-                        "status": self._get_level_status(results_by_level.get("dependency", [])),
+                        "status": self._get_level_status(
+                            results_by_level.get("dependency", [])
+                        ),
                         "checks": len(results_by_level.get("dependency", [])),
                         "passed": len(
                             [
@@ -1071,10 +1111,14 @@ class ArtifactValidator:
                                 if r.status == "warning"
                             ]
                         ),
-                        "details": [r.to_dict() for r in results_by_level.get("dependency", [])],
+                        "details": [
+                            r.to_dict() for r in results_by_level.get("dependency", [])
+                        ],
                     },
                     "governance": {
-                        "status": self._get_level_status(results_by_level.get("governance", [])),
+                        "status": self._get_level_status(
+                            results_by_level.get("governance", [])
+                        ),
                         "checks": len(results_by_level.get("governance", [])),
                         "passed": len(
                             [
@@ -1097,16 +1141,28 @@ class ArtifactValidator:
                                 if r.status == "warning"
                             ]
                         ),
-                        "details": [r.to_dict() for r in results_by_level.get("governance", [])],
+                        "details": [
+                            r.to_dict() for r in results_by_level.get("governance", [])
+                        ],
                     },
                     "closure": {
-                        "status": self._get_level_status(results_by_level.get("closure", [])),
+                        "status": self._get_level_status(
+                            results_by_level.get("closure", [])
+                        ),
                         "checks": len(results_by_level.get("closure", [])),
                         "passed": len(
-                            [r for r in results_by_level.get("closure", []) if r.status == "pass"]
+                            [
+                                r
+                                for r in results_by_level.get("closure", [])
+                                if r.status == "pass"
+                            ]
                         ),
                         "failed": len(
-                            [r for r in results_by_level.get("closure", []) if r.status == "fail"]
+                            [
+                                r
+                                for r in results_by_level.get("closure", [])
+                                if r.status == "fail"
+                            ]
                         ),
                         "warnings": len(
                             [
@@ -1115,7 +1171,9 @@ class ArtifactValidator:
                                 if r.status == "warning"
                             ]
                         ),
-                        "details": [r.to_dict() for r in results_by_level.get("closure", [])],
+                        "details": [
+                            r.to_dict() for r in results_by_level.get("closure", [])
+                        ],
                     },
                 },
                 # Governance compliance summary
@@ -1146,11 +1204,17 @@ class ArtifactValidator:
                 "warnings": len([r for r in self.results if r.status == "warning"]),
                 # Closure status
                 "closure_achieved": overall_status == "passed",
-                "dependency_closure": self._get_level_status(results_by_level.get("dependency", []))
+                "dependency_closure": self._get_level_status(
+                    results_by_level.get("dependency", [])
+                )
                 == "pass",
-                "semantic_closure": self._get_level_status(results_by_level.get("semantic", []))
+                "semantic_closure": self._get_level_status(
+                    results_by_level.get("semantic", [])
+                )
                 == "pass",
-                "governance_closure": self._get_level_status(results_by_level.get("governance", []))
+                "governance_closure": self._get_level_status(
+                    results_by_level.get("governance", [])
+                )
                 == "pass",
             },
         }
@@ -1162,7 +1226,11 @@ class ArtifactValidator:
 
             with open(output_file, "w") as f:
                 yaml.dump(
-                    attestation, f, default_flow_style=False, allow_unicode=True, sort_keys=False
+                    attestation,
+                    f,
+                    default_flow_style=False,
+                    allow_unicode=True,
+                    sort_keys=False,
                 )
             print(f"📜 Attestation saved to: {output_path}")
 
@@ -1210,17 +1278,30 @@ Examples:
 
     parser.add_argument(
         "--level",
-        choices=["structural", "semantic", "dependency", "governance", "closure", "all"],
+        choices=[
+            "structural",
+            "semantic",
+            "dependency",
+            "governance",
+            "closure",
+            "all",
+        ],
         default="all",
         help="Validation level to run (default: all)",
     )
 
-    parser.add_argument("artifacts", nargs="*", help="Artifact files to validate (YAML format)")
-
-    parser.add_argument("--attestation", help="Path to save attestation bundle (YAML format)")
+    parser.add_argument(
+        "artifacts", nargs="*", help="Artifact files to validate (YAML format)"
+    )
 
     parser.add_argument(
-        "--strict", action="store_true", help="Fail on warnings (treat warnings as failures)"
+        "--attestation", help="Path to save attestation bundle (YAML format)"
+    )
+
+    parser.add_argument(
+        "--strict",
+        action="store_true",
+        help="Fail on warnings (treat warnings as failures)",
     )
 
     parser.add_argument("--version", action="version", version="%(prog)s 2.0.0")

@@ -65,7 +65,9 @@ class Phase1Validator:
 
         # Check directory exists
         if not self.deliverables_path.exists():
-            self.errors.append(f"Deliverables directory not found: {self.deliverables_path}")
+            self.errors.append(
+                f"Deliverables directory not found: {self.deliverables_path}"
+            )
             return False, self._get_report()
 
         # Validate each deliverable
@@ -188,11 +190,17 @@ class Phase1Validator:
 
 
 def main():
-    parser = argparse.ArgumentParser(description="Validate Phase 1 (Deconstruction) deliverables")
-    parser.add_argument(
-        "--deliverables-path", required=True, help="Path to Phase 1 deliverables directory"
+    parser = argparse.ArgumentParser(
+        description="Validate Phase 1 (Deconstruction) deliverables"
     )
-    parser.add_argument("--output", help="Output validation report to file (JSON format)")
+    parser.add_argument(
+        "--deliverables-path",
+        required=True,
+        help="Path to Phase 1 deliverables directory",
+    )
+    parser.add_argument(
+        "--output", help="Output validation report to file (JSON format)"
+    )
 
     args = parser.parse_args()
 

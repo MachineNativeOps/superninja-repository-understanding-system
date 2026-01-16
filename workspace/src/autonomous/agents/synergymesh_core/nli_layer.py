@@ -145,7 +145,9 @@ class NaturalLanguageInteractionLayer:
         # Register default handlers
         self._register_default_handlers()
 
-        logger.info("NaturalLanguageInteractionLayer initialized - 自然語言交互層已初始化")
+        logger.info(
+            "NaturalLanguageInteractionLayer initialized - 自然語言交互層已初始化"
+        )
 
     def _register_default_handlers(self) -> None:
         """Register default interaction handlers"""
@@ -220,7 +222,11 @@ class NaturalLanguageInteractionLayer:
         self.stats["mode_usage"][InteractionMode.TEXT.value] += 1
 
         # Detect language
-        language = self._detect_language(text) if context.language == "auto" else context.language
+        language = (
+            self._detect_language(text)
+            if context.language == "auto"
+            else context.language
+        )
 
         # Analyze intent
         intent, confidence = self._analyze_intent(text, language)
@@ -289,7 +295,16 @@ class NaturalLanguageInteractionLayer:
             return UserIntent.QUERY, 0.8
 
         # Command intent (default for action requests)
-        command_keywords = ["create", "migrate", "deploy", "sync", "建立", "遷移", "部署", "同步"]
+        command_keywords = [
+            "create",
+            "migrate",
+            "deploy",
+            "sync",
+            "建立",
+            "遷移",
+            "部署",
+            "同步",
+        ]
         if any(kw in text_lower for kw in command_keywords):
             return UserIntent.COMMAND, 0.85
 
@@ -323,7 +338,9 @@ class NaturalLanguageInteractionLayer:
             response_text = templates["help"].format(suggestions=", ".join(suggestions))
 
         elif intent == UserIntent.CANCEL:
-            response_text = "已取消操作。" if language == "zh" else "Operation cancelled."
+            response_text = (
+                "已取消操作。" if language == "zh" else "Operation cancelled."
+            )
 
         elif intent == UserIntent.COMMAND:
             # Extract action from text
@@ -337,7 +354,9 @@ class NaturalLanguageInteractionLayer:
             ]
 
         elif intent == UserIntent.QUERY:
-            response_text = "正在查詢相關信息..." if language == "zh" else "Querying information..."
+            response_text = (
+                "正在查詢相關信息..." if language == "zh" else "Querying information..."
+            )
 
         else:
             response_text = templates["greeting"]
@@ -462,7 +481,9 @@ class NaturalLanguageInteractionLayer:
             for comp in self.visual_components.values()
         ]
 
-    def create_visual_workflow(self, name: str, components: List[Dict[str, Any]]) -> Dict[str, Any]:
+    def create_visual_workflow(
+        self, name: str, components: List[Dict[str, Any]]
+    ) -> Dict[str, Any]:
         """
         Create a workflow from visual components
 

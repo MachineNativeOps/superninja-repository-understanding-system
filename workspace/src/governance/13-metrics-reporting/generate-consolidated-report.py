@@ -25,7 +25,9 @@ class ConsolidatedReportGenerator:
 
     def load_governance_report(self):
         """Load language governance report"""
-        report_path = self.results_dir / "language-governance-report" / "governance-report.json"
+        report_path = (
+            self.results_dir / "language-governance-report" / "governance-report.json"
+        )
         if report_path.exists():
             with open(report_path, encoding="utf-8") as f:
                 self.governance_data = json.load(f)
@@ -46,7 +48,9 @@ class ConsolidatedReportGenerator:
                         data = json.load(f)
                         self.codeql_data.append(
                             {
-                                "language": codeql_dir.name.replace("codeql-results-", ""),
+                                "language": codeql_dir.name.replace(
+                                    "codeql-results-", ""
+                                ),
                                 "data": data,
                             }
                         )
@@ -71,7 +75,9 @@ class ConsolidatedReportGenerator:
         # Header
         lines.append("# 🏝️ Unmanned Island Consolidated Security Report")
         lines.append("")
-        lines.append(f"**Generated:** {datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S UTC')}")
+        lines.append(
+            f"**Generated:** {datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S UTC')}"
+        )
         lines.append("")
         lines.append("---")
         lines.append("")
@@ -113,8 +119,12 @@ class ConsolidatedReportGenerator:
         if self.governance_data:
             lines.append("## 1. Language Stack Governance")
             lines.append("")
-            lines.append(f"**Files Scanned:** {self.governance_data.get('total_files', 0)}")
-            lines.append(f"**Violations:** {len(self.governance_data.get('violations', []))}")
+            lines.append(
+                f"**Files Scanned:** {self.governance_data.get('total_files', 0)}"
+            )
+            lines.append(
+                f"**Violations:** {len(self.governance_data.get('violations', []))}"
+            )
             lines.append("")
 
             violations = self.governance_data.get("violations", [])
@@ -125,7 +135,9 @@ class ConsolidatedReportGenerator:
 
                 for severity in ["CRITICAL", "ERROR", "WARNING"]:
                     if severity in by_severity:
-                        lines.append(f"### {severity} Issues ({len(by_severity[severity])})")
+                        lines.append(
+                            f"### {severity} Issues ({len(by_severity[severity])})"
+                        )
                         lines.append("")
                         for v in by_severity[severity][:10]:  # Top 10
                             lines.append(f"- **{v['message']}**")
@@ -137,7 +149,9 @@ class ConsolidatedReportGenerator:
                             lines.append("")
 
                         if len(by_severity[severity]) > 10:
-                            lines.append(f"*... and {len(by_severity[severity]) - 10} more*")
+                            lines.append(
+                                f"*... and {len(by_severity[severity]) - 10} more*"
+                            )
                             lines.append("")
 
             lines.append("---")
@@ -147,7 +161,9 @@ class ConsolidatedReportGenerator:
         if self.codeql_data:
             lines.append("## 2. CodeQL Analysis")
             lines.append("")
-            lines.append("Multi-language security analysis using GitHub's CodeQL engine.")
+            lines.append(
+                "Multi-language security analysis using GitHub's CodeQL engine."
+            )
             lines.append("")
 
             for codeql in self.codeql_data:
@@ -166,7 +182,9 @@ class ConsolidatedReportGenerator:
                             lines.append("- **Sample Issues:**")
                             for result in results[:5]:  # Top 5
                                 rule_id = result.get("ruleId", "Unknown")
-                                message = result.get("message", {}).get("text", "No description")
+                                message = result.get("message", {}).get(
+                                    "text", "No description"
+                                )
                                 lines.append(f"  - `{rule_id}`: {message}")
                             lines.append("")
                 except Exception as e:
@@ -196,7 +214,9 @@ class ConsolidatedReportGenerator:
                         lines.append("**Sample Issues:**")
                         for result in results[:10]:  # Top 10
                             rule_id = result.get("ruleId", "Unknown")
-                            message = result.get("message", {}).get("text", "No description")
+                            message = result.get("message", {}).get(
+                                "text", "No description"
+                            )
                             lines.append(f"- `{rule_id}`: {message}")
                         lines.append("")
             except Exception as e:
@@ -242,8 +262,12 @@ class ConsolidatedReportGenerator:
         lines.append("")
         lines.append("## Resources")
         lines.append("")
-        lines.append("- [Language Stack Documentation](docs/architecture/language-stack.md)")
-        lines.append("- [Language Governance Policy](docs/architecture/language-governance.md)")
+        lines.append(
+            "- [Language Stack Documentation](docs/architecture/language-stack.md)"
+        )
+        lines.append(
+            "- [Language Governance Policy](docs/architecture/language-governance.md)"
+        )
         lines.append("- [Language Policy Configuration](config/language-policy.yaml)")
         lines.append("")
         lines.append("*Report generated by Unmanned Island CI/CD System*")

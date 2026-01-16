@@ -559,21 +559,33 @@ user = db.users.find_first(where={'email': email})
         """Get a specific best practice by ID."""
         return self.best_practices.get(practice_id)
 
-    def get_best_practices_for_category(self, category: KnowledgeCategory) -> list[BestPractice]:
+    def get_best_practices_for_category(
+        self, category: KnowledgeCategory
+    ) -> list[BestPractice]:
         """Get all best practices for a category."""
         return [
-            practice for practice in self.best_practices.values() if practice.category == category
+            practice
+            for practice in self.best_practices.values()
+            if practice.category == category
         ]
 
     def get_anti_pattern(self, pattern_id: str) -> AntiPattern | None:
         """Get a specific anti-pattern by ID."""
         return self.anti_patterns.get(pattern_id)
 
-    def get_anti_patterns_for_category(self, category: KnowledgeCategory) -> list[AntiPattern]:
+    def get_anti_patterns_for_category(
+        self, category: KnowledgeCategory
+    ) -> list[AntiPattern]:
         """Get all anti-patterns for a category."""
-        return [pattern for pattern in self.anti_patterns.values() if pattern.category == category]
+        return [
+            pattern
+            for pattern in self.anti_patterns.values()
+            if pattern.category == category
+        ]
 
-    def get_domain_knowledge(self, category: KnowledgeCategory) -> DomainKnowledge | None:
+    def get_domain_knowledge(
+        self, category: KnowledgeCategory
+    ) -> DomainKnowledge | None:
         """Get complete domain knowledge."""
         return self.domains.get(category)
 
@@ -605,7 +617,9 @@ user = db.users.find_first(where={'email': email})
         if pattern.category in self.domains:
             self.domains[pattern.category].anti_patterns[pattern.id] = pattern
 
-    def get_relevant_knowledge(self, context: str, max_results: int = 5) -> dict[str, Any]:
+    def get_relevant_knowledge(
+        self, context: str, max_results: int = 5
+    ) -> dict[str, Any]:
         """
         Get relevant knowledge based on context.
 
@@ -630,7 +644,9 @@ user = db.users.find_first(where={'email': email})
 
         relevant["concepts"] = [
             c
-            for c, _ in sorted(relevant["concepts"], key=lambda x: x[1], reverse=True)[:max_results]
+            for c, _ in sorted(relevant["concepts"], key=lambda x: x[1], reverse=True)[
+                :max_results
+            ]
         ]
 
         # Find relevant best practices
@@ -643,9 +659,9 @@ user = db.users.find_first(where={'email': email})
 
         relevant["best_practices"] = [
             p
-            for p, _ in sorted(relevant["best_practices"], key=lambda x: x[1], reverse=True)[
-                :max_results
-            ]
+            for p, _ in sorted(
+                relevant["best_practices"], key=lambda x: x[1], reverse=True
+            )[:max_results]
         ]
 
         # Find relevant anti-patterns
@@ -658,9 +674,9 @@ user = db.users.find_first(where={'email': email})
 
         relevant["anti_patterns"] = [
             p
-            for p, _ in sorted(relevant["anti_patterns"], key=lambda x: x[1], reverse=True)[
-                :max_results
-            ]
+            for p, _ in sorted(
+                relevant["anti_patterns"], key=lambda x: x[1], reverse=True
+            )[:max_results]
         ]
 
         # Collect tips from relevant domains

@@ -8,18 +8,20 @@ Auto-Monitor Application
 Main application logic for the auto-monitor system.
 """
 
-from .config import MonitorConfig
-from .collectors import MetricCollector, ServiceCollector, SystemCollector
-from .alerts import AlertManager, AlertSeverity
 import logging
 import threading
 import time
 from datetime import datetime
 from typing import Any, Dict
 
-from .alerts import AlertManager
-from .collectors import MetricsCollector, ServiceCollector, SystemCollector
-from .config import AutoMonitorConfig
+from .alerts import AlertManager, AlertSeverity
+from .collectors import (
+    MetricCollector,
+    MetricsCollector,
+    ServiceCollector,
+    SystemCollector,
+)
+from .config import AutoMonitorConfig, MonitorConfig
 from .儲存 import StorageManager
 
 
@@ -51,7 +53,9 @@ class AutoMonitorApp:
         # Metrics collectors
         self.system_collector = SystemCollector(config.collectors.get("system", {}))
         self.service_collector = ServiceCollector(config.collectors.get("service", {}))
-        self.metrics_collector = MetricsCollector([self.system_collector, self.service_collector])
+        self.metrics_collector = MetricsCollector(
+            [self.system_collector, self.service_collector]
+        )
 
         # Alert manager
         self.alert_manager = AlertManager(config.alerts)
@@ -211,7 +215,11 @@ class AutoMonitorApp:
 
             # Store metrics
             self._store_metrics(
-                {"system": system_metrics, "services": service_metrics, "custom": custom_metrics}
+                {
+                    "system": system_metrics,
+                    "services": service_metrics,
+                    "custom": custom_metrics,
+                }
             )
 
             logger.info("Collection cycle complete")
@@ -290,7 +298,9 @@ class AutoMonitorApp:
                 )
                 self.alert_manager.add_alert(alert)
             else:
-                self.alert_manager.resolve_alert(f"service_{service_name}_down", "auto-monitor")
+                self.alert_manager.resolve_alert(
+                    f"service_{service_name}_down", "auto-monitor"
+                )
 
     def _store_metrics(self, metrics: Dict[str, Any]):
         """Store collected metrics"""
@@ -523,11 +533,15 @@ class MachineNativeOpsAutoMonitor:
     def _init_prometheus_metrics(self):
         """Initialize Prometheus metrics"""
         self.metrics = {
-            "cpu_usage": Gauge("machinenativenops_cpu_usage_percent", "CPU usage percentage"),
+            "cpu_usage": Gauge(
+                "machinenativenops_cpu_usage_percent", "CPU usage percentage"
+            ),
             "memory_usage": Gauge(
                 "machinenativenops_memory_usage_percent", "Memory usage percentage"
             ),
-            "disk_usage": Gauge("machinenativenops_disk_usage_percent", "Disk usage percentage"),
+            "disk_usage": Gauge(
+                "machinenativenops_disk_usage_percent", "Disk usage percentage"
+            ),
             "network_bytes_sent": Gauge(
                 "machinenativenops_network_bytes_sent_total", "Total bytes sent"
             ),
@@ -538,7 +552,8 @@ class MachineNativeOpsAutoMonitor:
                 "machinenativenops_quantum_fidelity", "Quantum state fidelity"
             ),
             "quantum_coherence_time": Gauge(
-                "machinenativenops_quantum_coherence_time_microseconds", "Quantum coherence time"
+                "machinenativenops_quantum_coherence_time_microseconds",
+                "Quantum coherence time",
             ),
             "quantum_error_rate": Gauge(
                 "machinenativenops_quantum_error_rate", "Quantum error rate"
@@ -549,7 +564,9 @@ class MachineNativeOpsAutoMonitor:
             "collection_duration": Histogram(
                 "machinenativenops_collection_duration_seconds", "Collection duration"
             ),
-            "alerts_total": Counter("machinenativenops_alerts_total", "Total alerts triggered"),
+            "alerts_total": Counter(
+                "machinenativenops_alerts_total", "Total alerts triggered"
+            ),
         }
 
         self.logger.info("Prometheus metrics initialized")
@@ -572,7 +589,11 @@ class MachineNativeOpsAutoMonitor:
                     "architecture_hash": self.config.architecture_hash,
                     "database_status": "ok" if db_status else "error",
                     "system_load": system_load,
-                    "uptime": time.time() - self.start_time if hasattr(self, "start_time") else 0,
+                    "uptime": (
+                        time.time() - self.start_time
+                        if hasattr(self, "start_time")
+                        else 0
+                    ),
                 }
 
                 # Include service status if not healthy
@@ -626,7 +647,9 @@ class MachineNativeOpsAutoMonitor:
                 return JSONResponse({"metrics": metrics, "count": len(metrics)})
             except Exception as e:
                 self.logger.error(f"Failed to get metrics: {e}")
-                raise HTTPException(status_code=500, detail="Failed to retrieve metrics")
+                raise HTTPException(
+                    status_code=500, detail="Failed to retrieve metrics"
+                )
 
         @self.app.get("/api/v1/alerts")
         async def get_alerts():

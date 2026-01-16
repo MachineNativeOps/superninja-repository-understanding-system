@@ -138,7 +138,14 @@ def validate_fix_rules(fix_rules: List[Dict[str, Any]]) -> List[str]:
     allowed_priorities = ["critical", "high", "medium", "low"]
 
     for i, rule in enumerate(fix_rules):
-        required_fields = ["name", "priority", "enabled", "scope", "triggers", "actions"]
+        required_fields = [
+            "name",
+            "priority",
+            "enabled",
+            "scope",
+            "triggers",
+            "actions",
+        ]
         for field in required_fields:
             if field not in rule:
                 issues.append(f"fix_rules[{i}] 缺少必要欄位: {field}")
@@ -242,7 +249,9 @@ def main():
         for issue in bot_issues:
             print(f"❌ {issue}")
         sys.exit(1)
-    print(f"✅ Bot 配置驗證通過 ({len(config.get('bot_config', {}).get('scopes', []))} 個範圍)")
+    print(
+        f"✅ Bot 配置驗證通過 ({len(config.get('bot_config', {}).get('scopes', []))} 個範圍)"
+    )
     print()
 
     # 驗證修復規則
@@ -291,7 +300,9 @@ def main():
     print(f"  ✅ 驗證範圍: {len(config.get('bot_config', {}).get('scopes', []))}")
     print(f"  ✅ 修復規則: {len(config.get('fix_rules', []))}")
     print(f"  ✅ Policy Gates: {len(config.get('policy_gates', []))}")
-    print(f"  ✅ 證據生成器: {len(config.get('evidence_generation', {}).get('generators', []))}")
+    print(
+        f"  ✅ 證據生成器: {len(config.get('evidence_generation', {}).get('generators', []))}"
+    )
     print(f"  ✅ 通知頻道: {len(config.get('notifications', {}).get('channels', {}))}")
     print(f"  ✅ 監控指標: {len(config.get('monitoring', {}).get('metrics', []))}")
     print("=" * 60)

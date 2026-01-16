@@ -219,7 +219,9 @@ class LawOne:
 
     def _detect_harm(self, action: ProposedAction, keywords: list[str]) -> str | None:
         """偵測行動中的傷害關鍵字"""
-        action_text = f"{action.action_type} {action.description} {action.target}".lower()
+        action_text = (
+            f"{action.action_type} {action.description} {action.target}".lower()
+        )
         for keyword in keywords:
             if keyword in action_text:
                 return keyword
@@ -327,7 +329,9 @@ class LawTwo:
         self._verification_history.append(result)
         return result
 
-    def _log_command(self, action: ProposedAction, is_human_command: bool, will_execute: bool):
+    def _log_command(
+        self, action: ProposedAction, is_human_command: bool, will_execute: bool
+    ):
         """記錄命令"""
         self._command_log.append(
             {
@@ -402,7 +406,9 @@ class LawThree:
         # 檢查資源消耗
         resource_impact = self._assess_resource_impact(action)
         if resource_impact > 0.8:
-            recommendations.append(f"警告：此行動可能消耗 {resource_impact*100:.1f}% 系統資源")
+            recommendations.append(
+                f"警告：此行動可能消耗 {resource_impact*100:.1f}% 系統資源"
+            )
 
         result = LawVerificationResult(
             law_id=self.LAW_ID,
@@ -492,7 +498,9 @@ class FundamentalLaws:
 
         self._verification_cache: dict[str, LawVerificationResult] = {}
 
-    async def verify_all(self, action: ProposedAction) -> dict[str, LawVerificationResult]:
+    async def verify_all(
+        self, action: ProposedAction
+    ) -> dict[str, LawVerificationResult]:
         """
         驗證行動是否符合所有根本法則
         按優先級順序驗證，一旦違反即停止

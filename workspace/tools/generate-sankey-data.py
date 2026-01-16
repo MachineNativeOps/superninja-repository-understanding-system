@@ -40,7 +40,9 @@ def parse_governance_report(report_path: Path) -> list[dict[str, Any]]:
     for line in lines:
         if "—" in line and "**" in line:
             # Extract file path and reason
-            match = re.match(r"-\s*\*\*(.*?)\*\*\s*—\s*(.*?)(?:\(Layer:\s*(.*?)\))?$", line)
+            match = re.match(
+                r"-\s*\*\*(.*?)\*\*\s*—\s*(.*?)(?:\(Layer:\s*(.*?)\))?$", line
+            )
             if match:
                 file_path = match.group(1).strip()
                 reason = match.group(2).strip()
@@ -50,10 +52,14 @@ def parse_governance_report(report_path: Path) -> list[dict[str, Any]]:
                 source_layer = determine_layer(file_path)
 
                 # Extract language and violation type
-                language, violation_type = extract_language_and_violation(file_path, reason)
+                language, violation_type = extract_language_and_violation(
+                    file_path, reason
+                )
 
                 # Determine fix target
-                fix_target = determine_fix_target(language, violation_type, source_layer)
+                fix_target = determine_fix_target(
+                    language, violation_type, source_layer
+                )
 
                 violations.append(
                     {
@@ -150,7 +156,9 @@ def aggregate_flows(violations: list[dict[str, Any]]) -> list[dict[str, Any]]:
     flow_map = {}
 
     for v in violations:
-        key = f"{v['sourceLayer']}|{v['language']}|{v['violationType']}|{v['fixTarget']}"
+        key = (
+            f"{v['sourceLayer']}|{v['language']}|{v['violationType']}|{v['fixTarget']}"
+        )
         if key in flow_map:
             flow_map[key]["count"] += 1
         else:

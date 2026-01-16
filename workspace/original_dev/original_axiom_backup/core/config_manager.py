@@ -74,10 +74,14 @@ class ConfigurationManager:
 
         # Setup file watching
         self.observer = Observer()
-        self.observer.schedule(ConfigurationFileHandler(self), str(self.config_dir), recursive=True)
+        self.observer.schedule(
+            ConfigurationFileHandler(self), str(self.config_dir), recursive=True
+        )
         self.observer.start()
 
-        logger.info(f"Configuration manager initialized for environment: {self.environment}")
+        logger.info(
+            f"Configuration manager initialized for environment: {self.environment}"
+        )
 
     def load_configuration(
         self,
@@ -104,7 +108,9 @@ class ConfigurationManager:
                 config_file = Path(config_file)
 
             if not config_file.exists():
-                raise ConfigValidationError(f"Configuration file not found: {config_file}")
+                raise ConfigValidationError(
+                    f"Configuration file not found: {config_file}"
+                )
 
             # Load base configuration
             try:
@@ -117,7 +123,9 @@ class ConfigurationManager:
                 raise ConfigValidationError(f"Failed to load configuration: {e}")
 
             # Apply environment-specific overrides
-            environment_config = self._load_environment_overrides(config_name, config_file)
+            environment_config = self._load_environment_overrides(
+                config_name, config_file
+            )
             merged_config = self._merge_configurations(base_config, environment_config)
 
             # Apply environment variable overrides
@@ -148,7 +156,9 @@ class ConfigurationManager:
             logger.info(f"Configuration '{config_name}' loaded successfully")
             return final_config
 
-    def get_configuration(self, config_name: str, section: Optional[str] = None) -> Dict[str, Any]:
+    def get_configuration(
+        self, config_name: str, section: Optional[str] = None
+    ) -> Dict[str, Any]:
         """
         Get configuration or specific section.
 
@@ -167,7 +177,9 @@ class ConfigurationManager:
 
             if section:
                 if section not in config:
-                    raise ConfigValidationError(f"Section '{section}' not found in '{config_name}'")
+                    raise ConfigValidationError(
+                        f"Section '{section}' not found in '{config_name}'"
+                    )
                 return config[section]
 
             return copy.deepcopy(config)
@@ -235,11 +247,15 @@ class ConfigurationManager:
             if config_name in self.callbacks:
                 try:
                     self.callbacks[config_name].remove(callback)
-                    logger.debug(f"Callback unregistered for configuration '{config_name}'")
+                    logger.debug(
+                        f"Callback unregistered for configuration '{config_name}'"
+                    )
                 except ValueError:
                     pass
 
-    def _load_environment_overrides(self, config_name: str, config_file: Path) -> Dict[str, Any]:
+    def _load_environment_overrides(
+        self, config_name: str, config_file: Path
+    ) -> Dict[str, Any]:
         """Load environment-specific configuration overrides"""
         env_config_file = config_file.parent / f"{config_name}.{self.environment}.yaml"
         env_alternative = config_file.parent / self.environment / f"{config_name}.yaml"
@@ -267,7 +283,7 @@ class ConfigurationManager:
         for key, value in os.environ.items():
             if key.startswith(prefix):
                 # Remove prefix and convert to nested dict structure
-                config_key = key[len(prefix) :].lower()
+                config_key = key[len(prefix):].lower()
 
                 # Parse value (attempt JSON, fallback to string)
                 try:
@@ -290,14 +306,20 @@ class ConfigurationManager:
         result = copy.deepcopy(base)
 
         for key, value in override.items():
-            if key in result and isinstance(result[key], dict) and isinstance(value, dict):
+            if (
+                key in result
+                and isinstance(result[key], dict)
+                and isinstance(value, dict)
+            ):
                 result[key] = self._merge_configurations(result[key], value)
             else:
                 result[key] = value
 
         return result
 
-    def _set_nested_value(self, config: Dict[str, Any], keys: List[str], value: Any) -> None:
+    def _set_nested_value(
+        self, config: Dict[str, Any], keys: List[str], value: Any
+    ) -> None:
         """Set nested value in configuration dictionary"""
         current = config
         for key in keys[:-1]:
@@ -306,7 +328,9 @@ class ConfigurationManager:
             current = current[key]
         current[keys[-1]] = value
 
-    def _validate_configuration(self, config: Dict[str, Any], schema: Dict[str, Any]) -> None:
+    def _validate_configuration(
+        self, config: Dict[str, Any], schema: Dict[str, Any]
+    ) -> None:
         """Validate configuration against schema"""
         try:
             # Simple validation - in production, use jsonschema or similar
@@ -320,7 +344,9 @@ class ConfigurationManager:
                 for field, field_schema in schema["properties"].items():
                     if field in config:
                         expected_type = field_schema.get("type")
-                        if expected_type and not self._check_type(config[field], expected_type):
+                        if expected_type and not self._check_type(
+                            config[field], expected_type
+                        ):
                             raise ConfigValidationError(
                                 f"Invalid type for {field}: expected {expected_type}"
                             )
@@ -366,7 +392,9 @@ class ConfigurationManager:
                     # Reload configuration
                     schema = self.schemas.get(config_name)
                     self.load_configuration(config_name, str(file_path), schema)
-                    logger.info(f"Reloaded configuration '{config_name}' from file change")
+                    logger.info(
+                        f"Reloaded configuration '{config_name}' from file change"
+                    )
                 except Exception as e:
                     logger.error(f"Failed to reload configuration '{config_name}': {e}")
                 break

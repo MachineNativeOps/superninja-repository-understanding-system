@@ -141,7 +141,9 @@ class PolicyRule:
 
         return None
 
-    def _evaluate_condition(self, data: Any, context: Optional[Dict[str, Any]] = None) -> bool:
+    def _evaluate_condition(
+        self, data: Any, context: Optional[Dict[str, Any]] = None
+    ) -> bool:
         """評估條件表達式"""
         # 簡單的條件評估
         # 支持: exists, equals, contains, matches, etc.
@@ -223,7 +225,9 @@ class PolicyEvaluationResult:
     @property
     def critical_count(self) -> int:
         """嚴重違規數量"""
-        return len([v for v in self.violations if v.severity == PolicySeverity.CRITICAL])
+        return len(
+            [v for v in self.violations if v.severity == PolicySeverity.CRITICAL]
+        )
 
     @property
     def high_count(self) -> int:
@@ -289,7 +293,9 @@ class PolicyGate:
             return True
         return False
 
-    def add_exception(self, rule_id: str, module_id: str, reason: str, approved_by: str) -> bool:
+    def add_exception(
+        self, rule_id: str, module_id: str, reason: str, approved_by: str
+    ) -> bool:
         """添加例外"""
         if rule_id not in self._rules:
             return False
@@ -305,7 +311,10 @@ class PolicyGate:
         return module_id in self._exceptions.get(rule_id, [])
 
     def evaluate(
-        self, data: Any, module_id: Optional[str] = None, context: Optional[Dict[str, Any]] = None
+        self,
+        data: Any,
+        module_id: Optional[str] = None,
+        context: Optional[Dict[str, Any]] = None,
     ) -> PolicyEvaluationResult:
         """
         評估數據是否符合所有策略
@@ -375,7 +384,9 @@ class PolicyGate:
         return result
 
     def get_rules(
-        self, category: Optional[PolicyCategory] = None, severity: Optional[PolicySeverity] = None
+        self,
+        category: Optional[PolicyCategory] = None,
+        severity: Optional[PolicySeverity] = None,
     ) -> List[PolicyRule]:
         """獲取策略規則列表"""
         rules = list(self._rules.values())

@@ -268,7 +268,9 @@ class PathValidator:
             for key, value in data.items():
                 new_path = f"{key_path}.{key}" if key_path else key
 
-                if key.endswith(("_path", "_file", "path", "file")) and isinstance(value, str):
+                if key.endswith(("_path", "_file", "path", "file")) and isinstance(
+                    value, str
+                ):
                     if (
                         value
                         and value != "_pending"
@@ -282,7 +284,9 @@ class PathValidator:
                                     category=ValidationCategory.REFERENCE.value,
                                     level=ValidationLevel.ERROR.value,
                                     message=f"YAML 引用的路徑不存在: {value}",
-                                    file_path=str(yaml_file.relative_to(self.target_path)),
+                                    file_path=str(
+                                        yaml_file.relative_to(self.target_path)
+                                    ),
                                     suggestion=f"檢查路徑 {new_path}",
                                 )
                             )
@@ -341,10 +345,11 @@ class PathValidator:
                             category=ValidationCategory.SECURITY.value,
                             level=ValidationLevel.ERROR.value,
                             message=f"符號連結指向外部: {file_path.relative_to(self.target_path)}",
-                            file_path=str(file_path.relative_to(self.target_path)),
+                            file_path=str(
+                                file_path.relative_to(
+                                    self.target_path)),
                             suggestion="移除或修正符號連結",
-                        )
-                    )
+                        ))
 
     def _generate_summary(self, errors: list, warnings: list, info: list) -> str:
         """生成摘要"""
@@ -388,7 +393,9 @@ def main():
         if result.issues:
             print(f"\n📋 問題列表:")
             for issue in result.issues:
-                level_icon = {"error": "❌", "warning": "⚠️", "info": "ℹ️"}.get(issue.level, "•")
+                level_icon = {"error": "❌", "warning": "⚠️", "info": "ℹ️"}.get(
+                    issue.level, "•"
+                )
                 print(f"   {level_icon} [{issue.category}] {issue.message}")
                 if issue.file_path:
                     print(

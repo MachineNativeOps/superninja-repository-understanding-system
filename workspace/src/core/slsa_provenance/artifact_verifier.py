@@ -183,11 +183,15 @@ class ArtifactVerifier:
         if artifact_path:
             metadata = self._get_file_metadata(artifact_path)
         elif artifact_content:
-            metadata = self._get_content_metadata(artifact_content, artifact_name or "unknown")
+            metadata = self._get_content_metadata(
+                artifact_content, artifact_name or "unknown"
+            )
         elif expected_digest and artifact_name:
             metadata = ArtifactMetadata(name=artifact_name, digest=expected_digest)
         else:
-            raise ValueError("Must provide artifact_path, artifact_content, or expected_digest")
+            raise ValueError(
+                "Must provide artifact_path, artifact_content, or expected_digest"
+            )
 
         result = VerificationResult(
             artifact=metadata,
@@ -196,7 +200,9 @@ class ArtifactVerifier:
         )
 
         # Step 1: Verify integrity
-        integrity_result = self._verify_integrity(metadata, expected_digest, active_policy)
+        integrity_result = self._verify_integrity(
+            metadata, expected_digest, active_policy
+        )
         result.integrity_status = integrity_result["status"]
         result.checks.extend(integrity_result["checks"])
 
@@ -205,7 +211,9 @@ class ArtifactVerifier:
 
         # Step 2: Verify provenance
         if provenance:
-            provenance_result = self._verify_provenance(metadata, provenance, active_policy)
+            provenance_result = self._verify_provenance(
+                metadata, provenance, active_policy
+            )
             result.provenance_status = provenance_result["status"]
             result.slsa_level = provenance_result.get("slsa_level", 0)
             result.checks.extend(provenance_result["checks"])
@@ -226,11 +234,15 @@ class ArtifactVerifier:
         cache_key = self._get_cache_key(metadata)
         self._verification_cache[cache_key] = result
 
-        logger.info(f"Verified artifact: {metadata.name} - {result.integrity_status.value}")
+        logger.info(
+            f"Verified artifact: {metadata.name} - {result.integrity_status.value}"
+        )
         return result
 
     def verify_artifact_batch(
-        self, artifacts: List[Dict[str, Any]], policy: Optional[VerificationPolicy] = None
+        self,
+        artifacts: List[Dict[str, Any]],
+        policy: Optional[VerificationPolicy] = None,
     ) -> List[VerificationResult]:
         """
         Verify multiple artifacts
@@ -256,7 +268,9 @@ class ArtifactVerifier:
         return results
 
     def verify_provenance_chain(
-        self, artifact_metadata: ArtifactMetadata, provenance_chain: List[Dict[str, Any]]
+        self,
+        artifact_metadata: ArtifactMetadata,
+        provenance_chain: List[Dict[str, Any]],
     ) -> Dict[str, Any]:
         """
         Verify a chain of provenance
@@ -290,7 +304,9 @@ class ArtifactVerifier:
                     break
 
             if not found and i == 0:
-                result["errors"].append(f"Artifact not found in provenance at position {i}")
+                result["errors"].append(
+                    f"Artifact not found in provenance at position {i}"
+                )
                 result["valid"] = False
                 continue
 
@@ -319,7 +335,9 @@ class ArtifactVerifier:
             if deps:
                 # Use first dependency's digest as next current
                 first_dep = deps[0]
-                current_digest = first_dep.get("digest", {}).get("sha256", current_digest)
+                current_digest = first_dep.get("digest", {}).get(
+                    "sha256", current_digest
+                )
 
         return result
 
@@ -336,7 +354,9 @@ class ArtifactVerifier:
         self._verification_cache.clear()
 
     def create_verification_summary(
-        self, results: List[VerificationResult], policy: Optional[VerificationPolicy] = None
+        self,
+        results: List[VerificationResult],
+        policy: Optional[VerificationPolicy] = None,
     ) -> Dict[str, Any]:
         """
         Create a verification summary for multiple results
@@ -416,7 +436,11 @@ class ArtifactVerifier:
         if not metadata.digest:
             result["status"] = IntegrityStatus.UNVERIFIED
             result["checks"].append(
-                {"name": "digest_presence", "passed": False, "error": "No digest available"}
+                {
+                    "name": "digest_presence",
+                    "passed": False,
+                    "error": "No digest available",
+                }
             )
             return result
 
@@ -439,7 +463,9 @@ class ArtifactVerifier:
                         f"Digest mismatch: expected {expected_hash}, got {actual_hash}"
                     )
                 else:
-                    result["checks"].append({"name": f"digest_match_{alg}", "passed": True})
+                    result["checks"].append(
+                        {"name": f"digest_match_{alg}", "passed": True}
+                    )
 
         # Check required algorithms
         for alg in policy.digest_algorithms:
@@ -455,7 +481,10 @@ class ArtifactVerifier:
         return result
 
     def _verify_provenance(
-        self, metadata: ArtifactMetadata, provenance: Dict[str, Any], policy: VerificationPolicy
+        self,
+        metadata: ArtifactMetadata,
+        provenance: Dict[str, Any],
+        policy: VerificationPolicy,
     ) -> Dict[str, Any]:
         """Verify provenance data"""
         result = {
@@ -503,13 +532,17 @@ class ArtifactVerifier:
         if policy.allowed_builders and builder_id not in policy.allowed_builders:
             result["warnings"].append(f"Builder {builder_id} not in allowed list")
 
-        result["checks"].append({"name": "builder_check", "passed": True, "builder": builder_id})
+        result["checks"].append(
+            {"name": "builder_check", "passed": True, "builder": builder_id}
+        )
 
         # Check source (from external parameters)
         source = build_def.get("externalParameters", {}).get("source", {})
         source_uri = source.get("uri", "")
         if policy.allowed_sources and source_uri:
-            source_allowed = any(allowed in source_uri for allowed in policy.allowed_sources)
+            source_allowed = any(
+                allowed in source_uri for allowed in policy.allowed_sources
+            )
             if not source_allowed:
                 result["warnings"].append(f"Source {source_uri} not in allowed list")
 
@@ -517,7 +550,10 @@ class ArtifactVerifier:
         return result
 
     def _determine_slsa_level(
-        self, build_def: Dict[str, Any], run_details: Dict[str, Any], policy: VerificationPolicy
+        self,
+        build_def: Dict[str, Any],
+        run_details: Dict[str, Any],
+        policy: VerificationPolicy,
     ) -> int:
         """Determine SLSA level achieved"""
         level = 0
@@ -568,7 +604,11 @@ class ArtifactVerifier:
         if result.integrity_status != IntegrityStatus.VERIFIED:
             compliance["compliant"] = False
             compliance["checks"].append(
-                {"name": "integrity", "passed": False, "status": result.integrity_status.value}
+                {
+                    "name": "integrity",
+                    "passed": False,
+                    "status": result.integrity_status.value,
+                }
             )
         else:
             compliance["checks"].append({"name": "integrity", "passed": True})
@@ -582,7 +622,9 @@ class ArtifactVerifier:
 
 
 # Factory functions
-def create_artifact_verifier(policy: Optional[VerificationPolicy] = None) -> ArtifactVerifier:
+def create_artifact_verifier(
+    policy: Optional[VerificationPolicy] = None,
+) -> ArtifactVerifier:
     """Create a new ArtifactVerifier instance"""
     return ArtifactVerifier(policy)
 

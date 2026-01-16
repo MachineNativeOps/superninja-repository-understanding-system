@@ -12,6 +12,11 @@ Tests for 00-namespaces/namespaces-mcp/tools/load_unified_pipeline.py
 5. INSTANT mode detection
 """
 
+import sys
+from dataclasses import dataclass
+from pathlib import Path
+
+import pytest
 from load_unified_pipeline import (
     MANIFEST_PATH,
     CoreScheduling,
@@ -33,11 +38,6 @@ from load_unified_pipeline import (
     validate_latency_compliance,
     validate_parallelism,
 )
-import sys
-from dataclasses import dataclass
-from pathlib import Path
-
-import pytest
 
 # Add namespaces-mcp/tools to path
 project_root = Path(__file__).parent.parent
@@ -46,7 +46,11 @@ sys.path.insert(0, str(repo_root / "00-namespaces" / "namespaces-mcp" / "tools")
 
 # Override MANIFEST_PATH for tests running from workspace directory
 WORKSPACE_MANIFEST_PATH = (
-    repo_root / "00-namespaces" / "namespaces-mcp" / "pipelines" / "unified-pipeline-config.yaml"
+    repo_root
+    / "00-namespaces"
+    / "namespaces-mcp"
+    / "pipelines"
+    / "unified-pipeline-config.yaml"
 )
 
 
@@ -86,7 +90,11 @@ class TestInstantPipelineHumanIntervention:
 
     def test_valid_instant_pipeline_with_zero_intervention(self):
         """InstantPipeline should accept humanIntervention=0."""
-        stages = [InstantPipelineStage(name="test", agent="analyzer", latency=5000, parallelism=1)]
+        stages = [
+            InstantPipelineStage(
+                name="test", agent="analyzer", latency=5000, parallelism=1
+            )
+        ]
         pipeline = InstantPipeline(
             name="test-pipeline",
             totalLatencyTarget=60000,
@@ -98,7 +106,11 @@ class TestInstantPipelineHumanIntervention:
 
     def test_instant_pipeline_rejects_nonzero_intervention(self):
         """InstantPipeline should reject humanIntervention != 0."""
-        stages = [InstantPipelineStage(name="test", agent="analyzer", latency=5000, parallelism=1)]
+        stages = [
+            InstantPipelineStage(
+                name="test", agent="analyzer", latency=5000, parallelism=1
+            )
+        ]
         with pytest.raises(ValueError, match="humanIntervention must be 0"):
             InstantPipeline(
                 name="test-pipeline",

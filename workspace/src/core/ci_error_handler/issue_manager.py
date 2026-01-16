@@ -220,7 +220,10 @@ class IssueManager:
         self._issues: Dict[str, CIIssue] = {}
 
     def create_issue_content(
-        self, error: CIError, workflow_info: Dict[str, Any], template_id: str = "default"
+        self,
+        error: CIError,
+        workflow_info: Dict[str, Any],
+        template_id: str = "default",
     ) -> Dict[str, Any]:
         """
         Create issue content from error
@@ -286,7 +289,9 @@ class IssueManager:
             return issue
         return None
 
-    def add_fix_attempt(self, error_id: str, fix_info: Dict[str, Any]) -> Optional[CIIssue]:
+    def add_fix_attempt(
+        self, error_id: str, fix_info: Dict[str, Any]
+    ) -> Optional[CIIssue]:
         """Add a fix attempt to an issue"""
         if error_id in self._issues:
             issue = self._issues[error_id]
@@ -297,7 +302,9 @@ class IssueManager:
             return issue
         return None
 
-    def add_comment(self, error_id: str, comment: str, author: str = "bot") -> Optional[CIIssue]:
+    def add_comment(
+        self, error_id: str, comment: str, author: str = "bot"
+    ) -> Optional[CIIssue]:
         """Add a comment to an issue"""
         if error_id in self._issues:
             issue = self._issues[error_id]
@@ -322,7 +329,11 @@ class IssueManager:
 
     def get_open_issues(self) -> List[CIIssue]:
         """Get all open issues"""
-        open_statuses = {IssueStatus.OPEN, IssueStatus.IN_PROGRESS, IssueStatus.FIX_ATTEMPTED}
+        open_statuses = {
+            IssueStatus.OPEN,
+            IssueStatus.IN_PROGRESS,
+            IssueStatus.FIX_ATTEMPTED,
+        }
         return [i for i in self._issues.values() if i.status in open_statuses]
 
     def check_duplicate(self, error: CIError) -> Optional[CIIssue]:

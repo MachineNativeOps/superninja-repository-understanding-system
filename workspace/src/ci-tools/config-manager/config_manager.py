@@ -87,7 +87,9 @@ class CIConfigManager:
 
         if not logger.handlers:
             handler = logging.StreamHandler()
-            formatter = logging.Formatter("%(asctime)s - %(name)s - %(levelname)s - %(message)s")
+            formatter = logging.Formatter(
+                "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+            )
             handler.setFormatter(formatter)
             logger.addHandler(handler)
 
@@ -289,7 +291,9 @@ TRACE_ENABLED={{ trace_enabled }}
             "required": ["name", "on", "jobs"],
             "properties": {
                 "name": {"type": "string"},
-                "on": {"anyOf": [{"type": "string"}, {"type": "object"}, {"type": "array"}]},
+                "on": {
+                    "anyOf": [{"type": "string"}, {"type": "object"}, {"type": "array"}]
+                },
                 "env": {"type": "object"},
                 "jobs": {
                     "type": "object",
@@ -298,8 +302,12 @@ TRACE_ENABLED={{ trace_enabled }}
                             "type": "object",
                             "required": ["runs-on"],
                             "properties": {
-                                "runs-on": {"anyOf": [{"type": "string"}, {"type": "array"}]},
-                                "needs": {"anyOf": [{"type": "string"}, {"type": "array"}]},
+                                "runs-on": {
+                                    "anyOf": [{"type": "string"}, {"type": "array"}]
+                                },
+                                "needs": {
+                                    "anyOf": [{"type": "string"}, {"type": "array"}]
+                                },
                                 "steps": {
                                     "type": "array",
                                     "items": {
@@ -338,7 +346,10 @@ TRACE_ENABLED={{ trace_enabled }}
                 "metadata": {
                     "type": "object",
                     "required": ["name"],
-                    "properties": {"name": {"type": "string"}, "namespace": {"type": "string"}},
+                    "properties": {
+                        "name": {"type": "string"},
+                        "namespace": {"type": "string"},
+                    },
                 },
                 "spec": {
                     "type": "object",
@@ -367,9 +378,13 @@ TRACE_ENABLED={{ trace_enabled }}
                                                         "type": "array",
                                                         "items": {
                                                             "type": "object",
-                                                            "required": ["containerPort"],
+                                                            "required": [
+                                                                "containerPort"
+                                                            ],
                                                             "properties": {
-                                                                "containerPort": {"type": "integer"}
+                                                                "containerPort": {
+                                                                    "type": "integer"
+                                                                }
                                                             },
                                                         },
                                                     },
@@ -393,7 +408,11 @@ TRACE_ENABLED={{ trace_enabled }}
         )
 
     def create_config_from_template(
-        self, template_name: str, variables: Dict[str, Any], config_name: str, description: str = ""
+        self,
+        template_name: str,
+        variables: Dict[str, Any],
+        config_name: str,
+        description: str = "",
     ) -> CIConfig:
         """從模板創建配置"""
 
@@ -501,14 +520,19 @@ TRACE_ENABLED={{ trace_enabled }}
 
         try:
             # 根據配置類型保存格式
-            if config.config_type == ConfigType.ENVIRONMENT and "raw_content" in config.content:
+            if (
+                config.config_type == ConfigType.ENVIRONMENT
+                and "raw_content" in config.content
+            ):
                 # 環境變數配置直接保存原始內容
                 with open(file_path, "w", encoding="utf-8") as f:
                     f.write(config.content["raw_content"])
             else:
                 # 其他配置使用 YAML 格式
                 with open(file_path, "w", encoding="utf-8") as f:
-                    yaml.dump(config.content, f, default_flow_style=False, allow_unicode=True)
+                    yaml.dump(
+                        config.content, f, default_flow_style=False, allow_unicode=True
+                    )
 
             # 更新配置文件路徑
             config.file_path = str(file_path)
@@ -556,7 +580,10 @@ TRACE_ENABLED={{ trace_enabled }}
                 version="1.0.0",
                 description=f"從文件載入: {file_path}",
                 content=parsed_content,
-                metadata={"source_file": str(file_path), "loaded_at": datetime.now().isoformat()},
+                metadata={
+                    "source_file": str(file_path),
+                    "loaded_at": datetime.now().isoformat(),
+                },
                 created_at=datetime.now(),
                 updated_at=datetime.now(),
                 file_path=str(file_path),
@@ -666,7 +693,9 @@ TRACE_ENABLED={{ trace_enabled }}
 
         return True
 
-    def export_configs(self, output_dir: str, config_type: ConfigType = None) -> List[str]:
+    def export_configs(
+        self, output_dir: str, config_type: ConfigType = None
+    ) -> List[str]:
         """導出配置到指定目錄"""
 
         output_dir = Path(output_dir)
@@ -681,7 +710,9 @@ TRACE_ENABLED={{ trace_enabled }}
 
             try:
                 with open(file_path, "w", encoding="utf-8") as f:
-                    yaml.dump(config.content, f, default_flow_style=False, allow_unicode=True)
+                    yaml.dump(
+                        config.content, f, default_flow_style=False, allow_unicode=True
+                    )
 
                 exported_files.append(str(file_path))
 

@@ -180,7 +180,9 @@ class SmartAnomalyDetector:
         else:
             return AnomalyCategory.UNKNOWN
 
-    def _calculate_severity(self, deviation: float, confidence: float) -> AnomalySeverity:
+    def _calculate_severity(
+        self, deviation: float, confidence: float
+    ) -> AnomalySeverity:
         """Calculate severity based on deviation and confidence"""
         score = deviation * confidence
 
@@ -193,7 +195,9 @@ class SmartAnomalyDetector:
         else:
             return AnomalySeverity.LOW
 
-    def detect_statistical(self, metric_name: str, value: float) -> DetectedAnomaly | None:
+    def detect_statistical(
+        self, metric_name: str, value: float
+    ) -> DetectedAnomaly | None:
         """Detect anomaly using statistical method (Z-score)"""
         baseline = self._baselines.get(metric_name)
         if not baseline or baseline["stdev"] == 0:
@@ -208,7 +212,9 @@ class SmartAnomalyDetector:
             return DetectedAnomaly(
                 metric_name=metric_name,
                 category=self._get_category(metric_name),
-                severity=self._calculate_severity(deviation, confidence),
+                severity=self._calculate_severity(
+                    deviation,
+                    confidence),
                 strategy_used=AnomalyDetectionStrategy.STATISTICAL,
                 current_value=value,
                 expected_value=baseline["mean"],
@@ -245,7 +251,9 @@ class SmartAnomalyDetector:
             return DetectedAnomaly(
                 metric_name=metric_name,
                 category=self._get_category(metric_name),
-                severity=self._calculate_severity(deviation, 0.9),
+                severity=self._calculate_severity(
+                    deviation,
+                    0.9),
                 strategy_used=AnomalyDetectionStrategy.THRESHOLD,
                 current_value=value,
                 expected_value=threshold,
@@ -274,7 +282,9 @@ class SmartAnomalyDetector:
             return DetectedAnomaly(
                 metric_name=metric_name,
                 category=self._get_category(metric_name),
-                severity=self._calculate_severity(rate_change * 2, 0.8),
+                severity=self._calculate_severity(
+                    rate_change * 2,
+                    0.8),
                 strategy_used=AnomalyDetectionStrategy.RATE_LIMIT,
                 current_value=value,
                 expected_value=prev_value,
@@ -286,7 +296,10 @@ class SmartAnomalyDetector:
         return None
 
     def detect(
-        self, metric_name: str, value: float, strategy: AnomalyDetectionStrategy | None = None
+        self,
+        metric_name: str,
+        value: float,
+        strategy: AnomalyDetectionStrategy | None = None,
     ) -> DetectedAnomaly | None:
         """
         Detect anomaly using specified or default strategy

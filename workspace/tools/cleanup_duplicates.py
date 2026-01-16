@@ -70,7 +70,9 @@ class DuplicatesCleaner:
                 rel_path = agent_file.relative_to(agent_dir)
                 services_file = services_agent_dir / rel_path
 
-                if services_file.exists() and self._files_identical(agent_file, services_file):
+                if services_file.exists() and self._files_identical(
+                    agent_file, services_file
+                ):
                     # 保留 services/agents/ 版本，移除 agent/ 版本
                     self._remove_file(agent_file, f"重複於 services/agents/{rel_path}")
 

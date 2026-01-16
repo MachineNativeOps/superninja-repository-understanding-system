@@ -80,7 +80,9 @@ class SuperAgentTester:
         self.base_url = base_url
         self.session = HttpSession()
 
-    def generate_test_message(self, message_type: str, payload: Dict[str, Any]) -> Dict[str, Any]:
+    def generate_test_message(
+        self, message_type: str, payload: Dict[str, Any]
+    ) -> Dict[str, Any]:
         """Generate a test message with proper envelope"""
         import uuid
 
@@ -156,7 +158,9 @@ class SuperAgentTester:
                 print(f"✅ Incident signal processed: {data}")
                 return data["processing_result"]["status"] == "created"
             else:
-                print(f"❌ Incident signal failed: {response.status_code}, {response.text}")
+                print(
+                    f"❌ Incident signal failed: {response.status_code}, {response.text}"
+                )
                 return False
         except Exception as e:
             print(f"❌ Incident signal error: {e}")
@@ -174,7 +178,9 @@ class SuperAgentTester:
                 "payload": {},
             }
 
-            response = self.session.post(f"{self.base_url}/message", json=invalid_message)
+            response = self.session.post(
+                f"{self.base_url}/message", json=invalid_message
+            )
 
             if response.status_code == 400:
                 print("✅ Invalid message properly rejected")

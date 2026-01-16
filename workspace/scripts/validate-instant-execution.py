@@ -154,7 +154,9 @@ class InstantExecutionValidator:
         print_header("驗證並行度配置")
 
         parallelism = (
-            self.manifest.get("spec", {}).get("execution_standards", {}).get("parallelism", {})
+            self.manifest.get("spec", {})
+            .get("execution_standards", {})
+            .get("parallelism", {})
         )
 
         all_passed = True
@@ -186,7 +188,11 @@ class InstantExecutionValidator:
         """驗證自治度配置"""
         print_header("驗證自治度配置")
 
-        autonomy = self.manifest.get("spec", {}).get("execution_standards", {}).get("autonomy", {})
+        autonomy = (
+            self.manifest.get("spec", {})
+            .get("execution_standards", {})
+            .get("autonomy", {})
+        )
 
         all_passed = True
 
@@ -354,12 +360,18 @@ class InstantExecutionValidator:
 
         all_passed = True
 
-        required_validators = ["INSTANT_EXECUTION", "AUTONOMY_LEVEL", "LATENCY_COMPLIANCE"]
+        required_validators = [
+            "INSTANT_EXECUTION",
+            "AUTONOMY_LEVEL",
+            "LATENCY_COMPLIANCE",
+        ]
 
         self.results["total_checks"] += len(required_validators)
 
         for validator_name in required_validators:
-            validator_found = any(v.get("standard") == validator_name for v in validators)
+            validator_found = any(
+                v.get("standard") == validator_name for v in validators
+            )
             if validator_found:
                 self.results["passed"] += 1
                 print_success(f"必要驗證器存在: {validator_name}")
@@ -462,7 +474,8 @@ class InstantExecutionValidator:
     def generate_report(self, output_path: str = None):
         """生成驗證報告"""
         report = {
-            "manifest_path": str(self.manifest_path),
+            "manifest_path": str(
+                self.manifest_path),
             "validation_timestamp": datetime.now().isoformat(),
             "results": self.results,
             "summary": {
@@ -488,7 +501,9 @@ def main():
         default="contracts/INSTANT-EXECUTION-MANIFEST.yaml",
         help="Path to the instant execution manifest file",
     )
-    parser.add_argument("--report", help="Path to save the validation report (JSON format)")
+    parser.add_argument(
+        "--report", help="Path to save the validation report (JSON format)"
+    )
     parser.add_argument("--verbose", action="store_true", help="Enable verbose output")
 
     args = parser.parse_args()

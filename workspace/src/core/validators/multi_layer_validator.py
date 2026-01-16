@@ -42,7 +42,9 @@ class MultiLayerValidator:
                 logger.error(f"Validation error: {e}")
                 results.append(
                     ValidationResult(
-                        layer=validator.__class__.__name__, is_valid=False, errors=[str(e)]
+                        layer=validator.__class__.__name__,
+                        is_valid=False,
+                        errors=[str(e)],
                     )
                 )
         return results

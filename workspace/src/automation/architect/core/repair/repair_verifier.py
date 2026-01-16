@@ -40,7 +40,9 @@ class RepairVerifier:
         self.config = config or {}
         logger.info("RepairVerifier initialized")
 
-    async def verify(self, file_path: str, run_tests: bool = True) -> VerificationResult:
+    async def verify(
+        self, file_path: str, run_tests: bool = True
+    ) -> VerificationResult:
         """
         執行驗證
 

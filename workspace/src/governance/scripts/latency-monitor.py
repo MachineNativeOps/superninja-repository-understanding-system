@@ -282,7 +282,9 @@ class LatencyMonitor:
                         "latency": latency,
                         "avg_latency": int(avg_latency),
                         "parallelism": parallelism,
-                        "recommendation": self._get_bottleneck_recommendation(latency, parallelism),
+                        "recommendation": self._get_bottleneck_recommendation(
+                            latency, parallelism
+                        ),
                     }
                     bottlenecks.append(bottleneck)
                     check["details"].append(
@@ -307,7 +309,9 @@ class LatencyMonitor:
 
         # Check passes if there are no critical bottlenecks
         # (stages that are > 3x average)
-        critical_bottlenecks = [b for b in bottlenecks if b["latency"] > b["avg_latency"] * 3]
+        critical_bottlenecks = [
+            b for b in bottlenecks if b["latency"] > b["avg_latency"] * 3
+        ]
         if critical_bottlenecks:
             check["passed"] = False
 
@@ -346,7 +350,9 @@ class LatencyMonitor:
         print()
 
         # Run checks
-        print(f"\n{Colors.BOLD}[1/3] Checking all stages within threshold...{Colors.ENDC}")
+        print(
+            f"\n{Colors.BOLD}[1/3] Checking all stages within threshold...{Colors.ENDC}"
+        )
         stages_check = self.check_all_stages_within_threshold()
         self.results["checks"].append(stages_check)
         if stages_check["passed"]:
@@ -397,7 +403,11 @@ class LatencyMonitor:
                     status_color = (
                         Colors.OKGREEN
                         if detail["status"] == "PASS"
-                        else Colors.WARNING if detail["status"] == "WARNING" else Colors.FAIL
+                        else (
+                            Colors.WARNING
+                            if detail["status"] == "WARNING"
+                            else Colors.FAIL
+                        )
                     )
                     print(
                         f"  - {detail['criterion']}: {detail['value']} "
@@ -407,7 +417,9 @@ class LatencyMonitor:
 
         # Print bottleneck recommendations
         if self.results["bottlenecks"]:
-            print(f"\n{Colors.WARNING}{Colors.BOLD}Bottleneck Recommendations:{Colors.ENDC}")
+            print(
+                f"\n{Colors.WARNING}{Colors.BOLD}Bottleneck Recommendations:{Colors.ENDC}"
+            )
             for b in self.results["bottlenecks"]:
                 print(
                     f"  {Colors.WARNING}⚡ {b['pipeline']}/{b['stage']}: "
@@ -419,9 +431,13 @@ class LatencyMonitor:
         print(f"\n{Colors.BOLD}{'='*70}{Colors.ENDC}\n")
 
         if self.results["passed"]:
-            print(f"{Colors.OKGREEN}{Colors.BOLD}✅ LATENCY VALIDATION PASSED{Colors.ENDC}\n")
+            print(
+                f"{Colors.OKGREEN}{Colors.BOLD}✅ LATENCY VALIDATION PASSED{Colors.ENDC}\n"
+            )
         else:
-            print(f"{Colors.FAIL}{Colors.BOLD}❌ LATENCY VALIDATION FAILED{Colors.ENDC}\n")
+            print(
+                f"{Colors.FAIL}{Colors.BOLD}❌ LATENCY VALIDATION FAILED{Colors.ENDC}\n"
+            )
             print(f"{Colors.WARNING}Action: auto-optimize{Colors.ENDC}\n")
 
     def get_results_json(self) -> str:
@@ -444,7 +460,9 @@ Examples:
 
     parser.add_argument("--config", "-c", help="Path to pipeline configuration file")
 
-    parser.add_argument("--verbose", "-v", action="store_true", help="Enable verbose output")
+    parser.add_argument(
+        "--verbose", "-v", action="store_true", help="Enable verbose output"
+    )
 
     parser.add_argument("--output", "-o", help="Output results to JSON file")
 

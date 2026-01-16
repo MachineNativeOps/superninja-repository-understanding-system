@@ -38,7 +38,9 @@ class BillingManager:
         """初始化計費管理器"""
         self.logger.info("Billing Manager initialized")
 
-    async def setup_billing_system(self, company_size: str = "medium") -> Dict[str, Any]:
+    async def setup_billing_system(
+        self, company_size: str = "medium"
+    ) -> Dict[str, Any]:
         """設置計費系統"""
         plans = [
             {

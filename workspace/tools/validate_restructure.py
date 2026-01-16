@@ -25,7 +25,9 @@ from pathlib import Path
 from typing import Dict, List, Optional, Set, Tuple
 
 # 設置日誌
-logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
+logging.basicConfig(
+    level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
+)
 logger = logging.getLogger(__name__)
 
 
@@ -126,10 +128,21 @@ class RestructureValidator:
                         "search_engine",
                         "data_pipeline",
                     ],
-                    "monitoring": ["metrics", "logging", "tracing", "alerting", "dashboard"],
+                    "monitoring": [
+                        "metrics",
+                        "logging",
+                        "tracing",
+                        "alerting",
+                        "dashboard",
+                    ],
                 },
                 "shared": {
-                    "types": ["common_types", "api_types", "domain_types", "event_types"],
+                    "types": [
+                        "common_types",
+                        "api_types",
+                        "domain_types",
+                        "event_types",
+                    ],
                     "utils": [
                         "helpers",
                         "validators",
@@ -166,10 +179,19 @@ class RestructureValidator:
                     "ci-error-handler",
                     "drone-config",
                 ],
-                "deployment": ["docker-compose", "dockerfile", "nginx", "deployment-pipelines"],
+                "deployment": [
+                    "docker-compose",
+                    "dockerfile",
+                    "nginx",
+                    "deployment-pipelines",
+                ],
                 "monitoring": ["prometheus", "grafana", "alerting", "dashboards"],
                 "environments": ["env-files", "environment-configs", "secrets"],
-                "security": ["security-policies", "safety-mechanisms", "access-control"],
+                "security": [
+                    "security-policies",
+                    "safety-mechanisms",
+                    "access-control",
+                ],
                 "build-tools": [
                     "eslint",
                     "jest",
@@ -253,7 +275,12 @@ class RestructureValidator:
         """驗證文件完整性"""
         logger.info("📁 驗證文件完整性...")
 
-        result = {"valid": True, "missing_files": [], "empty_files": [], "total_files": 0}
+        result = {
+            "valid": True,
+            "missing_files": [],
+            "empty_files": [],
+            "total_files": 0,
+        }
 
         # 檢查關鍵文件
         critical_files = [
@@ -295,7 +322,12 @@ class RestructureValidator:
         """驗證 Python 導入路徑"""
         logger.info("🔗 驗證導入路徑...")
 
-        result = {"valid": True, "broken_imports": [], "fixed_imports": [], "files_checked": 0}
+        result = {
+            "valid": True,
+            "broken_imports": [],
+            "fixed_imports": [],
+            "files_checked": 0,
+        }
 
         # 掃描所有 Python 文件
         for py_file in self.project_root.rglob("*.py"):
@@ -356,7 +388,9 @@ class RestructureValidator:
                         old_path.replace("/", "."), new_path.replace("/", ".")
                     )
                     self._fix_import_in_file(file_path, module_name, new_module)
-                    result["fixed_imports"].append(f"{file_path}: {module_name} -> {new_module}")
+                    result["fixed_imports"].append(
+                        f"{file_path}: {module_name} -> {new_module}"
+                    )
 
     def _fix_import_in_file(self, file_path: Path, old_import: str, new_import: str):
         """修復文件中的導入"""
@@ -411,7 +445,9 @@ class RestructureValidator:
 
                 for key in check["required_keys"]:
                     if key not in config:
-                        result["invalid_configs"].append(f"{check['path']}: 缺少鍵 '{key}'")
+                        result["invalid_configs"].append(
+                            f"{check['path']}: 缺少鍵 '{key}'"
+                        )
                         result["valid"] = False
 
             except Exception as e:

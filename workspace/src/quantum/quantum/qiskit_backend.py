@@ -40,7 +40,9 @@ class QiskitBackend:
             api_key: IBM Quantum API token
         """
         if not QISKIT_AVAILABLE:
-            raise ImportError("Qiskit is not installed. Install with: pip install qiskit")
+            raise ImportError(
+                "Qiskit is not installed. Install with: pip install qiskit"
+            )
 
         settings = get_settings()
         self.api_key = api_key or settings.qiskit_api_key or os.getenv("QISKIT_API_KEY")
@@ -53,7 +55,9 @@ class QiskitBackend:
             try:
                 IBMQ.save_account(self.api_key, overwrite=True)
                 if self.hub and self.project:
-                    self.provider = IBMQ.get_provider(hub=self.hub, project=self.project)
+                    self.provider = IBMQ.get_provider(
+                        hub=self.hub, project=self.project
+                    )
                 else:
                     self.provider = IBMQ.load_account()
                 logger.info("Initialized QiskitBackend with IBM Quantum provider")
@@ -113,9 +117,13 @@ class QiskitBackend:
                     f"Invalid backend type or missing cloud provider: {backend_type}"
                 )
 
-            logger.info(f"Executed circuit '{circuit_type}' with {shots} shots on {backend_type}")
+            logger.info(
+                f"Executed circuit '{circuit_type}' with {shots} shots on {backend_type}"
+            )
             return {
-                "result": result.get_counts() if hasattr(result, "get_counts") else result,
+                "result": (
+                    result.get_counts() if hasattr(result, "get_counts") else result
+                ),
                 "backend": "qiskit",
                 "backend_type": backend_type,
                 "circuit_type": circuit_type,

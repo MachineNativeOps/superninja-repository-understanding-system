@@ -147,7 +147,9 @@ class NamingGovernanceRepair:
             "compliance_threshold": 0.95,
         }
 
-    def detect_violations(self, namespace: str = "machine-native-ops") -> List[ViolationReport]:
+    def detect_violations(
+        self, namespace: str = "machine-native-ops"
+    ) -> List[ViolationReport]:
         """檢測命名治理違規"""
         logger.info(f"開始檢測命名治理違規，命名空間: {namespace}")
 
@@ -202,7 +204,11 @@ class NamingGovernanceRepair:
                 if "items" in data:
                     for item in data["items"]:
                         resources.append(
-                            {"type": resource_type, "data": item, "namespace": namespace}
+                            {
+                                "type": resource_type,
+                                "data": item,
+                                "namespace": namespace,
+                            }
                         )
 
             except subprocess.CalledProcessError as e:
@@ -212,7 +218,9 @@ class NamingGovernanceRepair:
 
         return resources
 
-    def _check_resource_violations(self, resource: Dict[str, Any]) -> List[ViolationReport]:
+    def _check_resource_violations(
+        self, resource: Dict[str, Any]
+    ) -> List[ViolationReport]:
         """檢查單個資源的違規"""
         violations = []
         data = resource["data"]
@@ -241,7 +249,9 @@ class NamingGovernanceRepair:
 
         return violations
 
-    def _check_naming_pattern(self, resource: Dict[str, Any]) -> Optional[ViolationReport]:
+    def _check_naming_pattern(
+        self, resource: Dict[str, Any]
+    ) -> Optional[ViolationReport]:
         """檢查命名模式違規"""
         metadata = resource["data"].get("metadata", {})
         name = metadata.get("name", "")
@@ -272,7 +282,9 @@ class NamingGovernanceRepair:
 
         return None
 
-    def _check_version_format(self, resource: Dict[str, Any]) -> Optional[ViolationReport]:
+    def _check_version_format(
+        self, resource: Dict[str, Any]
+    ) -> Optional[ViolationReport]:
         """檢查版本格式違規"""
         metadata = resource["data"].get("metadata", {})
         name = metadata.get("name", "")
@@ -306,7 +318,9 @@ class NamingGovernanceRepair:
 
         return None
 
-    def _check_required_labels(self, resource: Dict[str, Any]) -> Optional[ViolationReport]:
+    def _check_required_labels(
+        self, resource: Dict[str, Any]
+    ) -> Optional[ViolationReport]:
         """檢查必需標籤"""
         metadata = resource["data"].get("metadata", {})
         name = metadata.get("name", "")
@@ -327,12 +341,17 @@ class NamingGovernanceRepair:
                 auto_repairable=True,
                 repair_priority=2,
                 detected_at=datetime.now().isoformat(),
-                metadata={"missing_labels": missing_labels, "existing_labels": list(labels.keys())},
+                metadata={
+                    "missing_labels": missing_labels,
+                    "existing_labels": list(labels.keys()),
+                },
             )
 
         return None
 
-    def _check_security_compliance(self, resource: Dict[str, Any]) -> Optional[ViolationReport]:
+    def _check_security_compliance(
+        self, resource: Dict[str, Any]
+    ) -> Optional[ViolationReport]:
         """檢查安全合規性"""
         data = resource["data"]
         metadata = data.get("metadata", {})
@@ -372,7 +391,9 @@ class NamingGovernanceRepair:
             return f"{base_name}-v1.0.0"
         return f"{pattern_key}-v1.0.0"
 
-    def create_repair_plan(self, violations: List[ViolationReport]) -> List[RepairOperation]:
+    def create_repair_plan(
+        self, violations: List[ViolationReport]
+    ) -> List[RepairOperation]:
         """創建修復計劃"""
         logger.info(f"為 {len(violations)} 個違規創建修復計劃")
 
@@ -443,7 +464,9 @@ class NamingGovernanceRepair:
         return (
             self.approval_required
             or any(v.severity in ["critical", "high"] for v in violations)
-            or any(v.violation_type == ViolationType.SECURITY_VIOLATION for v in violations)
+            or any(
+                v.violation_type == ViolationType.SECURITY_VIOLATION for v in violations
+            )
         )
 
     def execute_repair(self, operation: RepairOperation) -> bool:
@@ -451,7 +474,9 @@ class NamingGovernanceRepair:
         logger.info(f"開始執行修復操作: {operation.operation_id}")
 
         if operation.status != RepairStatus.PENDING:
-            logger.warning(f"操作 {operation.operation_id} 狀態不正確: {operation.status}")
+            logger.warning(
+                f"操作 {operation.operation_id} 狀態不正確: {operation.status}"
+            )
             return False
 
         operation.status = RepairStatus.IN_PROGRESS
@@ -529,8 +554,7 @@ class NamingGovernanceRepair:
                             "machinenativeops.io/repair-timestamp": datetime.now().isoformat(),
                             "machinenativeops.io/repair-operation": operation.operation_id,
                         },
-                    }
-                }
+                    }}
 
                 # 執行重命名操作（注意：某些資源類型不支持直接重命名）
                 cmd = [
@@ -552,7 +576,9 @@ class NamingGovernanceRepair:
                         logger.error(f"重命名失敗: {result.stderr}")
                         continue
 
-                logger.info(f"成功重命名 {resource_type}/{current_name} 為 {suggested_name}")
+                logger.info(
+                    f"成功重命名 {resource_type}/{current_name} 為 {suggested_name}"
+                )
 
             except Exception as e:
                 logger.error(f"修復命名模式失敗: {e}")
@@ -599,8 +625,7 @@ class NamingGovernanceRepair:
                             "machinenativeops.io/repair-timestamp": datetime.now().isoformat(),
                             "machinenativeops.io/repair-operation": operation.operation_id,
                         },
-                    }
-                }
+                    }}
 
                 # 執行標籤添加
                 cmd = [
@@ -652,13 +677,13 @@ class NamingGovernanceRepair:
                 # 準備版本標籤補丁
                 patch = {
                     "metadata": {
-                        "labels": {"version": correct_version},
+                        "labels": {
+                            "version": correct_version},
                         "annotations": {
                             "machinenativeops.io/repair-timestamp": datetime.now().isoformat(),
                             "machinenativeops.io/repair-operation": operation.operation_id,
                         },
-                    }
-                }
+                    }}
 
                 # 執行版本更新
                 cmd = [
@@ -721,13 +746,19 @@ class NamingGovernanceRepair:
             current_violations = self.detect_violations(namespace)
 
             # 檢查修復的違規是否已解決
-            original_violation_ids = {v.resource_id for v in operation.violation_reports}
+            original_violation_ids = {
+                v.resource_id for v in operation.violation_reports
+            }
             current_violation_ids = {v.resource_id for v in current_violations}
 
-            remaining_violations = original_violation_ids.intersection(current_violation_ids)
+            remaining_violations = original_violation_ids.intersection(
+                current_violation_ids
+            )
 
             if not remaining_violations:
-                logger.info(f"修復操作 {operation.operation_id} 驗證成功：所有違規已解決")
+                logger.info(
+                    f"修復操作 {operation.operation_id} 驗證成功：所有違規已解決"
+                )
                 return True
             else:
                 logger.warning(
@@ -757,7 +788,9 @@ class NamingGovernanceRepair:
         except Exception as e:
             logger.error(f"發送安全告警失敗: {e}")
 
-    def generate_repair_report(self, operations: List[RepairOperation]) -> Dict[str, Any]:
+    def generate_repair_report(
+        self, operations: List[RepairOperation]
+    ) -> Dict[str, Any]:
         """生成修復報告"""
         logger.info("生成修復報告")
 
@@ -822,12 +855,16 @@ class NamingGovernanceRepair:
 
 def main():
     """主函數"""
-    parser = argparse.ArgumentParser(description="MachineNativeOps 命名治理自動修復工具")
+    parser = argparse.ArgumentParser(
+        description="MachineNativeOps 命名治理自動修復工具"
+    )
     parser.add_argument("--config", "-c", help="配置文件路徑")
     parser.add_argument(
         "--namespace", "-n", default="machine-native-ops", help="Kubernetes 命名空間"
     )
-    parser.add_argument("--dry-run", action="store_true", help="試運行模式，不執行實際修復")
+    parser.add_argument(
+        "--dry-run", action="store_true", help="試運行模式，不執行實際修復"
+    )
     parser.add_argument("--output", "-o", help="報告輸出路徑")
     parser.add_argument("--verbose", "-v", action="store_true", help="詳細輸出")
 

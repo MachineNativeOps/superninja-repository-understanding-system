@@ -129,16 +129,22 @@ class PrivacyByDesign:
         pii_count = sum(1 for f in self.data_fields.values() if f.is_pii)
         encrypted_count = sum(1 for f in self.data_fields.values() if f.is_encrypted)
         anonymized_count = sum(1 for f in self.data_fields.values() if f.is_anonymized)
-        consent_required = sum(1 for f in self.data_fields.values() if f.requires_consent)
+        consent_required = sum(
+            1 for f in self.data_fields.values() if f.requires_consent
+        )
 
         total_fields = len(self.data_fields)
 
         # 預防性分數（PII 保護比例）
-        self.proactive_score = (1 - pii_count / total_fields) * 100 if total_fields > 0 else 100
+        self.proactive_score = (
+            (1 - pii_count / total_fields) * 100 if total_fields > 0 else 100
+        )
 
         # 默認隱私分數（加密和匿名化比例）
         protected = encrypted_count + anonymized_count
-        self.default_privacy_score = (protected / total_fields) * 100 if total_fields > 0 else 0
+        self.default_privacy_score = (
+            (protected / total_fields) * 100 if total_fields > 0 else 0
+        )
 
         # 嵌入式設計分數
         self.embedded_score = 70  # 基礎分數，可根據架構評估調整
@@ -147,10 +153,14 @@ class PrivacyByDesign:
         self.positive_sum_score = 75  # 基礎分數
 
         # 端到端安全分數
-        self.e2e_security_score = (encrypted_count / total_fields) * 100 if total_fields > 0 else 0
+        self.e2e_security_score = (
+            (encrypted_count / total_fields) * 100 if total_fields > 0 else 0
+        )
 
         # 可見性分數（同意需求覆蓋率）
-        self.visibility_score = (consent_required / pii_count) * 100 if pii_count > 0 else 100
+        self.visibility_score = (
+            (consent_required / pii_count) * 100 if pii_count > 0 else 100
+        )
 
         # 以用戶為中心分數
         self.user_centric_score = (
@@ -211,7 +221,9 @@ class DataSovereignty:
     organization_id: str
 
     # 數據位置
-    data_locations: dict[str, str] = field(default_factory=dict)  # data_type -> location
+    data_locations: dict[str, str] = field(
+        default_factory=dict
+    )  # data_type -> location
 
     # 管轄權映射
     jurisdiction_mapping: dict[str, list[str]] = field(default_factory=dict)
@@ -222,7 +234,9 @@ class DataSovereignty:
     # 本地化要求
     localization_requirements: list[dict[str, Any]] = field(default_factory=list)
 
-    def register_data_location(self, data_type: str, location: str, jurisdiction: str) -> None:
+    def register_data_location(
+        self, data_type: str, location: str, jurisdiction: str
+    ) -> None:
         """註冊數據位置"""
         self.data_locations[data_type] = location
 
@@ -382,7 +396,9 @@ class ConsentManager:
         consent_id = self._generate_consent_id(user_id, purpose)
 
         # 哈希 IP 地址以保護隱私
-        hashed_ip = hashlib.sha256(ip_address.encode()).hexdigest()[:12] if ip_address else ""
+        hashed_ip = (
+            hashlib.sha256(ip_address.encode()).hexdigest()[:12] if ip_address else ""
+        )
 
         consent = ConsentRecord(
             consent_id=consent_id,
@@ -429,7 +445,9 @@ class ConsentManager:
 
         return count
 
-    def check_consent(self, user_id: str, purpose: str, data_category: DataCategory) -> bool:
+    def check_consent(
+        self, user_id: str, purpose: str, data_category: DataCategory
+    ) -> bool:
         """
         檢查用戶是否已同意特定目的和數據類別
 
@@ -447,7 +465,10 @@ class ConsentManager:
         for consent_id in self.user_consents[user_id]:
             consent = self.consents.get(consent_id)
             if consent and consent.is_valid():
-                if consent.purpose == purpose and data_category in consent.data_categories:
+                if (
+                    consent.purpose == purpose
+                    and data_category in consent.data_categories
+                ):
                     return True
 
         return False
@@ -457,7 +478,11 @@ class ConsentManager:
         if user_id not in self.user_consents:
             return []
 
-        return [self.consents[cid] for cid in self.user_consents[user_id] if cid in self.consents]
+        return [
+            self.consents[cid]
+            for cid in self.user_consents[user_id]
+            if cid in self.consents
+        ]
 
     def generate_consent_report(self, user_id: str) -> dict[str, Any]:
         """生成用戶同意報告"""
@@ -580,7 +605,9 @@ class PrivacyFramework:
             **kwargs,
         )
 
-    def check_consent(self, user_id: str, purpose: str, data_category: DataCategory) -> bool:
+    def check_consent(
+        self, user_id: str, purpose: str, data_category: DataCategory
+    ) -> bool:
         """檢查同意"""
         return self.consent_manager.check_consent(user_id, purpose, data_category)
 
@@ -615,7 +642,9 @@ class PrivacyFramework:
 
         if requirements.get("data_minimization"):
             # 檢查數據最小化
-            pii_ratio = sum(1 for f in self.privacy_design.data_fields.values() if f.is_pii)
+            pii_ratio = sum(
+                1 for f in self.privacy_design.data_fields.values() if f.is_pii
+            )
             total = len(self.privacy_design.data_fields)
             minimization_score = (1 - pii_ratio / total) * 100 if total > 0 else 100
             results["data_minimization"] = minimization_score >= 70
@@ -624,7 +653,9 @@ class PrivacyFramework:
 
         if requirements.get("encryption_required"):
             # 檢查加密
-            encrypted = sum(1 for f in self.privacy_design.data_fields.values() if f.is_encrypted)
+            encrypted = sum(
+                1 for f in self.privacy_design.data_fields.values() if f.is_encrypted
+            )
             total = len(self.privacy_design.data_fields)
             encryption_rate = (encrypted / total) * 100 if total > 0 else 0
             results["encryption"] = encryption_rate >= 80
@@ -633,7 +664,9 @@ class PrivacyFramework:
 
         if requirements.get("right_to_erasure") or requirements.get("right_to_delete"):
             # 檢查刪除權
-            has_deletion = any(f.deletion_policy for f in self.privacy_design.data_fields.values())
+            has_deletion = any(
+                f.deletion_policy for f in self.privacy_design.data_fields.values()
+            )
             results["right_to_deletion"] = has_deletion
             if not has_deletion:
                 issues.append("缺少數據刪除政策")
@@ -696,7 +729,9 @@ class PrivacyFramework:
 
         # 未加密 PII 風險
         unencrypted_pii = sum(
-            1 for f in self.privacy_design.data_fields.values() if f.is_pii and not f.is_encrypted
+            1
+            for f in self.privacy_design.data_fields.values()
+            if f.is_pii and not f.is_encrypted
         )
         if unencrypted_pii > 0:
             risk_factors.append(f"{unencrypted_pii} 個 PII 欄位未加密")
@@ -739,7 +774,9 @@ class PrivacyFramework:
             "mitigation_measures": self._generate_mitigation_measures(risk_factors),
         }
 
-    def _generate_mitigation_measures(self, risk_factors: list[str]) -> list[dict[str, str]]:
+    def _generate_mitigation_measures(
+        self, risk_factors: list[str]
+    ) -> list[dict[str, str]]:
         """生成風險緩解措施"""
         measures = []
 
@@ -772,7 +809,11 @@ class PrivacyFramework:
 
         if not measures:
             measures.append(
-                {"risk": "無重大風險", "measure": "繼續維持現有隱私保護措施", "priority": "LOW"}
+                {
+                    "risk": "無重大風險",
+                    "measure": "繼續維持現有隱私保護措施",
+                    "priority": "LOW",
+                }
             )
 
         return measures

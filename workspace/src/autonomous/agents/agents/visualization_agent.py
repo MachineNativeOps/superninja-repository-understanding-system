@@ -66,7 +66,10 @@ class VisualizationAgent:
             "topic": topic,
             "explanation": explanation,
             "follow_up_questions": follow_ups,
-            "has_context": {"problem": bool(problem_content), "code": bool(editor_code)},
+            "has_context": {
+                "problem": bool(problem_content),
+                "code": bool(editor_code),
+            },
         }
 
         # Store in history
@@ -90,7 +93,14 @@ class VisualizationAgent:
         # Algorithm topics
         if any(
             keyword in query_lower
-            for keyword in ["sort", "search", "algorithm", "complexity", "遞歸", "recursion"]
+            for keyword in [
+                "sort",
+                "search",
+                "algorithm",
+                "complexity",
+                "遞歸",
+                "recursion",
+            ]
         ):
             return "algorithm"
 
@@ -136,7 +146,12 @@ class VisualizationAgent:
             Structured explanation
         """
         # Base explanation structure
-        explanation = {"summary": "", "analogy": "", "key_points": [], "practical_example": ""}
+        explanation = {
+            "summary": "",
+            "analogy": "",
+            "key_points": [],
+            "practical_example": "",
+        }
 
         if topic == "algorithm":
             explanation["summary"] = "算法是解決問題的步驟方法"
@@ -147,11 +162,15 @@ class VisualizationAgent:
                 "每步驟都是可執行的",
                 "最終能解決特定問題",
             ]
-            explanation["practical_example"] = "在自動駕駛中，路徑規劃算法決定車輛行駛路線"
+            explanation["practical_example"] = (
+                "在自動駕駛中，路徑規劃算法決定車輛行駛路線"
+            )
 
         elif topic == "data_structure":
             explanation["summary"] = "數據結構是組織和存儲數據的方式"
-            explanation["analogy"] = "就像圖書館的分類系統，不同的組織方式適合不同的查找需求"
+            explanation["analogy"] = (
+                "就像圖書館的分類系統，不同的組織方式適合不同的查找需求"
+            )
             explanation["key_points"] = [
                 "選擇合適的數據結構影響效率",
                 "不同操作有不同的時間複雜度",
@@ -233,8 +252,16 @@ class VisualizationAgent:
                 "什麼時候應該使用異步處理？",
                 "如何處理競態條件？",
             ],
-            "safety": ["如何設計容錯機制？", "怎樣處理異常情況？", "如何驗證系統的安全性？"],
-            "general": ["這個概念的實際應用場景？", "有哪些最佳實踐？", "常見的錯誤是什麼？"],
+            "safety": [
+                "如何設計容錯機制？",
+                "怎樣處理異常情況？",
+                "如何驗證系統的安全性？",
+            ],
+            "general": [
+                "這個概念的實際應用場景？",
+                "有哪些最佳實踐？",
+                "常見的錯誤是什麼？",
+            ],
         }
 
         return base_questions.get(topic, base_questions["general"])

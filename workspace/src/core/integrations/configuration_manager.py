@@ -96,7 +96,11 @@ class SystemConfiguration:
             "enable_slsa_provenance": self.enable_slsa_provenance,
             "enable_cloud_delegation": self.enable_cloud_delegation,
             "phase_configs": {
-                k: {"phase_id": v.phase_id, "enabled": v.enabled, "settings": v.settings}
+                k: {
+                    "phase_id": v.phase_id,
+                    "enabled": v.enabled,
+                    "settings": v.settings,
+                }
                 for k, v in self.phase_configs.items()
             },
             "custom_settings": self.custom_settings,
@@ -207,12 +211,24 @@ class ConfigurationManager:
             "MAX_CONCURRENT_TASKS": ("max_concurrent_tasks", int),
             "TASK_TIMEOUT": ("task_timeout_seconds", int),
             "HEALTH_CHECK_INTERVAL": ("health_check_interval_seconds", int),
-            "ENABLE_SAFETY": ("enable_safety_mechanisms", lambda x: x.lower() == "true"),
-            "ENABLE_CIRCUIT_BREAKER": ("enable_circuit_breaker", lambda x: x.lower() == "true"),
-            "ENABLE_AUTO_REMEDIATION": ("enable_auto_remediation", lambda x: x.lower() == "true"),
+            "ENABLE_SAFETY": (
+                "enable_safety_mechanisms",
+                lambda x: x.lower() == "true",
+            ),
+            "ENABLE_CIRCUIT_BREAKER": (
+                "enable_circuit_breaker",
+                lambda x: x.lower() == "true",
+            ),
+            "ENABLE_AUTO_REMEDIATION": (
+                "enable_auto_remediation",
+                lambda x: x.lower() == "true",
+            ),
             "ENABLE_MCP_SERVERS": ("enable_mcp_servers", lambda x: x.lower() == "true"),
             "ENABLE_SLSA": ("enable_slsa_provenance", lambda x: x.lower() == "true"),
-            "ENABLE_CLOUD_DELEGATION": ("enable_cloud_delegation", lambda x: x.lower() == "true"),
+            "ENABLE_CLOUD_DELEGATION": (
+                "enable_cloud_delegation",
+                lambda x: x.lower() == "true",
+            ),
         }
 
         for env_suffix, (attr, converter) in env_mappings.items():
@@ -247,7 +263,10 @@ class ConfigurationManager:
                 value = getattr(value, part)
             elif isinstance(value, dict) and part in value:
                 value = value[part]
-            elif hasattr(self._config, "custom_settings") and part in self._config.custom_settings:
+            elif (
+                hasattr(self._config, "custom_settings")
+                and part in self._config.custom_settings
+            ):
                 return self._config.custom_settings[part]
             else:
                 return default

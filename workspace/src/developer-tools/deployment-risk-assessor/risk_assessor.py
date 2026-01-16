@@ -107,9 +107,16 @@ class DeploymentRiskAssessor:
             return {
                 "github": {
                     "token": os.getenv("GITHUB_TOKEN"),
-                    "repo": os.getenv("GITHUB_REPO", "MachineNativeOps/MachineNativeOps"),
+                    "repo": os.getenv(
+                        "GITHUB_REPO", "MachineNativeOps/MachineNativeOps"
+                    ),
                 },
-                "risk_thresholds": {"low": 30, "medium": 60, "high": 80, "critical": 90},
+                "risk_thresholds": {
+                    "low": 30,
+                    "medium": 60,
+                    "high": 80,
+                    "critical": 90,
+                },
                 "risk_factors": {
                     "code_change_impact": 0.25,
                     "test_coverage": 0.20,
@@ -144,7 +151,9 @@ class DeploymentRiskAssessor:
 
         if not logger.handlers:
             handler = logging.StreamHandler()
-            formatter = logging.Formatter("%(asctime)s - %(name)s - %(levelname)s - %(message)s")
+            formatter = logging.Formatter(
+                "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+            )
             handler.setFormatter(formatter)
             logger.addHandler(handler)
 
@@ -220,7 +229,9 @@ class DeploymentRiskAssessor:
         rollback_time = self._estimate_rollback_time(deployment_type, change_impact)
 
         # 分析部署影響
-        deployment_impact = self._analyze_deployment_impact(change_impact, deployment_type)
+        deployment_impact = self._analyze_deployment_impact(
+            change_impact, deployment_type
+        )
 
         # 確定是否需要審批
         approval_required = self._requires_approval(risk_level, overall_risk_score)
@@ -317,7 +328,10 @@ class DeploymentRiskAssessor:
 
                 # 檢查配置變更
                 for item in commit.stats.files:
-                    if any(ext in item.lower() for ext in [".yaml", ".yml", ".json", ".env"]):
+                    if any(
+                        ext in item.lower()
+                        for ext in [".yaml", ".yml", ".json", ".env"]
+                    ):
                         config_changes += 1
 
             # 評估測試覆蓋率影響（簡化實現）
@@ -405,7 +419,11 @@ class DeploymentRiskAssessor:
 
         recommendations = []
         if coverage_score < 60:
-            recommendations = ["增加單元測試覆蓋率", "添加集成測試", "確保關鍵路徑都有測試覆蓋"]
+            recommendations = [
+                "增加單元測試覆蓋率",
+                "添加集成測試",
+                "確保關鍵路徑都有測試覆蓋",
+            ]
         elif coverage_score < 80:
             recommendations = ["提高邊界條件測試覆蓋", "添加異常處理測試"]
 
@@ -431,7 +449,11 @@ class DeploymentRiskAssessor:
 
         recommendations = []
         if security_issues > 0:
-            recommendations = ["修復已發現的安全漏洞", "運行完整的安全掃描", "審權限和認證邏輯"]
+            recommendations = [
+                "修復已發現的安全漏洞",
+                "運行完整的安全掃描",
+                "審權限和認證邏輯",
+            ]
 
         impact_desc = "高" if risk_value > 70 else "中" if risk_value > 40 else "低"
 
@@ -455,7 +477,11 @@ class DeploymentRiskAssessor:
 
         recommendations = []
         if performance_impact_score > 50:
-            recommendations = ["執行性能基準測試", "監控關鍵性能指標", "準備性能回滾方案"]
+            recommendations = [
+                "執行性能基準測試",
+                "監控關鍵性能指標",
+                "準備性能回滾方案",
+            ]
 
         impact_desc = "高" if risk_value > 70 else "中" if risk_value > 40 else "低"
 
@@ -468,7 +494,9 @@ class DeploymentRiskAssessor:
             recommendations=recommendations,
         )
 
-    def _assess_deployment_complexity_risk(self, deployment_type: DeploymentType) -> RiskFactor:
+    def _assess_deployment_complexity_risk(
+        self, deployment_type: DeploymentType
+    ) -> RiskFactor:
         """評估部署複雜度風險"""
         weight = self.config["risk_factors"]["deployment_complexity"]
 
@@ -516,7 +544,11 @@ class DeploymentRiskAssessor:
 
         recommendations = []
         if environment.lower().startswith("production"):
-            recommendations = ["確保完整的監控覆蓋", "準備緊急回滾程序", "安排值班人員監控"]
+            recommendations = [
+                "確保完整的監控覆蓋",
+                "準備緊急回滾程序",
+                "安排值班人員監控",
+            ]
 
         impact_desc = "高" if risk_value > 70 else "中" if risk_value > 40 else "低"
 
@@ -550,7 +582,9 @@ class DeploymentRiskAssessor:
         else:
             return RiskLevel.LOW
 
-    def _generate_mitigation_strategies(self, risk_factors: List[RiskFactor]) -> List[str]:
+    def _generate_mitigation_strategies(
+        self, risk_factors: List[RiskFactor]
+    ) -> List[str]:
         """生成緩解策略"""
         strategies = []
 
@@ -569,7 +603,9 @@ class DeploymentRiskAssessor:
         # 去重
         return list(set(strategies))
 
-    def _estimate_rollback_time(self, deployment_type: DeploymentType, impact: ChangeImpact) -> int:
+    def _estimate_rollback_time(
+        self, deployment_type: DeploymentType, impact: ChangeImpact
+    ) -> int:
         """估算回滾時間（分鐘）"""
         base_times = {
             DeploymentType.ROLLING: 15,
@@ -602,7 +638,9 @@ class DeploymentRiskAssessor:
                 DeploymentType.CANARY: 0,
                 DeploymentType.RECREATE: 5,
             }.get(deployment_type, 0),
-            "user_impact": "minimal" if deployment_type != DeploymentType.RECREATE else "full",
+            "user_impact": (
+                "minimal" if deployment_type != DeploymentType.RECREATE else "full"
+            ),
             "affected_services": impact.files_changed,  # 簡化
             "estimated_risk_users": "low" if impact.breaking_changes == 0 else "high",
         }
@@ -620,10 +658,13 @@ class DeploymentRiskAssessor:
     def _update_metrics(self, assessment: RiskAssessment):
         """更新 Prometheus 指標"""
         self.risk_score_gauge.labels(
-            environment=assessment.environment, deployment_type=assessment.deployment_type.value
+            environment=assessment.environment,
+            deployment_type=assessment.deployment_type.value,
         ).set(assessment.risk_score)
 
-        self.assessment_counter.labels(risk_level=assessment.overall_risk_level.value).inc()
+        self.assessment_counter.labels(
+            risk_level=assessment.overall_risk_level.value
+        ).inc()
 
     def generate_risk_report(self, assessment: RiskAssessment) -> str:
         """生成風險評估報告"""

@@ -11,15 +11,6 @@ Integration Automation Engine - 整合全自動化引擎
 Version: 1.0.0
 """
 
-from engine_base import (
-    BaseEngine,
-    EngineConfig,
-    EngineState,
-    EngineType,
-    ExecutionEngineBase,
-    ExecutionMode,
-    TaskResult,
-)
 import asyncio
 import shutil
 import sys
@@ -29,6 +20,15 @@ from pathlib import Path
 from typing import Any, Dict, List, Optional
 
 import yaml
+from engine_base import (
+    BaseEngine,
+    EngineConfig,
+    EngineState,
+    EngineType,
+    ExecutionEngineBase,
+    ExecutionMode,
+    TaskResult,
+)
 
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
@@ -72,7 +72,9 @@ class IntegrationAutomationEngine(ExecutionEngineBase):
             elif operation == "full_integration":
                 result = await self._full_integration_cycle()
             else:
-                return TaskResult(task_id=task_id, success=False, error=f"未知操作: {operation}")
+                return TaskResult(
+                    task_id=task_id, success=False, error=f"未知操作: {operation}"
+                )
 
             return TaskResult(task_id=task_id, success=True, result=result)
 

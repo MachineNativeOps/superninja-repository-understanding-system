@@ -74,14 +74,23 @@ class CoreSatelliteArchitecture:
             ),
             satellite_allocations=[
                 PromptAllocation(
-                    PromptCategory.PROFESSIONAL, AllocationRole.SATELLITE, 15.0, "專業級開發"
+                    PromptCategory.PROFESSIONAL,
+                    AllocationRole.SATELLITE,
+                    15.0,
+                    "專業級開發",
                 ),
                 PromptAllocation(
-                    PromptCategory.HIGH_VALUE, AllocationRole.SATELLITE, 10.0, "高價值應用"
+                    PromptCategory.HIGH_VALUE,
+                    AllocationRole.SATELLITE,
+                    10.0,
+                    "高價值應用",
                 ),
             ],
             exploration_allocation=PromptAllocation(
-                PromptCategory.INTELLIGENT, AllocationRole.EXPLORATION, 5.0, "智能化探索"
+                PromptCategory.INTELLIGENT,
+                AllocationRole.EXPLORATION,
+                5.0,
+                "智能化探索",
             ),
         )
 
@@ -94,7 +103,10 @@ class CoreSatelliteArchitecture:
             ),
             satellite_allocations=[
                 PromptAllocation(
-                    PromptCategory.BUSINESS_ORIENTED, AllocationRole.SATELLITE, 20.0, "商業導向"
+                    PromptCategory.BUSINESS_ORIENTED,
+                    AllocationRole.SATELLITE,
+                    20.0,
+                    "商業導向",
                 ),
                 PromptAllocation(
                     PromptCategory.ENTERPRISE, AllocationRole.SATELLITE, 5.0, "企業基礎"
@@ -116,7 +128,9 @@ class CoreSatelliteArchitecture:
                 PromptAllocation(
                     PromptCategory.INTELLIGENT, AllocationRole.SATELLITE, 15.0, "智能化"
                 ),
-                PromptAllocation(PromptCategory.NEXT_GEN, AllocationRole.SATELLITE, 10.0, "下世代"),
+                PromptAllocation(
+                    PromptCategory.NEXT_GEN, AllocationRole.SATELLITE, 10.0, "下世代"
+                ),
             ],
             exploration_allocation=PromptAllocation(
                 PromptCategory.HIGH_VALUE, AllocationRole.EXPLORATION, 5.0, "新興研究"

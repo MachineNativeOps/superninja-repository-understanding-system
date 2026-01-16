@@ -665,7 +665,9 @@ class GuardrailSystem:
             stats["total_failures"] += guardrail.fail_count
 
         if stats["total_checks"] > 0:
-            stats["pass_rate"] = round(stats["total_passes"] / stats["total_checks"] * 100, 2)
+            stats["pass_rate"] = round(
+                stats["total_passes"] / stats["total_checks"] * 100, 2
+            )
         else:
             stats["pass_rate"] = 0
 

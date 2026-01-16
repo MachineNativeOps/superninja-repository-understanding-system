@@ -76,7 +76,9 @@ def calculate_statistics(
     """Calculate all dashboard statistics"""
     stats = {
         "timestamp": datetime.datetime.utcnow().isoformat() + "Z",
-        "generation_timestamp": datetime.datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S UTC"),
+        "generation_timestamp": datetime.datetime.utcnow().strftime(
+            "%Y-%m-%d %H:%M:%S UTC"
+        ),
     }
 
     # Health score
@@ -103,7 +105,10 @@ def calculate_statistics(
 
     # Architecture
     stats["architecture_compliance"] = (
-        health_data.get("components", {}).get("architecture_alignment", {}).get("score", 0) * 5
+        health_data.get("components", {})
+        .get("architecture_alignment", {})
+        .get("score", 0)
+        * 5
     )
 
     # Trends
@@ -230,9 +235,14 @@ def generate_hotspot_table(violations: list[dict]) -> str:
         vdir = "/".join(vfile.split("/")[:2]) if "/" in vfile else vfile
         dir_counts[vdir] += 1
 
-    lines = ["| Directory | Violations | Status |", "|-----------|------------|--------|"]
+    lines = [
+        "| Directory | Violations | Status |",
+        "|-----------|------------|--------|",
+    ]
 
-    for vdir, count in sorted(dir_counts.items(), key=lambda x: x[1], reverse=True)[:10]:
+    for vdir, count in sorted(dir_counts.items(), key=lambda x: x[1], reverse=True)[
+        :10
+    ]:
         status = "🔴" if count > 10 else "🟡" if count > 5 else "🟢"
         lines.append(f"| `{vdir}` | {count} | {status} |")
 
@@ -251,7 +261,9 @@ def generate_dashboard(args):
     semgrep_data = load_sarif(args.semgrep_results)
 
     console.print("[cyan]Calculating statistics...[/cyan]")
-    stats = calculate_statistics(governance_data, codeql_data, semgrep_data, health_data)
+    stats = calculate_statistics(
+        governance_data, codeql_data, semgrep_data, health_data
+    )
 
     console.print("[cyan]Generating dashboard sections...[/cyan]")
 
@@ -279,7 +291,9 @@ def generate_dashboard(args):
         "COMPLIANCE_STATUS": stats["compliance_status"],
         "FIX_SUCCESS_RATE": "85",  # Placeholder
         "FIX_STATUS": "🟢",
-        "VIOLATIONS_TABLE": generate_violations_table(governance_data.get("violations", [])),
+        "VIOLATIONS_TABLE": generate_violations_table(
+            governance_data.get("violations", [])
+        ),
         "LANGUAGE_DISTRIBUTION_CHART": generate_language_chart(governance_data),
         "HEALTH_SCORE_TREND_CHART": "Trend data not available",
         "VIOLATION_TREND_CHART": generate_trend_chart(history_data),
@@ -310,7 +324,9 @@ def generate_dashboard(args):
 
 
 def main():
-    parser = argparse.ArgumentParser(description="Generate Language Governance Dashboard")
+    parser = argparse.ArgumentParser(
+        description="Generate Language Governance Dashboard"
+    )
     parser.add_argument(
         "--governance-report",
         default="governance/language-governance-report.json",
@@ -327,13 +343,19 @@ def main():
         help="Path to Semgrep SARIF file",
     )
     parser.add_argument(
-        "--history", default="knowledge/language-history.yaml", help="Path to fix history YAML"
+        "--history",
+        default="knowledge/language-history.yaml",
+        help="Path to fix history YAML",
     )
     parser.add_argument(
-        "--health", default="knowledge/language-health-score.yaml", help="Path to health score YAML"
+        "--health",
+        default="knowledge/language-health-score.yaml",
+        help="Path to health score YAML",
     )
     parser.add_argument(
-        "--output", default="docs/LANGUAGE_GOVERNANCE_DASHBOARD.md", help="Output dashboard file"
+        "--output",
+        default="docs/LANGUAGE_GOVERNANCE_DASHBOARD.md",
+        help="Output dashboard file",
     )
 
     args = parser.parse_args()

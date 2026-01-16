@@ -243,8 +243,7 @@ class StructureValidator:
                     level=ValidationLevel.WARNING,
                     message=f"根目錄檔案過多 ({len(root_files)} 個，建議 <= {self.spec.max_root_files})",
                     suggestion="將檔案分類到子目錄",
-                )
-            )
+                ))
 
         return issues
 
@@ -319,7 +318,7 @@ class ReferenceValidator:
                     if (
                         link_href.startswith("./")
                         or link_href.startswith("../")
-                        or not "://" in link_href
+                        or "://" not in link_href
                     ):
                         resolved = (md_file.parent / link_href.split("#")[0]).resolve()
                         if not resolved.exists():
@@ -389,7 +388,9 @@ class ReferenceValidator:
                 new_path = f"{path}.{key}" if path else key
 
                 # 檢查路徑相關的鍵
-                if key.endswith(("_path", "_file", "path", "file")) and isinstance(value, str):
+                if key.endswith(("_path", "_file", "path", "file")) and isinstance(
+                    value, str
+                ):
                     if (
                         value
                         and value != "_pending"
@@ -408,11 +409,15 @@ class ReferenceValidator:
                                 )
                             )
 
-                issues.extend(self._check_yaml_paths(value, yaml_file, target_path, new_path))
+                issues.extend(
+                    self._check_yaml_paths(value, yaml_file, target_path, new_path)
+                )
 
         elif isinstance(data, list):
             for i, item in enumerate(data):
-                issues.extend(self._check_yaml_paths(item, yaml_file, target_path, f"{path}[{i}]"))
+                issues.extend(
+                    self._check_yaml_paths(item, yaml_file, target_path, f"{path}[{i}]")
+                )
 
         return issues
 
@@ -521,10 +526,10 @@ class NamingValidator:
                             category=ValidationCategory.NAMING,
                             level=ValidationLevel.WARNING,
                             message=f"命名不符合 {self.convention} 規範: {file.name}",
-                            file_path=str(file.relative_to(target_path)),
+                            file_path=str(
+                                file.relative_to(target_path)),
                             suggestion=f"建議重命名為: {self._suggest_name(stem, file.suffix)}",
-                        )
-                    )
+                        ))
 
         return issues
 
@@ -651,7 +656,13 @@ class ContentValidator:
         issues = []
 
         for file in target_path.rglob("*"):
-            if file.is_file() and file.suffix in [".md", ".yaml", ".yml", ".json", ".txt"]:
+            if file.is_file() and file.suffix in [
+                ".md",
+                ".yaml",
+                ".yml",
+                ".json",
+                ".txt",
+            ]:
                 try:
                     file.read_text(encoding="utf-8")
                 except UnicodeDecodeError:
@@ -892,9 +903,13 @@ def main():
 
     # full 命令
     full_parser = subparsers.add_parser("full", help="完整驗證")
-    full_parser.add_argument("--target", "-t", default=str(PLAYBOOKS_PATH), help="目標目錄")
+    full_parser.add_argument(
+        "--target", "-t", default=str(PLAYBOOKS_PATH), help="目標目錄"
+    )
     full_parser.add_argument("--output", "-o", help="輸出報告")
-    full_parser.add_argument("--format", "-f", choices=["md", "yaml", "json"], default="md")
+    full_parser.add_argument(
+        "--format", "-f", choices=["md", "yaml", "json"], default="md"
+    )
 
     # structure 命令
     struct_parser = subparsers.add_parser("structure", help="結構驗證")
@@ -947,10 +962,14 @@ def main():
                 output = report_gen.generate_markdown(result)
             elif args.format == "yaml":
                 output = yaml.dump(
-                    report_gen.generate_yaml(result), allow_unicode=True, default_flow_style=False
+                    report_gen.generate_yaml(result),
+                    allow_unicode=True,
+                    default_flow_style=False,
                 )
             else:
-                output = json.dumps(report_gen.generate_yaml(result), indent=2, ensure_ascii=False)
+                output = json.dumps(
+                    report_gen.generate_yaml(result), indent=2, ensure_ascii=False
+                )
 
             with open(args.output, "w", encoding="utf-8") as f:
                 f.write(output)
@@ -992,7 +1011,9 @@ def main():
             output = report_gen.generate_markdown(result)
         else:
             output = yaml.dump(
-                report_gen.generate_yaml(result), allow_unicode=True, default_flow_style=False
+                report_gen.generate_yaml(result),
+                allow_unicode=True,
+                default_flow_style=False,
             )
 
         with open(args.output, "w", encoding="utf-8") as f:

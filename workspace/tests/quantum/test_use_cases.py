@@ -37,14 +37,21 @@ class TestWorkflowUseCases:
 
     def test_create_workflow(self, use_cases):
         """Test creating a workflow."""
-        tasks = [{"type": "classical", "config": {"operation": "preprocess", "data": [1.0, 2.0]}}]
+        tasks = [
+            {
+                "type": "classical",
+                "config": {"operation": "preprocess", "data": [1.0, 2.0]},
+            }
+        ]
 
         workflow_id = use_cases.create_workflow("Test Workflow", tasks)
         assert workflow_id > 0
 
     def test_create_workflow_invalid_name(self, use_cases):
         """Test creating workflow with invalid name."""
-        tasks = [{"type": "classical", "config": {"operation": "preprocess", "data": [1.0]}}]
+        tasks = [
+            {"type": "classical", "config": {"operation": "preprocess", "data": [1.0]}}
+        ]
 
         with pytest.raises(ValidationError):
             use_cases.create_workflow("", tasks)
@@ -57,7 +64,10 @@ class TestWorkflowUseCases:
     def test_execute_workflow(self, use_cases):
         """Test executing a workflow."""
         tasks = [
-            {"type": "classical", "config": {"operation": "preprocess", "data": [1.0, 2.0, 3.0]}}
+            {
+                "type": "classical",
+                "config": {"operation": "preprocess", "data": [1.0, 2.0, 3.0]},
+            }
         ]
 
         workflow_id = use_cases.create_workflow("Test Workflow", tasks)
@@ -69,7 +79,9 @@ class TestWorkflowUseCases:
 
     def test_get_workflow_status(self, use_cases):
         """Test getting workflow status."""
-        tasks = [{"type": "classical", "config": {"operation": "preprocess", "data": [1.0]}}]
+        tasks = [
+            {"type": "classical", "config": {"operation": "preprocess", "data": [1.0]}}
+        ]
 
         workflow_id = use_cases.create_workflow("Test Workflow", tasks)
         status = use_cases.get_workflow_status(workflow_id)
@@ -87,7 +99,12 @@ class TestWorkflowUseCases:
         """Test listing workflows."""
         # Create multiple workflows
         for i in range(3):
-            tasks = [{"type": "classical", "config": {"operation": "preprocess", "data": [1.0]}}]
+            tasks = [
+                {
+                    "type": "classical",
+                    "config": {"operation": "preprocess", "data": [1.0]},
+                }
+            ]
             use_cases.create_workflow(f"Workflow {i}", tasks)
 
         workflows = use_cases.list_workflows(limit=10)

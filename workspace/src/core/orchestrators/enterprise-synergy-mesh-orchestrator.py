@@ -80,7 +80,9 @@ class RetryPolicy:
 
     def get_delay(self, attempt: int) -> float:
         """計算重試延遲（指數退避）"""
-        delay = min(self.initial_delay * (self.exponential_base**attempt), self.max_delay)
+        delay = min(
+            self.initial_delay * (self.exponential_base**attempt), self.max_delay
+        )
         return delay
 
 
@@ -410,7 +412,10 @@ class EnterpriseSynergyMeshOrchestrator:
             return False
 
     def _has_circular_dependency(
-        self, component_id: str, new_dependencies: List[str], visited: Optional[Set[str]] = None
+        self,
+        component_id: str,
+        new_dependencies: List[str],
+        visited: Optional[Set[str]] = None,
     ) -> bool:
         """檢測循環依賴"""
         if visited is None:
@@ -465,10 +470,17 @@ class EnterpriseSynergyMeshOrchestrator:
     # ========================================================================
 
     async def execute_with_retry(
-        self, func, component_id: str, tenant_id: str, max_retries: Optional[int] = None, **kwargs
+        self,
+        func,
+        component_id: str,
+        tenant_id: str,
+        max_retries: Optional[int] = None,
+        **kwargs,
     ) -> ExecutionResult:
         """帶重試的執行"""
-        policy = self.retry_policies.get(component_id, RetryPolicy(max_retries=max_retries or 3))
+        policy = self.retry_policies.get(
+            component_id, RetryPolicy(max_retries=max_retries or 3)
+        )
 
         start_time = datetime.now()
         last_error = None
@@ -477,7 +489,9 @@ class EnterpriseSynergyMeshOrchestrator:
             try:
                 if attempt > 0:
                     delay = policy.get_delay(attempt - 1)
-                    logger.info(f"⏳ 重試 {component_id} (第 {attempt} 次，延遲 {delay}s)")
+                    logger.info(
+                        f"⏳ 重試 {component_id} (第 {attempt} 次，延遲 {delay}s)"
+                    )
                     await asyncio.sleep(delay)
                     self.metrics["total_retry_attempts"] += 1
 
@@ -546,7 +560,9 @@ class EnterpriseSynergyMeshOrchestrator:
             self.rate_limiters[tenant_id] = (1, now)
             return True
 
-    def check_resource_quota(self, tenant_id: str, resource_type: str = "tasks") -> bool:
+    def check_resource_quota(
+        self, tenant_id: str, resource_type: str = "tasks"
+    ) -> bool:
         """檢查資源配額"""
         if tenant_id not in self.tenants:
             return True
@@ -555,7 +571,9 @@ class EnterpriseSynergyMeshOrchestrator:
         quota = tenant.quota
 
         if resource_type == "concurrent":
-            active_count = len([t for t in self.active_tasks if t.startswith(tenant_id)])
+            active_count = len(
+                [t for t in self.active_tasks if t.startswith(tenant_id)]
+            )
             return active_count < quota.max_concurrent_tasks
 
         return True
@@ -592,7 +610,9 @@ class EnterpriseSynergyMeshOrchestrator:
         cutoff = datetime.now() - timedelta(hours=hours)
 
         return [
-            log for log in self.audit_logs if log.tenant_id == tenant_id and log.timestamp >= cutoff
+            log
+            for log in self.audit_logs
+            if log.tenant_id == tenant_id and log.timestamp >= cutoff
         ]
 
     # ========================================================================
@@ -663,12 +683,16 @@ class EnterpriseSynergyMeshOrchestrator:
 
     def get_tenant_health(self, tenant_id: str) -> Dict[str, Any]:
         """獲取租戶健康狀態"""
-        tenant_logs = [log for log in self.execution_results if log.tenant_id == tenant_id]
+        tenant_logs = [
+            log for log in self.execution_results if log.tenant_id == tenant_id
+        ]
 
         if not tenant_logs:
             return {"status": "no_data"}
 
-        successful = len([l for l in tenant_logs if l.status == ExecutionStatus.SUCCESS])
+        successful = len(
+            [l for l in tenant_logs if l.status == ExecutionStatus.SUCCESS]
+        )
         total = len(tenant_logs)
 
         return {
@@ -676,7 +700,9 @@ class EnterpriseSynergyMeshOrchestrator:
             "total_executions": total,
             "successful": successful,
             "uptime_percent": (successful / max(total, 1)) * 100,
-            "last_execution": tenant_logs[-1].end_time.isoformat() if tenant_logs else None,
+            "last_execution": (
+                tenant_logs[-1].end_time.isoformat() if tenant_logs else None
+            ),
         }
 
 

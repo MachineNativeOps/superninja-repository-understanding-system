@@ -86,7 +86,10 @@ class RecognitionServer:
             "action": action,
             "need_code": need_code,
             "query": query,
-            "context": {"has_problem": bool(problem_content), "has_code": bool(editor_code)},
+            "context": {
+                "has_problem": bool(problem_content),
+                "has_code": bool(editor_code),
+            },
         }
 
         logger.info(f"Intent analysis result: action={action}, need_code={need_code}")
@@ -167,7 +170,9 @@ class RecognitionServer:
         # Check for diagram generation
         if any(keyword in query_lower for keyword in diagram_keywords):
             # Exclude if asking about code itself
-            if "code" in query_lower and ("show" in query_lower or "mermaid" in query_lower):
+            if "code" in query_lower and (
+                "show" in query_lower or "mermaid" in query_lower
+            ):
                 return self.ACTION_PROCEED
             return self.ACTION_GENERATE_DIAGRAM
 
@@ -272,13 +277,19 @@ class RecognitionServer:
 
         # Check safety
         if not intent_result["safe"]:
-            yield {"type": "blocked", "data": {"message": "Request blocked for security"}}
+            yield {
+                "type": "blocked",
+                "data": {"message": "Request blocked for security"},
+            }
             return
 
         # Yield routing information
         yield {
             "type": "routing",
-            "data": {"action": intent_result["action"], "need_code": intent_result["need_code"]},
+            "data": {
+                "action": intent_result["action"],
+                "need_code": intent_result["need_code"],
+            },
         }
 
         # Complete

@@ -21,7 +21,9 @@ class ValidationResult:
     valid_files: int = 0
     invalid_files: int = 0
     errors: List[Tuple[str, str]] = field(default_factory=list)  # (file, error_message)
-    warnings: List[Tuple[str, str]] = field(default_factory=list)  # (file, warning_message)
+    warnings: List[Tuple[str, str]] = field(
+        default_factory=list
+    )  # (file, warning_message)
 
 
 class NamespaceValidator:
@@ -66,7 +68,9 @@ class NamespaceValidator:
             # 檢查禁止的模式
             for pattern in self.FORBIDDEN_PATTERNS:
                 if pattern in content.lower():
-                    self.result.errors.append((str(file_path), "檢測到禁止的舊命名空間引用"))
+                    self.result.errors.append(
+                        (str(file_path), "檢測到禁止的舊命名空間引用")
+                    )
                     return False
 
             # 嘗試解析 YAML
@@ -82,16 +86,15 @@ class NamespaceValidator:
                     if "apiVersion" in doc:
                         if doc["apiVersion"] != self.REQUIRED_API_VERSION:
                             self.result.errors.append(
-                                (
-                                    str(file_path),
-                                    f"Document {doc_idx}: apiVersion 應為 {self.REQUIRED_API_VERSION}",
-                                )
-                            )
+                                (str(file_path), f"Document {doc_idx}: apiVersion 應為 {self.REQUIRED_API_VERSION}", ))
                             file_valid = False
 
                     # 檢查 kind
                     if "kind" in doc:
-                        if "GlobalBaseline" in doc["kind"] and doc["kind"] != self.REQUIRED_KIND:
+                        if (
+                            "GlobalBaseline" in doc["kind"]
+                            and doc["kind"] != self.REQUIRED_KIND
+                        ):
                             self.result.errors.append(
                                 (
                                     str(file_path),
@@ -108,48 +111,44 @@ class NamespaceValidator:
                         if "namespace" in metadata:
                             if metadata["namespace"] != self.REQUIRED_NAMESPACE:
                                 self.result.errors.append(
-                                    (
-                                        str(file_path),
-                                        f"Document {doc_idx}: namespace 應為 {self.REQUIRED_NAMESPACE}",
-                                    )
-                                )
+                                    (str(file_path), f"Document {doc_idx}: namespace 應為 {self.REQUIRED_NAMESPACE}", ))
                                 file_valid = False
 
                         # 檢查 labels
-                        if "labels" in metadata and isinstance(metadata["labels"], dict):
+                        if "labels" in metadata and isinstance(
+                            metadata["labels"], dict
+                        ):
                             for key in metadata["labels"].keys():
-                                if "/" in key and not key.startswith(self.REQUIRED_LABEL_PREFIX):
+                                if "/" in key and not key.startswith(
+                                    self.REQUIRED_LABEL_PREFIX
+                                ):
                                     self.result.warnings.append(
-                                        (
-                                            str(file_path),
-                                            f"Document {doc_idx}: label key '{key}' 應使用前綴 {self.REQUIRED_LABEL_PREFIX}",
-                                        )
-                                    )
+                                        (str(file_path), f"Document {doc_idx}: label key '{key}' 應使用前綴 {self.REQUIRED_LABEL_PREFIX}", ))
 
                         # 檢查 annotations
-                        if "annotations" in metadata and isinstance(metadata["annotations"], dict):
+                        if "annotations" in metadata and isinstance(
+                            metadata["annotations"], dict
+                        ):
                             for key, value in metadata["annotations"].items():
                                 # 檢查 URN
                                 if "urn" in key.lower() and isinstance(value, str):
-                                    if value.startswith("urn:") and not value.startswith(
+                                    if value.startswith(
+                                        "urn:"
+                                    ) and not value.startswith(
                                         self.REQUIRED_URN_PREFIX
                                     ):
                                         self.result.errors.append(
-                                            (
-                                                str(file_path),
-                                                f"Document {doc_idx}: URN 應使用前綴 {self.REQUIRED_URN_PREFIX}",
-                                            )
-                                        )
+                                            (str(file_path), f"Document {doc_idx}: URN 應使用前綴 {self.REQUIRED_URN_PREFIX}", ))
                                         file_valid = False
 
                                 # 檢查 annotation key
-                                if "/" in key and not key.startswith(self.REQUIRED_LABEL_PREFIX):
+                                if "/" in key and not key.startswith(
+                                    self.REQUIRED_LABEL_PREFIX
+                                ):
                                     self.result.warnings.append(
-                                        (
-                                            str(file_path),
-                                            f"Document {doc_idx}: annotation key '{key}' 應使用前綴 {self.REQUIRED_LABEL_PREFIX}",
-                                        )
-                                    )
+                                        (str(file_path),
+                                         f"Document {doc_idx}: annotation key '{key}' 應使用前綴 {self.REQUIRED_LABEL_PREFIX}",
+                                         ))
 
                 return file_valid
 
@@ -174,7 +173,9 @@ class NamespaceValidator:
 
         # 過濾排除目錄
         yaml_files = [
-            f for f in yaml_files if not any(excluded in f.parts for excluded in self.exclude_dirs)
+            f
+            for f in yaml_files
+            if not any(excluded in f.parts for excluded in self.exclude_dirs)
         ]
 
         print(f"📁 找到 {len(yaml_files)} 個 YAML 文件")

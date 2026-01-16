@@ -124,7 +124,9 @@ class AnalysisResult:
             SeverityLevel.INFO: 0.5,
         }
 
-        total_weight = sum(severity_weights.get(issue.severity, 0) for issue in self.issues)
+        total_weight = sum(
+            severity_weights.get(issue.severity, 0) for issue in self.issues
+        )
 
         return max(0, 100 - total_weight)
 
@@ -169,7 +171,9 @@ class BaseAnalyzer:
         """
         # Default implementation for base analyzer
         # Subclasses should override this method
-        self.logger.warning(f"{self.__class__.__name__}.analyze() called but not implemented")
+        self.logger.warning(
+            f"{self.__class__.__name__}.analyze() called but not implemented"
+        )
         return []
 
 
@@ -246,7 +250,9 @@ class StaticAnalyzer(BaseAnalyzer):
                     type=IssueType.SECURITY,
                     severity=SeverityLevel.HIGH,
                     file=file_path,
-                    line=self._find_line_number(code, r"(query|execute|sql)\s*=\s*['\"].*\+"),
+                    line=self._find_line_number(
+                        code, r"(query|execute|sql)\s*=\s*['\"].*\+"
+                    ),
                     column=1,
                     message="SQL injection risk detected",
                     description="檢測到潛在的 SQL 注入風險",
@@ -423,7 +429,11 @@ class StaticAnalyzer(BaseAnalyzer):
 
     def _contains_xss_risk(self, code: str) -> bool:
         """檢測 XSS 風險"""
-        patterns = [r"innerHTML\s*=\s*[^(]", r"document\.write\(", r"\.html\([^)]*\+[^)]*\)"]
+        patterns = [
+            r"innerHTML\s*=\s*[^(]",
+            r"document\.write\(",
+            r"\.html\([^)]*\+[^)]*\)",
+        ]
         for pattern in patterns:
             if re.search(pattern, code, re.IGNORECASE):
                 return True
@@ -443,7 +453,9 @@ class StaticAnalyzer(BaseAnalyzer):
         lines = code.split("\n")
         # 過濾空行和註釋
         lines = [
-            line.strip() for line in lines if line.strip() and not line.strip().startswith("#")
+            line.strip()
+            for line in lines
+            if line.strip() and not line.strip().startswith("#")
         ]
         if len(lines) < 10:
             return 0.0
@@ -527,7 +539,9 @@ class CodeAnalysisEngine:
             self.logger.error(f"分析文件失敗 {file_path}: {e}")
             return []
 
-    async def analyze_repository(self, repo_path: str, commit_hash: str) -> AnalysisResult:
+    async def analyze_repository(
+        self, repo_path: str, commit_hash: str
+    ) -> AnalysisResult:
         """
         分析整個代碼庫
 
@@ -553,7 +567,11 @@ class CodeAnalysisEngine:
             analysis_timestamp=start_time,
             duration=duration,
             issues=all_issues,
-            metrics={"files_analyzed": 0, "lines_of_code": 0, "total_issues": len(all_issues)},
+            metrics={
+                "files_analyzed": 0,
+                "lines_of_code": 0,
+                "total_issues": len(all_issues),
+            },
         )
 
 
@@ -565,7 +583,8 @@ class CodeAnalysisEngine:
 async def main():
     """主程序"""
     logging.basicConfig(
-        level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+        level=logging.INFO,
+        format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
     )
 
     print("代碼分析引擎已初始化")

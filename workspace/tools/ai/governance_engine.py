@@ -276,7 +276,9 @@ class AIGovernanceEngine:
         affected_count = context.get("affected_resources", len(resources))
 
         # Assess risk
-        risk_level, risk_score = self.assess_risk(change_type, impact_scope, affected_count)
+        risk_level, risk_score = self.assess_risk(
+            change_type, impact_scope, affected_count
+        )
 
         # Detect patterns
         pattern_analysis = self.detect_naming_patterns(resources)

@@ -181,7 +181,9 @@ class EventWriter:
         events = session.get("events", [])
 
         if len(events) < threshold:
-            print(f"Only {len(events)} events, threshold is {threshold}. No compression needed.")
+            print(
+                f"Only {len(events)} events, threshold is {threshold}. No compression needed."
+            )
             return 0
 
         # Keep recent events, compress older ones
@@ -259,8 +261,12 @@ class EventWriter:
         if "compressed_events" not in vector_data:
             vector_data["compressed_events"] = []
         vector_data["compressed_events"].append(compressed_vector)
-        vector_data["statistics"]["compressed_count"] = len(vector_data["compressed_events"])
-        vector_data["statistics"]["last_compression"] = datetime.utcnow().isoformat() + "Z"
+        vector_data["statistics"]["compressed_count"] = len(
+            vector_data["compressed_events"]
+        )
+        vector_data["statistics"]["last_compression"] = (
+            datetime.utcnow().isoformat() + "Z"
+        )
         self._save_json(self.vector_path, vector_data)
 
         print(f"✓ Compressed {len(to_compress)} events to {compressed_file}")
@@ -302,7 +308,9 @@ class EventWriter:
         enriched_results = []
         for r in results[:top_k]:
             if r["event_id"] in events_map:
-                enriched_results.append({**r, "data": events_map[r["event_id"]].get("data", {})})
+                enriched_results.append(
+                    {**r, "data": events_map[r["event_id"]].get("data", {})}
+                )
             else:
                 enriched_results.append(r)
 
@@ -366,7 +374,9 @@ class EventWriter:
 
         return context
 
-    def close_loop(self, start_event_id: str, end_event_id: str, loop_type: str) -> Dict:
+    def close_loop(
+        self, start_event_id: str, end_event_id: str, loop_type: str
+    ) -> Dict:
         """
         Close an event loop.
 
@@ -420,7 +430,9 @@ def main():
     # Query command
     query_parser = subparsers.add_parser("query", help="Query events")
     query_parser.add_argument("query", help="Search query")
-    query_parser.add_argument("--top-k", "-k", type=int, default=10, help="Number of results")
+    query_parser.add_argument(
+        "--top-k", "-k", type=int, default=10, help="Number of results"
+    )
 
     # Bootstrap command
     subparsers.add_parser("bootstrap", help="Bootstrap agent context")

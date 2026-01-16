@@ -67,8 +67,16 @@ class SecurityScanner:
                 "hardcoded-api-key",
                 "Hardcoded API key detected",
             ),
-            (r'secret\s*=\s*["\'][^"\']+["\']', "hardcoded-secret", "Hardcoded secret detected"),
-            (r'token\s*=\s*["\'][^"\']+["\']', "hardcoded-token", "Hardcoded token detected"),
+            (
+                r'secret\s*=\s*["\'][^"\']+["\']',
+                "hardcoded-secret",
+                "Hardcoded secret detected",
+            ),
+            (
+                r'token\s*=\s*["\'][^"\']+["\']',
+                "hardcoded-token",
+                "Hardcoded token detected",
+            ),
             (
                 r'private[_-]?key\s*=\s*["\'][^"\']+["\']',
                 "hardcoded-private-key",
@@ -98,7 +106,11 @@ class SecurityScanner:
         # XSS 模式
         self.xss_patterns = [
             (r"innerHTML\s*=\s*", "xss", "Potential XSS vulnerability via innerHTML"),
-            (r"document\.write\s*\(", "xss", "Potential XSS vulnerability via document.write"),
+            (
+                r"document\.write\s*\(",
+                "xss",
+                "Potential XSS vulnerability via document.write",
+            ),
             (r"eval\s*\(", "eval-usage", "Use of eval() can lead to code injection"),
         ]
 
@@ -192,7 +204,9 @@ class SecurityScanner:
 
         return issues
 
-    def _check_secrets(self, line: str, file_path: Path, line_num: int) -> List[SecurityIssue]:
+    def _check_secrets(
+        self, line: str, file_path: Path, line_num: int
+    ) -> List[SecurityIssue]:
         """檢查硬編碼密鑰"""
         issues = []
 
@@ -207,8 +221,7 @@ class SecurityScanner:
                         line=line_num,
                         cwe_id="CWE-798",
                         recommendation="Use environment variables or secure vaults for sensitive data",
-                    )
-                )
+                    ))
 
         return issues
 
@@ -229,12 +242,13 @@ class SecurityScanner:
                         line=line_num,
                         cwe_id="CWE-89",
                         recommendation="Use parameterized queries or ORM to prevent SQL injection",
-                    )
-                )
+                    ))
 
         return issues
 
-    def _check_xss(self, line: str, file_path: Path, line_num: int) -> List[SecurityIssue]:
+    def _check_xss(
+        self, line: str, file_path: Path, line_num: int
+    ) -> List[SecurityIssue]:
         """檢查 XSS 風險"""
         issues = []
 
@@ -252,12 +266,13 @@ class SecurityScanner:
                         line=line_num,
                         cwe_id=cwe,
                         recommendation="Sanitize user input and use safe DOM manipulation methods",
-                    )
-                )
+                    ))
 
         return issues
 
-    def _check_crypto(self, line: str, file_path: Path, line_num: int) -> List[SecurityIssue]:
+    def _check_crypto(
+        self, line: str, file_path: Path, line_num: int
+    ) -> List[SecurityIssue]:
         """檢查不安全的加密算法"""
         issues = []
 
@@ -272,8 +287,7 @@ class SecurityScanner:
                         line=line_num,
                         cwe_id="CWE-327",
                         recommendation="Use SHA-256 or stronger cryptographic algorithms",
-                    )
-                )
+                    ))
 
         return issues
 
@@ -294,8 +308,7 @@ class SecurityScanner:
                         line=line_num,
                         cwe_id="CWE-22",
                         recommendation="Validate and sanitize file paths, use whitelisting",
-                    )
-                )
+                    ))
 
         return issues
 

@@ -124,13 +124,33 @@ class TechStackMatrix:
         FrontendTech.NEXTJS: ["Prisma", "NextAuth", "Vercel", "tRPC"],
         FrontendTech.FLUTTER: ["Provider", "Riverpod", "Firebase", "Hive"],
         BackendArch.MICROSERVICES: ["Kubernetes", "Docker", "Istio", "gRPC"],
-        BackendArch.SERVERLESS: ["AWS Lambda", "Azure Functions", "Vercel", "Cloudflare Workers"],
+        BackendArch.SERVERLESS: [
+            "AWS Lambda",
+            "Azure Functions",
+            "Vercel",
+            "Cloudflare Workers",
+        ],
         BackendArch.MONOLITH: ["Django", "Rails", "Spring Boot", "Express"],
-        DataProcessing.REALTIME: ["Apache Kafka", "Redis Streams", "WebSocket", "Socket.io"],
-        DataProcessing.STREAMING: ["Apache Flink", "Spark Streaming", "Kinesis", "Pulsar"],
+        DataProcessing.REALTIME: [
+            "Apache Kafka",
+            "Redis Streams",
+            "WebSocket",
+            "Socket.io",
+        ],
+        DataProcessing.STREAMING: [
+            "Apache Flink",
+            "Spark Streaming",
+            "Kinesis",
+            "Pulsar",
+        ],
         DataProcessing.BATCH: ["Apache Spark", "Hadoop", "Airflow", "dbt"],
         DeploymentStrategy.CLOUD_NATIVE: ["Kubernetes", "Helm", "ArgoCD", "Prometheus"],
-        DeploymentStrategy.EDGE: ["Cloudflare Workers", "Lambda@Edge", "Fly.io", "Deno Deploy"],
+        DeploymentStrategy.EDGE: [
+            "Cloudflare Workers",
+            "Lambda@Edge",
+            "Fly.io",
+            "Deno Deploy",
+        ],
     }
 
     # 複雜度評級
@@ -178,14 +198,24 @@ class TechStackMatrix:
         )
 
         # 計算相容性分數
-        frontend_backend = self.COMPATIBILITY_MATRIX.get((frontend, backend), 75)  # 預設分數
-        data_deploy = self.DATA_DEPLOY_COMPATIBILITY.get((data_processing, deployment), 75)
+        frontend_backend = self.COMPATIBILITY_MATRIX.get(
+            (frontend, backend), 75
+        )  # 預設分數
+        data_deploy = self.DATA_DEPLOY_COMPATIBILITY.get(
+            (data_processing, deployment), 75
+        )
         recommendation.compatibility_score = (frontend_backend + data_deploy) / 2
 
         # 設定評級
-        recommendation.complexity_rating = self.COMPLEXITY_RATINGS.get(backend, "medium")
-        recommendation.scalability_rating = self.SCALABILITY_RATINGS.get(backend, "medium")
-        recommendation.cost_estimate = self.COST_ESTIMATES.get((backend, deployment), "medium")
+        recommendation.complexity_rating = self.COMPLEXITY_RATINGS.get(
+            backend, "medium"
+        )
+        recommendation.scalability_rating = self.SCALABILITY_RATINGS.get(
+            backend, "medium"
+        )
+        recommendation.cost_estimate = self.COST_ESTIMATES.get(
+            (backend, deployment), "medium"
+        )
 
         # 推薦工具
         recommendation.recommended_tools = {
@@ -206,10 +236,16 @@ class TechStackMatrix:
         considerations = []
 
         # 前後端考量
-        if rec.frontend == FrontendTech.NEXTJS and rec.backend == BackendArch.MICROSERVICES:
+        if (
+            rec.frontend == FrontendTech.NEXTJS
+            and rec.backend == BackendArch.MICROSERVICES
+        ):
             considerations.append("Next.js 的 API Routes 可簡化部分後端邏輯")
 
-        if rec.frontend == FrontendTech.FLUTTER and rec.backend == BackendArch.SERVERLESS:
+        if (
+            rec.frontend == FrontendTech.FLUTTER
+            and rec.backend == BackendArch.SERVERLESS
+        ):
             considerations.append("考慮使用 Firebase 作為後端服務")
 
         # 數據處理考量
@@ -226,7 +262,9 @@ class TechStackMatrix:
 
         # 組合特定考量
         if rec.backend == BackendArch.MICROSERVICES:
-            considerations.extend(["需要完善的服務發現機制", "考慮分佈式追蹤和日誌聚合"])
+            considerations.extend(
+                ["需要完善的服務發現機制", "考慮分佈式追蹤和日誌聚合"]
+            )
 
         if rec.compatibility_score < 80:
             considerations.append("⚠️ 此組合相容性較低，建議重新評估")
@@ -234,7 +272,11 @@ class TechStackMatrix:
         return considerations
 
     def recommend_optimal_stack(
-        self, project_type: str, team_size: int, scalability_need: str, budget_level: str
+        self,
+        project_type: str,
+        team_size: int,
+        scalability_need: str,
+        budget_level: str,
     ) -> StackRecommendation:
         """推薦最佳技術棧"""
         # 基於項目類型選擇前端
@@ -252,7 +294,9 @@ class TechStackMatrix:
             backend = BackendArch.MONOLITH
         elif team_size < 15:
             backend = (
-                BackendArch.MODULAR_MONOLITH if budget_level == "low" else BackendArch.SERVERLESS
+                BackendArch.MODULAR_MONOLITH
+                if budget_level == "low"
+                else BackendArch.SERVERLESS
             )
         else:
             backend = BackendArch.MICROSERVICES
@@ -284,7 +328,9 @@ class TechStackMatrix:
 
         comparison = {
             "stacks": [s.to_dict() for s in stacks],
-            "best_compatibility": max(stacks, key=lambda s: s.compatibility_score).to_dict(),
+            "best_compatibility": max(
+                stacks, key=lambda s: s.compatibility_score
+            ).to_dict(),
             "lowest_complexity": min(
                 stacks, key=lambda s: self._complexity_to_score(s.complexity_rating)
             ).to_dict(),
@@ -306,7 +352,9 @@ class TechStackMatrix:
         scores = {"low": 1, "medium": 2, "high": 3, "very_high": 4}
         return scores.get(rating, 2)
 
-    def _create_comparison_matrix(self, stacks: List[StackRecommendation]) -> List[Dict[str, Any]]:
+    def _create_comparison_matrix(
+        self, stacks: List[StackRecommendation]
+    ) -> List[Dict[str, Any]]:
         """創建比較矩陣"""
         matrix = []
         for stack in stacks:

@@ -341,8 +341,7 @@ class CompatibilityChecker:
                                 severity="error",
                                 message=f"欄位 '{field}' 的約束 '{constraint}' 變得更嚴格: {old_value} → {new_value}",
                                 location=f"properties.{field}.{constraint}",
-                            )
-                        )
+                            ))
                     else:
                         issues.append(
                             CompatibilityIssue(
@@ -350,8 +349,7 @@ class CompatibilityChecker:
                                 severity="info",
                                 message=f"欄位 '{field}' 的約束 '{constraint}' 變更: {old_value} → {new_value}",
                                 location=f"properties.{field}.{constraint}",
-                            )
-                        )
+                            ))
 
         return issues
 

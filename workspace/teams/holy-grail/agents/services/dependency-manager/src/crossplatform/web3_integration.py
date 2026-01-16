@@ -76,7 +76,9 @@ class DAppAssessment:
             "estimated_tps_requirement": self.estimated_tps_requirement,
             "feasibility_score": self.feasibility_score,
             "recommended_blockchain": (
-                self.recommended_blockchain.value if self.recommended_blockchain else None
+                self.recommended_blockchain.value
+                if self.recommended_blockchain
+                else None
             ),
             "risks": self.risks,
             "recommendations": self.recommendations,
@@ -345,7 +347,9 @@ class Web3Integration:
         risks = []
 
         if contract.contract_type == "defi":
-            risks.extend(["重入攻擊風險", "閃電貸攻擊風險", "預言機操縱風險", "前端運行風險"])
+            risks.extend(
+                ["重入攻擊風險", "閃電貸攻擊風險", "預言機操縱風險", "前端運行風險"]
+            )
         elif contract.contract_type == "token":
             risks.extend(["無限鑄造漏洞", "轉帳邏輯錯誤", "授權管理不當"])
         elif contract.contract_type == "nft":
@@ -391,7 +395,8 @@ class Web3Integration:
                 "total_nft_strategies": len(self.nft_strategies),
                 "total_contracts": len(self.contracts),
                 "avg_feasibility_score": (
-                    sum(a.feasibility_score for a in self.assessments) / len(self.assessments)
+                    sum(a.feasibility_score for a in self.assessments)
+                    / len(self.assessments)
                     if self.assessments
                     else 0
                 ),

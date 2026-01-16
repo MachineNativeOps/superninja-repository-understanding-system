@@ -9,15 +9,16 @@ dimension. It handles dimension-specific tasks and integrates with the main
 governance automation launcher.
 """
 
+import sys
+from pathlib import Path
+from typing import Any, Dict
+
 from engines import (
     DimensionAutomationEngine,
     DimensionTask,
     TaskType,
     create_dimension_engine,
 )
-import sys
-from pathlib import Path
-from typing import Any, Dict
 
 # Add parent to path for imports
 automation_dir = Path(__file__).parent.parent

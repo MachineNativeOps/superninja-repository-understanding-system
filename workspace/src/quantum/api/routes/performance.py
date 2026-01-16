@@ -43,7 +43,8 @@ async def get_workflow_metrics(workflow_id: int):
             metrics = monitor.get_metrics(workflow_id)
             if metrics is None:
                 raise HTTPException(
-                    status_code=404, detail=f"No metrics found for workflow {workflow_id}"
+                    status_code=404,
+                    detail=f"No metrics found for workflow {workflow_id}",
                 )
 
             return [
@@ -64,7 +65,9 @@ async def get_workflow_metrics(workflow_id: int):
     except HTTPException:
         raise
     except Exception as e:
-        logger.error(f"Error getting metrics for workflow {workflow_id}: {str(e)}", exc_info=True)
+        logger.error(
+            f"Error getting metrics for workflow {workflow_id}: {str(e)}", exc_info=True
+        )
         raise HTTPException(status_code=500, detail="Internal server error")
 
 
@@ -106,5 +109,7 @@ async def get_task_metrics(workflow_id: int, task_id: int):
     except HTTPException:
         raise
     except Exception as e:
-        logger.error(f"Error getting metrics for task {task_id}: {str(e)}", exc_info=True)
+        logger.error(
+            f"Error getting metrics for task {task_id}: {str(e)}", exc_info=True
+        )
         raise HTTPException(status_code=500, detail="Internal server error")

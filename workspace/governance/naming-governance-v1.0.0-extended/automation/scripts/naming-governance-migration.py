@@ -358,7 +358,9 @@ class NamingGovernanceMigration:
                         service_account_id = f"serviceaccounts/{result.stdout.strip()}"
                         if service_account_id in asset_map:
                             asset.dependencies.append(service_account_id)
-                            asset_map[service_account_id].dependents.append(asset.resource_id)
+                            asset_map[service_account_id].dependents.append(
+                                asset.resource_id
+                            )
 
                 elif resource_type == "services":
                     # 檢查關聯的部署
@@ -366,7 +368,8 @@ class NamingGovernanceMigration:
                     if selector:
                         for potential_asset in assets:
                             if (
-                                potential_asset.resource_type in ["deployments", "statefulsets"]
+                                potential_asset.resource_type
+                                in ["deployments", "statefulsets"]
                                 and potential_asset.labels.get("app") == selector
                             ):
                                 asset.dependencies.append(potential_asset.resource_id)
@@ -428,7 +431,16 @@ class NamingGovernanceMigration:
     def _assess_deployment_complexity(self, asset: AssetInfo) -> int:
         """評估部署複雜度"""
         try:
-            cmd = ["kubectl", "get", "deployment", asset.name, "-n", asset.namespace, "-o", "json"]
+            cmd = [
+                "kubectl",
+                "get",
+                "deployment",
+                asset.name,
+                "-n",
+                asset.namespace,
+                "-o",
+                "json",
+            ]
 
             result = subprocess.run(cmd, capture_output=True, text=True, check=True)
             data = json.loads(result.stdout)
@@ -558,7 +570,9 @@ class NamingGovernanceMigration:
         if not assets:
             return 0.0
 
-        compliant_count = sum(1 for asset in assets if self._is_naming_compliant(asset.name))
+        compliant_count = sum(
+            1 for asset in assets if self._is_naming_compliant(asset.name)
+        )
         return compliant_count / len(assets)
 
     def _generate_risk_recommendations(self, risk_factors: Dict[str, Any]) -> List[str]:
@@ -599,7 +613,9 @@ class NamingGovernanceMigration:
                 simulation_results.append(result)
 
                 if not result["success"]:
-                    logger.error(f"資產 {asset.resource_id} 模擬失敗: {result['error']}")
+                    logger.error(
+                        f"資產 {asset.resource_id} 模擬失敗: {result['error']}"
+                    )
                     return False
 
             # 生成模擬報告
@@ -727,7 +743,9 @@ class NamingGovernanceMigration:
 
         return True
 
-    def _generate_dry_run_report(self, plan: MigrationPlan, results: List[Dict[str, Any]]):
+    def _generate_dry_run_report(
+        self, plan: MigrationPlan, results: List[Dict[str, Any]]
+    ):
         """生成 Dry-run 報告"""
         report = {
             "plan_id": plan.plan_id,
@@ -735,7 +753,9 @@ class NamingGovernanceMigration:
             "total_assets": len(plan.assets),
             "successful_simulations": sum(1 for r in results if r["success"]),
             "failed_simulations": sum(1 for r in results if not r["success"]),
-            "estimated_total_downtime": sum(r.get("estimated_downtime", 0) for r in results),
+            "estimated_total_downtime": sum(
+                r.get("estimated_downtime", 0) for r in results
+            ),
             "results": results,
         }
 
@@ -759,7 +779,8 @@ class NamingGovernanceMigration:
             # 按批次分組遷移
             batch_size = self.config.get("max_concurrent_migrations", 3)
             asset_batches = [
-                plan.assets[i : i + batch_size] for i in range(0, len(plan.assets), batch_size)
+                plan.assets[i: i + batch_size]
+                for i in range(0, len(plan.assets), batch_size)
             ]
 
             successful_migrations = 0
@@ -804,7 +825,8 @@ class NamingGovernanceMigration:
         """遷移資產批次"""
         with concurrent.futures.ThreadPoolExecutor(max_workers=3) as executor:
             future_to_asset = {
-                executor.submit(self._migrate_single_asset, asset): asset for asset in assets
+                executor.submit(self._migrate_single_asset, asset): asset
+                for asset in assets
             }
 
             batch_success = True
@@ -880,11 +902,15 @@ class NamingGovernanceMigration:
                 "yaml",
             ]
 
-            result = subprocess.run(export_cmd, capture_output=True, text=True, check=True)
+            result = subprocess.run(
+                export_cmd, capture_output=True, text=True, check=True
+            )
             config_data = result.stdout
 
             # 修改名稱
-            config_data = config_data.replace(f"name: {asset.name}", f"name: {new_name}")
+            config_data = config_data.replace(
+                f"name: {asset.name}", f"name: {new_name}"
+            )
 
             # 創建新資源
             create_cmd = ["kubectl", "apply", "-f", "-"]
@@ -892,7 +918,14 @@ class NamingGovernanceMigration:
             subprocess.run(create_cmd, input=config_data, text=True, check=True)
 
             # 驗證新資源
-            verify_cmd = ["kubectl", "get", asset.resource_type, new_name, "-n", asset.namespace]
+            verify_cmd = [
+                "kubectl",
+                "get",
+                asset.resource_type,
+                new_name,
+                "-n",
+                asset.namespace,
+            ]
 
             subprocess.run(verify_cmd, check=True)
 
@@ -989,7 +1022,9 @@ class NamingGovernanceMigration:
 
                 result = subprocess.run(old_verify_cmd, capture_output=True, text=True)
                 if result.returncode == 0:
-                    logger.warning(f"舊資源仍然存在: {asset.resource_type}/{asset.name}")
+                    logger.warning(
+                        f"舊資源仍然存在: {asset.resource_type}/{asset.name}"
+                    )
 
             except Exception as e:
                 logger.error(f"驗證資產 {asset.resource_id} 失敗: {e}")
@@ -1012,7 +1047,14 @@ class NamingGovernanceMigration:
         for asset in plan.assets:
             try:
                 # 檢查舊資源是否仍然存在
-                cmd = ["kubectl", "get", asset.resource_type, asset.name, "-n", asset.namespace]
+                cmd = [
+                    "kubectl",
+                    "get",
+                    asset.resource_type,
+                    asset.name,
+                    "-n",
+                    asset.namespace,
+                ]
 
                 result = subprocess.run(cmd, capture_output=True, text=True)
                 if result.returncode == 0:
@@ -1092,7 +1134,14 @@ class NamingGovernanceMigration:
         for asset in plan.assets:
             try:
                 # 檢查原始資源是否已恢復
-                cmd = ["kubectl", "get", asset.resource_type, asset.name, "-n", asset.namespace]
+                cmd = [
+                    "kubectl",
+                    "get",
+                    asset.resource_type,
+                    asset.name,
+                    "-n",
+                    asset.namespace,
+                ]
 
                 result = subprocess.run(cmd, capture_output=True, text=True)
                 if result.returncode != 0:
@@ -1114,8 +1163,13 @@ class NamingGovernanceMigration:
             "plan_id": plan.plan_id,
             "generated_at": datetime.now().isoformat(),
             "migration_phases": {
-                "discovery": {"assets_discovered": self.migration_stats["total_assets_discovered"]},
-                "planning": {"plan_created": True, "risk_assessment": plan.risk_assessment},
+                "discovery": {
+                    "assets_discovered": self.migration_stats["total_assets_discovered"]
+                },
+                "planning": {
+                    "plan_created": True,
+                    "risk_assessment": plan.risk_assessment,
+                },
                 "execution": {
                     "assets_migrated": self.migration_stats["assets_migrated"],
                     "assets_failed": self.migration_stats["assets_failed"],
@@ -1136,7 +1190,9 @@ class NamingGovernanceMigration:
         if self.migration_stats["assets_failed"] > 0:
             recommendations.append("有資產遷移失敗，建議人工審核並修復")
 
-        if self.migration_stats["downtime_seconds"] > self.config.get("downtime_threshold", 300):
+        if self.migration_stats["downtime_seconds"] > self.config.get(
+            "downtime_threshold", 300
+        ):
             recommendations.append("實際停機時間超過預期，建議優化遷移策略")
 
         if plan.status == MigrationStatus.ROLLED_BACK:
@@ -1210,9 +1266,13 @@ def main():
         # 輸出摘要
         logger.info(f"遷移完成摘要:")
         logger.info(f"  總資產數: {len(assets)}")
-        logger.info(f"  成功遷移: {migration_system.migration_stats['assets_migrated']}")
+        logger.info(
+            f"  成功遷移: {migration_system.migration_stats['assets_migrated']}"
+        )
         logger.info(f"  失敗數量: {migration_system.migration_stats['assets_failed']}")
-        logger.info(f"  總停機時間: {migration_system.migration_stats['downtime_seconds']} 秒")
+        logger.info(
+            f"  總停機時間: {migration_system.migration_stats['downtime_seconds']} 秒"
+        )
 
         return 0
 

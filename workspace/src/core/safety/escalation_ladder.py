@@ -181,7 +181,9 @@ class EscalationLadder:
 
         return len(self._last_escalation_times) < self.config.max_escalation_rate
 
-    async def escalate(self, reason: str, triggered_by: str, levels: int = 1) -> EscalationEvent:
+    async def escalate(
+        self, reason: str, triggered_by: str, levels: int = 1
+    ) -> EscalationEvent:
         """
         Escalate to a higher level
 
@@ -201,7 +203,9 @@ class EscalationLadder:
             )
 
         old_level = self._current_level
-        new_level_value = min(old_level.value + levels, EscalationLevel.LEVEL_5_DISASTER.value)
+        new_level_value = min(
+            old_level.value + levels, EscalationLevel.LEVEL_5_DISASTER.value
+        )
         new_level = EscalationLevel(new_level_value)
 
         if new_level == old_level:
@@ -237,7 +241,9 @@ class EscalationLadder:
 
         return event
 
-    async def de_escalate(self, reason: str, triggered_by: str, levels: int = 1) -> EscalationEvent:
+    async def de_escalate(
+        self, reason: str, triggered_by: str, levels: int = 1
+    ) -> EscalationEvent:
         """
         De-escalate to a lower level
 
@@ -250,7 +256,9 @@ class EscalationLadder:
             EscalationEvent record
         """
         old_level = self._current_level
-        new_level_value = max(old_level.value - levels, EscalationLevel.LEVEL_0_NORMAL.value)
+        new_level_value = max(
+            old_level.value - levels, EscalationLevel.LEVEL_0_NORMAL.value
+        )
         new_level = EscalationLevel(new_level_value)
 
         if new_level == old_level:
@@ -311,7 +319,9 @@ class EscalationLadder:
 
         return event
 
-    async def acknowledge(self, event_timestamp: datetime, acknowledged_by: str) -> bool:
+    async def acknowledge(
+        self, event_timestamp: datetime, acknowledged_by: str
+    ) -> bool:
         """
         Acknowledge an escalation event
 

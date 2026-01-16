@@ -8,18 +8,17 @@ Phase 4 企業級功能單元測試
 - 下世代安全模組
 """
 
-from enterprise.security import (
-    ComplianceFramework,
-    NextGenSecurity,
-    SBOMFormat,
-    SupplyChainRisk,
-    TrustLevel,
-)
-from enterprise.recommendation import (
-    HealthScore,
-    IntelligentRecommendation,
-    RecommendationType,
-    RiskLevel,
+import os
+import sys
+import unittest
+from datetime import datetime, timedelta
+
+from enterprise.analytics import (
+    CommercialAnalytics,
+    CostCategory,
+    CostItem,
+    TechDebtItem,
+    TechDebtType,
 )
 from enterprise.integration import (
     AuthMethod,
@@ -28,17 +27,19 @@ from enterprise.integration import (
     IntegrationType,
     WebhookEvent,
 )
-from enterprise.analytics import (
-    CommercialAnalytics,
-    CostCategory,
-    CostItem,
-    TechDebtItem,
-    TechDebtType,
+from enterprise.recommendation import (
+    HealthScore,
+    IntelligentRecommendation,
+    RecommendationType,
+    RiskLevel,
 )
-import os
-import sys
-import unittest
-from datetime import datetime, timedelta
+from enterprise.security import (
+    ComplianceFramework,
+    NextGenSecurity,
+    SBOMFormat,
+    SupplyChainRisk,
+    TrustLevel,
+)
 
 # 添加路徑
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "src"))
@@ -97,7 +98,9 @@ class TestEnterpriseIntegration(unittest.TestCase):
         self.assertEqual(len(enabled), 1)
 
         # 按類型
-        slack_only = self.integration.list_integrations(integration_type=IntegrationType.SLACK)
+        slack_only = self.integration.list_integrations(
+            integration_type=IntegrationType.SLACK
+        )
         self.assertEqual(len(slack_only), 1)
 
     def test_webhook_handler(self):
@@ -247,8 +250,18 @@ class TestCommercialAnalytics(unittest.TestCase):
     def test_comprehensive_analysis(self):
         """測試綜合分析"""
         dependencies = [
-            {"name": "express", "version": "4.18.0", "outdated": True, "vulnerabilities": 1},
-            {"name": "lodash", "version": "4.17.21", "outdated": False, "vulnerabilities": 0},
+            {
+                "name": "express",
+                "version": "4.18.0",
+                "outdated": True,
+                "vulnerabilities": 1,
+            },
+            {
+                "name": "lodash",
+                "version": "4.17.21",
+                "outdated": False,
+                "vulnerabilities": 0,
+            },
         ]
 
         analysis = self.analytics.comprehensive_analysis(dependencies)
@@ -342,8 +355,18 @@ class TestIntelligentRecommendation(unittest.TestCase):
     def test_generate_recommendations(self):
         """測試建議生成"""
         dependencies = [
-            {"name": "lodash", "version": "4.0.0", "outdated": True, "vulnerabilities": 0},
-            {"name": "moment", "version": "2.29.0", "outdated": False, "vulnerabilities": 0},
+            {
+                "name": "lodash",
+                "version": "4.0.0",
+                "outdated": True,
+                "vulnerabilities": 0,
+            },
+            {
+                "name": "moment",
+                "version": "2.29.0",
+                "outdated": False,
+                "vulnerabilities": 0,
+            },
         ]
 
         recommendations = self.engine.generate_recommendations(dependencies)
@@ -351,7 +374,9 @@ class TestIntelligentRecommendation(unittest.TestCase):
         self.assertGreater(len(recommendations), 0)
 
         # moment 應有替換建議
-        replace_recs = [r for r in recommendations if r.rec_type == RecommendationType.REPLACE]
+        replace_recs = [
+            r for r in recommendations if r.rec_type == RecommendationType.REPLACE
+        ]
         self.assertGreater(len(replace_recs), 0)
 
     def test_generate_insight_report(self):
@@ -457,7 +482,9 @@ class TestNextGenSecurity(unittest.TestCase):
 
         self.assertGreater(len(alerts), 0)
 
-        malicious_alerts = [a for a in alerts if a.risk_type == SupplyChainRisk.MALICIOUS_PACKAGE]
+        malicious_alerts = [
+            a for a in alerts if a.risk_type == SupplyChainRisk.MALICIOUS_PACKAGE
+        ]
         self.assertGreater(len(malicious_alerts), 0)
 
     def test_analyze_supply_chain_unpinned(self):
@@ -468,7 +495,9 @@ class TestNextGenSecurity(unittest.TestCase):
 
         alerts = self.security.analyze_supply_chain(dependencies)
 
-        unpinned_alerts = [a for a in alerts if a.risk_type == SupplyChainRisk.UNPINNED_DEPENDENCY]
+        unpinned_alerts = [
+            a for a in alerts if a.risk_type == SupplyChainRisk.UNPINNED_DEPENDENCY
+        ]
         self.assertGreater(len(unpinned_alerts), 0)
 
     def test_assess_trust(self):
@@ -489,7 +518,9 @@ class TestNextGenSecurity(unittest.TestCase):
 
     def test_assess_trust_malicious(self):
         """測試信任評估 - 惡意套件"""
-        assessment = self.security.assess_trust(package_name="event-stream", version="3.3.6")
+        assessment = self.security.assess_trust(
+            package_name="event-stream", version="3.3.6"
+        )
 
         self.assertEqual(assessment.trust_level, TrustLevel.UNTRUSTED)
 

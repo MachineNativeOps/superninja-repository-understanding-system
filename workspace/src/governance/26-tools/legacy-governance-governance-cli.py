@@ -25,7 +25,9 @@ def cli():
 @cli.command()
 def init():
     """Initialize governance framework"""
-    console.print("[bold green]Initializing SynergyMesh Governance Framework...[/bold green]")
+    console.print(
+        "[bold green]Initializing SynergyMesh Governance Framework...[/bold green]"
+    )
     console.print("✓ Validating configurations")
     console.print("✓ Setting up monitoring")
     console.print("✓ Generating initial reports")
@@ -56,7 +58,9 @@ def validate(all, schemas, dependencies, verbose):
 
 
 @cli.command()
-@click.option("--type", type=click.Choice(["assessment", "compliance", "metrics"]), required=True)
+@click.option(
+    "--type", type=click.Choice(["assessment", "compliance", "metrics"]), required=True
+)
 @click.option("--output", default="reports/", help="Output directory")
 def report(type, output):
     """Generate governance reports"""

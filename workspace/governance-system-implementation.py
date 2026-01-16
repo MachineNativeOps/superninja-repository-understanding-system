@@ -32,7 +32,8 @@ import yaml
 
 # Configure logging
 logging.basicConfig(
-    level=logging.INFO, format="%(asctime)s - %(levelname)s - [GovernanceSystem] - %(message)s"
+    level=logging.INFO,
+    format="%(asctime)s - %(levelname)s - [GovernanceSystem] - %(message)s",
 )
 logger = logging.getLogger(__name__)
 
@@ -132,9 +133,15 @@ class GovernanceClosedLoopSystem:
 
     def __init__(self, config_path: str = None):
         self.config = self._load_config(config_path)
-        self.evidence_base_dir = Path(self.config.get("evidence_base_dir", "./governance/evidence"))
-        self.exceptions_dir = Path(self.config.get("exceptions_dir", "./governance/exceptions"))
-        self.rollback_dir = Path(self.config.get("rollback_dir", "./governance/rollback"))
+        self.evidence_base_dir = Path(
+            self.config.get("evidence_base_dir", "./governance/evidence")
+        )
+        self.exceptions_dir = Path(
+            self.config.get("exceptions_dir", "./governance/exceptions")
+        )
+        self.rollback_dir = Path(
+            self.config.get("rollback_dir", "./governance/rollback")
+        )
 
         # 創建目錄結構
         self._setup_directories()
@@ -212,7 +219,9 @@ class GovernanceClosedLoopSystem:
         gate_checks = self._define_gate_checks(verification_results)
 
         for gate_name, gate_config in gate_checks.items():
-            check_result = self._evaluate_single_gate(gate_name, gate_config, verification_results)
+            check_result = self._evaluate_single_gate(
+                gate_name, gate_config, verification_results
+            )
             gate_results["gates"][gate_name] = {
                 "name": check_result.name,
                 "level": check_result.level.value,
@@ -224,7 +233,9 @@ class GovernanceClosedLoopSystem:
             }
 
         # 計算最終決策
-        gate_results["final_decision"] = self._calculate_final_decision(gate_results["gates"])
+        gate_results["final_decision"] = self._calculate_final_decision(
+            gate_results["gates"]
+        )
 
         logger.info(f"✅ Gate 評估完成: {gate_results['final_decision']['decision']}")
         return gate_results
@@ -279,7 +290,10 @@ class GovernanceClosedLoopSystem:
         }
 
     def _evaluate_single_gate(
-        self, gate_name: str, gate_config: Dict[str, Any], verification_results: Dict[str, Any]
+        self,
+        gate_name: str,
+        gate_config: Dict[str, Any],
+        verification_results: Dict[str, Any],
     ) -> GateCheckResult:
         """評估單個 Gate"""
         level = gate_config["level"]
@@ -312,7 +326,9 @@ class GovernanceClosedLoopSystem:
             details={"threshold": threshold, "actual": actual_value, "source": source},
         )
 
-    def _extract_value_from_results(self, source: str, results: Dict[str, Any]) -> float:
+    def _extract_value_from_results(
+        self, source: str, results: Dict[str, Any]
+    ) -> float:
         """從驗證結果中提取數值"""
         try:
             parts = source.split(".")
@@ -346,7 +362,9 @@ class GovernanceClosedLoopSystem:
         else:
             return GateDecision.LOG_ONLY
 
-    def _calculate_final_decision(self, gate_results: Dict[str, Dict[str, Any]]) -> Dict[str, Any]:
+    def _calculate_final_decision(
+        self, gate_results: Dict[str, Dict[str, Any]]
+    ) -> Dict[str, Any]:
         """計算最終決策"""
         decisions = [result["decision"] for result in gate_results.values()]
 
@@ -358,9 +376,9 @@ class GovernanceClosedLoopSystem:
             final_score = min(result["score"] for result in gate_results.values())
         else:
             final_decision = "ALLOW"
-            final_score = sum(result["score"] for result in gate_results.values()) / len(
-                gate_results
-            )
+            final_score = sum(
+                result["score"] for result in gate_results.values()
+            ) / len(gate_results)
 
         return {
             "decision": final_decision,
@@ -368,17 +386,23 @@ class GovernanceClosedLoopSystem:
             "passed_checks": sum(
                 1
                 for result in gate_results.values()
-                if result["decision"] in [GateDecision.ALLOW, GateDecision.WARN_WITH_OVERRIDE]
+                if result["decision"]
+                in [GateDecision.ALLOW, GateDecision.WARN_WITH_OVERRIDE]
             ),
             "total_checks": len(gate_results),
             "critical_failures": sum(
-                1 for result in gate_results.values() if result["decision"] == GateDecision.BLOCK
+                1
+                for result in gate_results.values()
+                if result["decision"] == GateDecision.BLOCK
             ),
         }
 
     # ===== 2. Evidence Bundle 架構 =====
     def create_evidence_bundle(
-        self, trace_id: str, verification_results: Dict[str, Any], gate_results: Dict[str, Any]
+        self,
+        trace_id: str,
+        verification_results: Dict[str, Any],
+        gate_results: Dict[str, Any],
     ) -> EvidenceBundle:
         """創建證據包"""
         logger.info(f"📦 創建證據包: {trace_id}")
@@ -395,7 +419,9 @@ class GovernanceClosedLoopSystem:
                 "creator": "governance-system@machinenativeops.io",
                 "stages": len(verification_results.get("evidence_chain", [])),
                 "complianceScore": gate_results["final_decision"]["score"],
-                "finalHash": self._calculate_bundle_hash(verification_results, gate_results),
+                "finalHash": self._calculate_bundle_hash(
+                    verification_results, gate_results
+                ),
                 "immutable": True,
                 "retention": f"{self.config['storage']['retention_years']}y",
             }
@@ -476,7 +502,10 @@ class GovernanceClosedLoopSystem:
                 "traceId": bundle_dir.name.replace("trace-", ""),
                 "timestamp": datetime.now(timezone.utc).isoformat(),
                 "version": "v1.0",
-                "algorithms": {"content": self.content_algo, "semantic": self.semantic_algo},
+                "algorithms": {
+                    "content": self.content_algo,
+                    "semantic": self.semantic_algo,
+                },
             },
             "artifacts": [],
         }
@@ -484,9 +513,8 @@ class GovernanceClosedLoopSystem:
         # 遍歷所有驗證階段的檔案
         for stage_info in verification_results.get("evidence_chain", []):
             stage_dir = (
-                bundle_dir
-                / f"stage{stage_info['stage']:02d}-{stage_info['stage_name'].replace(' ', '_').lower()}"
-            )
+                bundle_dir /
+                f"stage{stage_info['stage']:02d}-{stage_info['stage_name'].replace(' ', '_').lower()}")
 
             if stage_dir.exists():
                 for file_path in stage_dir.rglob("*"):
@@ -505,7 +533,9 @@ class GovernanceClosedLoopSystem:
                         )
 
         # 計算 Bundle Hash
-        bundle_hash = hashlib.sha3_512(json.dumps(digests, sort_keys=True).encode()).hexdigest()
+        bundle_hash = hashlib.sha3_512(
+            json.dumps(digests, sort_keys=True).encode()
+        ).hexdigest()
         digests["bundleHash"] = f"{self.semantic_algo}:{bundle_hash}"
 
         # 保存 digests 文件
@@ -531,7 +561,10 @@ class GovernanceClosedLoopSystem:
                 else:
                     data = yaml.safe_load(content.decode())
                     canonical = yaml.dump(
-                        data, sort_keys=True, default_flow_style=False, allow_unicode=True
+                        data,
+                        sort_keys=True,
+                        default_flow_style=False,
+                        allow_unicode=True,
                     )
 
                 semantic_hash = hashlib.sha3_512(canonical.encode()).hexdigest()
@@ -547,7 +580,9 @@ class GovernanceClosedLoopSystem:
             file_path=str(file_path),
         )
 
-    def _copy_verification_stages(self, bundle_dir: Path, verification_results: Dict[str, Any]):
+    def _copy_verification_stages(
+        self, bundle_dir: Path, verification_results: Dict[str, Any]
+    ):
         """複製驗證階段結果到證據包"""
         evidence_chain = verification_results.get("evidence_chain", [])
 
@@ -561,7 +596,10 @@ class GovernanceClosedLoopSystem:
                 stage_name = getattr(stage_info, "stage_name", "unknown")
                 stage_data_dict = stage_info.__dict__
 
-            stage_dir = bundle_dir / f"stage{stage_num:02d}-{stage_name.replace(' ', '_').lower()}"
+            stage_dir = (
+                bundle_dir
+                / f"stage{stage_num:02d}-{stage_name.replace(' ', '_').lower()}"
+            )
             stage_dir.mkdir(exist_ok=True)
 
             # 保存階段數據
@@ -581,7 +619,10 @@ class GovernanceClosedLoopSystem:
         self, verification_results: Dict[str, Any], gate_results: Dict[str, Any]
     ) -> str:
         """計算 Bundle 最終 Hash"""
-        combined_data = {"verification_results": verification_results, "gate_results": gate_results}
+        combined_data = {
+            "verification_results": verification_results,
+            "gate_results": gate_results,
+        }
         data_str = json.dumps(combined_data, sort_keys=True, default=str)
         return hashlib.sha3_512(data_str.encode()).hexdigest()
 
@@ -600,7 +641,9 @@ class GovernanceClosedLoopSystem:
         logger.info(f"🚨 創建例外請求: {gate_check}")
 
         request_id = f"EXC-{datetime.now(timezone.utc).strftime('%Y-%m-%d')}-{len(list(self.exceptions_dir.glob('EXC-*'))) + 1:03d}"
-        expiry_date = (datetime.now(timezone.utc) + timedelta(days=expiry_days)).isoformat()
+        expiry_date = (
+            datetime.now(timezone.utc) + timedelta(days=expiry_days)
+        ).isoformat()
 
         exception_request = ExceptionRequest(
             request_id=request_id,
@@ -790,9 +833,13 @@ class GovernanceClosedLoopSystem:
             "calculated_at": datetime.now(timezone.utc).isoformat(),
             "metrics": {
                 "gate_efficiency": self._calculate_gate_efficiency_kpi(time_range),
-                "evidence_integrity": self._calculate_evidence_integrity_kpi(time_range),
+                "evidence_integrity": self._calculate_evidence_integrity_kpi(
+                    time_range
+                ),
                 "reproducibility": self._calculate_reproducibility_kpi(time_range),
-                "exception_management": self._calculate_exception_management_kpi(time_range),
+                "exception_management": self._calculate_exception_management_kpi(
+                    time_range
+                ),
                 "drift_monitoring": self._calculate_drift_monitoring_kpi(time_range),
             },
         }
@@ -810,16 +857,24 @@ class GovernanceClosedLoopSystem:
 
     def _calculate_evidence_integrity_kpi(self, time_range: int) -> Dict[str, float]:
         """計算證據完整性 KPI"""
-        return {"evidence_completeness_rate": 99.2, "evidence_verification_rate": 98.8}  # %  # %
+        return {
+            "evidence_completeness_rate": 99.2,
+            "evidence_verification_rate": 98.8,
+        }  # %  # %
 
     def _calculate_reproducibility_kpi(self, time_range: int) -> Dict[str, float]:
         """計算重現性 KPI"""
-        return {"replay_consistency_rate": 96.3, "reproducibility_pass_rate": 93.7}  # %  # %
+        return {
+            "replay_consistency_rate": 96.3,
+            "reproducibility_pass_rate": 93.7,
+        }  # %  # %
 
     def _calculate_exception_management_kpi(self, time_range: int) -> Dict[str, float]:
         """計算例外管理 KPI"""
         active_exceptions = len(list(self.exceptions_dir.glob("active/*.yaml")))
-        total_exceptions = active_exceptions + len(list(self.exceptions_dir.glob("expired/*.yaml")))
+        total_exceptions = active_exceptions + len(
+            list(self.exceptions_dir.glob("expired/*.yaml"))
+        )
 
         overdue_count = 0
         for exception_file in self.exceptions_dir.glob("active/*.yaml"):
@@ -834,7 +889,10 @@ class GovernanceClosedLoopSystem:
 
     def _calculate_drift_monitoring_kpi(self, time_range: int) -> Dict[str, float]:
         """計算漂移監控 KPI"""
-        return {"drift_detection_rate": 100.0, "drift_resolution_time": 1.8}  # %  # hours
+        return {
+            "drift_detection_rate": 100.0,
+            "drift_resolution_time": 1.8,
+        }  # %  # hours
 
     def _generate_trace_id(self) -> str:
         """生成追蹤 ID"""

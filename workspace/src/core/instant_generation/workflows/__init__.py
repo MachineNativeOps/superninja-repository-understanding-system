@@ -195,7 +195,9 @@ class ParallelProcessor:
         processed_results = []
         for i, result in enumerate(results):
             if isinstance(result, Exception):
-                self.logger.error(f"Task {tasks[i].task_id} failed with exception: {result}")
+                self.logger.error(
+                    f"Task {tasks[i].task_id} failed with exception: {result}"
+                )
                 processed_results.append(
                     AgentResult(
                         task_id=tasks[i].task_id,
@@ -395,7 +397,8 @@ class InstantGenerationWorkflow:
                 if not ready_tasks:
                     # 檢查是否所有任務都已完成
                     all_completed = all(
-                        task.status in [TaskStatus.COMPLETED, TaskStatus.FAILED, TaskStatus.SKIPPED]
+                        task.status
+                        in [TaskStatus.COMPLETED, TaskStatus.FAILED, TaskStatus.SKIPPED]
                         for task in workflow.tasks.values()
                     )
 
@@ -435,7 +438,9 @@ class InstantGenerationWorkflow:
             workflow.completed_at = datetime.now()
             workflow.results = results
 
-            execution_time = (workflow.completed_at - workflow.started_at).total_seconds()
+            execution_time = (
+                workflow.completed_at - workflow.started_at
+            ).total_seconds()
 
             return {
                 "success": True,

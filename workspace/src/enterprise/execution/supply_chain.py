@@ -395,7 +395,10 @@ class SupplyChainValidator:
                 errors.append(
                     f"SLSA L{self.require_slsa_level.value} provenance required but not found"
                 )
-            elif attestation.slsa_provenance.slsa_level.value < self.require_slsa_level.value:
+            elif (
+                attestation.slsa_provenance.slsa_level.value
+                < self.require_slsa_level.value
+            ):
                 errors.append(
                     f"SLSA L{self.require_slsa_level.value} required, "
                     f"got L{attestation.slsa_provenance.slsa_level.value}"
@@ -452,9 +455,15 @@ class SupplyChainValidator:
         # Scan SBOM for vulnerabilities
         if sbom and self.sbom_scanner:
             vulns = await self.sbom_scanner.scan_vulnerabilities(sbom)
-            attestation.critical_vulns = sum(1 for v in vulns if v.get("severity") == "CRITICAL")
-            attestation.high_vulns = sum(1 for v in vulns if v.get("severity") == "HIGH")
-            attestation.medium_vulns = sum(1 for v in vulns if v.get("severity") == "MEDIUM")
+            attestation.critical_vulns = sum(
+                1 for v in vulns if v.get("severity") == "CRITICAL"
+            )
+            attestation.high_vulns = sum(
+                1 for v in vulns if v.get("severity") == "HIGH"
+            )
+            attestation.medium_vulns = sum(
+                1 for v in vulns if v.get("severity") == "MEDIUM"
+            )
             attestation.low_vulns = sum(1 for v in vulns if v.get("severity") == "LOW")
 
         if self.storage:

@@ -5,9 +5,10 @@ v1 → v2 遷移腳本
 將 v1-python-drones 遷移至 v2-multi-islands 架構。
 """
 
-from migration.migrator import Migrator
 import sys
 from pathlib import Path
+
+from migration.migrator import Migrator
 
 # 添加父目錄到路徑
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent.parent))

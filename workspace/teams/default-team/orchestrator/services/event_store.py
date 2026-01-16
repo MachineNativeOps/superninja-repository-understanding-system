@@ -23,13 +23,16 @@ from pydantic import BaseModel, Field
 class StoredEvent(BaseModel):
     """Event stored in the event store."""
 
-    event_id: str = Field(default_factory=lambda: str(uuid.uuid4()), description="Unique event ID")
+    event_id: str = Field(
+        default_factory=lambda: str(uuid.uuid4()), description="Unique event ID"
+    )
     event_type: str = Field(..., description="Type of event")
     aggregate_type: str = Field(..., description="Aggregate type (e.g., 'incident')")
     aggregate_id: str = Field(..., description="Aggregate ID")
     sequence_number: int = Field(..., description="Sequence number within aggregate")
     timestamp: str = Field(
-        default_factory=lambda: datetime.now().isoformat(), description="Event timestamp"
+        default_factory=lambda: datetime.now().isoformat(),
+        description="Event timestamp",
     )
     trace_id: Optional[str] = Field(default=None, description="Trace ID")
     data: Dict[str, Any] = Field(default_factory=dict, description="Event data")
@@ -168,7 +171,7 @@ class EventStore:
                 self._events.append(event)
                 # Enforce max events for memory store
                 if len(self._events) > self._max_events:
-                    self._events = self._events[-self._max_events :]
+                    self._events = self._events[-self._max_events:]
 
         # Trigger handlers
         await self._trigger_handlers(event)
@@ -370,10 +373,14 @@ class EventStore:
             cursor.execute("SELECT COUNT(*) FROM events")
             total = cursor.fetchone()[0]
 
-            cursor.execute("SELECT event_type, COUNT(*) FROM events GROUP BY event_type")
+            cursor.execute(
+                "SELECT event_type, COUNT(*) FROM events GROUP BY event_type"
+            )
             by_type = dict(cursor.fetchall())
 
-            cursor.execute("SELECT aggregate_type, COUNT(*) FROM events GROUP BY aggregate_type")
+            cursor.execute(
+                "SELECT aggregate_type, COUNT(*) FROM events GROUP BY aggregate_type"
+            )
             by_aggregate = dict(cursor.fetchall())
         else:
             async with self._lock:
@@ -382,7 +389,9 @@ class EventStore:
                 by_aggregate: Dict[str, int] = {}
                 for e in self._events:
                     by_type[e.event_type] = by_type.get(e.event_type, 0) + 1
-                    by_aggregate[e.aggregate_type] = by_aggregate.get(e.aggregate_type, 0) + 1
+                    by_aggregate[e.aggregate_type] = (
+                        by_aggregate.get(e.aggregate_type, 0) + 1
+                    )
 
         return {
             "total_events": total,

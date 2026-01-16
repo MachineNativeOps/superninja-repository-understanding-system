@@ -376,12 +376,16 @@ class PhaseOrchestrator:
             if result.state == PhaseState.FAILED:
                 phase = self._phases.get(phase_id)
                 if phase and phase.enabled:
-                    self.logger.error(f"Stopping execution due to phase failure: {phase_id}")
+                    self.logger.error(
+                        f"Stopping execution due to phase failure: {phase_id}"
+                    )
                     break
 
         return results
 
-    def transition(self, from_phase: str, to_phase: str, trigger: str) -> PhaseTransition:
+    def transition(
+        self, from_phase: str, to_phase: str, trigger: str
+    ) -> PhaseTransition:
         """
         Record a phase transition
 

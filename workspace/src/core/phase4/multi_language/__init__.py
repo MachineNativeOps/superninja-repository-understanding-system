@@ -148,7 +148,14 @@ class MultiLanguageManager:
                 True,
             ),
             "Svelte": LanguageInfo(
-                "Svelte", LanguageCategory.FRONTEND, ".svelte", ["SvelteKit"], 70, 3, True, True
+                "Svelte",
+                LanguageCategory.FRONTEND,
+                ".svelte",
+                ["SvelteKit"],
+                70,
+                3,
+                True,
+                True,
             ),
             # Backend Languages
             "Python": LanguageInfo(
@@ -182,7 +189,14 @@ class MultiLanguageManager:
                 True,
             ),
             "Go": LanguageInfo(
-                "Go", LanguageCategory.BACKEND, ".go", ["Gin", "Echo", "Fiber"], 80, 3, True, True
+                "Go",
+                LanguageCategory.BACKEND,
+                ".go",
+                ["Gin", "Echo", "Fiber"],
+                80,
+                3,
+                True,
+                True,
             ),
             "Node.js": LanguageInfo(
                 "Node.js",
@@ -205,7 +219,14 @@ class MultiLanguageManager:
                 True,
             ),
             "Ruby": LanguageInfo(
-                "Ruby", LanguageCategory.BACKEND, ".rb", ["Rails", "Sinatra"], 70, 3, True, True
+                "Ruby",
+                LanguageCategory.BACKEND,
+                ".rb",
+                ["Rails", "Sinatra"],
+                70,
+                3,
+                True,
+                True,
             ),
             "Rust": LanguageInfo(
                 "Rust",
@@ -218,14 +239,35 @@ class MultiLanguageManager:
                 True,
             ),
             "Elixir": LanguageInfo(
-                "Elixir", LanguageCategory.BACKEND, ".ex", ["Phoenix", "Ecto"], 65, 4, True, True
+                "Elixir",
+                LanguageCategory.BACKEND,
+                ".ex",
+                ["Phoenix", "Ecto"],
+                65,
+                4,
+                True,
+                True,
             ),
             "Erlang": LanguageInfo(
-                "Erlang", LanguageCategory.BACKEND, ".erl", ["OTP", "Cowboy"], 60, 5, True, True
+                "Erlang",
+                LanguageCategory.BACKEND,
+                ".erl",
+                ["OTP", "Cowboy"],
+                60,
+                5,
+                True,
+                True,
             ),
             # Mobile Languages
             "Swift": LanguageInfo(
-                "Swift", LanguageCategory.MOBILE, ".swift", ["SwiftUI", "UIKit"], 80, 4, True, True
+                "Swift",
+                LanguageCategory.MOBILE,
+                ".swift",
+                ["SwiftUI", "UIKit"],
+                80,
+                4,
+                True,
+                True,
             ),
             "Kotlin": LanguageInfo(
                 "Kotlin",
@@ -269,10 +311,24 @@ class MultiLanguageManager:
                 True,
             ),
             "C": LanguageInfo(
-                "C", LanguageCategory.DESKTOP, ".c", ["GTK", "SDL", "OpenGL"], 80, 5, True, True
+                "C",
+                LanguageCategory.DESKTOP,
+                ".c",
+                ["GTK", "SDL", "OpenGL"],
+                80,
+                5,
+                True,
+                True,
             ),
             "JavaFX": LanguageInfo(
-                "JavaFX", LanguageCategory.DESKTOP, ".java", ["JavaFX", "Swing"], 70, 4, True, True
+                "JavaFX",
+                LanguageCategory.DESKTOP,
+                ".java",
+                ["JavaFX", "Swing"],
+                70,
+                4,
+                True,
+                True,
             ),
             "Electron": LanguageInfo(
                 "Electron",
@@ -307,7 +363,14 @@ class MultiLanguageManager:
             ),
             # DevOps Languages
             "Bash": LanguageInfo(
-                "Bash", LanguageCategory.DEVOPS, ".sh", ["Docker", "Kubernetes"], 85, 2, True, True
+                "Bash",
+                LanguageCategory.DEVOPS,
+                ".sh",
+                ["Docker", "Kubernetes"],
+                85,
+                2,
+                True,
+                True,
             ),
             "PowerShell": LanguageInfo(
                 "PowerShell",
@@ -341,26 +404,75 @@ class MultiLanguageManager:
             ),
             # Scripting Languages
             "Perl": LanguageInfo(
-                "Perl", LanguageCategory.SCRIPTING, ".pl", ["Moose", "Catalyst"], 60, 3, True, True
+                "Perl",
+                LanguageCategory.SCRIPTING,
+                ".pl",
+                ["Moose", "Catalyst"],
+                60,
+                3,
+                True,
+                True,
             ),
             "Lua": LanguageInfo(
-                "Lua", LanguageCategory.SCRIPTING, ".lua", ["LuaJIT", "Love2D"], 65, 2, True, True
+                "Lua",
+                LanguageCategory.SCRIPTING,
+                ".lua",
+                ["LuaJIT", "Love2D"],
+                65,
+                2,
+                True,
+                True,
             ),
             "R": LanguageInfo(
-                "R", LanguageCategory.SCRIPTING, ".r", ["Tidyverse", "Shiny"], 70, 3, True, True
+                "R",
+                LanguageCategory.SCRIPTING,
+                ".r",
+                ["Tidyverse", "Shiny"],
+                70,
+                3,
+                True,
+                True,
             ),
             # System Languages
             "Assembly": LanguageInfo(
-                "Assembly", LanguageCategory.SYSTEM, ".asm", ["NASM", "MASM"], 50, 5, True, False
+                "Assembly",
+                LanguageCategory.SYSTEM,
+                ".asm",
+                ["NASM", "MASM"],
+                50,
+                5,
+                True,
+                False,
             ),
             "Zig": LanguageInfo(
-                "Zig", LanguageCategory.SYSTEM, ".zig", ["Zig Standard Lib"], 60, 4, True, True
+                "Zig",
+                LanguageCategory.SYSTEM,
+                ".zig",
+                ["Zig Standard Lib"],
+                60,
+                4,
+                True,
+                True,
             ),
             "Nim": LanguageInfo(
-                "Nim", LanguageCategory.SYSTEM, ".nim", ["Nimble", "Jester"], 65, 3, True, True
+                "Nim",
+                LanguageCategory.SYSTEM,
+                ".nim",
+                ["Nimble", "Jester"],
+                65,
+                3,
+                True,
+                True,
             ),
             "V": LanguageInfo(
-                "V", LanguageCategory.SYSTEM, ".v", ["V Stdlib", "VWeb"], 60, 3, True, True
+                "V",
+                LanguageCategory.SYSTEM,
+                ".v",
+                ["V Stdlib", "VWeb"],
+                60,
+                3,
+                True,
+                True,
             ),
             "D": LanguageInfo(
                 "D", LanguageCategory.SYSTEM, ".d", ["DUB", "Vibe.d"], 65, 4, True, True
@@ -377,7 +489,14 @@ class MultiLanguageManager:
                 True,
             ),
             "F#": LanguageInfo(
-                "F#", LanguageCategory.FUNCTIONAL, ".fs", [".NET Core", "Suave"], 65, 4, True, True
+                "F#",
+                LanguageCategory.FUNCTIONAL,
+                ".fs",
+                [".NET Core", "Suave"],
+                65,
+                4,
+                True,
+                True,
             ),
             "Clojure": LanguageInfo(
                 "Clojure",
@@ -400,7 +519,14 @@ class MultiLanguageManager:
                 True,
             ),
             "OCaml": LanguageInfo(
-                "OCaml", LanguageCategory.FUNCTIONAL, ".ml", ["Dune", "Core"], 60, 4, True, True
+                "OCaml",
+                LanguageCategory.FUNCTIONAL,
+                ".ml",
+                ["Dune", "Core"],
+                60,
+                4,
+                True,
+                True,
             ),
             "Lisp": LanguageInfo(
                 "Lisp",
@@ -424,7 +550,14 @@ class MultiLanguageManager:
                 True,
             ),
             "Julia": LanguageInfo(
-                "Julia", LanguageCategory.SCIENTIFIC, ".jl", ["JuMP", "Plots.jl"], 70, 3, True, True
+                "Julia",
+                LanguageCategory.SCIENTIFIC,
+                ".jl",
+                ["JuMP", "Plots.jl"],
+                70,
+                3,
+                True,
+                True,
             ),
             "Fortran": LanguageInfo(
                 "Fortran",
@@ -437,7 +570,14 @@ class MultiLanguageManager:
                 True,
             ),
             "Ada": LanguageInfo(
-                "Ada", LanguageCategory.SCIENTIFIC, ".adb", ["GNAT", "AdaCore"], 55, 4, True, True
+                "Ada",
+                LanguageCategory.SCIENTIFIC,
+                ".adb",
+                ["GNAT", "AdaCore"],
+                55,
+                4,
+                True,
+                True,
             ),
             "COBOL": LanguageInfo(
                 "COBOL",
@@ -479,7 +619,13 @@ class MultiLanguageManager:
                 "framework": ["Qt", "GTK", "WinForms", "WPF"],
             },
             "api": {
-                "rest": ["Express", "FastAPI", "Spring Boot", "ASP.NET Core", "Django REST"],
+                "rest": [
+                    "Express",
+                    "FastAPI",
+                    "Spring Boot",
+                    "ASP.NET Core",
+                    "Django REST",
+                ],
                 "graphql": ["Apollo Server", "GraphQL Yoga", "Strawberry", "Graphene"],
                 "grpc": ["gRPC", "Connect", "Twirp"],
             },
@@ -505,7 +651,9 @@ class MultiLanguageManager:
             await self.language_analyzer.initialize(self.supported_languages)
 
             # 初始化代碼生成器
-            await self.code_generator.initialize(self.supported_languages, self.framework_mappings)
+            await self.code_generator.initialize(
+                self.supported_languages, self.framework_mappings
+            )
 
             # 初始化API統一器
             await self.api_unifier.initialize()
@@ -592,7 +740,9 @@ class MultiLanguageManager:
                 if requirements.get("frontend", False):
                     frameworks.extend(["React", "Vue", "Angular"])
                 if requirements.get("backend", False):
-                    frameworks.extend(["Django", "Flask", "FastAPI", "Express", "Spring Boot"])
+                    frameworks.extend(
+                        ["Django", "Flask", "FastAPI", "Express", "Spring Boot"]
+                    )
             elif project_type == "mobile":
                 frameworks.extend(["Flutter", "React Native"])
             elif project_type == "api":
@@ -611,16 +761,22 @@ class MultiLanguageManager:
     ) -> Dict[str, Any]:
         """生成指定語言的代碼"""
         try:
-            self.logger.info(f"Generating {language} code with frameworks: {frameworks}")
+            self.logger.info(
+                f"Generating {language} code with frameworks: {frameworks}"
+            )
 
             if language not in self.supported_languages:
                 raise ValueError(f"Unsupported language: {language}")
 
             # 生成代碼
-            generation_result = await self.code_generator.generate(user_input, language, frameworks)
+            generation_result = await self.code_generator.generate(
+                user_input, language, frameworks
+            )
 
             # 代碼質量檢查
-            quality_check = await self._perform_quality_check(generation_result, language)
+            quality_check = await self._perform_quality_check(
+                generation_result, language
+            )
 
             # 依賴管理和構建配置
             build_config = await self._generate_build_config(
@@ -645,7 +801,9 @@ class MultiLanguageManager:
             self.logger.error(f"Code generation failed for {language}: {e}")
             return {"success": False, "error": str(e)}
 
-    async def create_unified_api(self, project_results: Dict[str, Any]) -> Dict[str, Any]:
+    async def create_unified_api(
+        self, project_results: Dict[str, Any]
+    ) -> Dict[str, Any]:
         """創建統一API接口"""
         try:
             self.logger.info("Creating unified API interface...")
@@ -654,10 +812,14 @@ class MultiLanguageManager:
             project_structure = await self._analyze_project_structure(project_results)
 
             # 生成API規範
-            api_specification = await self.api_unifier.generate_specification(project_structure)
+            api_specification = await self.api_unifier.generate_specification(
+                project_structure
+            )
 
             # 創建API網關配置
-            gateway_config = await self.api_unifier.create_gateway_config(api_specification)
+            gateway_config = await self.api_unifier.create_gateway_config(
+                api_specification
+            )
 
             # 生成客戶端SDK
             client_sdks = await self.api_unifier.generate_client_sdks(api_specification)
@@ -676,7 +838,9 @@ class MultiLanguageManager:
             self.logger.error(f"Unified API creation failed: {e}")
             return {"success": False, "error": str(e)}
 
-    async def optimize_cross_language(self, project_results: Dict[str, Any]) -> Dict[str, Any]:
+    async def optimize_cross_language(
+        self, project_results: Dict[str, Any]
+    ) -> Dict[str, Any]:
         """跨語言最佳化"""
         try:
             self.logger.info("Performing cross-language optimization...")
@@ -699,7 +863,9 @@ class MultiLanguageManager:
                 "consistency_check": consistency_check,
                 "dependency_resolution": dependency_resolution,
                 "test_suites": test_suites,
-                "optimizations_applied": len(performance_optimization.get("applied", [])),
+                "optimizations_applied": len(
+                    performance_optimization.get("applied", [])
+                ),
             }
 
         except Exception as e:
@@ -711,15 +877,37 @@ class MultiLanguageManager:
         user_input_lower = user_input.lower()
 
         # Web項目關鍵詞
-        web_keywords = ["website", "web", "frontend", "backend", "api", "webapp", "online"]
+        web_keywords = [
+            "website",
+            "web",
+            "frontend",
+            "backend",
+            "api",
+            "webapp",
+            "online",
+        ]
         # 移動項目關鍵詞
         mobile_keywords = ["mobile", "app", "ios", "android", "smartphone", "tablet"]
         # 桌面項目關鍵詞
-        desktop_keywords = ["desktop", "application", "software", "windows", "mac", "linux"]
+        desktop_keywords = [
+            "desktop",
+            "application",
+            "software",
+            "windows",
+            "mac",
+            "linux",
+        ]
         # API項目關鍵詞
         api_keywords = ["api", "service", "microservice", "backend", "rest", "graphql"]
         # 數據項目關鍵詞
-        data_keywords = ["data", "analytics", "machine learning", "ai", "ml", "statistics"]
+        data_keywords = [
+            "data",
+            "analytics",
+            "machine learning",
+            "ai",
+            "ml",
+            "statistics",
+        ]
 
         keyword_scores = {
             "web": sum(1 for kw in web_keywords if kw in user_input_lower),
@@ -792,7 +980,10 @@ class MultiLanguageManager:
         }
 
     async def _generate_build_config(
-        self, generation_result: CodeGenerationResult, language: str, frameworks: List[str]
+        self,
+        generation_result: CodeGenerationResult,
+        language: str,
+        frameworks: List[str],
     ) -> List[str]:
         """生成構建配置"""
         commands = []
@@ -814,11 +1005,15 @@ class MultiLanguageManager:
 
         return commands
 
-    async def _analyze_project_structure(self, project_results: Dict[str, Any]) -> Dict[str, Any]:
+    async def _analyze_project_structure(
+        self, project_results: Dict[str, Any]
+    ) -> Dict[str, Any]:
         """分析項目結構"""
         structure = {
             "languages": list(project_results.keys()),
-            "total_files": sum(result.get("file_count", 0) for result in project_results.values()),
+            "total_files": sum(
+                result.get("file_count", 0) for result in project_results.values()
+            ),
             "frameworks": [],
             "api_endpoints": 0,
             "components": [],
@@ -833,7 +1028,9 @@ class MultiLanguageManager:
 
         return structure
 
-    async def _optimize_performance(self, project_results: Dict[str, Any]) -> Dict[str, Any]:
+    async def _optimize_performance(
+        self, project_results: Dict[str, Any]
+    ) -> Dict[str, Any]:
         """性能最佳化"""
         return {
             "applied": [
@@ -846,7 +1043,9 @@ class MultiLanguageManager:
             "memory_reduction": "15%",
         }
 
-    async def _check_consistency(self, project_results: Dict[str, Any]) -> Dict[str, Any]:
+    async def _check_consistency(
+        self, project_results: Dict[str, Any]
+    ) -> Dict[str, Any]:
         """代碼一致性檢查"""
         return {
             "consistent": True,
@@ -856,7 +1055,9 @@ class MultiLanguageManager:
             "code_structure": "uniform",
         }
 
-    async def _resolve_dependencies(self, project_results: Dict[str, Any]) -> Dict[str, Any]:
+    async def _resolve_dependencies(
+        self, project_results: Dict[str, Any]
+    ) -> Dict[str, Any]:
         """依賴解析"""
         return {
             "resolved": True,
@@ -865,7 +1066,9 @@ class MultiLanguageManager:
             "security_vulnerabilities": 0,
         }
 
-    async def _generate_test_suites(self, project_results: Dict[str, Any]) -> Dict[str, Any]:
+    async def _generate_test_suites(
+        self, project_results: Dict[str, Any]
+    ) -> Dict[str, Any]:
         """生成測試套件"""
         return {
             "unit_tests": True,
@@ -935,7 +1138,14 @@ class LanguageRequirementAnalyzer:
 
     def _detect_backend_needs(self, user_input: str) -> bool:
         """檢測後端需求"""
-        backend_keywords = ["backend", "server", "api", "database", "business logic", "processing"]
+        backend_keywords = [
+            "backend",
+            "server",
+            "api",
+            "database",
+            "business logic",
+            "processing",
+        ]
         return any(keyword in user_input.lower() for keyword in backend_keywords)
 
     def _detect_mobile_needs(self, user_input: str) -> bool:
@@ -945,7 +1155,14 @@ class LanguageRequirementAnalyzer:
 
     def _detect_desktop_needs(self, user_input: str) -> bool:
         """檢測桌面端需求"""
-        desktop_keywords = ["desktop", "application", "software", "windows", "mac", "linux"]
+        desktop_keywords = [
+            "desktop",
+            "application",
+            "software",
+            "windows",
+            "mac",
+            "linux",
+        ]
         return any(keyword in user_input.lower() for keyword in desktop_keywords)
 
     def _detect_api_needs(self, user_input: str) -> bool:
@@ -960,7 +1177,13 @@ class LanguageRequirementAnalyzer:
 
     def _detect_enterprise_needs(self, user_input: str) -> bool:
         """檢測企業級需求"""
-        enterprise_keywords = ["enterprise", "business", "corporate", "scalable", "production"]
+        enterprise_keywords = [
+            "enterprise",
+            "business",
+            "corporate",
+            "scalable",
+            "production",
+        ]
         return any(keyword in user_input.lower() for keyword in enterprise_keywords)
 
     def _detect_cloud_needs(self, user_input: str) -> bool:
@@ -975,7 +1198,13 @@ class LanguageRequirementAnalyzer:
 
     def _detect_security_needs(self, user_input: str) -> bool:
         """檢測安全需求"""
-        security_keywords = ["security", "authentication", "authorization", "encryption", "secure"]
+        security_keywords = [
+            "security",
+            "authentication",
+            "authorization",
+            "encryption",
+            "secure",
+        ]
         return any(keyword in user_input.lower() for keyword in security_keywords)
 
 
@@ -1040,7 +1269,9 @@ if __name__ == "__main__":
 
         # 根據模板生成代碼
         main_code = self.templates.get(language, {}).get("main", f"# {project_name}")
-        main_code = main_code.format(project_name=project_name, ProjectName=project_name.title())
+        main_code = main_code.format(
+            project_name=project_name, ProjectName=project_name.title()
+        )
 
         # 生成文件結構
         files = {
@@ -1161,7 +1392,9 @@ class UnifiedAPIGenerator:
         """初始化API生成器"""
         self.logger.info("Unified API Generator initialized")
 
-    async def generate_specification(self, project_structure: Dict[str, Any]) -> Dict[str, Any]:
+    async def generate_specification(
+        self, project_structure: Dict[str, Any]
+    ) -> Dict[str, Any]:
         """生成API規範"""
         # 簡化的API規範生成
         specification = {
@@ -1169,7 +1402,10 @@ class UnifiedAPIGenerator:
             "info": {"title": "Unified API", "version": "1.0.0"},
             "paths": {
                 "/api/health": {
-                    "get": {"summary": "Health check", "responses": {"200": {"description": "OK"}}}
+                    "get": {
+                        "summary": "Health check",
+                        "responses": {"200": {"description": "OK"}},
+                    }
                 }
             },
             "components": {"schemas": {}},
@@ -1177,7 +1413,9 @@ class UnifiedAPIGenerator:
 
         return specification
 
-    async def create_gateway_config(self, api_specification: Dict[str, Any]) -> Dict[str, Any]:
+    async def create_gateway_config(
+        self, api_specification: Dict[str, Any]
+    ) -> Dict[str, Any]:
         """創建API網關配置"""
         return {
             "gateway_type": "nginx",
@@ -1188,7 +1426,9 @@ class UnifiedAPIGenerator:
             "middleware": ["cors", "auth", "rate_limit"],
         }
 
-    async def generate_client_sdks(self, api_specification: Dict[str, Any]) -> Dict[str, str]:
+    async def generate_client_sdks(
+        self, api_specification: Dict[str, Any]
+    ) -> Dict[str, str]:
         """生成客戶端SDK"""
         sdks = {}
 

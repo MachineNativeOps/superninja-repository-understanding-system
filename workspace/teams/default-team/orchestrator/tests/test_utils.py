@@ -9,6 +9,19 @@ Tests cover:
 - Rate limiting and backpressure
 """
 
+import asyncio
+import os
+import sys
+import time
+
+import pytest
+from utils.circuit_breaker import (
+    CircuitBreaker,
+    CircuitBreakerRegistry,
+    CircuitOpenError,
+    CircuitState,
+)
+from utils.metrics import Counter, Gauge, Histogram, MetricsCollector
 from utils.retry import (
     BackpressureController,
     RateLimiter,
@@ -16,19 +29,6 @@ from utils.retry import (
     RetryExhaustedError,
     retry_async,
 )
-from utils.metrics import Counter, Gauge, Histogram, MetricsCollector
-from utils.circuit_breaker import (
-    CircuitBreaker,
-    CircuitBreakerRegistry,
-    CircuitOpenError,
-    CircuitState,
-)
-import asyncio
-import os
-import sys
-import time
-
-import pytest
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
@@ -171,13 +171,17 @@ class TestMetricsCollector:
         await collector.record_request("GET", "/api/health", "200", 0.05)
 
         all_metrics = collector.collect_all()
-        request_metrics = [m for m in all_metrics if m["name"] == "superagent_requests_total"]
+        request_metrics = [
+            m for m in all_metrics if m["name"] == "superagent_requests_total"
+        ]
         assert len(request_metrics) > 0
 
     @pytest.mark.asyncio
     async def test_record_message(self, collector):
         """Test recording a message."""
-        await collector.record_message("incident.create", "monitoring-agent", "success", 0.1)
+        await collector.record_message(
+            "incident.create", "monitoring-agent", "success", 0.1
+        )
 
         all_metrics = collector.collect_all()
         msg_metrics = [m for m in all_metrics if "messages" in m["name"]]
@@ -400,7 +404,9 @@ class TestRetryMechanism:
 
     def test_retry_config_delay_calculation(self):
         """Test delay calculation with exponential backoff."""
-        config = RetryConfig(base_delay=1.0, exponential_base=2.0, max_delay=60.0, jitter=False)
+        config = RetryConfig(
+            base_delay=1.0, exponential_base=2.0, max_delay=60.0, jitter=False
+        )
 
         assert config.calculate_delay(0) == 1.0
         assert config.calculate_delay(1) == 2.0

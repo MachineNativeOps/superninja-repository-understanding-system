@@ -138,7 +138,9 @@ class DynamicPolicyController:
             ),
         }
 
-    def adjust_parameters(self, noise_level: float, coherence_time: float) -> DynamicParameters:
+    def adjust_parameters(
+        self, noise_level: float, coherence_time: float
+    ) -> DynamicParameters:
         """
         根據量子狀態調整參數
 
@@ -176,7 +178,9 @@ class DynamicPolicyController:
         return self.presets["standard_v3"]
 
     def activate_emergency_mode(
-        self, strategy: str = "classic_aggressive", quantum_preset: str = "lightweight_v2"
+        self,
+        strategy: str = "classic_aggressive",
+        quantum_preset: str = "lightweight_v2",
     ):
         """啟用緊急模式"""
         self.emergency_mode = True
@@ -204,12 +208,17 @@ class FusionEngine:
             # 簡化的貝葉斯融合
             prior = 0.5
             likelihood = classic_score * quantum_score
-            return (likelihood * prior) / ((likelihood * prior) + ((1 - likelihood) * (1 - prior)))
+            return (likelihood * prior) / (
+                (likelihood * prior) + ((1 - likelihood) * (1 - prior))
+            )
         else:
             # 集成投票
             threshold = 0.6
             votes = sum(
-                [1 if classic_score > threshold else 0, 1 if quantum_score > threshold else 0]
+                [
+                    1 if classic_score > threshold else 0,
+                    1 if quantum_score > threshold else 0,
+                ]
             )
             return 1.0 if votes >= 1 else 0.0
 
@@ -272,13 +281,20 @@ class FusionEngine:
             quantum_score = quantum_dict.get(dim_name, 0.99)
 
             hybrid_score = self.fuse_scores(
-                classic_score, quantum_score, params.classic_weight, params.quantum_weight
+                classic_score,
+                quantum_score,
+                params.classic_weight,
+                params.quantum_weight,
             )
 
             status = (
                 ValidationStatus.PASS
                 if hybrid_score > 0.9
-                else ValidationStatus.WARNING if hybrid_score > 0.7 else ValidationStatus.FAIL
+                else (
+                    ValidationStatus.WARNING
+                    if hybrid_score > 0.7
+                    else ValidationStatus.FAIL
+                )
             )
 
             dimensions.append(
@@ -299,7 +315,9 @@ class FusionEngine:
         overall_status = (
             ValidationStatus.PASS
             if total_score > 0.9
-            else ValidationStatus.WARNING if total_score > 0.7 else ValidationStatus.FAIL
+            else (
+                ValidationStatus.WARNING if total_score > 0.7 else ValidationStatus.FAIL
+            )
         )
 
         return HybridDecision(
@@ -380,7 +398,9 @@ class AdaptiveDecisionEngine:
         return {
             "validation_report": {
                 "document": document_path,
-                "timestamp": datetime.now(timezone.utc).isoformat().replace("+00:00", "Z"),
+                "timestamp": datetime.now(timezone.utc)
+                .isoformat()
+                .replace("+00:00", "Z"),
                 "overall_status": decision.overall_status.value,
                 "confidence": round(decision.confidence, 4),
                 "verification_matrix": [
@@ -437,7 +457,9 @@ def main():
     """主函數"""
     import argparse
 
-    parser = argparse.ArgumentParser(description="自適應決策引擎 - MachineNativeOps 驗證系統")
+    parser = argparse.ArgumentParser(
+        description="自適應決策引擎 - MachineNativeOps 驗證系統"
+    )
     parser.add_argument("--demo", action="store_true", help="運行演示模式")
     parser.add_argument("--output", default=None, help="輸出文件路徑")
 

@@ -230,7 +230,9 @@ class PythonEnvironment:
             await asyncio.sleep(0.1)
             return True
         except Exception as e:
-            logger.error(f"Failed to install requirements from {requirements_path}: {e}")
+            logger.error(
+                f"Failed to install requirements from {requirements_path}: {e}"
+            )
             return False
 
     async def destroy(self) -> bool:
@@ -283,7 +285,10 @@ class PackageManager:
             PythonPackage("langchain-openai", "0.0.5"),
             PythonPackage("crewai", "0.28.0"),
             PythonPackage(
-                "autogen", "0.2.0", source="git", git_url="https://github.com/microsoft/autogen"
+                "autogen",
+                "0.2.0",
+                source="git",
+                git_url="https://github.com/microsoft/autogen",
             ),
             PythonPackage("langgraph", "0.0.1"),
         ],
@@ -534,15 +539,19 @@ class PythonBridge:
         self.default_environment: Optional[PythonEnvironment] = None
         self._initialized = False
 
-    async def initialize(self, setup_ai_env: bool = True, include_ml: bool = True) -> bool:
+    async def initialize(
+        self, setup_ai_env: bool = True, include_ml: bool = True
+    ) -> bool:
         """Initialize the Python bridge
 
         初始化 Python 橋接器
         """
         try:
             if setup_ai_env:
-                self.default_environment = await self.package_manager.setup_ai_environment(
-                    include_ml=include_ml
+                self.default_environment = (
+                    await self.package_manager.setup_ai_environment(
+                        include_ml=include_ml
+                    )
                 )
                 self.executors["default"] = PythonExecutor(self.default_environment)
 
@@ -564,7 +573,9 @@ class PythonBridge:
         self.executors[name] = executor
         return executor
 
-    async def execute_ai_code(self, code: str, executor_name: str = "default") -> ExecutionResult:
+    async def execute_ai_code(
+        self, code: str, executor_name: str = "default"
+    ) -> ExecutionResult:
         """Execute AI-related Python code
 
         執行 AI 相關的 Python 代碼
@@ -575,12 +586,16 @@ class PythonBridge:
 
         if not executor:
             return ExecutionResult(
-                success=False, error_type="RuntimeError", error_message="No executor available"
+                success=False,
+                error_type="RuntimeError",
+                error_message="No executor available",
             )
 
         return await executor.execute_code(code)
 
-    async def run_langchain_agent(self, agent_config: Dict[str, Any], task: str) -> ExecutionResult:
+    async def run_langchain_agent(
+        self, agent_config: Dict[str, Any], task: str
+    ) -> ExecutionResult:
         """Run a LangChain agent
 
         運行 LangChain 代理
@@ -633,7 +648,9 @@ print(f"CrewAI crew executed with {{len(config.get('agents', []))}} agents")
         return {
             "initialized": self._initialized,
             "default_environment": (
-                self.default_environment.get_status() if self.default_environment else None
+                self.default_environment.get_status()
+                if self.default_environment
+                else None
             ),
             "executors_count": len(self.executors),
             "environments_count": len(self.package_manager.environments),

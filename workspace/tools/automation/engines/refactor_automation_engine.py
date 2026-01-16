@@ -15,16 +15,6 @@ Refactor Automation Engine - 重構全自動化引擎
 Version: 1.0.0
 """
 
-from engine_base import (
-    BaseEngine,
-    EngineConfig,
-    EngineState,
-    EngineType,
-    ExecutionEngineBase,
-    ExecutionMode,
-    Priority,
-    TaskResult,
-)
 import asyncio
 import json
 import re
@@ -36,6 +26,16 @@ from pathlib import Path
 from typing import Any, Dict, List, Optional
 
 import yaml
+from engine_base import (
+    BaseEngine,
+    EngineConfig,
+    EngineState,
+    EngineType,
+    ExecutionEngineBase,
+    ExecutionMode,
+    Priority,
+    TaskResult,
+)
 
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
@@ -299,7 +299,9 @@ class RefactorAutomationEngine(ExecutionEngineBase):
 
         # 創建備份
         if self._backup_enabled:
-            backup_dir = self._target_path / ".backup" / datetime.now().strftime("%Y%m%d%H%M%S")
+            backup_dir = (
+                self._target_path / ".backup" / datetime.now().strftime("%Y%m%d%H%M%S")
+            )
             backup_dir.mkdir(parents=True, exist_ok=True)
 
         results = {
@@ -579,7 +581,9 @@ class RefactorAutomationEngine(ExecutionEngineBase):
             source = Path(rollback_info["source"])
             source.rename(source.parent / rollback_info["new_name"])
         elif op_type == "update_content":
-            Path(rollback_info["target"]).write_text(rollback_info["content"], encoding="utf-8")
+            Path(rollback_info["target"]).write_text(
+                rollback_info["content"], encoding="utf-8"
+            )
         elif op_type == "restore":
             if Path(rollback_info["source"]).is_file():
                 shutil.copy2(rollback_info["source"], rollback_info["target"])

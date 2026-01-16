@@ -101,7 +101,9 @@ class StepResult:
             "duration_ms": self.duration_ms,
             "attempts": self.attempts,
             "started_at": self.started_at.isoformat() if self.started_at else None,
-            "completed_at": self.completed_at.isoformat() if self.completed_at else None,
+            "completed_at": (
+                self.completed_at.isoformat() if self.completed_at else None
+            ),
         }
 
 
@@ -129,7 +131,9 @@ class WorkflowResult:
             "steps": [s.to_dict() for s in self.steps],
             "total_duration_ms": self.total_duration_ms,
             "started_at": self.started_at.isoformat() if self.started_at else None,
-            "completed_at": self.completed_at.isoformat() if self.completed_at else None,
+            "completed_at": (
+                self.completed_at.isoformat() if self.completed_at else None
+            ),
             "output": self.output,
             "error": self.error,
             "metadata": self.metadata,
@@ -244,7 +248,8 @@ class WorkflowOrchestrator:
             # Check if all steps succeeded
             failed_steps = [s for s in step_results if s.status == StepStatus.FAILED]
             if failed_steps and not all(
-                self._get_step(workflow, s.step_id).continue_on_failure for s in failed_steps
+                self._get_step(workflow, s.step_id).continue_on_failure
+                for s in failed_steps
             ):
                 result.status = WorkflowStatus.FAILED
                 result.error = f"{len(failed_steps)} step(s) failed"
@@ -313,7 +318,9 @@ class WorkflowOrchestrator:
             self._event_handlers[event] = []
         self._event_handlers[event].append(handler)
 
-    async def _execute_steps(self, workflow: Workflow, context: Dict[str, Any]) -> List[StepResult]:
+    async def _execute_steps(
+        self, workflow: Workflow, context: Dict[str, Any]
+    ) -> List[StepResult]:
         """Execute all steps in a workflow"""
         results: Dict[str, StepResult] = {}
         completed: Set[str] = set()
@@ -322,7 +329,9 @@ class WorkflowOrchestrator:
         while pending_steps:
             # Find steps that can be executed (all dependencies met)
             ready_steps = [
-                step for step in pending_steps if all(dep in completed for dep in step.dependencies)
+                step
+                for step in pending_steps
+                if all(dep in completed for dep in step.dependencies)
             ]
 
             if not ready_steps:
@@ -339,7 +348,9 @@ class WorkflowOrchestrator:
             # Execute ready steps in parallel (with limit)
             parallel_batch = ready_steps[: workflow.max_parallel]
 
-            batch_tasks = [self._execute_step(step, context, results) for step in parallel_batch]
+            batch_tasks = [
+                self._execute_step(step, context, results) for step in parallel_batch
+            ]
 
             batch_results = await asyncio.gather(*batch_tasks, return_exceptions=True)
 
@@ -365,7 +376,10 @@ class WorkflowOrchestrator:
         return list(results.values())
 
     async def _execute_step(
-        self, step: WorkflowStep, context: Dict[str, Any], previous_results: Dict[str, StepResult]
+        self,
+        step: WorkflowStep,
+        context: Dict[str, Any],
+        previous_results: Dict[str, StepResult],
     ) -> StepResult:
         """Execute a single workflow step"""
         result = StepResult(
@@ -393,7 +407,8 @@ class WorkflowOrchestrator:
             try:
                 start_time = datetime.now()
                 tool_result = await asyncio.wait_for(
-                    self._tool_executor(step.tool, arguments), timeout=step.timeout / 1000.0
+                    self._tool_executor(step.tool, arguments),
+                    timeout=step.timeout / 1000.0,
                 )
                 end_time = datetime.now()
 
@@ -473,7 +488,9 @@ class WorkflowOrchestrator:
                 condition = condition.replace(f"${{{key}}}", repr(value))
             # Basic safety check - only allow simple comparisons
             allowed_chars = set("0123456789.!=<>andornotTrueFalse\"' ")
-            if not all(c in allowed_chars or c.isalnum() or c == "_" for c in condition):
+            if not all(
+                c in allowed_chars or c.isalnum() or c == "_" for c in condition
+            ):
                 logger.warning(f"Unsafe condition blocked: {condition}")
                 return True
             # For framework demonstration, return True
@@ -489,7 +506,11 @@ class WorkflowOrchestrator:
         """Substitute context values into arguments"""
         result = {}
         for key, value in arguments.items():
-            if isinstance(value, str) and value.startswith("${") and value.endswith("}"):
+            if (
+                isinstance(value, str)
+                and value.startswith("${")
+                and value.endswith("}")
+            ):
                 # Context reference
                 ref = value[2:-1]
                 result[key] = context.get(ref, value)
@@ -532,7 +553,9 @@ class WorkflowOrchestrator:
         except Exception as e:
             logger.error(f"Callback error: {e}")
 
-    async def _default_executor(self, tool_name: str, arguments: Dict[str, Any]) -> Dict[str, Any]:
+    async def _default_executor(
+        self, tool_name: str, arguments: Dict[str, Any]
+    ) -> Dict[str, Any]:
         """Default tool executor (for testing)"""
         return {
             "success": True,
@@ -543,7 +566,9 @@ class WorkflowOrchestrator:
 
 
 # Factory functions
-def create_workflow_orchestrator(tool_executor: Callable = None) -> WorkflowOrchestrator:
+def create_workflow_orchestrator(
+    tool_executor: Callable = None,
+) -> WorkflowOrchestrator:
     """Create a new WorkflowOrchestrator instance"""
     return WorkflowOrchestrator(tool_executor)
 
@@ -553,10 +578,16 @@ def create_workflow(name: str, steps: List[WorkflowStep], **kwargs) -> Workflow:
     return Workflow(id=str(uuid4()), name=name, steps=steps, **kwargs)
 
 
-def create_step(name: str, tool: str, arguments: Dict[str, Any], **kwargs) -> WorkflowStep:
+def create_step(
+    name: str, tool: str, arguments: Dict[str, Any], **kwargs
+) -> WorkflowStep:
     """Create a new WorkflowStep instance"""
     return WorkflowStep(
-        id=kwargs.pop("id", str(uuid4())), name=name, tool=tool, arguments=arguments, **kwargs
+        id=kwargs.pop("id", str(uuid4())),
+        name=name,
+        tool=tool,
+        arguments=arguments,
+        **kwargs,
     )
 
 

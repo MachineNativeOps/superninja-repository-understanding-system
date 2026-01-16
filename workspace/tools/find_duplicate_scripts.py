@@ -17,7 +17,15 @@ class ScriptDuplicateFinder:
     def __init__(self, repo_root: Path):
         self.repo_root = repo_root
         self.script_extensions = {".py", ".sh", ".js", ".ts"}
-        self.skip_dirs = {"node_modules", ".git", "__pycache__", ".venv", "venv", "dist", "build"}
+        self.skip_dirs = {
+            "node_modules",
+            ".git",
+            "__pycache__",
+            ".venv",
+            "venv",
+            "dist",
+            "build",
+        }
 
     def find_duplicates(self) -> Dict[str, List[str]]:
         """查找重複腳本（基於內容哈希）"""
@@ -46,7 +54,9 @@ class ScriptDuplicateFinder:
             name_to_files[name].append(rel_path)
 
         # 過濾出名稱重複
-        similar = {name: files for name, files in name_to_files.items() if len(files) > 1}
+        similar = {
+            name: files for name, files in name_to_files.items() if len(files) > 1
+        }
         return similar
 
     def _iter_scripts(self):
@@ -94,7 +104,9 @@ class ScriptDuplicateFinder:
                     print(f"    - {file}")
 
         # 3. 統計
-        total_duplicate_files = sum(len(files) - 1 for files in content_duplicates.values())
+        total_duplicate_files = sum(
+            len(files) - 1 for files in content_duplicates.values()
+        )
         print(f"\n\n📊 統計:")
         print(f"  可移除的重複文件數: {total_duplicate_files}")
         print(f"  名稱衝突組數: {len(name_similar)}")

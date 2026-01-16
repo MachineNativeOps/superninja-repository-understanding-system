@@ -7,7 +7,6 @@ from datetime import datetime
 from typing import Any, Dict
 
 import pytest
-
 from core.main_system.automation_pipeline import (
     AutomationPipeline,
     PipelineConfig,
@@ -197,7 +196,9 @@ class TestSystemBootstrap:
         class SimpleService:
             pass
 
-        bootstrap.register_service(ServiceDefinition(name="simple", service_class=SimpleService))
+        bootstrap.register_service(
+            ServiceDefinition(name="simple", service_class=SimpleService)
+        )
 
         result = bootstrap.initialize()
         assert result is True
@@ -390,4 +391,6 @@ class TestPhaseIntegration:
         for task_type, expected_phases in task_types:
             result = core.process_task({"type": task_type, "id": f"test_{task_type}"})
             for phase in expected_phases:
-                assert phase in result["processed_by"], f"Task {task_type} missing {phase}"
+                assert (
+                    phase in result["processed_by"]
+                ), f"Task {task_type} missing {phase}"

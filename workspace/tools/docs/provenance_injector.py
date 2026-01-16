@@ -76,7 +76,10 @@ def get_git_info(repo_root: Path) -> dict[str, str]:
 
         # Get remote URL
         result = subprocess.run(
-            ["git", "remote", "get-url", "origin"], cwd=repo_root, capture_output=True, text=True
+            ["git", "remote", "get-url", "origin"],
+            cwd=repo_root,
+            capture_output=True,
+            text=True,
         )
         if result.returncode == 0:
             git_info["remote"] = result.stdout.strip()
@@ -182,7 +185,11 @@ def generate_spdx_sbom(items: list[dict[str, Any]], repo_root: Path) -> dict[str
 
         # Add relationship
         relationships.append(
-            {"spdxElementId": root_id, "relatedSpdxElement": pkg_id, "relationshipType": "CONTAINS"}
+            {
+                "spdxElementId": root_id,
+                "relatedSpdxElement": pkg_id,
+                "relationshipType": "CONTAINS",
+            }
         )
 
     # Document describes root
@@ -202,7 +209,10 @@ def generate_spdx_sbom(items: list[dict[str, Any]], repo_root: Path) -> dict[str
         "documentNamespace": f"https://github.com/Unmanned-Island-admin/SynergyMesh/sbom/{uuid4()}",
         "creationInfo": {
             "created": now.isoformat(),
-            "creators": ["Tool: SynergyMesh Provenance Injector", "Organization: SynergyMesh Team"],
+            "creators": [
+                "Tool: SynergyMesh Provenance Injector",
+                "Organization: SynergyMesh Team",
+            ],
             "licenseListVersion": "3.21",
         },
         "documentDescribes": [root_id],
@@ -232,12 +242,16 @@ def inject_provenance_into_index(
 
     # Write updated index
     with open(output_path, "w", encoding="utf-8") as f:
-        yaml.dump(index, f, allow_unicode=True, default_flow_style=False, sort_keys=False)
+        yaml.dump(
+            index, f, allow_unicode=True, default_flow_style=False, sort_keys=False
+        )
 
     return index
 
 
-def generate_audit_event(action: str, subject: str, details: dict[str, Any]) -> dict[str, Any]:
+def generate_audit_event(
+    action: str, subject: str, details: dict[str, Any]
+) -> dict[str, Any]:
     """Generate an audit event record."""
     now = datetime.now(timezone.utc)
 
@@ -266,15 +280,23 @@ def main():
     parser.add_argument(
         "--input", "-i", default="docs/knowledge_index.yaml", help="Input index file"
     )
-    parser.add_argument("--output", "-o", help="Output file path (default: same as input)")
-    parser.add_argument("--generate-sbom", action="store_true", help="Generate SPDX SBOM")
+    parser.add_argument(
+        "--output", "-o", help="Output file path (default: same as input)"
+    )
+    parser.add_argument(
+        "--generate-sbom", action="store_true", help="Generate SPDX SBOM"
+    )
     parser.add_argument(
         "--generate-provenance", action="store_true", help="Generate SLSA provenance"
     )
-    parser.add_argument("--inject", action="store_true", help="Inject provenance into index")
+    parser.add_argument(
+        "--inject", action="store_true", help="Inject provenance into index"
+    )
     parser.add_argument("--audit", action="store_true", help="Generate audit event")
     parser.add_argument(
-        "--sbom-output", default="governance/sbom/docs-sbom.spdx.json", help="SBOM output path"
+        "--sbom-output",
+        default="governance/sbom/docs-sbom.spdx.json",
+        help="SBOM output path",
     )
     parser.add_argument(
         "--provenance-output",
@@ -344,7 +366,9 @@ def main():
     if args.inject:
         print("💉 注入溯源資訊...")
         updated_index = inject_provenance_into_index(input_path, output_path, repo_root)
-        items_with_prov = sum(1 for item in updated_index.get("items", []) if "provenance" in item)
+        items_with_prov = sum(
+            1 for item in updated_index.get("items", []) if "provenance" in item
+        )
         print(f"   ✅ 已更新: {output_path}")
         print(f"   📊 {items_with_prov} 個項目含有溯源資訊")
         print()

@@ -3,7 +3,6 @@
 Pytest Configuration and Fixtures for SuperAgent Tests.
 """
 
-from main import app, superagent_core
 import asyncio
 import os
 import sys
@@ -12,6 +11,7 @@ from typing import AsyncGenerator, Generator
 import pytest
 import pytest_asyncio
 from httpx import AsyncClient
+from main import app, superagent_core
 
 # Add parent directory to path for imports
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))

@@ -92,7 +92,15 @@ class NaturalLanguageProcessor:
     # Intent keywords mapping
     INTENT_KEYWORDS = {
         IntentType.DATA_MIGRATION: {
-            "en": ["migrate", "sync", "transfer", "move data", "copy data", "import", "export"],
+            "en": [
+                "migrate",
+                "sync",
+                "transfer",
+                "move data",
+                "copy data",
+                "import",
+                "export",
+            ],
             "zh": ["遷移", "同步", "轉移", "移動資料", "匯入", "匯出", "資料同步"],
         },
         IntentType.SYSTEM_INTEGRATION: {
@@ -162,7 +170,9 @@ class NaturalLanguageProcessor:
             return "zh"
         return "en"
 
-    def parse_intent(self, query: str, session_id: Optional[str] = None) -> ParsedIntent:
+    def parse_intent(
+        self, query: str, session_id: Optional[str] = None
+    ) -> ParsedIntent:
         """
         Parse user intent from natural language query
 
@@ -227,7 +237,9 @@ class NaturalLanguageProcessor:
                 self.conversation_context[session_id] = []
             self.conversation_context[session_id].append(parsed)
 
-        logger.info(f"Intent parsed: {best_intent.value} (confidence: {best_confidence:.2f})")
+        logger.info(
+            f"Intent parsed: {best_intent.value} (confidence: {best_confidence:.2f})"
+        )
         return parsed
 
     def _extract_entities(self, query: str, language: str) -> Dict[str, Any]:
@@ -267,7 +279,9 @@ class NaturalLanguageProcessor:
 
         return entities
 
-    async def translate_to_technical_spec(self, intent: ParsedIntent) -> TechnicalSpecification:
+    async def translate_to_technical_spec(
+        self, intent: ParsedIntent
+    ) -> TechnicalSpecification:
         """
         Translate parsed intent into technical specification
 
@@ -321,36 +335,31 @@ class NaturalLanguageProcessor:
         tasks = []
 
         if intent.intent_type == IntentType.DATA_MIGRATION:
-            tasks = [
-                {
-                    "id": "task-1",
-                    "name": "Analyze Source System",
-                    "description": "Analyze source system schema and data structure",
-                    "automated": True,
-                    "priority": 1,
-                },
-                {
-                    "id": "task-2",
-                    "name": "Generate Migration Scripts",
-                    "description": "Auto-generate migration scripts based on schema analysis",
-                    "automated": True,
-                    "priority": 2,
-                },
-                {
-                    "id": "task-3",
-                    "name": "Execute Migration",
-                    "description": "Execute migration with validation and rollback support",
-                    "automated": True,
-                    "priority": 3,
-                },
-                {
-                    "id": "task-4",
-                    "name": "Verify Data Integrity",
-                    "description": "Verify migrated data integrity and completeness",
-                    "automated": True,
-                    "priority": 4,
-                },
-            ]
+            tasks = [{"id": "task-1",
+                      "name": "Analyze Source System",
+                      "description": "Analyze source system schema and data structure",
+                      "automated": True,
+                      "priority": 1,
+                      },
+                     {"id": "task-2",
+                      "name": "Generate Migration Scripts",
+                      "description": "Auto-generate migration scripts based on schema analysis",
+                      "automated": True,
+                      "priority": 2,
+                      },
+                     {"id": "task-3",
+                      "name": "Execute Migration",
+                      "description": "Execute migration with validation and rollback support",
+                      "automated": True,
+                      "priority": 3,
+                      },
+                     {"id": "task-4",
+                      "name": "Verify Data Integrity",
+                      "description": "Verify migrated data integrity and completeness",
+                      "automated": True,
+                      "priority": 4,
+                      },
+                     ]
         elif intent.intent_type == IntentType.SYSTEM_INTEGRATION:
             tasks = [
                 {
@@ -407,29 +416,25 @@ class NaturalLanguageProcessor:
                 },
             ]
         elif intent.intent_type == IntentType.WORKFLOW_AUTOMATION:
-            tasks = [
-                {
-                    "id": "task-1",
-                    "name": "Analyze Workflow",
-                    "description": "Analyze existing workflow and identify automation points",
-                    "automated": True,
-                    "priority": 1,
-                },
-                {
-                    "id": "task-2",
-                    "name": "Generate Automation Scripts",
-                    "description": "Generate workflow automation scripts",
-                    "automated": True,
-                    "priority": 2,
-                },
-                {
-                    "id": "task-3",
-                    "name": "Configure Triggers",
-                    "description": "Configure workflow triggers and schedules",
-                    "automated": True,
-                    "priority": 3,
-                },
-            ]
+            tasks = [{"id": "task-1",
+                      "name": "Analyze Workflow",
+                      "description": "Analyze existing workflow and identify automation points",
+                      "automated": True,
+                      "priority": 1,
+                      },
+                     {"id": "task-2",
+                      "name": "Generate Automation Scripts",
+                      "description": "Generate workflow automation scripts",
+                      "automated": True,
+                      "priority": 2,
+                      },
+                     {"id": "task-3",
+                      "name": "Configure Triggers",
+                      "description": "Configure workflow triggers and schedules",
+                      "automated": True,
+                      "priority": 3,
+                      },
+                     ]
         else:
             # Default task for general queries
             tasks = [
@@ -444,7 +449,9 @@ class NaturalLanguageProcessor:
 
         return tasks
 
-    def _estimate_complexity(self, intent: ParsedIntent, tasks: List[Dict[str, Any]]) -> str:
+    def _estimate_complexity(
+        self, intent: ParsedIntent, tasks: List[Dict[str, Any]]
+    ) -> str:
         """Estimate complexity based on intent and tasks"""
         # Complexity heuristics
         if len(tasks) >= 4:
@@ -453,7 +460,9 @@ class NaturalLanguageProcessor:
             return "medium"
         return "low"
 
-    def _determine_automation_level(self, intent: ParsedIntent, tasks: List[Dict[str, Any]]) -> str:
+    def _determine_automation_level(
+        self, intent: ParsedIntent, tasks: List[Dict[str, Any]]
+    ) -> str:
         """Determine automation level for the specification"""
         automated_count = sum(1 for t in tasks if t.get("automated", False))
         ratio = automated_count / len(tasks) if tasks else 0
@@ -548,7 +557,9 @@ class NaturalLanguageProcessor:
         logger.info(f"Natural request processed: {spec.spec_id}")
         return result
 
-    def _generate_user_message(self, intent: ParsedIntent, spec: TechnicalSpecification) -> str:
+    def _generate_user_message(
+        self, intent: ParsedIntent, spec: TechnicalSpecification
+    ) -> str:
         """Generate user-friendly response message"""
         if intent.language == "zh":
             return (
@@ -567,7 +578,9 @@ class NaturalLanguageProcessor:
     def get_statistics(self) -> Dict[str, Any]:
         """Get processor statistics"""
         total_sessions = len(self.conversation_context)
-        total_intents = sum(len(intents) for intents in self.conversation_context.values())
+        total_intents = sum(
+            len(intents) for intents in self.conversation_context.values()
+        )
 
         intent_counts = {}
         for intents in self.conversation_context.values():
@@ -611,7 +624,9 @@ if __name__ == "__main__":
 
         for query in test_queries:
             print(f"Query: {query}")
-            result = await processor.process_natural_request(query, session_id="test-session")
+            result = await processor.process_natural_request(
+                query, session_id="test-session"
+            )
             print(f"Result:\n{json.dumps(result, indent=2, ensure_ascii=False)}\n")
             print("-" * 50 + "\n")
 

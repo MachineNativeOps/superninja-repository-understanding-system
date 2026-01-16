@@ -35,14 +35,20 @@ class ArchitectureDesignAgent(BaseAgent):
 
         try:
             # 提取分析結果和技術規格
-            input_analysis = task.input_data.get("input_analysis", {}).get("output_data", {})
+            input_analysis = task.input_data.get("input_analysis", {}).get(
+                "output_data", {}
+            )
             tech_specs = task.input_data.get("tech_specs", {})
 
             # 設計系統架構
-            system_architecture = await self._design_system_architecture(input_analysis, tech_specs)
+            system_architecture = await self._design_system_architecture(
+                input_analysis, tech_specs
+            )
 
             # 設計API結構
-            api_design = await self._design_api_structure(system_architecture, input_analysis)
+            api_design = await self._design_api_structure(
+                system_architecture, input_analysis
+            )
 
             # 設計數據架構
             data_architecture = await self._design_data_architecture(
@@ -75,7 +81,9 @@ class ArchitectureDesignAgent(BaseAgent):
                     "architecture_diagram": self._generate_architecture_diagram(
                         system_architecture
                     ),
-                    "complexity_analysis": self._analyze_complexity(system_architecture),
+                    "complexity_analysis": self._analyze_complexity(
+                        system_architecture
+                    ),
                 },
                 execution_time=execution_time,
             )
@@ -137,7 +145,11 @@ class ArchitectureDesignAgent(BaseAgent):
                 "codes": [400, 401, 403, 404, 500],
                 "messages": "structured",
             },
-            "rate_limiting": {"enabled": True, "requests_per_minute": 100, "burst_limit": 200},
+            "rate_limiting": {
+                "enabled": True,
+                "requests_per_minute": 100,
+                "burst_limit": 200,
+            },
             "documentation": {
                 "type": "OpenAPI 3.0",
                 "auto_generate": True,
@@ -150,12 +162,18 @@ class ArchitectureDesignAgent(BaseAgent):
     ) -> Dict[str, Any]:
         """設計數據架構"""
         return {
-            "database_type": tech_specs.get("backend", {}).get("database", "postgresql"),
+            "database_type": tech_specs.get("backend", {}).get(
+                "database", "postgresql"
+            ),
             "data_model": "relational",
             "tables": self._define_data_tables(architecture),
             "relationships": self._define_relationships(architecture),
             "indexes": self._define_indexes(architecture),
-            "backup_strategy": {"frequency": "daily", "retention": "30_days", "encryption": True},
+            "backup_strategy": {
+                "frequency": "daily",
+                "retention": "30_days",
+                "encryption": True,
+            },
             "migration_approach": "versioned",
         }
 
@@ -164,7 +182,11 @@ class ArchitectureDesignAgent(BaseAgent):
     ) -> Dict[str, Any]:
         """設計安全架構"""
         return {
-            "authentication": {"method": "JWT", "token_expiry": "24h", "refresh_tokens": True},
+            "authentication": {
+                "method": "JWT",
+                "token_expiry": "24h",
+                "refresh_tokens": True,
+            },
             "authorization": {
                 "model": "RBAC",
                 "roles": ["admin", "user", "guest"],
@@ -176,7 +198,11 @@ class ArchitectureDesignAgent(BaseAgent):
                 "sensitive_data_masking": True,
             },
             "security_headers": {"CSP": True, "HSTS": True, "XSS_Protection": True},
-            "audit_logging": {"enabled": True, "log_level": "INFO", "retention": "90_days"},
+            "audit_logging": {
+                "enabled": True,
+                "log_level": "INFO",
+                "retention": "90_days",
+            },
         }
 
     async def _design_deployment_architecture(
@@ -184,7 +210,9 @@ class ArchitectureDesignAgent(BaseAgent):
     ) -> Dict[str, Any]:
         """設計部署架構"""
         return {
-            "deployment_method": tech_specs.get("infrastructure", {}).get("deployment", "docker"),
+            "deployment_method": tech_specs.get("infrastructure", {}).get(
+                "deployment", "docker"
+            ),
             "orchestration": tech_specs.get("infrastructure", {}).get(
                 "orchestration", "kubernetes"
             ),
@@ -203,7 +231,9 @@ class ArchitectureDesignAgent(BaseAgent):
             "scaling": {"horizontal": True, "vertical": True, "auto_scaling": True},
         }
 
-    def _define_components(self, domain: str, tech_specs: Dict[str, Any]) -> List[Dict[str, Any]]:
+    def _define_components(
+        self, domain: str, tech_specs: Dict[str, Any]
+    ) -> List[Dict[str, Any]]:
         """定義系統組件"""
         components = []
 
@@ -300,7 +330,9 @@ class ArchitectureDesignAgent(BaseAgent):
             },
         ]
 
-    def _define_relationships(self, architecture: Dict[str, Any]) -> List[Dict[str, str]]:
+    def _define_relationships(
+        self, architecture: Dict[str, Any]
+    ) -> List[Dict[str, str]]:
         """定義關係"""
         return [
             {

@@ -194,7 +194,9 @@ class MindMatrix:
         """
         return self.model.executive_layer.roles
 
-    def get_ceo_mission(self, ceo_id: str = "machinenativenops.ceo") -> list[str] | None:
+    def get_ceo_mission(
+        self, ceo_id: str = "machinenativenops.ceo"
+    ) -> list[str] | None:
         """
         取得特定執行長的使命 (Get mission for a specific executive).
 
@@ -299,7 +301,9 @@ class MindMatrix:
             # location
             possible_paths = [
                 Path("config/topology-mind-matrix.yaml"),
-                Path(__file__).parent.parent.parent / "config" / "topology-mind-matrix.yaml",
+                Path(__file__).parent.parent.parent
+                / "config"
+                / "topology-mind-matrix.yaml",
             ]
             for path in possible_paths:
                 if path.exists():
@@ -317,8 +321,12 @@ class MindMatrix:
         tool_stages = mm.get_tool_pipeline_stages()
         yaml_stages = mm.get_yaml_validation_stages()
 
-        assert len(tool_stages) == 8, f"工具管線必須為八階段，目前有 {len(tool_stages)} 階段"
-        assert len(yaml_stages) == 7, f"YAML 驗證管線必須為七階段，目前有 {len(yaml_stages)} 階段"
+        assert (
+            len(tool_stages) == 8
+        ), f"工具管線必須為八階段，目前有 {len(tool_stages)} 階段"
+        assert (
+            len(yaml_stages) == 7
+        ), f"YAML 驗證管線必須為七階段，目前有 {len(yaml_stages)} 階段"
 
         print("✅ MindMatrix 啟動自檢通過：八階段工具管線、七階段 YAML 驗證")
 
@@ -345,7 +353,9 @@ if __name__ == "__main__":
 
         controller = ExecutiveAutoController()
         report = controller.run_once()
-        print(f"🚀 Autonomous Executive 完成一次閉環，審計事件數：{len(report['audit'])}")
+        print(
+            f"🚀 Autonomous Executive 完成一次閉環，審計事件數：{len(report['audit'])}"
+        )
     except ImportError as ex:
         print(f"[WARN] 自動執行長模組未載入：{ex}")
     except Exception as ex:

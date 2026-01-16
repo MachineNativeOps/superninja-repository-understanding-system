@@ -136,7 +136,9 @@ class ProjectRestructurer:
                     # Create placeholder files
                     if isinstance(contents, list):
                         for content in contents:
-                            if content.endswith((".md", ".yaml", ".yml", ".json", ".py", ".sh")):
+                            if content.endswith(
+                                (".md", ".yaml", ".yml", ".json", ".py", ".sh")
+                            ):
                                 file_path = subdir_path / content
                                 if not file_path.exists():
                                     file_path.touch()
@@ -215,7 +217,10 @@ class ProjectRestructurer:
                 "environment": "development",
                 "namespace": "machinenativenops",
                 "services": {
-                    "machinenativenops.instant_generation": {"enabled": True, "debug": True},
+                    "machinenativenops.instant_generation": {
+                        "enabled": True,
+                        "debug": True,
+                    },
                     "phase4": {"enabled": True, "debug": True},
                 },
             },
@@ -223,14 +228,20 @@ class ProjectRestructurer:
                 "environment": "production",
                 "namespace": "machinenativenops",
                 "services": {
-                    "machinenativenops.instant_generation": {"enabled": True, "debug": False},
+                    "machinenativenops.instant_generation": {
+                        "enabled": True,
+                        "debug": False,
+                    },
                     "phase4": {"enabled": True, "debug": False},
                 },
             },
             "config/ci-cd/github-actions/main.yml": {
                 "name": "MachineNativeOps CI/CD",
                 "namespace": "machinenativenops",
-                "on": {"push": {"branches": ["main"]}, "pull_request": {"branches": ["main"]}},
+                "on": {
+                    "push": {"branches": ["main"]},
+                    "pull_request": {"branches": ["main"]},
+                },
                 "jobs": {
                     "build": {
                         "runs-on": "ubuntu-latest",

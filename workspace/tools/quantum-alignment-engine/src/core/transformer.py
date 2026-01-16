@@ -95,7 +95,9 @@ class SemanticLattice:
         lattice_position = self._find_lattice_position(entangled_state)
 
         return QuantumNode(
-            element=code_element, quantum_state=entangled_state, lattice_position=lattice_position
+            element=code_element,
+            quantum_state=entangled_state,
+            lattice_position=lattice_position,
         )
 
     def _apply_hadamard(self, vector: np.ndarray) -> np.ndarray:
@@ -178,7 +180,9 @@ class NamespaceRegistry:
         manifest_path = Path(self.manifest_path)
 
         if not manifest_path.exists():
-            print(f"⚠️  Warning: {self.manifest_path} not found, using default namespaces")
+            print(
+                f"⚠️  Warning: {self.manifest_path} not found, using default namespaces"
+            )
             self._load_default_namespaces()
             return
 
@@ -208,7 +212,10 @@ class NamespaceRegistry:
             self.namespaces[ns] = "axiom-naming-v9"
             self.namespace_vectors[ns] = self._generate_namespace_vector(ns)
 
-        self.policies["axiom-naming-v9"] = {"namespaces": default_namespaces, "version": "9.0.0"}
+        self.policies["axiom-naming-v9"] = {
+            "namespaces": default_namespaces,
+            "version": "9.0.0",
+        }
 
     def _generate_namespace_vector(self, namespace: str) -> np.ndarray:
         """
@@ -236,7 +243,9 @@ class NamespaceRegistry:
         """Get semantic vector for namespace"""
         if namespace not in self.namespace_vectors:
             # Generate on-the-fly
-            self.namespace_vectors[namespace] = self._generate_namespace_vector(namespace)
+            self.namespace_vectors[namespace] = self._generate_namespace_vector(
+                namespace
+            )
 
         return self.namespace_vectors[namespace]
 
@@ -322,7 +331,9 @@ class EntanglementMapper:
 
         return best_match
 
-    def _create_entanglement(self, element: CodeElement, namespace: str) -> "QuantumNode":
+    def _create_entanglement(
+        self, element: CodeElement, namespace: str
+    ) -> "QuantumNode":
         """
         Create entangled quantum state between element and namespace
 
@@ -626,7 +637,9 @@ class QuantumCodeTransformer:
 
         for node in semantic_graph.traverse():
             try:
-                remapped = self.entanglement_mapper.remap(node, target_policy=target_policy)
+                remapped = self.entanglement_mapper.remap(
+                    node, target_policy=target_policy
+                )
                 remapped_nodes.append(remapped)
             except SemanticDecoherenceError as e:
                 print(f"  ⚠️  Warning: {e}")
@@ -638,7 +651,9 @@ class QuantumCodeTransformer:
                 except Exception as e:
                     print(f"  ❌ Failed to correct: {e}")
 
-        print(f"  ✓ Remapped {len(remapped_nodes)} nodes ({failed_count} with warnings)")
+        print(
+            f"  ✓ Remapped {len(remapped_nodes)} nodes ({failed_count} with warnings)"
+        )
         print()
 
         # Phase 4: Generate quantum circuit intermediate representation
@@ -772,7 +787,9 @@ class QuantumCodeTransformer:
 
         return graph
 
-    def _find_node_by_name(self, nodes: List[QuantumNode], name: str) -> Optional[QuantumNode]:
+    def _find_node_by_name(
+        self, nodes: List[QuantumNode], name: str
+    ) -> Optional[QuantumNode]:
         """Find node by element name"""
         for node in nodes:
             if node.element.name == name:
@@ -792,25 +809,22 @@ class QuantumCodeTransformer:
 
     def _generate_quantum_gates(self, node: QuantumNode) -> List[Dict]:
         """Generate quantum gates for node"""
-        gates = [
-            {
-                "type": "Hadamard",
-                "qubits": [0, 1],
-                "description": f"Superposition for {node.element.name}",
-            },
-            {
-                "type": "CNOT",
-                "control": 0,
-                "target": 1,
-                "description": f'Entangle with namespace {node.element.context.get("target_namespace", "unknown")}',
-            },
-            {
-                "type": "Rotation",
-                "angle": float(np.arccos(np.mean(node.quantum_state))),
-                "axis": "Z",
-                "description": f"Semantic rotation for {node.element.name}",
-            },
-        ]
+        gates = [{"type": "Hadamard",
+                  "qubits": [0,
+                             1],
+                  "description": f"Superposition for {node.element.name}",
+                  },
+                 {"type": "CNOT",
+                  "control": 0,
+                  "target": 1,
+                  "description": f'Entangle with namespace {node.element.context.get("target_namespace", "unknown")}',
+                  },
+                 {"type": "Rotation",
+                  "angle": float(np.arccos(np.mean(node.quantum_state))),
+                  "axis": "Z",
+                  "description": f"Semantic rotation for {node.element.name}",
+                  },
+                 ]
 
         return gates
 
@@ -820,7 +834,9 @@ class QuantumCodeTransformer:
         stabilized = calibrator.stabilize(qir)
         return stabilized
 
-    def _collapse_to_classical(self, qir: QuantumIR, output_path: Optional[str] = None) -> str:
+    def _collapse_to_classical(
+        self, qir: QuantumIR, output_path: Optional[str] = None
+    ) -> str:
         """Collapse quantum state to classical code"""
         # Measure quantum state
         classical_code = self._measure_quantum_state(qir)
@@ -833,7 +849,9 @@ class QuantumCodeTransformer:
         measurement = {"circuits": qir.circuits, "metadata": qir.metadata}
         return measurement
 
-    def _generate_classical_code(self, measurement: Dict, output_path: Optional[str] = None) -> str:
+    def _generate_classical_code(
+        self, measurement: Dict, output_path: Optional[str] = None
+    ) -> str:
         """Generate classical code from quantum measurement"""
         if output_path is None:
             output_path = "/workspace/transformed_code"
@@ -854,7 +872,9 @@ class QuantumCodeTransformer:
 
         return str(generated_file)
 
-    def _correct_decoherence(self, node: QuantumNode, target_policy: str) -> QuantumNode:
+    def _correct_decoherence(
+        self, node: QuantumNode, target_policy: str
+    ) -> QuantumNode:
         """Correct decoherence in quantum node"""
         # Apply error correction
         corrected_state = self._apply_error_correction(node.quantum_state)
@@ -901,17 +921,19 @@ def main():
     import argparse
 
     parser = argparse.ArgumentParser(
-        description="Quantum Code Alignment Engine - Transform external code to align with MachineNativeOps"
-    )
+        description="Quantum Code Alignment Engine - Transform external code to align with MachineNativeOps")
 
     parser.add_argument("source_path", help="Path to external codebase to transform")
 
     parser.add_argument(
-        "--policy", default="axiom-naming-v9", help="Target policy (default: axiom-naming-v9)"
+        "--policy",
+        default="axiom-naming-v9",
+        help="Target policy (default: axiom-naming-v9)",
     )
 
     parser.add_argument(
-        "--output", help="Output path for transformed code (default: ./transformed_code)"
+        "--output",
+        help="Output path for transformed code (default: ./transformed_code)",
     )
 
     args = parser.parse_args()

@@ -452,7 +452,9 @@ class FunctionDefinition:
                 expected_type = properties[key].get("type")
                 if expected_type and expected_type in type_map:
                     if not isinstance(value, type_map[expected_type]):
-                        errors.append(f"Invalid type for {key}: expected {expected_type}")
+                        errors.append(
+                            f"Invalid type for {key}: expected {expected_type}"
+                        )
 
         return errors
 
@@ -951,7 +953,9 @@ class FunctionCallHandler:
         self._call_history.append(result)
         return result
 
-    def parse_openai_tool_call(self, tool_call: Dict[str, Any]) -> tuple[str, Dict[str, Any]]:
+    def parse_openai_tool_call(
+        self, tool_call: Dict[str, Any]
+    ) -> tuple[str, Dict[str, Any]]:
         """Parse an OpenAI tool call response"""
         function_name = tool_call.get("function", {}).get("name", "")
         arguments_str = tool_call.get("function", {}).get("arguments", "{}")
@@ -1265,7 +1269,10 @@ def create_api_function(
             "type": "object",
             "properties": {
                 "url": {"type": "string", "description": "The URL to call"},
-                "method": {"type": "string", "description": "HTTP method (GET, POST, etc.)"},
+                "method": {
+                    "type": "string",
+                    "description": "HTTP method (GET, POST, etc.)",
+                },
                 "body": {"type": "object", "description": "Request body"},
             },
             "required": ["url", "method"],

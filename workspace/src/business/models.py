@@ -118,7 +118,9 @@ class BusinessMetrics(BaseModel):
     completed_projects: int = Field(0, description="已完成項目數")
     total_tasks: int = Field(0, description="任務總數")
     completed_tasks: int = Field(0, description="已完成任務數")
-    average_completion_time: Optional[float] = Field(None, description="平均完成時間（小時）")
+    average_completion_time: Optional[float] = Field(
+        None, description="平均完成時間（小時）"
+    )
     resource_utilization: float = Field(0.0, ge=0, le=1, description="資源利用率")
     cost_efficiency: Optional[float] = Field(None, description="成本效率")
     quality_score: float = Field(0.0, ge=0, le=100, description="質量分數")
@@ -185,7 +187,9 @@ class CreateTaskRequest(BaseModel):
 class UpdateTaskRequest(BaseModel):
     """更新任務請求"""
 
-    name: Optional[str] = Field(None, min_length=1, max_length=100, description="任務名稱")
+    name: Optional[str] = Field(
+        None, min_length=1, max_length=100, description="任務名稱"
+    )
     description: Optional[str] = Field(None, max_length=500, description="任務描述")
     assignee: Optional[str] = Field(None, description="執行人")
     status: Optional[BusinessStatus] = Field(None, description="任務狀態")

@@ -72,7 +72,9 @@ def create_namespace(name: str, labels: Optional[dict] = None) -> None:
 def delete_namespace(name: str) -> None:
     """刪除命名空間"""
     try:
-        run_kubectl(["delete", "namespace", name, "--grace-period=0", "--force", "--wait=false"])
+        run_kubectl(
+            ["delete", "namespace", name, "--grace-period=0", "--force", "--wait=false"]
+        )
     except KubectlError:
         pass
 
@@ -160,7 +162,9 @@ class TestResourceQuotaCreation:
         apply_manifest(quota)
 
         quotas = get_resource_quotas(test_namespace)
-        object_quota = next((q for q in quotas if q["metadata"]["name"] == "object-quota"), None)
+        object_quota = next(
+            (q for q in quotas if q["metadata"]["name"] == "object-quota"), None
+        )
 
         assert object_quota is not None
         assert object_quota["spec"]["hard"]["pods"] == "20"
@@ -183,7 +187,9 @@ class TestResourceQuotaCreation:
         apply_manifest(quota)
 
         quotas = get_resource_quotas(test_namespace)
-        storage_quota = next((q for q in quotas if q["metadata"]["name"] == "storage-quota"), None)
+        storage_quota = next(
+            (q for q in quotas if q["metadata"]["name"] == "storage-quota"), None
+        )
 
         assert storage_quota is not None
         assert storage_quota["spec"]["hard"]["requests.storage"] == "100Gi"
@@ -244,7 +250,9 @@ class TestLimitRangeCreation:
         apply_manifest(limit_range)
 
         limits = get_limit_ranges(test_namespace)
-        pod_limits = next((lr for lr in limits if lr["metadata"]["name"] == "pod-limits"), None)
+        pod_limits = next(
+            (lr for lr in limits if lr["metadata"]["name"] == "pod-limits"), None
+        )
 
         assert pod_limits is not None
         limit_spec = pod_limits["spec"]["limits"][0]
@@ -270,7 +278,9 @@ class TestLimitRangeCreation:
         apply_manifest(limit_range)
 
         limits = get_limit_ranges(test_namespace)
-        pvc_limits = next((lr for lr in limits if lr["metadata"]["name"] == "pvc-limits"), None)
+        pvc_limits = next(
+            (lr for lr in limits if lr["metadata"]["name"] == "pvc-limits"), None
+        )
 
         assert pvc_limits is not None
 
@@ -338,7 +348,9 @@ class TestQuotaScopes:
         apply_manifest(quota)
 
         quotas = get_resource_quotas(test_namespace)
-        be_quota = next((q for q in quotas if q["metadata"]["name"] == "best-effort-quota"), None)
+        be_quota = next(
+            (q for q in quotas if q["metadata"]["name"] == "best-effort-quota"), None
+        )
 
         assert be_quota is not None
         assert "BestEffort" in be_quota["spec"]["scopes"]
@@ -363,7 +375,8 @@ class TestQuotaScopes:
 
         quotas = get_resource_quotas(test_namespace)
         nbe_quota = next(
-            (q for q in quotas if q["metadata"]["name"] == "not-best-effort-quota"), None
+            (q for q in quotas if q["metadata"]["name"] == "not-best-effort-quota"),
+            None,
         )
 
         assert nbe_quota is not None

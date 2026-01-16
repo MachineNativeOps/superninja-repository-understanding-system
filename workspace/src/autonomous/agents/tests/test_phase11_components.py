@@ -10,11 +10,12 @@ Tests for:
 - ObservabilityPlatform
 """
 
-from core.monitoring_system.smart_anomaly_detector import AnomalySeverity
-from core.monitoring_system.self_learning import PatternType
-from core.monitoring_system.observability_platform import EventType, LogLevel, TraceStatus
-from core.monitoring_system.intelligent_monitoring import MetricType as MT
-from core.monitoring_system.auto_remediation import RemediationStatus, RemediationType
+import asyncio
+import os
+import sys
+from datetime import datetime, timedelta
+
+import pytest
 from core.monitoring_system import (  # Intelligent Monitoring; Smart Anomaly Detection; Auto Diagnosis; Auto Remediation; Self Learning; Observability Platform
     Alert,
     AlertSeverity,
@@ -48,12 +49,15 @@ from core.monitoring_system import (  # Intelligent Monitoring; Smart Anomaly De
     SmartAnomalyDetector,
     TraceSpan,
 )
-import asyncio
-import os
-import sys
-from datetime import datetime, timedelta
-
-import pytest
+from core.monitoring_system.auto_remediation import RemediationStatus, RemediationType
+from core.monitoring_system.intelligent_monitoring import MetricType as MT
+from core.monitoring_system.observability_platform import (
+    EventType,
+    LogLevel,
+    TraceStatus,
+)
+from core.monitoring_system.self_learning import PatternType
+from core.monitoring_system.smart_anomaly_detector import AnomalySeverity
 
 # Add parent directory to path for imports
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", ".."))
@@ -178,7 +182,9 @@ class TestSmartAnomalyDetector:
 
     def test_hybrid_detection(self):
         """Test hybrid detection strategy"""
-        detector = SmartAnomalyDetector(default_strategy=AnomalyDetectionStrategy.HYBRID)
+        detector = SmartAnomalyDetector(
+            default_strategy=AnomalyDetectionStrategy.HYBRID
+        )
         detector.learn_baseline("latency", [100, 105, 98, 102, 101])
 
         result = detector.detect("latency", 500)
@@ -274,7 +280,9 @@ class TestRemediationExecutor:
         executor = RemediationExecutor()
 
         action = RemediationAction(
-            name="restart_service", action_type=RemediationType.RESTART, target="test-service"
+            name="restart_service",
+            action_type=RemediationType.RESTART,
+            target="test-service",
         )
 
         result = await executor.execute(action)
@@ -303,7 +311,9 @@ class TestAutoRemediationEngine:
         """Test registering a playbook"""
         engine = AutoRemediationEngine()
 
-        playbook = RemediationPlaybook(name="test_playbook", trigger_conditions=["high cpu"])
+        playbook = RemediationPlaybook(
+            name="test_playbook", trigger_conditions=["high cpu"]
+        )
 
         engine.register_playbook(playbook)
         retrieved = engine.get_playbook(playbook.playbook_id)
@@ -330,7 +340,9 @@ class TestAutoRemediationEngine:
 
         playbook = RemediationPlaybook(
             name="test",
-            actions=[RemediationAction(name="step1", action_type=RemediationType.RESTART)],
+            actions=[
+                RemediationAction(name="step1", action_type=RemediationType.RESTART)
+            ],
         )
         engine.register_playbook(playbook)
 
@@ -359,7 +371,9 @@ class TestPatternLearner:
         """Test learning a new pattern"""
         learner = PatternLearner()
 
-        pattern = learner.learn(conditions=[{"metric": "cpu", "value": 95}], description="High CPU")
+        pattern = learner.learn(
+            conditions=[{"metric": "cpu", "value": 95}], description="High CPU"
+        )
 
         assert pattern is not None
         assert pattern.frequency == 1
@@ -368,7 +382,9 @@ class TestPatternLearner:
         """Test finding similar patterns"""
         learner = PatternLearner()
 
-        learner.learn(conditions=[{"metric": "cpu", "value": 95}], description="High CPU")
+        learner.learn(
+            conditions=[{"metric": "cpu", "value": 95}], description="High CPU"
+        )
 
         # Learn similar pattern - should increment existing
         pattern = learner.learn(conditions=[{"metric": "cpu", "value": 90}])

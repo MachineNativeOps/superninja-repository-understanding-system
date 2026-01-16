@@ -56,7 +56,9 @@ class TestMessageEndpoints:
     """Tests for message handling endpoints."""
 
     @pytest.mark.asyncio
-    async def test_send_message_valid(self, async_client: AsyncClient, sample_message_payload):
+    async def test_send_message_valid(
+        self, async_client: AsyncClient, sample_message_payload
+    ):
         """Test sending a valid message."""
         response = await async_client.post("/message", json=sample_message_payload)
 
@@ -97,7 +99,9 @@ class TestIncidentEndpoints:
     """Tests for incident management endpoints."""
 
     @pytest.mark.asyncio
-    async def test_create_incident(self, async_client: AsyncClient, sample_incident_payload):
+    async def test_create_incident(
+        self, async_client: AsyncClient, sample_incident_payload
+    ):
         """Test creating an incident."""
         response = await async_client.post("/incidents", json=sample_incident_payload)
 
@@ -108,7 +112,9 @@ class TestIncidentEndpoints:
         assert data["state"] == "OPEN"
 
     @pytest.mark.asyncio
-    async def test_get_incident(self, async_client: AsyncClient, sample_incident_payload):
+    async def test_get_incident(
+        self, async_client: AsyncClient, sample_incident_payload
+    ):
         """Test retrieving an incident."""
         # First create the incident
         await async_client.post("/incidents", json=sample_incident_payload)
@@ -139,7 +145,9 @@ class TestIncidentEndpoints:
         assert isinstance(data, list)
 
     @pytest.mark.asyncio
-    async def test_transition_incident(self, async_client: AsyncClient, sample_incident_payload):
+    async def test_transition_incident(
+        self, async_client: AsyncClient, sample_incident_payload
+    ):
         """Test transitioning an incident state."""
         # Create incident
         await async_client.post("/incidents", json=sample_incident_payload)
@@ -200,7 +208,9 @@ class TestConsensusEndpoints:
             "vote": "approve",
             "reason": "Approved",
         }
-        response = await async_client.post(f"/consensus/{request_id}/vote", json=vote_payload)
+        response = await async_client.post(
+            f"/consensus/{request_id}/vote", json=vote_payload
+        )
 
         assert response.status_code == 200
 

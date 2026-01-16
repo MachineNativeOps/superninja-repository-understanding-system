@@ -12,14 +12,6 @@ covering security-critical scenarios including:
 - Malformed JWT detection
 """
 
-from enterprise.iam.sso import (
-    HTTPClient,
-    MembershipRepository,
-    SSOManager,
-    SSORepository,
-    UserRepository,
-)
-from enterprise.iam.models import Role, SSOConfig
 import sys
 from datetime import datetime, timedelta
 from pathlib import Path
@@ -27,6 +19,14 @@ from unittest.mock import AsyncMock, Mock, patch
 
 import jwt
 import pytest
+from enterprise.iam.models import Role, SSOConfig
+from enterprise.iam.sso import (
+    HTTPClient,
+    MembershipRepository,
+    SSOManager,
+    SSORepository,
+    UserRepository,
+)
 from jwt.exceptions import DecodeError
 
 # Add src to path
@@ -65,7 +65,10 @@ def mock_http_client():
 
 @pytest.fixture
 def sso_manager(
-    mock_sso_repository, mock_user_repository, mock_membership_repository, mock_http_client
+    mock_sso_repository,
+    mock_user_repository,
+    mock_membership_repository,
+    mock_http_client,
 ):
     """Create SSO manager with mocked dependencies"""
     return SSOManager(
@@ -144,7 +147,11 @@ def create_id_token(
         "sub": "user-123",
         "aud": client_id,
         "iat": int(now.timestamp()),
-        "exp": int((now - timedelta(hours=1) if expired else now + timedelta(hours=1)).timestamp()),
+        "exp": int(
+            (
+                now - timedelta(hours=1) if expired else now + timedelta(hours=1)
+            ).timestamp()
+        ),
     }
 
     if include_nonce:
@@ -229,10 +236,14 @@ class TestJWTValidation:
             mock_user = Mock()
             mock_user.email = "user@example.com"
             mock_membership = Mock()
-            sso_manager._provision_sso_user = AsyncMock(return_value=(mock_user, mock_membership))
+            sso_manager._provision_sso_user = AsyncMock(
+                return_value=(mock_user, mock_membership)
+            )
 
             # Execute
-            user, membership = await sso_manager.complete_oidc_login(state, code, client_secret)
+            user, membership = await sso_manager.complete_oidc_login(
+                state, code, client_secret
+            )
 
             # Verify
             assert user.email == "user@example.com"
@@ -333,7 +344,9 @@ class TestJWTValidation:
             mock_jwk_client.return_value = mock_jwk_instance
 
             # Should raise ValueError for nonce mismatch
-            with pytest.raises(ValueError, match="Nonce mismatch.*possible replay attack"):
+            with pytest.raises(
+                ValueError, match="Nonce mismatch.*possible replay attack"
+            ):
                 await sso_manager.complete_oidc_login(state, code, client_secret)
 
     @pytest.mark.asyncio
@@ -441,7 +454,9 @@ class TestJWTValidation:
                 await sso_manager.complete_oidc_login(state, code, client_secret)
 
     @pytest.mark.asyncio
-    async def test_malformed_jwt_token(self, sso_manager, sso_config, org_id, discovery_document):
+    async def test_malformed_jwt_token(
+        self, sso_manager, sso_config, org_id, discovery_document
+    ):
         """Test JWT validation fails with malformed token"""
         state = "test-state"
         nonce = "test-nonce"
@@ -472,7 +487,9 @@ class TestJWTValidation:
             mock_jwk_instance = Mock()
             # PyJWKClient will raise when trying to get signing key from
             # malformed JWT
-            mock_jwk_instance.get_signing_key_from_jwt.side_effect = DecodeError("Invalid token")
+            mock_jwk_instance.get_signing_key_from_jwt.side_effect = DecodeError(
+                "Invalid token"
+            )
             mock_jwk_client.return_value = mock_jwk_instance
 
             # Should raise ValueError wrapping decode error
@@ -516,7 +533,9 @@ class TestJWTValidation:
         sso_manager.http_client.post.return_value = token_response
 
         # Should raise ValueError for missing jwks_uri
-        with pytest.raises(ValueError, match="OIDC discovery document missing 'jwks_uri'"):
+        with pytest.raises(
+            ValueError, match="OIDC discovery document missing 'jwks_uri'"
+        ):
             await sso_manager.complete_oidc_login(state, code, client_secret)
 
 

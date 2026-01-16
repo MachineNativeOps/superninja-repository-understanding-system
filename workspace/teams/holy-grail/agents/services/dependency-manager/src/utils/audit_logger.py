@@ -231,17 +231,24 @@ class AuditLogger:
         self, package: str, vulnerability_id: str, severity: str
     ) -> AuditEvent:
         """記錄發現漏洞"""
-        audit_severity = AuditSeverity.CRITICAL if severity == "CRITICAL" else AuditSeverity.WARNING
+        audit_severity = (
+            AuditSeverity.CRITICAL if severity == "CRITICAL" else AuditSeverity.WARNING
+        )
 
         return self.log(
             event_type=AuditEventType.VULNERABILITY_DETECTED,
             target=package,
             details=f"發現漏洞 {vulnerability_id} (嚴重程度: {severity})",
             severity=audit_severity,
-            metadata={"vulnerability_id": vulnerability_id, "vulnerability_severity": severity},
+            metadata={
+                "vulnerability_id": vulnerability_id,
+                "vulnerability_severity": severity,
+            },
         )
 
-    def log_update_started(self, package: str, from_version: str, to_version: str) -> AuditEvent:
+    def log_update_started(
+        self, package: str, from_version: str, to_version: str
+    ) -> AuditEvent:
         """記錄更新開始"""
         return self.log(
             event_type=AuditEventType.UPDATE_STARTED,
@@ -250,7 +257,9 @@ class AuditLogger:
             metadata={"from_version": from_version, "to_version": to_version},
         )
 
-    def log_update_completed(self, package: str, from_version: str, to_version: str) -> AuditEvent:
+    def log_update_completed(
+        self, package: str, from_version: str, to_version: str
+    ) -> AuditEvent:
         """記錄更新完成"""
         return self.log(
             event_type=AuditEventType.UPDATE_COMPLETED,
@@ -364,7 +373,10 @@ class AuditLogger:
                 or event.timestamp < summary["time_range"]["start"]
             ):
                 summary["time_range"]["start"] = event.timestamp
-            if not summary["time_range"]["end"] or event.timestamp > summary["time_range"]["end"]:
+            if (
+                not summary["time_range"]["end"]
+                or event.timestamp > summary["time_range"]["end"]
+            ):
                 summary["time_range"]["end"] = event.timestamp
 
         # 轉換時間格式

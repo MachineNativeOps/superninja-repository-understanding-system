@@ -99,8 +99,7 @@ class LogicalConsistencyEngine:
                         "severity": "MEDIUM",
                         "message": f"Directory '{item}' does not follow XX-name pattern",
                         "auto_fix": False,
-                    }
-                )
+                    })
                 self.stats["structural_issues"] += 1
 
         if verbose:
@@ -226,7 +225,9 @@ class LogicalConsistencyEngine:
                 if file.endswith((".md", ".yaml", ".yml")):
                     filepath = os.path.join(root, file)
                     try:
-                        with open(filepath, "r", encoding="utf-8", errors="ignore") as f:
+                        with open(
+                            filepath, "r", encoding="utf-8", errors="ignore"
+                        ) as f:
                             content = f.read().lower()
 
                             for base_term, variations in term_variations.items():
@@ -248,8 +249,7 @@ class LogicalConsistencyEngine:
                         "severity": "LOW",
                         "message": f"Inconsistent spelling of '{base_term}': {dict(variants)}",
                         "auto_fix": True,
-                    }
-                )
+                    })
                 self.stats["semantic_issues"] += 1
 
         if verbose:
@@ -323,12 +323,13 @@ class LogicalConsistencyEngine:
                         "severity": "MEDIUM",
                         "message": f"Function '{func_name}' defined in {len(files)} files",
                         "auto_fix": False,
-                    }
-                )
+                    })
                 self.stats["implementation_issues"] += 1
 
         if verbose:
-            print(f"  Found {self.stats['implementation_issues']} implementation issues\n")
+            print(
+                f"  Found {self.stats['implementation_issues']} implementation issues\n"
+            )
 
     def check_metadata_consistency(self, verbose: bool = False):
         """Check version alignment, owner verification."""
@@ -376,7 +377,9 @@ class LogicalConsistencyEngine:
                 if file.endswith((".py", ".md", ".yaml", ".yml")):
                     filepath = os.path.join(root, file)
                     try:
-                        with open(filepath, "r", encoding="utf-8", errors="ignore") as f:
+                        with open(
+                            filepath, "r", encoding="utf-8", errors="ignore"
+                        ) as f:
                             for line_num, line in enumerate(f, 1):
                                 for marker in debt_markers:
                                     if marker in line:
@@ -419,7 +422,9 @@ class LogicalConsistencyEngine:
                             for match in link_pattern.finditer(content):
                                 link_target = match.group(2)
                                 # Check if it's a relative file link
-                                if not link_target.startswith(("http://", "https://", "#")):
+                                if not link_target.startswith(
+                                    ("http://", "https://", "#")
+                                ):
                                     target_path = os.path.join(root, link_target)
                                     if not os.path.exists(target_path):
                                         self.logic_errors.append(
@@ -482,7 +487,11 @@ class LogicalConsistencyEngine:
         # Overall health
         health = summary["health_score"]
         health_color = GREEN if health >= 85 else YELLOW if health >= 70 else RED
-        grade = "A" if health >= 90 else "B" if health >= 80 else "C" if health >= 70 else "D"
+        grade = (
+            "A"
+            if health >= 90
+            else "B" if health >= 80 else "C" if health >= 70 else "D"
+        )
 
         print(
             f"{BOLD}Overall Health Score:{RESET} {health_color}{health}/100{RESET} (Grade {grade})\n"
@@ -499,7 +508,9 @@ class LogicalConsistencyEngine:
         for category, count in report["issues_by_category"].items():
             color = RED if count > 10 else YELLOW if count > 5 else GREEN
             status = "✅" if count == 0 else "⚠️"
-            print(f"  {status} {category.replace('_', ' ').title()}: {color}{count}{RESET}")
+            print(
+                f"  {status} {category.replace('_', ' ').title()}: {color}{count}{RESET}"
+            )
 
         print(f"\n{BOLD}{BLUE}{'═'*70}{RESET}\n")
 
@@ -511,7 +522,9 @@ def main():
     parser = argparse.ArgumentParser(
         description="Logical Consistency Engine - Deep project analysis"
     )
-    parser.add_argument("--check-all", action="store_true", help="Run all consistency checks")
+    parser.add_argument(
+        "--check-all", action="store_true", help="Run all consistency checks"
+    )
     parser.add_argument(
         "--check",
         choices=[
@@ -525,9 +538,15 @@ def main():
         ],
         help="Run specific consistency check",
     )
-    parser.add_argument("--detect-tech-debt", action="store_true", help="Detect technical debt")
-    parser.add_argument("--detect-logic-errors", action="store_true", help="Detect logic errors")
-    parser.add_argument("--full-report", action="store_true", help="Generate full report")
+    parser.add_argument(
+        "--detect-tech-debt", action="store_true", help="Detect technical debt"
+    )
+    parser.add_argument(
+        "--detect-logic-errors", action="store_true", help="Detect logic errors"
+    )
+    parser.add_argument(
+        "--full-report", action="store_true", help="Generate full report"
+    )
     parser.add_argument("--verbose", "-v", action="store_true", help="Verbose output")
 
     args = parser.parse_args()

@@ -48,7 +48,9 @@ def load_playbook(cluster_id: str, index_path: Path, repo_root: Path) -> dict:
     if not refactor_file:
         raise ValueError(f"No refactor_file specified for cluster '{cluster_id}'")
 
-    playbook_path = repo_root / "docs" / "refactor_playbooks" / "03_refactor" / refactor_file
+    playbook_path = (
+        repo_root / "docs" / "refactor_playbooks" / "03_refactor" / refactor_file
+    )
 
     if not playbook_path.exists():
         raise FileNotFoundError(f"Playbook not found: {playbook_path}")
@@ -114,7 +116,9 @@ def extract_auto_fix_allowed(content: str) -> list[str]:
 
     # Look for subsection "適合 Auto-Fix"
     allowed_section = re.search(
-        r"適合.*Auto-Fix.*?[:：](.*?)(?=必須人工審查|##|\Z)", section, re.DOTALL | re.IGNORECASE
+        r"適合.*Auto-Fix.*?[:：](.*?)(?=必須人工審查|##|\Z)",
+        section,
+        re.DOTALL | re.IGNORECASE,
     )
 
     if allowed_section:
@@ -152,11 +156,15 @@ def extract_priority_actions(content: str, priority: str) -> dict[str, any]:
         return {"objective": "", "actions": [], "acceptance_criteria": []}
 
     # Extract objective (first paragraph or line after heading)
-    objective_match = re.search(r"目標[:：](.*?)(?=\n[-*]|\n行動|\Z)", section, re.DOTALL)
+    objective_match = re.search(
+        r"目標[:：](.*?)(?=\n[-*]|\n行動|\Z)", section, re.DOTALL
+    )
     objective = objective_match.group(1).strip() if objective_match else ""
 
     # Extract actions (list items under "行動項目")
-    actions_section = re.search(r"行動項目.*?[:：](.*?)(?=驗收條件|##|\Z)", section, re.DOTALL)
+    actions_section = re.search(
+        r"行動項目.*?[:：](.*?)(?=驗收條件|##|\Z)", section, re.DOTALL
+    )
     actions = []
     if actions_section:
         actions = extract_list_items(actions_section.group(1))
@@ -199,7 +207,10 @@ def main():
         description="Load refactor playbook and extract auto-fix context"
     )
     parser.add_argument(
-        "--cluster", type=str, required=True, help="Cluster ID (e.g., core/architecture-stability)"
+        "--cluster",
+        type=str,
+        required=True,
+        help="Cluster ID (e.g., core/architecture-stability)",
     )
     parser.add_argument(
         "--index",
@@ -208,10 +219,17 @@ def main():
         help="Path to index.yaml file (relative to repo root)",
     )
     parser.add_argument(
-        "--output", type=str, default="playbook-context.json", help="Output JSON file path"
+        "--output",
+        type=str,
+        default="playbook-context.json",
+        help="Output JSON file path",
     )
-    parser.add_argument("--repo-root", type=str, default=".", help="Repository root directory")
-    parser.add_argument("--pretty", action="store_true", help="Pretty print JSON output")
+    parser.add_argument(
+        "--repo-root", type=str, default=".", help="Repository root directory"
+    )
+    parser.add_argument(
+        "--pretty", action="store_true", help="Pretty print JSON output"
+    )
 
     args = parser.parse_args()
 

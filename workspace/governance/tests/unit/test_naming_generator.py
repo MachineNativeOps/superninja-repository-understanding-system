@@ -23,15 +23,21 @@ class TestNamingGenerator:
         assert result == "staging-api-gateway-v2.1.3"
         assert mock_naming_generator.validate_pattern(result)
 
-    def test_validate_pattern_valid_names(self, mock_naming_generator, sample_resource_names):
+    def test_validate_pattern_valid_names(
+        self, mock_naming_generator, sample_resource_names
+    ):
         """Test pattern validation with valid names"""
         for name in sample_resource_names["valid"]:
             assert mock_naming_generator.validate_pattern(name), f"Failed for: {name}"
 
-    def test_validate_pattern_invalid_names(self, mock_naming_generator, sample_resource_names):
+    def test_validate_pattern_invalid_names(
+        self, mock_naming_generator, sample_resource_names
+    ):
         """Test pattern validation with invalid names"""
         for name in sample_resource_names["invalid"]:
-            assert not mock_naming_generator.validate_pattern(name), f"Should fail for: {name}"
+            assert not mock_naming_generator.validate_pattern(
+                name
+            ), f"Should fail for: {name}"
 
     def test_generate_lowercase_only(self, mock_naming_generator):
         """Test that generated names are lowercase only"""

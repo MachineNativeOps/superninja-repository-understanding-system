@@ -79,10 +79,14 @@ class BusinessWorkflowEngine:
                 config={"type": "validation", "target": "project"},
             ),
             WorkflowTask(
-                id="allocate_resources", name="分配資源", config={"type": "resource_allocation"}
+                id="allocate_resources",
+                name="分配資源",
+                config={"type": "resource_allocation"},
             ),
             WorkflowTask(
-                id="setup_monitoring", name="設置監控", config={"type": "monitoring_setup"}
+                id="setup_monitoring",
+                name="設置監控",
+                config={"type": "monitoring_setup"},
             ),
             WorkflowTask(
                 id="notify_stakeholders",
@@ -94,10 +98,16 @@ class BusinessWorkflowEngine:
         # 任務審批工作流
         task_approval_workflow = [
             WorkflowTask(
-                id="validate_dependencies", name="驗證依賴", config={"type": "dependency_check"}
+                id="validate_dependencies",
+                name="驗證依賴",
+                config={"type": "dependency_check"},
             ),
-            WorkflowTask(id="check_resources", name="檢查資源", config={"type": "resource_check"}),
-            WorkflowTask(id="security_review", name="安全審核", config={"type": "security_check"}),
+            WorkflowTask(
+                id="check_resources", name="檢查資源", config={"type": "resource_check"}
+            ),
+            WorkflowTask(
+                id="security_review", name="安全審核", config={"type": "security_check"}
+            ),
             WorkflowTask(
                 id="approve_task",
                 name="審批任務",
@@ -113,23 +123,35 @@ class BusinessWorkflowEngine:
                 config={"type": "requirements_assessment"},
             ),
             WorkflowTask(
-                id="check_availability", name="檢查可用性", config={"type": "availability_check"}
+                id="check_availability",
+                name="檢查可用性",
+                config={"type": "availability_check"},
             ),
             WorkflowTask(id="allocate", name="分配資源", config={"type": "allocation"}),
             WorkflowTask(
-                id="update_inventory", name="更新庫存", config={"type": "inventory_update"}
+                id="update_inventory",
+                name="更新庫存",
+                config={"type": "inventory_update"},
             ),
         ]
 
         # 質量檢查工作流
         quality_workflow = [
-            WorkflowTask(id="code_analysis", name="代碼分析", config={"type": "static_analysis"}),
-            WorkflowTask(id="security_scan", name="安全掃描", config={"type": "security_scan"}),
             WorkflowTask(
-                id="performance_test", name="性能測試", config={"type": "performance_test"}
+                id="code_analysis", name="代碼分析", config={"type": "static_analysis"}
             ),
             WorkflowTask(
-                id="generate_report", name="生成報告", config={"type": "report_generation"}
+                id="security_scan", name="安全掃描", config={"type": "security_scan"}
+            ),
+            WorkflowTask(
+                id="performance_test",
+                name="性能測試",
+                config={"type": "performance_test"},
+            ),
+            WorkflowTask(
+                id="generate_report",
+                name="生成報告",
+                config={"type": "report_generation"},
             ),
         ]
 
@@ -213,9 +235,13 @@ class BusinessWorkflowEngine:
 
         # 更新任務狀態
         if execution.status == BusinessStatus.COMPLETED:
-            await self.business_service.update_task(task_id, {"status": BusinessStatus.ACTIVE})
+            await self.business_service.update_task(
+                task_id, {"status": BusinessStatus.ACTIVE}
+            )
         elif execution.status == BusinessStatus.FAILED:
-            await self.business_service.update_task(task_id, {"status": BusinessStatus.CANCELLED})
+            await self.business_service.update_task(
+                task_id, {"status": BusinessStatus.CANCELLED}
+            )
 
         return {
             "execution_id": execution.id,
@@ -310,13 +336,17 @@ class BusinessWorkflowEngine:
 
         for task_config in tasks:
             workflow_task = WorkflowTask(
-                id=task_config["id"], name=task_config["name"], config=task_config.get("config", {})
+                id=task_config["id"],
+                name=task_config["name"],
+                config=task_config.get("config", {}),
             )
             workflow_tasks.append(workflow_task)
 
         workflow_id = f"custom_{name.lower().replace(' ', '_')}"
 
-        await self.workflow_engine.create_workflow(workflow_id, description, workflow_tasks)
+        await self.workflow_engine.create_workflow(
+            workflow_id, description, workflow_tasks
+        )
 
         self.custom_workflows[workflow_id] = workflow_tasks
 
@@ -355,7 +385,9 @@ class BusinessWorkflowEngine:
             "status": execution.status,
             "progress": execution.progress,
             "started_at": execution.started_at.isoformat(),
-            "completed_at": execution.completed_at.isoformat() if execution.completed_at else None,
+            "completed_at": (
+                execution.completed_at.isoformat() if execution.completed_at else None
+            ),
             "results": execution.results,
             "error_message": execution.error_message,
         }
@@ -377,7 +409,9 @@ class BusinessWorkflowEngine:
                         "progress": execution.progress,
                         "started_at": execution.started_at.isoformat(),
                         "completed_at": (
-                            execution.completed_at.isoformat() if execution.completed_at else None
+                            execution.completed_at.isoformat()
+                            if execution.completed_at
+                            else None
                         ),
                     }
                 )
@@ -406,7 +440,9 @@ class BusinessWorkflowEngine:
 
         return True
 
-    async def retry_workflow_execution(self, execution_id: str) -> Optional[Dict[str, Any]]:
+    async def retry_workflow_execution(
+        self, execution_id: str
+    ) -> Optional[Dict[str, Any]]:
         """重試工作流執行"""
         execution = await self.business_service.get_workflow_execution(execution_id)
         if not execution:

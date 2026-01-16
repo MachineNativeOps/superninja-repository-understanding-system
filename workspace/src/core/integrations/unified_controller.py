@@ -328,7 +328,9 @@ class UnifiedSystemController:
 
             self._state = SystemState.READY
             self._startup_time = datetime.now(timezone.utc)
-            await self._emit_event("system_initialized", {"timestamp": self._startup_time})
+            await self._emit_event(
+                "system_initialized", {"timestamp": self._startup_time}
+            )
             logger.info("SynergyMesh Unified System initialized successfully")
             return True
 
@@ -355,7 +357,9 @@ class UnifiedSystemController:
 
             self._state = SystemState.RUNNING
             self._is_running = True
-            await self._emit_event("system_started", {"timestamp": datetime.now(timezone.utc)})
+            await self._emit_event(
+                "system_started", {"timestamp": datetime.now(timezone.utc)}
+            )
             logger.info("SynergyMesh Unified System started")
             return True
 
@@ -382,7 +386,9 @@ class UnifiedSystemController:
 
             self._state = SystemState.OFFLINE
             self._is_running = False
-            await self._emit_event("system_stopped", {"timestamp": datetime.now(timezone.utc)})
+            await self._emit_event(
+                "system_stopped", {"timestamp": datetime.now(timezone.utc)}
+            )
             logger.info("SynergyMesh Unified System stopped")
             return True
 
@@ -457,7 +463,9 @@ class UnifiedSystemController:
                 "request_count": phase_state.request_count,
                 "error_count": phase_state.error_count,
                 "last_activity": (
-                    phase_state.last_activity.isoformat() if phase_state.last_activity else None
+                    phase_state.last_activity.isoformat()
+                    if phase_state.last_activity
+                    else None
                 ),
             }
 
@@ -498,10 +506,14 @@ class UnifiedSystemController:
             "request_count": phase_state.request_count,
             "error_count": phase_state.error_count,
             "initialized_at": (
-                phase_state.initialized_at.isoformat() if phase_state.initialized_at else None
+                phase_state.initialized_at.isoformat()
+                if phase_state.initialized_at
+                else None
             ),
             "last_activity": (
-                phase_state.last_activity.isoformat() if phase_state.last_activity else None
+                phase_state.last_activity.isoformat()
+                if phase_state.last_activity
+                else None
             ),
             "dependencies": phase_def.dependencies,
             "critical": phase_def.critical,
@@ -551,7 +563,9 @@ class UnifiedSystemController:
         phase_state.last_activity = datetime.now(timezone.utc)
         return True
 
-    async def _invoke_phase(self, phase_id: int, request: Dict[str, Any]) -> Dict[str, Any]:
+    async def _invoke_phase(
+        self, phase_id: int, request: Dict[str, Any]
+    ) -> Dict[str, Any]:
         """Invoke a phase to process a request"""
         phase_state = self._phases.get(phase_id)
         phase_def = self._get_phase_definition(phase_id)
@@ -628,7 +642,8 @@ class UnifiedSystemController:
             if phase_state.status == "running" and phase_state.health_score >= 80:
                 healthy += 1
             elif (
-                phase_state.status in ("initialized", "running") and phase_state.health_score >= 50
+                phase_state.status in ("initialized", "running")
+                and phase_state.health_score >= 50
             ):
                 degraded += 1
             else:

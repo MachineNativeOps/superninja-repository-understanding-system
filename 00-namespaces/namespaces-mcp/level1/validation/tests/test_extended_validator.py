@@ -489,9 +489,11 @@ class TestExtendedMCPValidator:
     def test_performance_metrics_collection(self):
         """Test that performance metrics are collected"""
         # Mock the artifact loading
-        with patch("builtins.open", create=True), patch(
-            "yaml.safe_load"
-        ) as mock_yaml, patch("pathlib.Path.exists") as mock_exists:
+        with (
+            patch("builtins.open", create=True),
+            patch("yaml.safe_load") as mock_yaml,
+            patch("pathlib.Path.exists") as mock_exists,
+        ):
 
             mock_exists.return_value = True
             mock_yaml.return_value = self.test_artifact
@@ -554,11 +556,12 @@ class TestIntegration:
         }
 
         # Mock file operations and endpoint validation
-        with patch("builtins.open", create=True), patch(
-            "yaml.safe_load"
-        ) as mock_yaml, patch("pathlib.Path.exists") as mock_exists, patch(
-            "requests.get"
-        ) as mock_get:
+        with (
+            patch("builtins.open", create=True),
+            patch("yaml.safe_load") as mock_yaml,
+            patch("pathlib.Path.exists") as mock_exists,
+            patch("requests.get") as mock_get,
+        ):
 
             mock_exists.return_value = True
             mock_yaml.return_value = complex_artifact

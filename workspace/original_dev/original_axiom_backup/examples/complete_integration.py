@@ -3,13 +3,6 @@ AXIOM Backup System - Complete Integration Example
 Demonstrates the full power of the hot-swappable plugin architecture.
 """
 
-from core.plugin_orchestrator import ErrorHandlingStrategy, ExecutionMode, orchestrator
-from core.plugin_manager import PluginManagerContext, plugin_manager
-from core.config_manager import config_manager
-from plugins.storage_s3 import PLUGIN_METADATA as STORAGE_METADATA
-from plugins.encryption_aes import PLUGIN_METADATA as ENCRYPTION_METADATA
-from plugins.compression_zstd import PLUGIN_METADATA as COMPRESSION_METADATA
-from plugins.backup_incremental import PLUGIN_METADATA as BACKUP_METADATA
 import json
 import logging
 import os
@@ -19,6 +12,14 @@ import tempfile
 import time
 from pathlib import Path
 from typing import Any, Dict, List
+
+from core.config_manager import config_manager
+from core.plugin_manager import PluginManagerContext, plugin_manager
+from core.plugin_orchestrator import ErrorHandlingStrategy, ExecutionMode, orchestrator
+from plugins.backup_incremental import PLUGIN_METADATA as BACKUP_METADATA
+from plugins.compression_zstd import PLUGIN_METADATA as COMPRESSION_METADATA
+from plugins.encryption_aes import PLUGIN_METADATA as ENCRYPTION_METADATA
+from plugins.storage_s3 import PLUGIN_METADATA as STORAGE_METADATA
 
 # Add the project root to Python path
 project_root = Path(__file__).parent.parent
@@ -214,7 +215,9 @@ class AxiomBackupSystem:
             "timestamp": time.time(),
         }
 
-        compression_result = plugin_manager.execute_plugin("compression_zstd", compression_context)
+        compression_result = plugin_manager.execute_plugin(
+            "compression_zstd", compression_context
+        )
         results["compression"] = compression_result._asdict()
 
         if compression_result.status == "SUCCESS":
@@ -237,7 +240,9 @@ class AxiomBackupSystem:
             "timestamp": time.time(),
         }
 
-        encryption_result = plugin_manager.execute_plugin("encryption_aes", encryption_context)
+        encryption_result = plugin_manager.execute_plugin(
+            "encryption_aes", encryption_context
+        )
         results["encryption"] = encryption_result._asdict()
 
         if encryption_result.status == "SUCCESS":
@@ -254,7 +259,9 @@ class AxiomBackupSystem:
             "timestamp": time.time(),
         }
 
-        backup_result = plugin_manager.execute_plugin("backup_incremental", backup_context)
+        backup_result = plugin_manager.execute_plugin(
+            "backup_incremental", backup_context
+        )
         results["backup"] = backup_result._asdict()
 
         if backup_result.status == "SUCCESS":
@@ -295,7 +302,9 @@ class AxiomBackupSystem:
                 f"    📊 {workflow_result['plugins_successful']}/{workflow_result['plugins_executed']} plugins successful"
             )
         else:
-            logger.error(f"    ❌ Quick backup workflow failed: {workflow_result.get('error')}")
+            logger.error(
+                f"    ❌ Quick backup workflow failed: {workflow_result.get('error')}"
+            )
 
         # Demonstrate parallel execution
         logger.info("  ⚡ Demonstrating parallel execution...")
@@ -329,7 +338,9 @@ class AxiomBackupSystem:
 
         # Show current plugins
         current_plugins = plugin_manager.list_plugins()
-        logger.info(f"  📋 Currently loaded plugins: {[p['plugin_id'] for p in current_plugins]}")
+        logger.info(
+            f"  📋 Currently loaded plugins: {[p['plugin_id'] for p in current_plugins]}"
+        )
 
         # Test plugin validation
         logger.info("  🔍 Validating all plugins...")
@@ -377,7 +388,9 @@ class AxiomBackupSystem:
         reload_success = plugin_manager.unload_plugin("backup_incremental")
         if reload_success:
             plugin_path = project_root / "plugins" / "backup_incremental.py"
-            reload_success = plugin_manager.load_plugin(str(plugin_path), backup_plugin_config)
+            reload_success = plugin_manager.load_plugin(
+                str(plugin_path), backup_plugin_config
+            )
 
         results["hot_swap"] = {"success": reload_success}
 
@@ -404,7 +417,9 @@ class AxiomBackupSystem:
             "timestamp": time.time(),
         }
 
-        error_result = plugin_manager.execute_plugin("compression_zstd", invalid_context)
+        error_result = plugin_manager.execute_plugin(
+            "compression_zstd", invalid_context
+        )
         results["invalid_path"] = error_result._asdict()
 
         if error_result.status == "FAILED":
@@ -429,11 +444,15 @@ class AxiomBackupSystem:
         }
 
         retry_results = orchestrator.execute_plugins(
-            ["compression_zstd"], retry_context["global_context"], ExecutionMode.SEQUENTIAL
+            ["compression_zstd"],
+            retry_context["global_context"],
+            ExecutionMode.SEQUENTIAL,
         )
         results["retry_test"] = [r._asdict() for r in retry_results]
 
-        logger.info(f"    ✅ Retry mechanism tested: {len(retry_results)} attempts made")
+        logger.info(
+            f"    ✅ Retry mechanism tested: {len(retry_results)} attempts made"
+        )
 
         return results
 
@@ -448,7 +467,9 @@ class AxiomBackupSystem:
         if "total_executions" in perf_analysis:
             logger.info(f"    Total executions: {perf_analysis['total_executions']}")
             logger.info(f"    Success rate: {perf_analysis['success_rate']:.1f}%")
-            logger.info(f"    Avg execution time: {perf_analysis['avg_execution_time']:.3f}s")
+            logger.info(
+                f"    Avg execution time: {perf_analysis['avg_execution_time']:.3f}s"
+            )
 
         # Plugin performance breakdown
         if "plugin_performance" in perf_analysis:
@@ -499,27 +520,43 @@ class AxiomBackupSystem:
             self.create_demo_data()
 
             # Run all demonstrations
-            results = {"status": "SUCCESS", "demo_start_time": time.time(), "demonstrations": {}}
+            results = {
+                "status": "SUCCESS",
+                "demo_start_time": time.time(),
+                "demonstrations": {},
+            }
 
             # Basic operations
-            results["demonstrations"]["basic_operations"] = self.demonstrate_basic_operations()
+            results["demonstrations"][
+                "basic_operations"
+            ] = self.demonstrate_basic_operations()
 
             # Workflow execution
-            results["demonstrations"]["workflow_execution"] = self.demonstrate_workflow_execution()
+            results["demonstrations"][
+                "workflow_execution"
+            ] = self.demonstrate_workflow_execution()
 
             # Hot swapping
             results["demonstrations"]["hot_swap"] = self.demonstrate_hot_swap()
 
             # Error handling
-            results["demonstrations"]["error_handling"] = self.demonstrate_error_handling()
+            results["demonstrations"][
+                "error_handling"
+            ] = self.demonstrate_error_handling()
 
             # Performance analysis
-            results["demonstrations"]["performance_analysis"] = self.performance_analysis()
+            results["demonstrations"][
+                "performance_analysis"
+            ] = self.performance_analysis()
 
             results["demo_end_time"] = time.time()
-            results["total_demo_time"] = results["demo_end_time"] - results["demo_start_time"]
+            results["total_demo_time"] = (
+                results["demo_end_time"] - results["demo_start_time"]
+            )
 
-            logger.info(f"🎉 Complete demonstration finished in {results['total_demo_time']:.3f}s")
+            logger.info(
+                f"🎉 Complete demonstration finished in {results['total_demo_time']:.3f}s"
+            )
 
             return results
 

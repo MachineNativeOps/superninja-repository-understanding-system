@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 """Unit tests for contract engine"""
 import pytest
-
 from core.contract_engine import ContractDefinition, ContractRegistry
 
 

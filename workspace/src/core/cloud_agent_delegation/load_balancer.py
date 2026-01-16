@@ -163,7 +163,9 @@ class LoadBalancer:
 
         # Initialize health status
         self._health[name] = ProviderHealth(
-            provider=name, status=HealthStatus.UNKNOWN, last_check=datetime.now(timezone.utc)
+            provider=name,
+            status=HealthStatus.UNKNOWN,
+            last_check=datetime.now(timezone.utc),
         )
 
         self._rebuild_weighted_list()
@@ -376,7 +378,8 @@ class LoadBalancer:
                         # Perform health check
                         if hasattr(provider, "health_check"):
                             result = await asyncio.wait_for(
-                                provider.health_check(), timeout=self.config.health_check_timeout
+                                provider.health_check(),
+                                timeout=self.config.health_check_timeout,
                             )
                             healthy = result.get("healthy", True)
                         else:
@@ -390,7 +393,9 @@ class LoadBalancer:
                         self.update_health(name, healthy, latency_ms)
 
                     except asyncio.TimeoutError:
-                        self.update_health(name, False, self.config.health_check_timeout * 1000)
+                        self.update_health(
+                            name, False, self.config.health_check_timeout * 1000
+                        )
                     except Exception as e:
                         logger.error(f"Health check failed for {name}: {e}")
                         self.update_health(name, False)

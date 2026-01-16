@@ -168,7 +168,9 @@ class AutonomousCoordinator:
 
         logger.info(f"AutonomousCoordinator initialized with {worker_count} workers")
 
-    def register_task_handler(self, task_type: str, handler: Callable[..., Awaitable[Any]]) -> None:
+    def register_task_handler(
+        self, task_type: str, handler: Callable[..., Awaitable[Any]]
+    ) -> None:
         """
         Register a task handler for autonomous execution
 
@@ -459,7 +461,9 @@ class AutonomousCoordinator:
         """Check internal coordinator health"""
         queue_size = len(self.task_queue)
         running_count = len(self.running_tasks)
-        failed_ratio = self.stats["tasks_failed"] / max(self.stats["tasks_processed"], 1)
+        failed_ratio = self.stats["tasks_failed"] / max(
+            self.stats["tasks_processed"], 1
+        )
 
         status = SystemHealth.HEALTHY
         message = "All systems nominal"
@@ -518,7 +522,8 @@ class AutonomousCoordinator:
             task
             for task in self.running_tasks.values()
             if task.started_at
-            and (datetime.now() - task.started_at).seconds > self.STUCK_TASK_TIMEOUT_SECONDS
+            and (datetime.now() - task.started_at).seconds
+            > self.STUCK_TASK_TIMEOUT_SECONDS
         ]
 
         for task in stuck_tasks:
@@ -546,7 +551,9 @@ class AutonomousCoordinator:
 
             self.recovery_actions.append(action)
             self.stats["auto_recoveries"] += 1
-            logger.info(f"Auto-recovery action: {action.description} - {action.result_message}")
+            logger.info(
+                f"Auto-recovery action: {action.description} - {action.result_message}"
+            )
 
         # Check if we need to adjust worker count
         if (
@@ -613,7 +620,9 @@ class AutonomousCoordinator:
             "priority": task.priority.name,
             "created_at": task.created_at.isoformat() if task.created_at else None,
             "started_at": task.started_at.isoformat() if task.started_at else None,
-            "completed_at": task.completed_at.isoformat() if task.completed_at else None,
+            "completed_at": (
+                task.completed_at.isoformat() if task.completed_at else None
+            ),
             "retry_count": task.retry_count,
             "error": task.error,
             "result": task.result,
@@ -641,7 +650,10 @@ class AutonomousCoordinator:
             "tasks_failed": self.stats["tasks_failed"],
             "auto_recoveries": self.stats["auto_recoveries"],
             "success_rate": round(
-                self.stats["tasks_succeeded"] / max(self.stats["tasks_processed"], 1) * 100, 2
+                self.stats["tasks_succeeded"]
+                / max(self.stats["tasks_processed"], 1)
+                * 100,
+                2,
             ),
         }
 
@@ -682,7 +694,9 @@ class AutonomousCoordinator:
 if __name__ == "__main__":
     import json
 
-    async def example_task_handler(task_name: str, duration: float = 0.5) -> Dict[str, Any]:
+    async def example_task_handler(
+        task_name: str, duration: float = 0.5
+    ) -> Dict[str, Any]:
         """Example task handler"""
         await asyncio.sleep(duration)
         return {

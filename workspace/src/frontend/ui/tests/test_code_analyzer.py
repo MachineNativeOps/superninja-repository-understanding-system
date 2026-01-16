@@ -10,6 +10,11 @@ Version: 2.0.0
 ============================================================================
 """
 
+import sys
+from datetime import datetime
+from pathlib import Path
+
+import pytest
 from services.code_analyzer import (
     AnalysisResult,
     AnalysisStrategy,
@@ -22,11 +27,6 @@ from services.code_analyzer import (
     SeverityLevel,
     StaticAnalyzer,
 )
-import sys
-from datetime import datetime
-from pathlib import Path
-
-import pytest
 
 # Add parent directory to path for imports
 sys.path.insert(0, str(Path(__file__).parent.parent))
@@ -108,7 +108,9 @@ class TestDataModels:
 
     def test_analysis_result_creation(self):
         """測試分析結果創建"""
-        result = AnalysisResult(repository="test-repo", commit_hash="abc123", branch="main")
+        result = AnalysisResult(
+            repository="test-repo", commit_hash="abc123", branch="main"
+        )
 
         assert result.repository == "test-repo"
         assert result.commit_hash == "abc123"
@@ -284,7 +286,9 @@ class TestLanguageAnalyzers:
         )
 
         # Should detect use of 'var'
-        assert any("var" in issue.message.lower() for issue in issues) or len(issues) >= 0
+        assert (
+            any("var" in issue.message.lower() for issue in issues) or len(issues) >= 0
+        )
 
 
 # ============================================================================
@@ -312,7 +316,9 @@ class TestCodeAnalysisEngine:
     async def test_analyze_repository(self, engine):
         """測試代碼庫分析"""
         result = await engine.analyze_repository(
-            repo_path="/tmp/test-repo", commit_hash="abc123", strategy=AnalysisStrategy.STANDARD
+            repo_path="/tmp/test-repo",
+            commit_hash="abc123",
+            strategy=AnalysisStrategy.STANDARD,
         )
 
         assert isinstance(result, AnalysisResult)

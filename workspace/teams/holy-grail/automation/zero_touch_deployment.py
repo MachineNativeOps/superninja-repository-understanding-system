@@ -164,7 +164,9 @@ class ZeroTouchDeploymentEngine:
     def _register_default_handlers(self) -> None:
         """Register default deployment handlers"""
         self.deployment_handlers[DeploymentStrategy.ROLLING] = self._deploy_rolling
-        self.deployment_handlers[DeploymentStrategy.BLUE_GREEN] = self._deploy_blue_green
+        self.deployment_handlers[DeploymentStrategy.BLUE_GREEN] = (
+            self._deploy_blue_green
+        )
         self.deployment_handlers[DeploymentStrategy.CANARY] = self._deploy_canary
         self.deployment_handlers[DeploymentStrategy.RECREATE] = self._deploy_recreate
 
@@ -250,7 +252,9 @@ class ZeroTouchDeploymentEngine:
         try:
             # Prepare deployment
             result.status = DeploymentStatus.PREPARING
-            result.logs.append(f"[{datetime.now().isoformat()}] Preparing deployment...")
+            result.logs.append(
+                f"[{datetime.now().isoformat()}] Preparing deployment..."
+            )
             await self._prepare_deployment(config, result)
 
             # Execute deployment based on strategy
@@ -259,12 +263,16 @@ class ZeroTouchDeploymentEngine:
                 f"[{datetime.now().isoformat()}] Executing {config.strategy.value} deployment..."
             )
 
-            handler = self.deployment_handlers.get(config.strategy, self._deploy_rolling)
+            handler = self.deployment_handlers.get(
+                config.strategy, self._deploy_rolling
+            )
             await handler(config, result)
 
             # Verify deployment
             result.status = DeploymentStatus.VERIFYING
-            result.logs.append(f"[{datetime.now().isoformat()}] Verifying deployment health...")
+            result.logs.append(
+                f"[{datetime.now().isoformat()}] Verifying deployment health..."
+            )
 
             is_healthy = await self._verify_deployment(config, result)
 
@@ -295,17 +303,23 @@ class ZeroTouchDeploymentEngine:
 
         return result
 
-    async def _prepare_deployment(self, config: DeploymentConfig, result: DeploymentResult) -> None:
+    async def _prepare_deployment(
+        self, config: DeploymentConfig, result: DeploymentResult
+    ) -> None:
         """Prepare for deployment"""
         # Simulate preparation steps
         await asyncio.sleep(0.1)
 
         result.logs.append(f"  - Environment: {config.target.environment.value}")
-        result.logs.append(f"  - Artifact: {config.artifact.name}:{config.artifact.version}")
+        result.logs.append(
+            f"  - Artifact: {config.artifact.name}:{config.artifact.version}"
+        )
         result.logs.append(f"  - Strategy: {config.strategy.value}")
         result.logs.append(f"  - Replicas: {config.target.replicas}")
 
-    async def _deploy_rolling(self, config: DeploymentConfig, result: DeploymentResult) -> None:
+    async def _deploy_rolling(
+        self, config: DeploymentConfig, result: DeploymentResult
+    ) -> None:
         """Execute rolling deployment"""
         replicas = config.target.replicas
 
@@ -315,7 +329,9 @@ class ZeroTouchDeploymentEngine:
 
         result.logs.append("  - Rolling deployment complete")
 
-    async def _deploy_blue_green(self, config: DeploymentConfig, result: DeploymentResult) -> None:
+    async def _deploy_blue_green(
+        self, config: DeploymentConfig, result: DeploymentResult
+    ) -> None:
         """Execute blue-green deployment"""
         result.logs.append("  - Spinning up green environment...")
         await asyncio.sleep(0.1)
@@ -328,7 +344,9 @@ class ZeroTouchDeploymentEngine:
 
         result.logs.append("  - Blue-green deployment complete")
 
-    async def _deploy_canary(self, config: DeploymentConfig, result: DeploymentResult) -> None:
+    async def _deploy_canary(
+        self, config: DeploymentConfig, result: DeploymentResult
+    ) -> None:
         """Execute canary deployment"""
         result.logs.append("  - Deploying canary instance (10% traffic)...")
         await asyncio.sleep(0.05)
@@ -341,7 +359,9 @@ class ZeroTouchDeploymentEngine:
 
         result.logs.append("  - Canary deployment complete")
 
-    async def _deploy_recreate(self, config: DeploymentConfig, result: DeploymentResult) -> None:
+    async def _deploy_recreate(
+        self, config: DeploymentConfig, result: DeploymentResult
+    ) -> None:
         """Execute recreate deployment"""
         result.logs.append("  - Terminating existing instances...")
         await asyncio.sleep(0.05)
@@ -351,7 +371,9 @@ class ZeroTouchDeploymentEngine:
 
         result.logs.append("  - Recreate deployment complete")
 
-    async def _verify_deployment(self, config: DeploymentConfig, result: DeploymentResult) -> bool:
+    async def _verify_deployment(
+        self, config: DeploymentConfig, result: DeploymentResult
+    ) -> bool:
         """Verify deployment health"""
         # Simulate health check
         await asyncio.sleep(0.1)
@@ -392,7 +414,9 @@ class ZeroTouchDeploymentEngine:
             "target": result.target.name,
             "artifact": f"{result.artifact.name}:{result.artifact.version}",
             "started_at": result.started_at.isoformat(),
-            "completed_at": result.completed_at.isoformat() if result.completed_at else None,
+            "completed_at": (
+                result.completed_at.isoformat() if result.completed_at else None
+            ),
             "duration_seconds": result.duration_seconds,
             "health_status": result.health_status,
             "error": result.error,

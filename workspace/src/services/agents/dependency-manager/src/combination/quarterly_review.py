@@ -84,7 +84,10 @@ class QuarterlyReviewEngine:
         end_date = datetime(year, end_month, 28)
 
         review = QuarterlyReview(
-            quarter=quarter, start_date=start_date, end_date=end_date, status=ReviewStatus.SCHEDULED
+            quarter=quarter,
+            start_date=start_date,
+            end_date=end_date,
+            status=ReviewStatus.SCHEDULED,
         )
         self._reviews[quarter] = review
         return review
@@ -145,7 +148,11 @@ class QuarterlyReviewEngine:
 
     def list_reviews(self) -> list[dict]:
         return [
-            {"quarter": r.quarter, "status": r.status.value, "items_count": len(r.items)}
+            {
+                "quarter": r.quarter,
+                "status": r.status.value,
+                "items_count": len(r.items),
+            }
             for r in self._reviews.values()
         ]
 

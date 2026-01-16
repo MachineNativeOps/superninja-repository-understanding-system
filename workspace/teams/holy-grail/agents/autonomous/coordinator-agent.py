@@ -99,14 +99,22 @@ class CoordinatorAgent(BaseAgent):
                 analysis["tools"][tool] = {
                     "installed": result.returncode == 0,
                     "version": (
-                        result.stdout.strip().split("\n")[0] if result.returncode == 0 else None
+                        result.stdout.strip().split("\n")[0]
+                        if result.returncode == 0
+                        else None
                     ),
                 }
             except (FileNotFoundError, subprocess.TimeoutExpired):
                 analysis["tools"][tool] = {"installed": False, "version": None}
 
         # 檢查專案結構
-        required_dirs = ["config/dev", ".vscode", "v1-python-drones", "shared", "migration"]
+        required_dirs = [
+            "config/dev",
+            ".vscode",
+            "v1-python-drones",
+            "shared",
+            "migration",
+        ]
         for dir_name in required_dirs:
             dir_path = self.project_root / dir_name
             analysis["structure"][dir_name] = dir_path.exists()
@@ -201,7 +209,9 @@ class CoordinatorAgent(BaseAgent):
         Returns:
             執行結果代碼
         """
-        core_script = self.project_root / "config/dev" / "automation" / "drone-coordinator.py"
+        core_script = (
+            self.project_root / "config/dev" / "automation" / "drone-coordinator.py"
+        )
 
         if not core_script.exists():
             self.log_error(f"核心協調器腳本不存在: {core_script}")

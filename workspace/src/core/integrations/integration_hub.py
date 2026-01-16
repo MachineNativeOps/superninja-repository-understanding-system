@@ -274,7 +274,9 @@ class IntegrationHub:
         if future and not future.done():
             future.set_result(payload)
 
-    async def broadcast(self, source_phase: int, event_type: str, payload: Dict[str, Any]) -> int:
+    async def broadcast(
+        self, source_phase: int, event_type: str, payload: Dict[str, Any]
+    ) -> int:
         """
         Broadcast an event to all subscribed phases
 
@@ -374,7 +376,9 @@ class IntegrationHub:
 
     def get_stats(self) -> Dict[str, Any]:
         """Get hub statistics"""
-        queue_sizes = {phase_id: queue.qsize() for phase_id, queue in self._queues.items()}
+        queue_sizes = {
+            phase_id: queue.qsize() for phase_id, queue in self._queues.items()
+        }
 
         return {
             "registered_phases": len(self._queues),
@@ -431,6 +435,8 @@ class IntegrationHub:
 
 
 # Factory function
-def create_integration_hub(config: Optional[IntegrationConfig] = None) -> IntegrationHub:
+def create_integration_hub(
+    config: Optional[IntegrationConfig] = None,
+) -> IntegrationHub:
     """Create a new IntegrationHub instance"""
     return IntegrationHub(config)

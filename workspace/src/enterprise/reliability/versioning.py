@@ -58,8 +58,16 @@ class SemanticVersion:
 
     def __lt__(self, other: "SemanticVersion") -> bool:
         # Compare major.minor.patch first
-        if (self.major, self.minor, self.patch) != (other.major, other.minor, other.patch):
-            return (self.major, self.minor, self.patch) < (other.major, other.minor, other.patch)
+        if (self.major, self.minor, self.patch) != (
+            other.major,
+            other.minor,
+            other.patch,
+        ):
+            return (self.major, self.minor, self.patch) < (
+                other.major,
+                other.minor,
+                other.patch,
+            )
 
         # If major.minor.patch are equal, handle prerelease versions
         # According to SemVer 2.0.0:
@@ -205,7 +213,9 @@ class SchemaVersion:
     json_schema: str | None = None
 
     # Compatibility
-    backward_compatible_with: list[str] = field(default_factory=list)  # List of versions
+    backward_compatible_with: list[str] = field(
+        default_factory=list
+    )  # List of versions
 
     # Dates
     released_at: datetime = field(default_factory=datetime.utcnow)
@@ -356,7 +366,9 @@ class VersionManager:
         if name not in self.schema_versions:
             return None
 
-        versions = [(SemanticVersion.parse(v), s) for v, s in self.schema_versions[name].items()]
+        versions = [
+            (SemanticVersion.parse(v), s) for v, s in self.schema_versions[name].items()
+        ]
 
         if not versions:
             return None
@@ -501,7 +513,9 @@ class VersionManager:
                     "version": v.version,
                     "status": v.status.value,
                     "base_path": v.base_path,
-                    "deprecated_at": v.deprecated_at.isoformat() if v.deprecated_at else None,
+                    "deprecated_at": (
+                        v.deprecated_at.isoformat() if v.deprecated_at else None
+                    ),
                     "sunset_at": v.sunset_at.isoformat() if v.sunset_at else None,
                 }
                 for v in self.get_supported_api_versions()

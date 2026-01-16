@@ -226,7 +226,9 @@ class PhoenixAgent:
         ch.setLevel(logging.INFO)
 
         # Formatter
-        formatter = logging.Formatter("%(asctime)s - 🦅 Dr. Phoenix - %(levelname)s - %(message)s")
+        formatter = logging.Formatter(
+            "%(asctime)s - 🦅 Dr. Phoenix - %(levelname)s - %(message)s"
+        )
         fh.setFormatter(formatter)
         ch.setFormatter(formatter)
 
@@ -294,7 +296,9 @@ class PhoenixAgent:
                 self.health_checks[component] = health
 
                 if health.status != HealthStatus.HEALTHY:
-                    self.logger.warning(f"⚠️  Component {component} is {health.status.value}")
+                    self.logger.warning(
+                        f"⚠️  Component {component} is {health.status.value}"
+                    )
 
             except Exception as e:
                 self.logger.error(f"Failed to check {component}: {e}")
@@ -423,7 +427,9 @@ class PhoenixAgent:
             },
         )
 
-    async def _check_process_health(self, process_name: str, timestamp: datetime) -> HealthCheck:
+    async def _check_process_health(
+        self, process_name: str, timestamp: datetime
+    ) -> HealthCheck:
         """Generic process health check"""
         for proc in psutil.process_iter(["pid", "name"]):
             try:
@@ -465,7 +471,10 @@ class PhoenixAgent:
         incident_id = f"INC-{datetime.now().strftime('%Y%m%d-%H%M%S')}-{component}"
 
         incident = Incident(
-            id=incident_id, component=component, status=health.status, detected_at=datetime.now()
+            id=incident_id,
+            component=component,
+            status=health.status,
+            detected_at=datetime.now(),
         )
 
         self.active_incidents[component] = incident
@@ -495,7 +504,9 @@ class PhoenixAgent:
             return
 
         # Check if we should try another recovery
-        last_attempt = incident.recovery_attempts[-1] if incident.recovery_attempts else None
+        last_attempt = (
+            incident.recovery_attempts[-1] if incident.recovery_attempts else None
+        )
         if last_attempt:
             time_since_last = (datetime.now() - last_attempt.timestamp).seconds
             if time_since_last > 60:  # Wait at least 1 minute between attempts
@@ -643,13 +654,17 @@ class PhoenixAgent:
                         # Safe mode restart would be handled by watchdog or systemd
                         # The presence of .safe_mode file signals minimal
                         # config should be used
-                        self.logger.info(f"✅ Safe mode restart completed for {component}")
+                        self.logger.info(
+                            f"✅ Safe mode restart completed for {component}"
+                        )
                         return True
                 except (psutil.NoSuchProcess, psutil.AccessDenied) as e:
                     self.logger.warning(f"Process access error: {e}")
                     continue
 
-            self.logger.warning(f"⚠️  Process {component} not found for safe mode restart")
+            self.logger.warning(
+                f"⚠️  Process {component} not found for safe mode restart"
+            )
             return False
 
         except Exception as e:
@@ -666,12 +681,16 @@ class PhoenixAgent:
             backup_dir = BASE_PATH / ".config_backups"
 
             if not backup_dir.exists():
-                self.logger.warning(f"⚠️  No configuration backups found at {backup_dir}")
+                self.logger.warning(
+                    f"⚠️  No configuration backups found at {backup_dir}"
+                )
                 return False
 
             # Find the most recent backup
             backups = sorted(
-                backup_dir.glob("*.backup"), key=lambda p: p.stat().st_mtime, reverse=True
+                backup_dir.glob("*.backup"),
+                key=lambda p: p.stat().st_mtime,
+                reverse=True,
             )
             if not backups:
                 self.logger.warning("⚠️  No configuration backup files found")
@@ -690,7 +709,9 @@ class PhoenixAgent:
             )
 
             # Log success
-            self.logger.info(f"✅ Configuration rollback marker created for {component}")
+            self.logger.info(
+                f"✅ Configuration rollback marker created for {component}"
+            )
             return True
 
         except Exception as e:
@@ -836,10 +857,14 @@ class PhoenixAgent:
                 "status": incident.status.value,
                 "escalation_level": incident.escalation_level,
                 "detected_at": incident.detected_at.isoformat(),
-                "recovery_attempts": len(incident.recovery_attempts),
+                "recovery_attempts": len(
+                    incident.recovery_attempts),
                 "timestamp": datetime.now().isoformat(),
                 "severity": "CRITICAL",
-                "channels": ["email", "slack", "pagerduty"],
+                "channels": [
+                    "email",
+                    "slack",
+                    "pagerduty"],
                 "message": f"Component {incident.component} has escalated to level {incident.escalation_level} after {len(incident.recovery_attempts)} failed recovery attempts",
                 "action_required": True,
             }
@@ -857,8 +882,7 @@ class PhoenixAgent:
             with open(notification_log, "a") as f:
                 f.write(
                     f"[{datetime.now().isoformat()}] ESCALATION {incident.escalation_level} - "
-                    f"{incident.id} - {incident.component} - {len(incident.recovery_attempts)} attempts\n"
-                )
+                    f"{incident.id} - {incident.component} - {len(incident.recovery_attempts)} attempts\n")
 
         except Exception as e:
             self.logger.error(f"Failed to create notification: {e}", exc_info=True)
@@ -880,7 +904,9 @@ class PhoenixAgent:
             state = {
                 "stats": self.stats,
                 "timestamp": datetime.now().isoformat(),
-                "uptime": str(datetime.now() - self.start_time) if self.start_time else "0",
+                "uptime": (
+                    str(datetime.now() - self.start_time) if self.start_time else "0"
+                ),
             }
 
             with open(STATE_PATH, "w") as f:
@@ -907,7 +933,9 @@ class PhoenixAgent:
 
         if self.stats["total_recoveries"] > 0:
             success_rate = (
-                self.stats["successful_recoveries"] / self.stats["total_recoveries"] * 100
+                self.stats["successful_recoveries"]
+                / self.stats["total_recoveries"]
+                * 100
             )
             self.logger.info(f"Success Rate: {success_rate:.1f}%")
 
@@ -950,7 +978,9 @@ async def main():
         formatter_class=argparse.RawDescriptionHelpFormatter,
     )
 
-    parser.add_argument("command", choices=["start", "status", "stop"], help="Command to execute")
+    parser.add_argument(
+        "command", choices=["start", "status", "stop"], help="Command to execute"
+    )
 
     parser.add_argument(
         "--mode",

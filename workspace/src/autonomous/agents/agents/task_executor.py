@@ -18,7 +18,9 @@ import logging
 from typing import Any, AsyncGenerator, Dict, Optional
 
 # Configure logging - must be before any logger usage
-logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
+logging.basicConfig(
+    level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
+)
 logger = logging.getLogger(__name__)
 
 try:
@@ -76,7 +78,9 @@ class TaskExecutor:
         self.context_history = []
         logger.info("Context reset")
 
-    async def analyze_code(self, code: str, analysis_type: str = "comprehensive") -> Dict[str, Any]:
+    async def analyze_code(
+        self, code: str, analysis_type: str = "comprehensive"
+    ) -> Dict[str, Any]:
         """
         Analyze code for quality, security, and performance issues
 
@@ -108,7 +112,9 @@ class TaskExecutor:
 
         # Generate automated fix recommendations
         if results["issues"]:
-            results["recommendations"] = await self._generate_recommendations(results["issues"])
+            results["recommendations"] = await self._generate_recommendations(
+                results["issues"]
+            )
 
         logger.info(f"Analysis complete: {len(results['issues'])} issues found")
         return results
@@ -164,15 +170,12 @@ class TaskExecutor:
 
         # Basic performance pattern detection
         if code.count("for") > 3 and code.count("for") < 10:
-            issues.append(
-                {
-                    "type": "performance",
-                    "severity": "medium",
-                    "description": "Nested loops detected - potential O(n^x) complexity",
-                    "line": None,
-                    "recommendation": "Consider optimization or algorithm improvement",
-                }
-            )
+            issues.append({"type": "performance",
+                           "severity": "medium",
+                           "description": "Nested loops detected - potential O(n^x) complexity",
+                           "line": None,
+                           "recommendation": "Consider optimization or algorithm improvement",
+                           })
 
         return issues
 

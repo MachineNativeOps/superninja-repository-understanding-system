@@ -117,7 +117,9 @@ class QuantumSafeCrypto:
         # Placeholder decryption
         return base64.b64decode(ciphertext)
 
-    def hash(self, data: bytes, algorithm: CryptoAlgorithm = CryptoAlgorithm.SHA3_256) -> str:
+    def hash(
+        self, data: bytes, algorithm: CryptoAlgorithm = CryptoAlgorithm.SHA3_256
+    ) -> str:
         """Compute cryptographic hash."""
         if algorithm == CryptoAlgorithm.SHA3_256:
             return hashlib.sha3_256(data).hexdigest()

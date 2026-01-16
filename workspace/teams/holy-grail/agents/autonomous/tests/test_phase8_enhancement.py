@@ -8,16 +8,32 @@ Tests for:
 - Python Bridge
 """
 
-from core.tech_stack.python_bridge import (
-    EnvironmentType,
-    ExecutionMode,
-    PackageManager,
-    PythonBridge,
-    PythonEnvironment,
-    PythonEnvironmentConfig,
-    PythonExecutor,
-    PythonPackage,
-    PythonVersion,
+import asyncio
+import os
+import sys
+
+import pytest
+from core.tech_stack.architecture_config import (
+    ArchitectureLayer,
+    FrameworkCategory,
+    FrameworkConfig,
+    LanguageConfig,
+    LanguageType,
+    TechStackConfig,
+    get_recommended_stack,
+    get_stack_summary,
+)
+from core.tech_stack.framework_integrations import (
+    AgentConfig,
+    AgentType,
+    AutoGenIntegration,
+    CrewAIIntegration,
+    FrameworkCredentials,
+    FrameworkIntegration,
+    FrameworkOrchestrator,
+    FrameworkStatus,
+    LangChainIntegration,
+    LangGraphIntegration,
 )
 from core.tech_stack.multi_agent_coordinator import (
     AgentCapability,
@@ -34,33 +50,17 @@ from core.tech_stack.multi_agent_coordinator import (
     create_devops_agent,
     create_security_agent,
 )
-from core.tech_stack.framework_integrations import (
-    AgentConfig,
-    AgentType,
-    AutoGenIntegration,
-    CrewAIIntegration,
-    FrameworkCredentials,
-    FrameworkIntegration,
-    FrameworkOrchestrator,
-    FrameworkStatus,
-    LangChainIntegration,
-    LangGraphIntegration,
+from core.tech_stack.python_bridge import (
+    EnvironmentType,
+    ExecutionMode,
+    PackageManager,
+    PythonBridge,
+    PythonEnvironment,
+    PythonEnvironmentConfig,
+    PythonExecutor,
+    PythonPackage,
+    PythonVersion,
 )
-from core.tech_stack.architecture_config import (
-    ArchitectureLayer,
-    FrameworkCategory,
-    FrameworkConfig,
-    LanguageConfig,
-    LanguageType,
-    TechStackConfig,
-    get_recommended_stack,
-    get_stack_summary,
-)
-import asyncio
-import os
-import sys
-
-import pytest
 
 # Add the project root to path
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", ".."))
@@ -231,7 +231,9 @@ class TestFrameworkIntegrations:
         id2 = await integration.create_agent(agent2)
 
         # Create crew
-        crew_id = await integration.create_crew("test_crew", "Research Team", [id1, id2])
+        crew_id = await integration.create_crew(
+            "test_crew", "Research Team", [id1, id2]
+        )
 
         assert crew_id == "test_crew"
         assert crew_id in integration.crews
@@ -246,7 +248,9 @@ class TestFrameworkIntegrations:
         agent_id = await integration.create_agent(agent)
 
         crew_id = await integration.create_crew("crew1", "Test", [agent_id])
-        task_id = await integration.create_task("task1", "Do something", agent_id, "Result")
+        task_id = await integration.create_task(
+            "task1", "Do something", agent_id, "Result"
+        )
 
         result = await integration.execute_crew(crew_id, [task_id])
 
@@ -368,7 +372,9 @@ class TestFrameworkIntegrations:
 
         langchain = LangChainIntegration()
         orchestrator.register_framework(langchain, set_as_default=True)
-        await orchestrator.initialize_all({"langchain": FrameworkCredentials(api_key="test")})
+        await orchestrator.initialize_all(
+            {"langchain": FrameworkCredentials(api_key="test")}
+        )
 
         # Create agent
         config = AgentConfig(name="TestAgent")
@@ -402,7 +408,10 @@ class TestMultiAgentCoordinator:
         """Test agent task capability check"""
         agent = AgentDefinition(
             name="Coder",
-            capabilities=[AgentCapability.CODE_GENERATION, AgentCapability.CODE_DEBUGGING],
+            capabilities=[
+                AgentCapability.CODE_GENERATION,
+                AgentCapability.CODE_DEBUGGING,
+            ],
         )
 
         assert agent.can_handle_task([AgentCapability.CODE_GENERATION])
@@ -414,17 +423,23 @@ class TestMultiAgentCoordinator:
 
         # Register agents
         coder = AgentDefinition(
-            name="Coder", role=AgentRole.CODER, capabilities=[AgentCapability.CODE_GENERATION]
+            name="Coder",
+            role=AgentRole.CODER,
+            capabilities=[AgentCapability.CODE_GENERATION],
         )
         reviewer = AgentDefinition(
-            name="Reviewer", role=AgentRole.REVIEWER, capabilities=[AgentCapability.CODE_REVIEW]
+            name="Reviewer",
+            role=AgentRole.REVIEWER,
+            capabilities=[AgentCapability.CODE_REVIEW],
         )
 
         router.register_agent(coder)
         router.register_agent(reviewer)
 
         # Create task
-        task = TeamTask(title="Write Code", required_capabilities=[AgentCapability.CODE_GENERATION])
+        task = TeamTask(
+            title="Write Code", required_capabilities=[AgentCapability.CODE_GENERATION]
+        )
 
         # Route task
         assigned = router.route_task(task)
@@ -530,10 +545,14 @@ class TestMultiAgentCoordinator:
         coordinator = MultiAgentCoordinator()
         await coordinator.start()
 
-        agent = AgentDefinition(name="Worker", capabilities=[AgentCapability.TASK_EXECUTION])
+        agent = AgentDefinition(
+            name="Worker", capabilities=[AgentCapability.TASK_EXECUTION]
+        )
         coordinator.register_agent(agent)
 
-        task = TeamTask(title="Test Task", required_capabilities=[AgentCapability.TASK_EXECUTION])
+        task = TeamTask(
+            title="Test Task", required_capabilities=[AgentCapability.TASK_EXECUTION]
+        )
         task_id = await coordinator.submit_task(task)
 
         assert task_id in coordinator.tasks
@@ -569,7 +588,11 @@ class TestMultiAgentCoordinator:
         agent = AgentDefinition(name="Worker", max_concurrent_tasks=5)
         coordinator.register_agent(agent)
 
-        tasks = [TeamTask(title="Task1"), TeamTask(title="Task2"), TeamTask(title="Task3")]
+        tasks = [
+            TeamTask(title="Task1"),
+            TeamTask(title="Task2"),
+            TeamTask(title="Task3"),
+        ]
 
         results = await coordinator.execute_workflow(tasks, parallel=True)
 
@@ -635,7 +658,9 @@ class TestPythonBridge:
     @pytest.mark.asyncio
     async def test_python_environment_create(self):
         """Test Python environment creation"""
-        config = PythonEnvironmentConfig(name="test_env", environment_type=EnvironmentType.SYSTEM)
+        config = PythonEnvironmentConfig(
+            name="test_env", environment_type=EnvironmentType.SYSTEM
+        )
 
         env = PythonEnvironment(config)
         result = await env.create()
@@ -646,7 +671,9 @@ class TestPythonBridge:
     @pytest.mark.asyncio
     async def test_python_environment_install_package(self):
         """Test package installation in environment"""
-        config = PythonEnvironmentConfig(name="test_env", environment_type=EnvironmentType.SYSTEM)
+        config = PythonEnvironmentConfig(
+            name="test_env", environment_type=EnvironmentType.SYSTEM
+        )
 
         env = PythonEnvironment(config)
         await env.create()
@@ -660,7 +687,9 @@ class TestPythonBridge:
     @pytest.mark.asyncio
     async def test_python_executor(self):
         """Test Python executor"""
-        config = PythonEnvironmentConfig(name="test_env", environment_type=EnvironmentType.SYSTEM)
+        config = PythonEnvironmentConfig(
+            name="test_env", environment_type=EnvironmentType.SYSTEM
+        )
         env = PythonEnvironment(config)
         await env.create()
 

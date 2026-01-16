@@ -7,7 +7,6 @@ import asyncio
 from datetime import datetime, timezone
 
 import pytest
-
 from core.unified_integration import (  # Service Registry; Cognitive Processor; Configuration Optimizer
     CognitiveLayer,
     CognitiveSignal,
@@ -125,7 +124,9 @@ class TestServiceRegistry:
             name="health-service", version="1.0.0", category=ServiceCategory.MONITORING
         )
 
-        result = registry.update_health(service_id, ServiceStatus.HEALTHY, latency_ms=5.0)
+        result = registry.update_health(
+            service_id, ServiceStatus.HEALTHY, latency_ms=5.0
+        )
         assert result is True
 
         service = registry.get_service(service_id)

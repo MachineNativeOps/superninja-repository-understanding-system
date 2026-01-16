@@ -40,7 +40,11 @@ class FHSStructureValidator:
             "home": {"description": "用戶主目錄", "required": True},
             "tmp": {"description": "臨時檔案", "required": True},
             "opt": {"description": "可選應用程式", "required": True},
-            "srv": {"description": "服務資料", "required": True, "subdirs": ["www", "ftp", "git"]},
+            "srv": {
+                "description": "服務資料",
+                "required": True,
+                "subdirs": ["www", "ftp", "git"],
+            },
             "init.d": {"description": "初始化腳本", "required": True},
         }
 
@@ -114,7 +118,8 @@ def main():
 
     structure_results = validator.validate_directory_structure()
     compliance_score = (
-        structure_results["summary"]["valid_fhs"] / structure_results["summary"]["total_fhs"]
+        structure_results["summary"]["valid_fhs"]
+        / structure_results["summary"]["total_fhs"]
     ) * 100
 
     if compliance_score >= 90:

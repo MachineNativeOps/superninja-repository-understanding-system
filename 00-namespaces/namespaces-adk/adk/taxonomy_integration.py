@@ -33,10 +33,8 @@ class ADKTaxonomyManager:
                         "pattern": r"^(platform|int|obs|gov)-.*-agent-v\d+",
                         "message": "ADK agents must follow pattern: {domain}-{name}-agent-{version}",
                         "severity": "error",
-                    }
-                ],
-            }
-        )
+                    }],
+            })
 
         # Register ADK itself
         self.taxonomy.register(

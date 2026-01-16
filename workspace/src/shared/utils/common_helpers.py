@@ -98,7 +98,9 @@ def run_command(
         (返回碼, stdout, stderr)
     """
     try:
-        result = subprocess.run(cmd, capture_output=capture, text=True, timeout=timeout, cwd=cwd)
+        result = subprocess.run(
+            cmd, capture_output=capture, text=True, timeout=timeout, cwd=cwd
+        )
         return result.returncode, result.stdout or "", result.stderr or ""
     except subprocess.TimeoutExpired:
         return -1, "", "Command timed out"
@@ -108,7 +110,9 @@ def run_command(
         return -1, "", str(e)
 
 
-def check_tool_available(tool: str, version_arg: str = "--version") -> Tuple[bool, Optional[str]]:
+def check_tool_available(
+    tool: str, version_arg: str = "--version"
+) -> Tuple[bool, Optional[str]]:
     """
     檢查工具是否可用
 

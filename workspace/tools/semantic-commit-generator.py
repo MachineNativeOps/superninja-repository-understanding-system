@@ -27,10 +27,9 @@ Semantic Commit Message Generator
 import argparse
 import os
 
+from guardrails_client import chat_completion, get_api_key, is_client_available
 from rich import print
 from rich.console import Console
-
-from guardrails_client import chat_completion, get_api_key, is_client_available
 
 console = Console()
 
@@ -92,7 +91,9 @@ Generate the commit message:"""
         return commit_msg
 
     except Exception as e:
-        console.print(f"[yellow]AI generation failed: {e}. Using rule-based generation[/yellow]")
+        console.print(
+            f"[yellow]AI generation failed: {e}. Using rule-based generation[/yellow]"
+        )
         return generate_semantic_commit_rules(files, action, reason, violation_type)
 
 
@@ -105,7 +106,10 @@ def generate_semantic_commit_rules(
     commit_type = "fix"
     scope = "governance"
 
-    if "security" in violation_type.lower() or "vulnerability" in violation_type.lower():
+    if (
+        "security" in violation_type.lower()
+        or "vulnerability" in violation_type.lower()
+    ):
         commit_type = "fix"
         scope = "security"
     elif "language" in violation_type.lower() or "governance" in violation_type.lower():
@@ -217,9 +221,13 @@ def validate_commit_message(commit_msg: str) -> bool:
 
 def main():
     parser = argparse.ArgumentParser(description="Generate semantic commit message")
-    parser.add_argument("--files", nargs="+", required=True, help="List of files changed")
     parser.add_argument(
-        "--action", required=True, help="Action taken (e.g., 'removed', 'moved', 'refactored')"
+        "--files", nargs="+", required=True, help="List of files changed"
+    )
+    parser.add_argument(
+        "--action",
+        required=True,
+        help="Action taken (e.g., 'removed', 'moved', 'refactored')",
     )
     parser.add_argument("--reason", required=True, help="Reason for the change")
     parser.add_argument(
@@ -227,8 +235,12 @@ def main():
         required=True,
         help="Type of violation (e.g., 'language-governance', 'security')",
     )
-    parser.add_argument("--use-ai", action="store_true", help="Use AI to generate commit message")
-    parser.add_argument("--api-key", help="OpenAI API key (or use OPENAI_API_KEY env var)")
+    parser.add_argument(
+        "--use-ai", action="store_true", help="Use AI to generate commit message"
+    )
+    parser.add_argument(
+        "--api-key", help="OpenAI API key (or use OPENAI_API_KEY env var)"
+    )
     parser.add_argument("--output", help="Output file for commit message")
 
     args = parser.parse_args()

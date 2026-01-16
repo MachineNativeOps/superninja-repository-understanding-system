@@ -285,7 +285,9 @@ class CIErrorAnalyzer:
     def _generate_error_id(self) -> str:
         """Generate a unique error ID"""
         self._error_counter += 1
-        return f"ERR-{datetime.now().strftime('%Y%m%d%H%M%S')}-{self._error_counter:04d}"
+        return (
+            f"ERR-{datetime.now().strftime('%Y%m%d%H%M%S')}-{self._error_counter:04d}"
+        )
 
     def analyze_log(self, log_content: str, source: str = "unknown") -> list[CIError]:
         """
@@ -344,7 +346,9 @@ class CIErrorAnalyzer:
 
         return errors
 
-    def _extract_file_info(self, log_content: str, category: ErrorCategory) -> dict[str, Any]:
+    def _extract_file_info(
+        self, log_content: str, category: ErrorCategory
+    ) -> dict[str, Any]:
         """Extract file path and line number from log content"""
         # Common patterns for file:line:column format
         patterns = [
@@ -366,7 +370,9 @@ class CIErrorAnalyzer:
 
         return {}
 
-    def _extract_code_snippet(self, log_content: str, file_info: dict[str, Any]) -> str | None:
+    def _extract_code_snippet(
+        self, log_content: str, file_info: dict[str, Any]
+    ) -> str | None:
         """Extract code snippet from log content if available"""
         # Look for code snippet markers
         snippet_patterns = [

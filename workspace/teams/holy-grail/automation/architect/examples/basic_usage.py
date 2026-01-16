@@ -5,10 +5,11 @@ Basic Usage Example
 演示如何使用 Automation Architect 系統進行代碼分析
 """
 
-from core.orchestration.pipeline import AnalysisPipeline
 import asyncio
 import sys
 from pathlib import Path
+
+from core.orchestration.pipeline import AnalysisPipeline
 
 # 添加父目錄到路徑以便導入
 sys.path.insert(0, str(Path(__file__).parent.parent))
@@ -23,14 +24,19 @@ async def main():
     pipeline = AnalysisPipeline()
 
     # 示例代碼路徑 (可以替換為實際代碼路徑)
-    code_path = str(Path(__file__).parent.parent / "core" / "analysis" / "static_analyzer.py")
+    code_path = str(
+        Path(__file__).parent.parent / "core" / "analysis" / "static_analyzer.py"
+    )
 
     print(f"分析目標: {code_path}\n")
 
     # 執行分析
     print("開始執行代碼分析...")
     result = await pipeline.analyze(
-        code_path=code_path, scenario="general", enable_repair=False, enable_verification=False
+        code_path=code_path,
+        scenario="general",
+        enable_repair=False,
+        enable_verification=False,
     )
 
     # 顯示結果

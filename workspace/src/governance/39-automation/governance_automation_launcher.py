@@ -135,7 +135,9 @@ class GovernanceAutomationEngine:
         self.status = EngineStatus.IDLE
         self.health_level = HealthLevel.GOOD
         self.metrics = EngineMetrics(
-            engine_id=config.engine_id, status=self.status, health_level=self.health_level
+            engine_id=config.engine_id,
+            status=self.status,
+            health_level=self.health_level,
         )
         self.task_queue: List[AutomationTask] = []
         self.running_tasks: Dict[str, AutomationTask] = {}
@@ -178,7 +180,9 @@ class GovernanceAutomationEngine:
         """Process pending tasks. Returns number of processed tasks."""
         processed = 0
 
-        while self.task_queue and len(self.running_tasks) < self.config.max_parallel_tasks:
+        while (
+            self.task_queue and len(self.running_tasks) < self.config.max_parallel_tasks
+        ):
             task = self.task_queue.pop(0)
             task.started_at = datetime.now().isoformat()
             self.running_tasks[task.task_id] = task
@@ -263,7 +267,9 @@ class GovernanceAutomationLauncher:
         logger = logging.getLogger("GovernanceAutomation")
         if not logger.handlers:
             handler = logging.StreamHandler(sys.stdout)
-            formatter = logging.Formatter("%(asctime)s - %(name)s - %(levelname)s - %(message)s")
+            formatter = logging.Formatter(
+                "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+            )
             handler.setFormatter(formatter)
             logger.addHandler(handler)
             logger.setLevel(logging.INFO)
@@ -321,7 +327,9 @@ class GovernanceAutomationLauncher:
             else:
                 self.logger.error(f"Failed to initialize engine: {config.engine_id}")
 
-        self.logger.info(f"✅ Initialized {success_count}/{len(self.engine_configs)} engines")
+        self.logger.info(
+            f"✅ Initialized {success_count}/{len(self.engine_configs)} engines"
+        )
         return success_count > 0
 
     async def run(self, duration_seconds: Optional[int] = None) -> None:
@@ -377,7 +385,9 @@ class GovernanceAutomationLauncher:
                 f"Health: {health.value:10} | Tasks: {engine.metrics.executed_tasks}"
             )
 
-        self.logger.info(f"System Health: {healthy_engines}/{len(self.engines)} engines healthy")
+        self.logger.info(
+            f"System Health: {healthy_engines}/{len(self.engines)} engines healthy"
+        )
 
     def get_metrics_report(self) -> Dict[str, Any]:
         """Generate comprehensive metrics report."""
@@ -389,7 +399,8 @@ class GovernanceAutomationLauncher:
             ),
             "global_metrics": self.global_metrics,
             "engines": {
-                engine_id: engine.metrics.to_dict() for engine_id, engine in self.engines.items()
+                engine_id: engine.metrics.to_dict()
+                for engine_id, engine in self.engines.items()
             },
         }
         return report

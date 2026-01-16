@@ -17,7 +17,10 @@ from typing import Any, Dict, List
 try:
     import yaml
 except ImportError:
-    print("Error: PyYAML is required. Install it with: pip install pyyaml", file=sys.stderr)
+    print(
+        "Error: PyYAML is required. Install it with: pip install pyyaml",
+        file=sys.stderr,
+    )
     sys.exit(1)
 
 
@@ -84,7 +87,9 @@ def validate_behavior_contracts(verbose: bool = False) -> bool:
     contracts_dir = "governance/behavior-contracts"
 
     if not os.path.exists(contracts_dir):
-        print(f"Warning: {contracts_dir} not found, skipping validation", file=sys.stderr)
+        print(
+            f"Warning: {contracts_dir} not found, skipping validation", file=sys.stderr
+        )
         return True
 
     contracts = list(Path(contracts_dir).rglob("*.yaml"))
@@ -106,7 +111,10 @@ def validate_schemas(verbose: bool = False) -> bool:
     schemas_dir = "governance/schemas"
 
     if not os.path.exists(schemas_dir):
-        print(f"Warning: {schemas_dir} not found, creating empty validation", file=sys.stderr)
+        print(
+            f"Warning: {schemas_dir} not found, creating empty validation",
+            file=sys.stderr,
+        )
         return True
 
     schemas = list(Path(schemas_dir).rglob("*.json"))
@@ -131,10 +139,15 @@ def validate_policies(verbose: bool = False) -> bool:
     policies_dir = "governance/policies"
 
     if not os.path.exists(policies_dir):
-        print(f"Info: {policies_dir} not found, skipping policy validation", file=sys.stderr)
+        print(
+            f"Info: {policies_dir} not found, skipping policy validation",
+            file=sys.stderr,
+        )
         return True
 
-    policies = list(Path(policies_dir).rglob("*.yaml")) + list(Path(policies_dir).rglob("*.yml"))
+    policies = list(Path(policies_dir).rglob("*.yaml")) + list(
+        Path(policies_dir).rglob("*.yml")
+    )
 
     if verbose:
         print(f"✅ Policy files found: {len(policies)}")
@@ -148,7 +161,9 @@ def validate_policies(verbose: bool = False) -> bool:
 
 
 def main():
-    parser = argparse.ArgumentParser(description="Validate Architecture Governance Matrix")
+    parser = argparse.ArgumentParser(
+        description="Validate Architecture Governance Matrix"
+    )
     parser.add_argument("--verbose", action="store_true", help="Verbose output")
     args = parser.parse_args()
 

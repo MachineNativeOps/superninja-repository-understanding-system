@@ -7,7 +7,6 @@ from pathlib import Path
 
 import numpy as np
 import pytest
-
 from src.core.transformer import (
     CodeElement,
     EntanglementMapper,
@@ -40,7 +39,9 @@ class TestCodeElement:
 
     def test_semantic_vector_normalization(self):
         """Test semantic vector is properly normalized"""
-        element = CodeElement(name="test", semantic_vector=np.random.randn(8192), namespace="test")
+        element = CodeElement(
+            name="test", semantic_vector=np.random.randn(8192), namespace="test"
+        )
 
         norm = np.linalg.norm(element.semantic_vector)
         assert norm > 0
@@ -79,7 +80,9 @@ class TestSemanticLattice:
     def test_lattice_projection(self):
         """Test projecting code element to lattice"""
         lattice = SemanticLattice()
-        element = CodeElement(name="test", semantic_vector=np.random.randn(8192), namespace="test")
+        element = CodeElement(
+            name="test", semantic_vector=np.random.randn(8192), namespace="test"
+        )
 
         node = lattice.project(element)
 
@@ -100,7 +103,9 @@ class TestEntanglementMapper:
         mapper = EntanglementMapper()
         lattice = SemanticLattice()
 
-        element = CodeElement(name="test", semantic_vector=np.random.randn(8192), namespace="test")
+        element = CodeElement(
+            name="test", semantic_vector=np.random.randn(8192), namespace="test"
+        )
 
         node = lattice.project(element)
         features = mapper._extract_features(node)
@@ -121,19 +126,26 @@ class TestEntanglementMapper:
     def test_entanglement_creation(self):
         """Test creating entangled state"""
         mapper = EntanglementMapper()
-        element = CodeElement(name="test", semantic_vector=np.random.randn(8192), namespace="test")
+        element = CodeElement(
+            name="test", semantic_vector=np.random.randn(8192), namespace="test"
+        )
 
         entangled = mapper._create_entanglement(element, "workspace.src.governance")
 
         assert isinstance(entangled, QuantumNode)
-        assert entangled.element.context.get("target_namespace") == "workspace.src.governance"
+        assert (
+            entangled.element.context.get("target_namespace")
+            == "workspace.src.governance"
+        )
 
     def test_coherence_measurement(self):
         """Test measuring quantum coherence"""
         mapper = EntanglementMapper()
         lattice = SemanticLattice()
 
-        element = CodeElement(name="test", semantic_vector=np.random.randn(8192), namespace="test")
+        element = CodeElement(
+            name="test", semantic_vector=np.random.randn(8192), namespace="test"
+        )
 
         node = lattice.project(element)
         coherence = mapper._measure_coherence(node)
@@ -145,7 +157,9 @@ class TestEntanglementMapper:
         mapper = EntanglementMapper()
         lattice = SemanticLattice()
 
-        element = CodeElement(name="test", semantic_vector=np.random.randn(8192), namespace="test")
+        element = CodeElement(
+            name="test", semantic_vector=np.random.randn(8192), namespace="test"
+        )
 
         node = lattice.project(element)
         remapped = mapper.remap(node, "axiom-naming-v9")
@@ -180,7 +194,9 @@ class TestQuantumCodeTransformer:
         transformer = QuantumCodeTransformer()
         lattice = SemanticLattice()
 
-        element = CodeElement(name="test", semantic_vector=np.random.randn(8192), namespace="test")
+        element = CodeElement(
+            name="test", semantic_vector=np.random.randn(8192), namespace="test"
+        )
 
         node = lattice.project(element)
         qir = transformer._compile_to_qir([node])
@@ -193,7 +209,9 @@ class TestQuantumCodeTransformer:
         transformer = QuantumCodeTransformer()
         lattice = SemanticLattice()
 
-        element = CodeElement(name="test", semantic_vector=np.random.randn(8192), namespace="test")
+        element = CodeElement(
+            name="test", semantic_vector=np.random.randn(8192), namespace="test"
+        )
 
         node = lattice.project(element)
         qir = transformer._compile_to_qir([node])
@@ -227,7 +245,9 @@ class TestClass:
         output_path = tmp_path / "output"
 
         result = transformer.transform(
-            str(test_code), target_policy="axiom-naming-v9", output_path=str(output_path)
+            str(test_code),
+            target_policy="axiom-naming-v9",
+            output_path=str(output_path),
         )
 
         # Verify output
@@ -244,7 +264,9 @@ class TestErrorHandling:
         lattice = SemanticLattice()
 
         # Create element with low coherence
-        element = CodeElement(name="test", semantic_vector=np.random.randn(8192), namespace="test")
+        element = CodeElement(
+            name="test", semantic_vector=np.random.randn(8192), namespace="test"
+        )
 
         node = lattice.project(element)
 

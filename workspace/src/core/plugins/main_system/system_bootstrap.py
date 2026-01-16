@@ -275,7 +275,9 @@ class SystemBootstrap:
             for service_name in order:
                 if not self._initialize_service(service_name):
                     if self.config.fail_fast:
-                        self.logger.error(f"Failed to initialize {service_name}, failing fast")
+                        self.logger.error(
+                            f"Failed to initialize {service_name}, failing fast"
+                        )
                         return False
 
             self._initialized = True
@@ -308,7 +310,11 @@ class SystemBootstrap:
             if definition.config:
                 instance = definition.service_class(**definition.config, **deps)
             else:
-                instance = definition.service_class(**deps) if deps else definition.service_class()
+                instance = (
+                    definition.service_class(**deps)
+                    if deps
+                    else definition.service_class()
+                )
 
             # Register instance
             self.registry.set_instance(name, instance)
@@ -392,7 +398,10 @@ class SystemBootstrap:
 
         # Check service states
         for name, service in self.registry.get_all().items():
-            is_healthy = service.lifecycle in [ServiceLifecycle.READY, ServiceLifecycle.RUNNING]
+            is_healthy = service.lifecycle in [
+                ServiceLifecycle.READY,
+                ServiceLifecycle.RUNNING,
+            ]
             results["services"][name] = {
                 "healthy": is_healthy,
                 "lifecycle": service.lifecycle.value,

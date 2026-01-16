@@ -67,7 +67,9 @@ class IntegratedGovernanceAutomationLauncher:
         logger = logging.getLogger("IntegratedGovernanceLauncher")
         if not logger.handlers:
             handler = logging.StreamHandler(sys.stdout)
-            formatter = logging.Formatter("%(asctime)s - [INTEGRATED] %(levelname)s - %(message)s")
+            formatter = logging.Formatter(
+                "%(asctime)s - [INTEGRATED] %(levelname)s - %(message)s"
+            )
             handler.setFormatter(formatter)
             logger.addHandler(handler)
             logger.setLevel(logging.INFO)
@@ -80,7 +82,9 @@ class IntegratedGovernanceAutomationLauncher:
         self.logger.info("=" * 80)
 
         # Step 1: Initialize main launcher
-        self.logger.info("\n📍 Step 1: Initializing Main Governance Automation Launcher...")
+        self.logger.info(
+            "\n📍 Step 1: Initializing Main Governance Automation Launcher..."
+        )
         self.main_launcher = GovernanceAutomationLauncher(self.governance_root)
         if not await self.main_launcher.initialize_engines():
             self.logger.error("Failed to initialize main launcher")
@@ -123,7 +127,9 @@ class IntegratedGovernanceAutomationLauncher:
         # Register handlers for coordinator messages
         async def handle_metrics_request(message):
             """Handle metrics request from engines."""
-            metrics = self.main_launcher.get_metrics_report() if self.main_launcher else {}
+            metrics = (
+                self.main_launcher.get_metrics_report() if self.main_launcher else {}
+            )
             return metrics
 
         async def handle_task_submission(message):
@@ -131,8 +137,12 @@ class IntegratedGovernanceAutomationLauncher:
             self.logger.info(f"Task submitted: {message.payload}")
             return {"status": "accepted"}
 
-        self.coordinator.register_message_handler("metrics_request", handle_metrics_request)
-        self.coordinator.register_message_handler("task_submission", handle_task_submission)
+        self.coordinator.register_message_handler(
+            "metrics_request", handle_metrics_request
+        )
+        self.coordinator.register_message_handler(
+            "task_submission", handle_task_submission
+        )
 
         self.logger.info("Communication channels configured")
 

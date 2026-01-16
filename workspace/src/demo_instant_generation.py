@@ -5,12 +5,16 @@ Instant Generation Demo
 展示革命性架構的完整功能
 """
 
-from core.machinenativenops.instant_generation.main import InstantGenerationSystem, quick_generate
 import asyncio
 import json
 import logging
 import time
 from datetime import datetime
+
+from core.machinenativenops.instant_generation.main import (
+    InstantGenerationSystem,
+    quick_generate,
+)
 
 # 配置日誌
 logging.basicConfig(
@@ -131,7 +135,13 @@ async def demo_performance_analysis():
     # 多次生成以收集性能數據
     print("🔄 執行多次生成測試...")
 
-    test_inputs = ["簡單的博客網站", "電商系統", "社交媒體應用", "在線教育平台", "金融管理系統"]
+    test_inputs = [
+        "簡單的博客網站",
+        "電商系統",
+        "社交媒體應用",
+        "在線教育平台",
+        "金融管理系統",
+    ]
 
     results = []
     for i, user_input in enumerate(test_inputs, 1):
@@ -161,17 +171,25 @@ async def demo_performance_analysis():
     successful_results = [r for r in results if r["success"]]
 
     if successful_results:
-        avg_time = sum(r["execution_time"] for r in successful_results) / len(successful_results)
+        avg_time = sum(r["execution_time"] for r in successful_results) / len(
+            successful_results
+        )
         success_rate = len(successful_results) / len(results) * 100
         target_met_rate = (
-            sum(1 for r in successful_results if r["target_met"]) / len(successful_results) * 100
+            sum(1 for r in successful_results if r["target_met"])
+            / len(successful_results)
+            * 100
         )
 
         print(f"成功率: {success_rate:.1f}%")
         print(f"平均執行時間: {avg_time:.2f}秒")
         print(f"目標達成率: {target_met_rate:.1f}%")
-        print(f"最快執行時間: {min(r['execution_time'] for r in successful_results):.2f}秒")
-        print(f"最慢執行時間: {max(r['execution_time'] for r in successful_results):.2f}秒")
+        print(
+            f"最快執行時間: {min(r['execution_time'] for r in successful_results):.2f}秒"
+        )
+        print(
+            f"最慢執行時間: {max(r['execution_time'] for r in successful_results):.2f}秒"
+        )
 
     # 獲取系統統計
     print(f"\n📈 系統統計:")

@@ -93,7 +93,8 @@ def get_workflow_use_cases() -> WorkflowUseCases:
 
 @router.post("", response_model=WorkflowResponse, status_code=201)
 async def create_workflow(
-    request: CreateWorkflowRequest, use_cases: WorkflowUseCases = Depends(get_workflow_use_cases)
+    request: CreateWorkflowRequest,
+    use_cases: WorkflowUseCases = Depends(get_workflow_use_cases),
 ):
     """
     Create a new workflow.
@@ -114,7 +115,9 @@ async def create_workflow(
         # Get workflow details
         workflow_status = use_cases.get_workflow_status(workflow_id)
         if not workflow_status:
-            raise HTTPException(status_code=404, detail="Workflow not found after creation")
+            raise HTTPException(
+                status_code=404, detail="Workflow not found after creation"
+            )
 
         return WorkflowResponse(
             workflow_id=workflow_status["workflow_id"],
@@ -136,7 +139,9 @@ async def create_workflow(
 
 @router.get("", response_model=List[WorkflowResponse])
 async def list_workflows(
-    limit: int = 100, offset: int = 0, use_cases: WorkflowUseCases = Depends(get_workflow_use_cases)
+    limit: int = 100,
+    offset: int = 0,
+    use_cases: WorkflowUseCases = Depends(get_workflow_use_cases),
 ):
     """
     List workflows with pagination.
@@ -185,7 +190,9 @@ async def get_workflow(
     try:
         workflow_status = use_cases.get_workflow_status(workflow_id)
         if not workflow_status:
-            raise HTTPException(status_code=404, detail=f"Workflow {workflow_id} not found")
+            raise HTTPException(
+                status_code=404, detail=f"Workflow {workflow_id} not found"
+            )
 
         return WorkflowDetailResponse(
             workflow_id=workflow_status["workflow_id"],

@@ -101,7 +101,11 @@ class TraceSpan:
     def add_event(self, name: str, attributes: Optional[Dict[str, Any]] = None) -> None:
         """Add an event to the span"""
         self.events.append(
-            {"name": name, "timestamp": datetime.now().isoformat(), "attributes": attributes or {}}
+            {
+                "name": name,
+                "timestamp": datetime.now().isoformat(),
+                "attributes": attributes or {},
+            }
         )
 
     def to_dict(self) -> Dict[str, Any]:
@@ -174,7 +178,9 @@ class CorrelationEngine:
     ) -> CorrelatedEvent:
         """Correlate events by time proximity"""
         event = CorrelatedEvent(
-            event_type=EventType.INCIDENT, title="Time-correlated event", timestamp=reference_time
+            event_type=EventType.INCIDENT,
+            title="Time-correlated event",
+            timestamp=reference_time,
         )
 
         # Find logs within time window
@@ -303,7 +309,7 @@ class ObservabilityPlatform:
     def _cleanup_logs(self) -> None:
         """Clean up old logs"""
         if len(self._logs) > self._max_retention:
-            self._logs = self._logs[-self._max_retention :]
+            self._logs = self._logs[-self._max_retention:]
 
     # === Tracing ===
 

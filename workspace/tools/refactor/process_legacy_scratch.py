@@ -272,12 +272,17 @@ class VocabularyScanner:
         unique_matches = {}
         for match in matches:
             key = (match.term, match.category)
-            if key not in unique_matches or match.confidence > unique_matches[key].confidence:
+            if (
+                key not in unique_matches
+                or match.confidence > unique_matches[key].confidence
+            ):
                 unique_matches[key] = match
 
         return list(unique_matches.values())
 
-    def extract_domain_classification(self, matches: List[VocabularyMatch]) -> Dict[str, float]:
+    def extract_domain_classification(
+        self, matches: List[VocabularyMatch]
+    ) -> Dict[str, float]:
         """從詞彙匹配中提取領域分類"""
         classification = defaultdict(float)
 
@@ -359,7 +364,9 @@ class ReferenceScanner:
 
         return unique
 
-    def _check_reference_exists(self, target: str, source_path: Path, is_internal: bool) -> bool:
+    def _check_reference_exists(
+        self, target: str, source_path: Path, is_internal: bool
+    ) -> bool:
         """檢查引用是否存在"""
         if not is_internal:
             return True  # 外部連結假設存在
@@ -460,7 +467,9 @@ class StructureAnalyzer:
             try:
                 data = yaml.safe_load(content)
                 if isinstance(data, dict):
-                    sections = [{"key": k, "type": type(v).__name__} for k, v in data.items()]
+                    sections = [
+                        {"key": k, "type": type(v).__name__} for k, v in data.items()
+                    ]
             except BaseException:
                 pass
 
@@ -577,7 +586,9 @@ class DecisionEngine:
         # 步驟5: 確定嵌入位置 (如果是嵌入式整合)
         embedding_loc, embedding_sec = None, None
         if integration_type == IntegrationType.EMBEDDED_INTEGRATION:
-            embedding_loc, embedding_sec = self._determine_embedding_location(analysis, target_dir)
+            embedding_loc, embedding_sec = self._determine_embedding_location(
+                analysis, target_dir
+            )
             reasoning.append(f"嵌入位置: {embedding_loc} / {embedding_sec}")
 
         # 步驟6: 計算置信度
@@ -636,7 +647,10 @@ class DecisionEngine:
             return IntegrationType.ARCHIVE
 
     def _determine_target_location(
-        self, analysis: AssetAnalysis, primary_domain: str, integration_type: IntegrationType
+        self,
+        analysis: AssetAnalysis,
+        primary_domain: str,
+        integration_type: IntegrationType,
     ) -> Tuple[str, Optional[str]]:
         """確定目標位置"""
         # 基於領域映射
@@ -698,7 +712,9 @@ class DecisionEngine:
 
         return min(confidence, 1.0)
 
-    def _generate_alternatives(self, analysis: AssetAnalysis, primary_domain: str) -> List[Dict]:
+    def _generate_alternatives(
+        self, analysis: AssetAnalysis, primary_domain: str
+    ) -> List[Dict]:
         """生成備選方案"""
         alternatives = []
 
@@ -778,7 +794,9 @@ class LegacyScratchProcessor:
                         "type": asset_type.value,
                         "stage": stage.value,
                         "size": file.stat().st_size,
-                        "modified": datetime.fromtimestamp(file.stat().st_mtime).isoformat(),
+                        "modified": datetime.fromtimestamp(
+                            file.stat().st_mtime
+                        ).isoformat(),
                     }
                 )
 
@@ -872,7 +890,9 @@ class LegacyScratchProcessor:
 
         return decision
 
-    def batch_process(self, filter_stage: Optional[ProcessingStage] = None) -> List[Dict]:
+    def batch_process(
+        self, filter_stage: Optional[ProcessingStage] = None
+    ) -> List[Dict]:
         """批量處理所有資產"""
         print("🔄 開始批量處理...")
 

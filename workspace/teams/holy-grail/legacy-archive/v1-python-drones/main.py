@@ -5,11 +5,12 @@ SynergyMesh v1-python-drones 主執行入口
 Python 無人機系統的主要入口點，提供命令行介面。
 """
 
-from utils import Colors, print_error, print_info, print_success
-from drones import AutopilotDrone, CoordinatorDrone, DeploymentDrone
 import argparse
 import sys
 from pathlib import Path
+
+from drones import AutopilotDrone, CoordinatorDrone, DeploymentDrone
+from utils import Colors, print_error, print_info, print_success
 
 # 確保可以導入本地模組
 _current_dir = Path(__file__).resolve().parent

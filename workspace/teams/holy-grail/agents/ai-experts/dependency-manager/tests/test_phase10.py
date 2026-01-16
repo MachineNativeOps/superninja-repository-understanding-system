@@ -84,7 +84,11 @@ class TestImplementationPlan(unittest.TestCase):
         from implementation.implementation_plan import Task
 
         task = Task(
-            id="task_1", name="測試任務", description="測試", estimated_hours=40, actual_hours=20
+            id="task_1",
+            name="測試任務",
+            description="測試",
+            estimated_hours=40,
+            actual_hours=20,
         )
 
         self.assertEqual(task.progress_percentage(), 50.0)
@@ -182,10 +186,14 @@ class TestSuccessMetrics(unittest.TestCase):
 
         tracker = SuccessMetricsTracker()
 
-        result = tracker.record_value(MetricCategory.TECHNICAL, "code_quality", 85.0, "測試記錄")
+        result = tracker.record_value(
+            MetricCategory.TECHNICAL, "code_quality", 85.0, "測試記錄"
+        )
 
         self.assertTrue(result)
-        self.assertEqual(tracker.technical_metrics["code_quality"].current_value(), 85.0)
+        self.assertEqual(
+            tracker.technical_metrics["code_quality"].current_value(), 85.0
+        )
 
     def test_metric_status(self):
         """測試指標狀態"""
@@ -325,7 +333,11 @@ class TestActionGuide(unittest.TestCase):
 
     def test_recommendation_creation(self):
         """測試建議創建"""
-        from implementation.action_guide import ActionPriority, Recommendation, RecommendationType
+        from implementation.action_guide import (
+            ActionPriority,
+            Recommendation,
+            RecommendationType,
+        )
 
         rec = Recommendation(
             id="rec_1",

@@ -42,7 +42,10 @@ def parse_arguments() -> argparse.Namespace:
     parser.add_argument(
         "--mode",
         type=str,
-        choices=["comment", "issue", "report"],
+        choices=[
+            "comment",
+            "issue",
+            "report"],
         default="report",
         help="Output mode: comment (PR comment), issue (create issue), report (JSON report)",
     )

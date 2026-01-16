@@ -270,8 +270,7 @@ class ErrorHandler:
 
                 self.logger.warning(
                     f"Attempt {attempt + 1}/{policy.max_attempts} failed for {operation_name}: {e}. "
-                    f"Retrying in {delay:.2f}s..."
-                )
+                    f"Retrying in {delay:.2f}s...")
 
                 await asyncio.sleep(delay)
 

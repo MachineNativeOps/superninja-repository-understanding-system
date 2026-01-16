@@ -99,7 +99,9 @@ class SelfHealingIntegrationEngine:
             # 嘗試從 v2-multi-islands 導入
             orchestrator_path = self.project_root / "v2-multi-islands"
             if not orchestrator_path.exists():
-                logger.warning(f"Island Orchestrator path not found: {orchestrator_path}")
+                logger.warning(
+                    f"Island Orchestrator path not found: {orchestrator_path}"
+                )
                 logger.info("   Creating mock Island Orchestrator for testing...")
                 self.island_orchestrator = self._create_mock_orchestrator()
                 return True
@@ -176,7 +178,11 @@ class SelfHealingIntegrationEngine:
                 "authority": "TACTICAL",
                 "location": "island-ai/src/agents/architect",
                 "endpoint": "/api/architect",
-                "capabilities": ["architecture_design", "system_optimization", "tech_stack"],
+                "capabilities": [
+                    "architecture_design",
+                    "system_optimization",
+                    "tech_stack",
+                ],
             },
             {
                 "type": AIAgentType.DEVELOPER,
@@ -194,7 +200,11 @@ class SelfHealingIntegrationEngine:
                 "authority": "OPERATIONAL",
                 "location": "island-ai/src/agents/tester",
                 "endpoint": "/api/tester",
-                "capabilities": ["test_generation", "quality_assurance", "coverage_analysis"],
+                "capabilities": [
+                    "test_generation",
+                    "quality_assurance",
+                    "coverage_analysis",
+                ],
             },
             {
                 "type": AIAgentType.DEPLOYER,
@@ -212,7 +222,11 @@ class SelfHealingIntegrationEngine:
                 "authority": "OPERATIONAL",
                 "location": "v2-multi-islands/islands/monitoring",
                 "endpoint": "/api/monitor",
-                "capabilities": ["performance_monitoring", "anomaly_detection", "alerting"],
+                "capabilities": [
+                    "performance_monitoring",
+                    "anomaly_detection",
+                    "alerting",
+                ],
             },
             {
                 "type": AIAgentType.COORDINATOR,
@@ -221,7 +235,11 @@ class SelfHealingIntegrationEngine:
                 "authority": "OPERATIONAL",
                 "location": "v2-multi-islands/orchestrator",
                 "endpoint": "/api/coordinator",
-                "capabilities": ["agent_coordination", "resource_management", "task_distribution"],
+                "capabilities": [
+                    "agent_coordination",
+                    "resource_management",
+                    "task_distribution",
+                ],
             },
         ]
 
@@ -261,7 +279,10 @@ class SelfHealingIntegrationEngine:
             {
                 "id": "14-improvement",
                 "name": "Improvement & Learning",
-                "integration_points": ["self-healing-self-healing.yaml", "improvement-policy.yaml"],
+                "integration_points": [
+                    "self-healing-self-healing.yaml",
+                    "improvement-policy.yaml",
+                ],
                 "agents": [AIAgentType.MONITOR, AIAgentType.ARCHITECT],
             },
             {
@@ -294,7 +315,9 @@ class SelfHealingIntegrationEngine:
             }
             logger.info(f"   ✅ {dimension['name']} integrated")
 
-        logger.info(f"✅ All {len(self.governance_dimensions)} Governance Dimensions integrated")
+        logger.info(
+            f"✅ All {len(self.governance_dimensions)} Governance Dimensions integrated"
+        )
         return True
 
     def start(self) -> bool:
@@ -379,11 +402,15 @@ class SelfHealingIntegrationEngine:
             "engine_status": self.status,
             "start_time": self.start_time.isoformat() if self.start_time else None,
             "uptime_seconds": (
-                (datetime.now() - self.start_time).total_seconds() if self.start_time else 0
+                (datetime.now() - self.start_time).total_seconds()
+                if self.start_time
+                else 0
             ),
             "ai_agents": {
                 "total": len(self.ai_agents),
-                "healthy": sum(1 for a in self.ai_agents.values() if a.get("health") == "healthy"),
+                "healthy": sum(
+                    1 for a in self.ai_agents.values() if a.get("health") == "healthy"
+                ),
                 "agents": {k: v["config"]["name"] for k, v in self.ai_agents.items()},
             },
             "governance_dimensions": {
@@ -394,7 +421,8 @@ class SelfHealingIntegrationEngine:
                     if d.get("status") == "integrated"
                 ),
                 "dimensions": {
-                    k: v["config"]["name"] for k, v in self.governance_dimensions.items()
+                    k: v["config"]["name"]
+                    for k, v in self.governance_dimensions.items()
                 },
             },
             "island_orchestrator": orchestrator_status,
@@ -438,7 +466,9 @@ class SelfHealingIntegrationEngine:
                 result["status"] = "failed"
                 result["result"] = {"error": f"Unknown task type: {task_type}"}
 
-            result["execution_time_seconds"] = (datetime.now() - start_time).total_seconds()
+            result["execution_time_seconds"] = (
+                datetime.now() - start_time
+            ).total_seconds()
             logger.info(f"✅ Task completed in {result['execution_time_seconds']:.2f}s")
 
         except Exception as e:

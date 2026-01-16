@@ -81,17 +81,23 @@ class SelfHealingSystem:
             healing_strategy = await self._determine_healing_strategy(failure_analysis)
 
             # 執行修復動作
-            healing_result = await self._execute_healing_strategy(healing_strategy, workflow_result)
+            healing_result = await self._execute_healing_strategy(
+                healing_strategy, workflow_result
+            )
 
             # 記錄修復歷史
-            self._record_healing(healing_id, failure_analysis, healing_strategy, healing_result)
+            self._record_healing(
+                healing_id, failure_analysis, healing_strategy, healing_result
+            )
 
             if healing_result.get("success", False):
                 return {
                     "success": True,
                     "healing_id": healing_id,
                     "healed_workflow": healing_result.get("workflow_result"),
-                    "healing_actions_taken": healing_result.get("actions_performed", []),
+                    "healing_actions_taken": healing_result.get(
+                        "actions_performed", []
+                    ),
                     "improvements": healing_result.get("improvements", {}),
                 }
             else:
@@ -99,7 +105,9 @@ class SelfHealingSystem:
                     "success": False,
                     "healing_id": healing_id,
                     "error": healing_result.get("error", "Healing failed"),
-                    "alternative_suggestions": await self._suggest_alternatives(failure_analysis),
+                    "alternative_suggestions": await self._suggest_alternatives(
+                        failure_analysis
+                    ),
                 }
 
         except Exception as e:
@@ -146,7 +154,9 @@ class SelfHealingSystem:
 
         return analysis
 
-    async def _determine_healing_strategy(self, failure_analysis: Dict[str, Any]) -> Dict[str, Any]:
+    async def _determine_healing_strategy(
+        self, failure_analysis: Dict[str, Any]
+    ) -> Dict[str, Any]:
         """確定修復策略"""
         strategy = {
             "primary_strategy": HealingStrategy.RETRY,
@@ -173,7 +183,10 @@ class SelfHealingSystem:
             strategy["estimated_success_rate"] = 0.7
 
         # 添加備用策略
-        strategy["fallback_strategies"] = [HealingStrategy.RESTART, HealingStrategy.MANUAL]
+        strategy["fallback_strategies"] = [
+            HealingStrategy.RESTART,
+            HealingStrategy.MANUAL,
+        ]
 
         return strategy
 
@@ -188,7 +201,9 @@ class SelfHealingSystem:
             if primary_strategy == HealingStrategy.RETRY:
                 return await self._execute_retry_strategy(workflow_result, parameters)
             elif primary_strategy == HealingStrategy.FALLBACK:
-                return await self._execute_fallback_strategy(workflow_result, parameters)
+                return await self._execute_fallback_strategy(
+                    workflow_result, parameters
+                )
             elif primary_strategy == HealingStrategy.SCALING:
                 return await self._execute_scaling_strategy(workflow_result, parameters)
             elif primary_strategy == HealingStrategy.RESTART:
@@ -242,7 +257,9 @@ class SelfHealingSystem:
             "improvements": {"stability": "+20%"},
         }
 
-    async def _suggest_alternatives(self, failure_analysis: Dict[str, Any]) -> List[str]:
+    async def _suggest_alternatives(
+        self, failure_analysis: Dict[str, Any]
+    ) -> List[str]:
         """建議替代方案"""
         alternatives = [
             "Reduce system complexity",
@@ -279,7 +296,8 @@ class SelfHealingSystem:
         recent_healings = [
             h
             for h in self.healing_history
-            if datetime.fromisoformat(h["timestamp"]) > datetime.now() - timedelta(hours=24)
+            if datetime.fromisoformat(h["timestamp"])
+            > datetime.now() - timedelta(hours=24)
         ]
 
         success_rate = (
@@ -293,7 +311,9 @@ class SelfHealingSystem:
             "success_rate_24h": success_rate,
             "total_healings": len(self.healing_history),
             "active_healings": len(self.active_healings),
-            "last_healing": self.healing_history[-1]["timestamp"] if self.healing_history else None,
+            "last_healing": (
+                self.healing_history[-1]["timestamp"] if self.healing_history else None
+            ),
         }
 
 
@@ -314,10 +334,14 @@ class PerformanceOptimizer:
             bottlenecks = await self._analyze_performance_bottlenecks(workflow_result)
 
             # 生成優化建議
-            recommendations = await self._generate_optimization_recommendations(bottlenecks)
+            recommendations = await self._generate_optimization_recommendations(
+                bottlenecks
+            )
 
             # 應用自動優化
-            applied_optimizations = await self._apply_automatic_optimizations(recommendations)
+            applied_optimizations = await self._apply_automatic_optimizations(
+                recommendations
+            )
 
             # 記錄優化歷史
             self._record_optimization(
@@ -337,7 +361,11 @@ class PerformanceOptimizer:
 
         except Exception as e:
             self.logger.error(f"Performance optimization {optimization_id} failed: {e}")
-            return {"success": False, "optimization_id": optimization_id, "error": str(e)}
+            return {
+                "success": False,
+                "optimization_id": optimization_id,
+                "error": str(e),
+            }
 
     async def _analyze_performance_bottlenecks(
         self, workflow_result: Dict[str, Any]
@@ -393,8 +421,7 @@ class PerformanceOptimizer:
                         expected_improvement="40-60% reduction in execution time",
                         implementation_effort="medium",
                         risk_level="low",
-                    )
-                )
+                    ))
 
             elif bottleneck["type"] == "task_failures":
                 recommendations.append(
@@ -405,8 +432,7 @@ class PerformanceOptimizer:
                         expected_improvement="80% reduction in task failures",
                         implementation_effort="low",
                         risk_level="low",
-                    )
-                )
+                    ))
 
         return recommendations
 
@@ -465,7 +491,8 @@ class PerformanceOptimizer:
         recent_optimizations = [
             o
             for o in self.optimization_history
-            if datetime.fromisoformat(o["timestamp"]) > datetime.now() - timedelta(hours=24)
+            if datetime.fromisoformat(o["timestamp"])
+            > datetime.now() - timedelta(hours=24)
         ]
 
         return {
@@ -473,7 +500,9 @@ class PerformanceOptimizer:
             "total_optimizations": len(self.optimization_history),
             "recent_optimizations": len(recent_optimizations),
             "last_optimization": (
-                self.optimization_history[-1]["timestamp"] if self.optimization_history else None
+                self.optimization_history[-1]["timestamp"]
+                if self.optimization_history
+                else None
             ),
         }
 
@@ -496,7 +525,9 @@ class ResourceManager:
         }
 
         # 記錄資源使用
-        self.resource_usage[f"alloc_{datetime.now().strftime('%Y%m%d_%H%M%S')}"] = allocation
+        self.resource_usage[f"alloc_{datetime.now().strftime('%Y%m%d_%H%M%S')}"] = (
+            allocation
+        )
 
         return {
             "success": True,
@@ -513,7 +544,11 @@ class ResourceManager:
             + allocation["storage_gb"] * 0.001
         )
 
-        return {"hourly": hourly_cost, "daily": hourly_cost * 24, "monthly": hourly_cost * 24 * 30}
+        return {
+            "hourly": hourly_cost,
+            "daily": hourly_cost * 24,
+            "monthly": hourly_cost * 24 * 30,
+        }
 
 
 __all__ = [

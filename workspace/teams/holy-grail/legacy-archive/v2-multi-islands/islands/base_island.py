@@ -120,7 +120,9 @@ class BaseIsland(ABC):
         """
         cmd, arg = self._get_language_check_command()
         try:
-            result = subprocess.run([cmd, arg], capture_output=True, text=True, timeout=5)
+            result = subprocess.run(
+                [cmd, arg], capture_output=True, text=True, timeout=5
+            )
             if result.returncode == 0:
                 version = result.stdout.strip().split("\n")[0]
                 return True, version
@@ -181,7 +183,9 @@ class BaseIsland(ABC):
             "island_id": self.island_id,
             "language": self.language,
             "status": self.status,
-            "activated_at": self.activated_at.isoformat() if self.activated_at else None,
+            "activated_at": (
+                self.activated_at.isoformat() if self.activated_at else None
+            ),
             "capabilities": self.capabilities,
             "tool_available": available,
             "tool_version": version,
@@ -189,4 +193,6 @@ class BaseIsland(ABC):
         }
 
     def __repr__(self) -> str:
-        return f"<{self.__class__.__name__}(name='{self.name}', status='{self.status}')>"
+        return (
+            f"<{self.__class__.__name__}(name='{self.name}', status='{self.status}')>"
+        )

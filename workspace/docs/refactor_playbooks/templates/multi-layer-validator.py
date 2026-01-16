@@ -198,7 +198,9 @@ class ValidationGateRegistry:
     # Layer A: Intent Validation
     # ------------------------------------------------------------------------
 
-    async def _validate_intent_clarity(self, context: Dict[str, Any]) -> ValidationResult:
+    async def _validate_intent_clarity(
+        self, context: Dict[str, Any]
+    ) -> ValidationResult:
         """Validate that user intent is clear and unambiguous"""
         start_time = time.perf_counter()
 
@@ -223,7 +225,9 @@ class ValidationGateRegistry:
             details={"intent": intent, "clarity_score": clarity_score},
         )
 
-    async def _validate_goal_alignment(self, context: Dict[str, Any]) -> ValidationResult:
+    async def _validate_goal_alignment(
+        self, context: Dict[str, Any]
+    ) -> ValidationResult:
         """Validate that requested action aligns with system goals"""
         start_time = time.perf_counter()
 
@@ -242,7 +246,9 @@ class ValidationGateRegistry:
             duration_ms=duration_ms,
         )
 
-    async def _validate_user_authorization(self, context: Dict[str, Any]) -> ValidationResult:
+    async def _validate_user_authorization(
+        self, context: Dict[str, Any]
+    ) -> ValidationResult:
         """Validate user is authorized for this intent"""
         start_time = time.perf_counter()
 
@@ -284,7 +290,9 @@ class ValidationGateRegistry:
             duration_ms=duration_ms,
         )
 
-    async def _validate_quantum_signature(self, context: Dict[str, Any]) -> ValidationResult:
+    async def _validate_quantum_signature(
+        self, context: Dict[str, Any]
+    ) -> ValidationResult:
         """Validate quantum-resistant cryptographic signature"""
         start_time = time.perf_counter()
 
@@ -303,7 +311,9 @@ class ValidationGateRegistry:
             duration_ms=duration_ms,
         )
 
-    async def _validate_threat_detection(self, context: Dict[str, Any]) -> ValidationResult:
+    async def _validate_threat_detection(
+        self, context: Dict[str, Any]
+    ) -> ValidationResult:
         """Detect potential security threats"""
         start_time = time.perf_counter()
 
@@ -326,7 +336,9 @@ class ValidationGateRegistry:
     # Layer C: Compliance Validation
     # ------------------------------------------------------------------------
 
-    async def _validate_policy_compliance(self, context: Dict[str, Any]) -> ValidationResult:
+    async def _validate_policy_compliance(
+        self, context: Dict[str, Any]
+    ) -> ValidationResult:
         """Validate compliance with organizational policies"""
         start_time = time.perf_counter()
 
@@ -344,7 +356,9 @@ class ValidationGateRegistry:
             duration_ms=duration_ms,
         )
 
-    async def _validate_regulatory_compliance(self, context: Dict[str, Any]) -> ValidationResult:
+    async def _validate_regulatory_compliance(
+        self, context: Dict[str, Any]
+    ) -> ValidationResult:
         """Validate regulatory compliance (GDPR, HIPAA, etc.)"""
         start_time = time.perf_counter()
 
@@ -362,7 +376,9 @@ class ValidationGateRegistry:
             duration_ms=duration_ms,
         )
 
-    async def _validate_ethical_boundaries(self, context: Dict[str, Any]) -> ValidationResult:
+    async def _validate_ethical_boundaries(
+        self, context: Dict[str, Any]
+    ) -> ValidationResult:
         """Validate ethical boundaries are respected"""
         start_time = time.perf_counter()
 
@@ -384,7 +400,9 @@ class ValidationGateRegistry:
     # Placeholder implementations for other layers (D, E, F)
     # ------------------------------------------------------------------------
 
-    async def _validate_resource_availability(self, context: Dict[str, Any]) -> ValidationResult:
+    async def _validate_resource_availability(
+        self, context: Dict[str, Any]
+    ) -> ValidationResult:
         start_time = time.perf_counter()
         duration_ms = (time.perf_counter() - start_time) * 1000
         return ValidationResult(
@@ -410,7 +428,9 @@ class ValidationGateRegistry:
             duration_ms=duration_ms,
         )
 
-    async def _validate_cost_optimization(self, context: Dict[str, Any]) -> ValidationResult:
+    async def _validate_cost_optimization(
+        self, context: Dict[str, Any]
+    ) -> ValidationResult:
         start_time = time.perf_counter()
         duration_ms = (time.perf_counter() - start_time) * 1000
         return ValidationResult(
@@ -423,7 +443,9 @@ class ValidationGateRegistry:
             duration_ms=duration_ms,
         )
 
-    async def _validate_pattern_analysis(self, context: Dict[str, Any]) -> ValidationResult:
+    async def _validate_pattern_analysis(
+        self, context: Dict[str, Any]
+    ) -> ValidationResult:
         start_time = time.perf_counter()
         duration_ms = (time.perf_counter() - start_time) * 1000
         return ValidationResult(
@@ -436,7 +458,9 @@ class ValidationGateRegistry:
             duration_ms=duration_ms,
         )
 
-    async def _validate_anomaly_detection(self, context: Dict[str, Any]) -> ValidationResult:
+    async def _validate_anomaly_detection(
+        self, context: Dict[str, Any]
+    ) -> ValidationResult:
         start_time = time.perf_counter()
         duration_ms = (time.perf_counter() - start_time) * 1000
         return ValidationResult(
@@ -462,7 +486,9 @@ class ValidationGateRegistry:
             duration_ms=duration_ms,
         )
 
-    async def _validate_output_quality(self, context: Dict[str, Any]) -> ValidationResult:
+    async def _validate_output_quality(
+        self, context: Dict[str, Any]
+    ) -> ValidationResult:
         start_time = time.perf_counter()
         duration_ms = (time.perf_counter() - start_time) * 1000
         return ValidationResult(
@@ -475,7 +501,9 @@ class ValidationGateRegistry:
             duration_ms=duration_ms,
         )
 
-    async def _validate_performance_sla(self, context: Dict[str, Any]) -> ValidationResult:
+    async def _validate_performance_sla(
+        self, context: Dict[str, Any]
+    ) -> ValidationResult:
         start_time = time.perf_counter()
         duration_ms = (time.perf_counter() - start_time) * 1000
         return ValidationResult(
@@ -488,7 +516,9 @@ class ValidationGateRegistry:
             duration_ms=duration_ms,
         )
 
-    async def _validate_user_satisfaction(self, context: Dict[str, Any]) -> ValidationResult:
+    async def _validate_user_satisfaction(
+        self, context: Dict[str, Any]
+    ) -> ValidationResult:
         start_time = time.perf_counter()
         duration_ms = (time.perf_counter() - start_time) * 1000
         return ValidationResult(
@@ -522,7 +552,9 @@ class MultiLayerValidator:
         # Load layer configurations
         self.layers = self._load_layer_config()
 
-        self.logger.info(f"MultiLayerValidator initialized with {len(self.layers)} layers")
+        self.logger.info(
+            f"MultiLayerValidator initialized with {len(self.layers)} layers"
+        )
 
     def _load_config(self, config_path: str) -> Dict[str, Any]:
         """Load validation configuration"""
@@ -548,7 +580,9 @@ class MultiLayerValidator:
         """Load layer configuration from main config"""
         return self.config.get("validation", {}).get("layers", {})
 
-    async def validate(self, context: Dict[str, Any]) -> Tuple[bool, List[LayerValidationResult]]:
+    async def validate(
+        self, context: Dict[str, Any]
+    ) -> Tuple[bool, List[LayerValidationResult]]:
         """
         Execute complete validation pipeline across all layers
 
@@ -562,7 +596,9 @@ class MultiLayerValidator:
         overall_success = True
 
         # Get ordered layers by priority
-        ordered_layers = sorted(self.layers.items(), key=lambda x: x[1].get("priority", 999))
+        ordered_layers = sorted(
+            self.layers.items(), key=lambda x: x[1].get("priority", 999)
+        )
 
         for layer_name, layer_config in ordered_layers:
             if not layer_config.get("enabled", False):
@@ -575,7 +611,9 @@ class MultiLayerValidator:
             # Check for blocking failures
             if layer_result.has_blocking_failures:
                 overall_success = False
-                self.logger.warning(f"Blocking failure in layer {layer_name}, stopping validation")
+                self.logger.warning(
+                    f"Blocking failure in layer {layer_name}, stopping validation"
+                )
                 break
 
             if not layer_result.passed:
@@ -606,7 +644,8 @@ class MultiLayerValidator:
 
         # Execute gates in parallel
         gate_tasks = [
-            self._execute_gate(gate_id, timeout_ms / 1000.0, context) for gate_id in gates
+            self._execute_gate(gate_id, timeout_ms / 1000.0, context)
+            for gate_id in gates
         ]
 
         gate_results = await asyncio.gather(*gate_tasks, return_exceptions=True)
@@ -640,7 +679,9 @@ class MultiLayerValidator:
             layer_status = ValidationStatus.WARNING
 
         # Update metrics
-        self.metrics.update(layer_name, duration_ms, layer_status == ValidationStatus.PASSED)
+        self.metrics.update(
+            layer_name, duration_ms, layer_status == ValidationStatus.PASSED
+        )
 
         return LayerValidationResult(
             layer_id=layer_name,
@@ -713,7 +754,10 @@ async def main():
             "intent": "deploy application to production",
             "preferences": {},
         },
-        "system_context": {"environment": "production", "resources": {"cpu": 0.5, "memory": 0.7}},
+        "system_context": {
+            "environment": "production",
+            "resources": {"cpu": 0.5, "memory": 0.7},
+        },
     }
 
     # Execute validation

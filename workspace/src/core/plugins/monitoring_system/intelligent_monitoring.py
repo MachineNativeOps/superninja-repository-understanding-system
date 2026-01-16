@@ -118,10 +118,13 @@ class MetricsCollector:
         if name not in self._metrics:
             self._metrics[name] = []
 
-    def collect(self, name: str, value: float, labels: dict[str, str] | None = None) -> Metric:
+    def collect(
+        self, name: str, value: float, labels: dict[str, str] | None = None
+    ) -> Metric:
         """Manually collect a metric value"""
         config = self._collectors.get(
-            name, {"type": MetricType.GAUGE, "labels": {}, "unit": "", "description": ""}
+            name,
+            {"type": MetricType.GAUGE, "labels": {}, "unit": "", "description": ""},
         )
 
         metric = Metric(
@@ -316,9 +319,15 @@ class IntelligentMonitoringSystem:
     def get_health_status(self) -> dict[str, Any]:
         """Get overall system health status"""
         active_alerts = self.get_active_alerts()
-        critical_count = len([a for a in active_alerts if a.severity == AlertSeverity.CRITICAL])
-        error_count = len([a for a in active_alerts if a.severity == AlertSeverity.ERROR])
-        warning_count = len([a for a in active_alerts if a.severity == AlertSeverity.WARNING])
+        critical_count = len(
+            [a for a in active_alerts if a.severity == AlertSeverity.CRITICAL]
+        )
+        error_count = len(
+            [a for a in active_alerts if a.severity == AlertSeverity.ERROR]
+        )
+        warning_count = len(
+            [a for a in active_alerts if a.severity == AlertSeverity.WARNING]
+        )
 
         if critical_count > 0:
             status = "CRITICAL"
@@ -338,7 +347,9 @@ class IntelligentMonitoringSystem:
             "timestamp": datetime.now().isoformat(),
         }
 
-    async def start(self, collection_interval: float = 10.0, check_interval: float = 30.0) -> None:
+    async def start(
+        self, collection_interval: float = 10.0, check_interval: float = 30.0
+    ) -> None:
         """Start the monitoring system"""
         self._running = True
 

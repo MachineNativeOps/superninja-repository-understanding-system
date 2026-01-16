@@ -28,7 +28,10 @@ class TestCircuitBreaker:
 
     def test_circuit_breaker_initial_state(self):
         """Test circuit breaker starts in closed state"""
-        from core.safety_mechanisms.circuit_breaker import CircuitBreaker, CircuitBreakerState
+        from core.safety_mechanisms.circuit_breaker import (
+            CircuitBreaker,
+            CircuitBreakerState,
+        )
 
         breaker = CircuitBreaker()
         assert breaker.state == CircuitBreakerState.CLOSED
@@ -108,7 +111,10 @@ class TestEscalationLadder:
 
     def test_escalation_ladder_initial_state(self):
         """Test escalation ladder starts at normal"""
-        from core.safety_mechanisms.escalation_ladder import EscalationLadder, EscalationLevel
+        from core.safety_mechanisms.escalation_ladder import (
+            EscalationLadder,
+            EscalationLevel,
+        )
 
         ladder = EscalationLadder()
         assert ladder.current_level == EscalationLevel.LEVEL_0_NORMAL
@@ -116,7 +122,10 @@ class TestEscalationLadder:
     @pytest.mark.asyncio
     async def test_escalation_ladder_escalate(self):
         """Test escalating levels"""
-        from core.safety_mechanisms.escalation_ladder import EscalationLadder, EscalationLevel
+        from core.safety_mechanisms.escalation_ladder import (
+            EscalationLadder,
+            EscalationLevel,
+        )
 
         ladder = EscalationLadder()
 
@@ -129,7 +138,10 @@ class TestEscalationLadder:
     @pytest.mark.asyncio
     async def test_escalation_ladder_de_escalate(self):
         """Test de-escalating levels"""
-        from core.safety_mechanisms.escalation_ladder import EscalationLadder, EscalationLevel
+        from core.safety_mechanisms.escalation_ladder import (
+            EscalationLadder,
+            EscalationLevel,
+        )
 
         ladder = EscalationLadder()
 
@@ -141,11 +153,16 @@ class TestEscalationLadder:
     @pytest.mark.asyncio
     async def test_escalation_ladder_set_level(self):
         """Test setting specific level"""
-        from core.safety_mechanisms.escalation_ladder import EscalationLadder, EscalationLevel
+        from core.safety_mechanisms.escalation_ladder import (
+            EscalationLadder,
+            EscalationLevel,
+        )
 
         ladder = EscalationLadder()
 
-        await ladder.set_level(EscalationLevel.LEVEL_3_CRITICAL, "Critical issue", "test_system")
+        await ladder.set_level(
+            EscalationLevel.LEVEL_3_CRITICAL, "Critical issue", "test_system"
+        )
 
         assert ladder.current_level == EscalationLevel.LEVEL_3_CRITICAL
 
@@ -191,7 +208,10 @@ class TestRollbackSystem:
     @pytest.mark.asyncio
     async def test_rollback_with_handlers(self):
         """Test rollback with component handlers"""
-        from core.safety_mechanisms.rollback_system import RollbackStrategy, RollbackSystem
+        from core.safety_mechanisms.rollback_system import (
+            RollbackStrategy,
+            RollbackSystem,
+        )
 
         state = {"value": 10}
 
@@ -234,7 +254,10 @@ class TestAnomalyDetector:
 
     def test_anomaly_detector_add_metric(self):
         """Test adding metrics"""
-        from core.safety_mechanisms.anomaly_detector import AnomalyDetector, DetectionStrategy
+        from core.safety_mechanisms.anomaly_detector import (
+            AnomalyDetector,
+            DetectionStrategy,
+        )
 
         detector = AnomalyDetector()
         detector.add_metric(
@@ -246,7 +269,10 @@ class TestAnomalyDetector:
     @pytest.mark.asyncio
     async def test_anomaly_detector_threshold(self):
         """Test threshold-based anomaly detection"""
-        from core.safety_mechanisms.anomaly_detector import AnomalyDetector, DetectionStrategy
+        from core.safety_mechanisms.anomaly_detector import (
+            AnomalyDetector,
+            DetectionStrategy,
+        )
 
         detector = AnomalyDetector()
         detector.add_metric(
@@ -271,7 +297,10 @@ class TestAnomalyDetector:
 
         summary = detector.get_metrics_summary()
         # Initially empty (no values recorded)
-        assert "test_metric" not in summary or summary.get("test_metric", {}).get("count", 0) == 0
+        assert (
+            "test_metric" not in summary
+            or summary.get("test_metric", {}).get("count", 0) == 0
+        )
 
 
 # ============ Emergency Stop Tests ============
@@ -306,12 +335,18 @@ class TestEmergencyStop:
     @pytest.mark.asyncio
     async def test_emergency_stop_trigger(self):
         """Test triggering emergency stop"""
-        from core.safety_mechanisms.emergency_stop import EmergencyStop, StopReason, StopScope
+        from core.safety_mechanisms.emergency_stop import (
+            EmergencyStop,
+            StopReason,
+            StopScope,
+        )
 
         stop = EmergencyStop()
 
         stopped_components = []
-        stop.register_component("test", stop_handler=lambda: stopped_components.append("test"))
+        stop.register_component(
+            "test", stop_handler=lambda: stopped_components.append("test")
+        )
 
         result = await stop.trigger(StopReason.SECURITY_BREACH, StopScope.SYSTEM)
 
@@ -322,16 +357,22 @@ class TestEmergencyStop:
     @pytest.mark.asyncio
     async def test_emergency_stop_recover(self):
         """Test recovery from emergency stop"""
-        from core.safety_mechanisms.emergency_stop import EmergencyStop, StopReason, StopScope
+        from core.safety_mechanisms.emergency_stop import (
+            EmergencyStop,
+            StopReason,
+            StopScope,
+        )
 
         stop = EmergencyStop()
 
-        stop.register_component("test", stop_handler=lambda: None, recovery_handler=lambda: None)
+        stop.register_component(
+            "test", stop_handler=lambda: None, recovery_handler=lambda: None
+        )
 
         await stop.trigger(StopReason.MANUAL, StopScope.SYSTEM)
         results = await stop.recover()
 
-        assert results.get("test") == True
+        assert results.get("test")
         assert not stop.is_stopped
 
 
@@ -350,7 +391,11 @@ class TestSafetyNet:
 
     def test_safety_net_add_check(self):
         """Test adding safety checks"""
-        from core.safety_mechanisms.safety_net import SafetyCheck, SafetyLayer, SafetyNet
+        from core.safety_mechanisms.safety_net import (
+            SafetyCheck,
+            SafetyLayer,
+            SafetyNet,
+        )
 
         safety = SafetyNet()
 
@@ -382,7 +427,11 @@ class TestSafetyNet:
     @pytest.mark.asyncio
     async def test_safety_net_validate_fail(self):
         """Test safety net validation (failing)"""
-        from core.safety_mechanisms.safety_net import SafetyCheck, SafetyLayer, SafetyNet
+        from core.safety_mechanisms.safety_net import (
+            SafetyCheck,
+            SafetyLayer,
+            SafetyNet,
+        )
 
         safety = SafetyNet()
         safety.add_check(
@@ -455,8 +504,14 @@ class TestSafetyMechanismsIntegration:
     @pytest.mark.asyncio
     async def test_circuit_breaker_with_anomaly_detection(self):
         """Test circuit breaker triggered by anomaly detection"""
-        from core.safety_mechanisms.anomaly_detector import AnomalyDetector, DetectionStrategy
-        from core.safety_mechanisms.circuit_breaker import CircuitBreaker, CircuitBreakerConfig
+        from core.safety_mechanisms.anomaly_detector import (
+            AnomalyDetector,
+            DetectionStrategy,
+        )
+        from core.safety_mechanisms.circuit_breaker import (
+            CircuitBreaker,
+            CircuitBreakerConfig,
+        )
 
         breaker = CircuitBreaker(CircuitBreakerConfig(failure_threshold=1))
         detector = AnomalyDetector()
@@ -472,8 +527,15 @@ class TestSafetyMechanismsIntegration:
     @pytest.mark.asyncio
     async def test_escalation_with_emergency_stop(self):
         """Test escalation ladder triggering emergency stop"""
-        from core.safety_mechanisms.emergency_stop import EmergencyStop, StopReason, StopScope
-        from core.safety_mechanisms.escalation_ladder import EscalationLadder, EscalationLevel
+        from core.safety_mechanisms.emergency_stop import (
+            EmergencyStop,
+            StopReason,
+            StopScope,
+        )
+        from core.safety_mechanisms.escalation_ladder import (
+            EscalationLadder,
+            EscalationLevel,
+        )
 
         ladder = EscalationLadder()
         stop = EmergencyStop()
@@ -489,11 +551,15 @@ class TestSafetyMechanismsIntegration:
 
         # Escalate to emergency level
         await ladder.set_level(
-            EscalationLevel.LEVEL_4_EMERGENCY, "Cascading failure detected", "monitoring"
+            EscalationLevel.LEVEL_4_EMERGENCY,
+            "Cascading failure detected",
+            "monitoring",
         )
 
         # Give async task time to complete
         await asyncio.sleep(0.1)
 
         # System should be stopped
-        assert stop.is_stopped or ladder.current_level == EscalationLevel.LEVEL_4_EMERGENCY
+        assert (
+            stop.is_stopped or ladder.current_level == EscalationLevel.LEVEL_4_EMERGENCY
+        )

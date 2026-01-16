@@ -70,7 +70,9 @@ def main():
     # 產出 tree/manifest（先不 hash，hash 交給 evidence gate）
     for p in sorted(rootfs.rglob("*")):
         if p.is_file():
-            manifest.append({"path": str(p.relative_to(rootfs)), "size": p.stat().st_size})
+            manifest.append(
+                {"path": str(p.relative_to(rootfs)), "size": p.stat().st_size}
+            )
 
     (repo / "dist/reports").mkdir(parents=True, exist_ok=True)
     (repo / "dist/reports/rootfs.manifest.json").write_text(

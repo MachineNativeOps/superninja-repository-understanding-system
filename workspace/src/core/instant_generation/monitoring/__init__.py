@@ -246,7 +246,9 @@ class RealTimeMonitor:
                 )
 
         # 檢查內存使用率
-        memory_metrics = list(self.metrics_store.get(f"{session_id}_system_memory_usage", []))
+        memory_metrics = list(
+            self.metrics_store.get(f"{session_id}_system_memory_usage", [])
+        )
         if memory_metrics:
             latest_memory = memory_metrics[-1].value
             if latest_memory > self.alert_thresholds.get("memory_warning", 85):
@@ -390,7 +392,9 @@ class RealTimeMonitor:
 
         return current_metrics
 
-    def get_recent_alerts(self, session_id: str = None, hours: int = 24) -> List[Dict[str, Any]]:
+    def get_recent_alerts(
+        self, session_id: str = None, hours: int = 24
+    ) -> List[Dict[str, Any]]:
         """獲取最近警報"""
         cutoff_time = datetime.now() - timedelta(hours=hours)
 
@@ -403,10 +407,16 @@ class RealTimeMonitor:
     async def health_check(self) -> Dict[str, Any]:
         """監控系統健康檢查"""
         return {
-            "status": "healthy" if self.is_monitoring or len(self.active_sessions) > 0 else "idle",
+            "status": (
+                "healthy"
+                if self.is_monitoring or len(self.active_sessions) > 0
+                else "idle"
+            ),
             "is_monitoring": self.is_monitoring,
             "active_sessions": len(self.active_sessions),
-            "total_metrics": sum(len(metrics) for metrics in self.metrics_store.values()),
+            "total_metrics": sum(
+                len(metrics) for metrics in self.metrics_store.values()
+            ),
             "active_alerts": len([a for a in self.alerts if not a.resolved]),
             "last_collection": datetime.now().isoformat(),
         }
@@ -420,7 +430,9 @@ class PerformanceTracker:
         self.performance_history: List[Dict[str, Any]] = []
         self.generation_metrics: Dict[str, PerformanceMetric] = {}
 
-    async def record_generation(self, generation_id: str, metrics: Dict[str, Any]) -> None:
+    async def record_generation(
+        self, generation_id: str, metrics: Dict[str, Any]
+    ) -> None:
         """記錄生成指標"""
         record = {
             "generation_id": generation_id,
@@ -472,8 +484,12 @@ class PerformanceTracker:
 
         # 計算統計數據
         scores = [r["performance_score"] for r in recent_records]
-        execution_times = [r["metrics"].get("execution_time", 0) for r in recent_records]
-        success_count = sum(1 for r in recent_records if r["metrics"].get("success", False))
+        execution_times = [
+            r["metrics"].get("execution_time", 0) for r in recent_records
+        ]
+        success_count = sum(
+            1 for r in recent_records if r["metrics"].get("success", False)
+        )
 
         return {
             "total_generations": len(recent_records),
@@ -519,7 +535,9 @@ class PerformanceTracker:
             "metric": metric_name,
             "current_value": values[-1] if values else None,
             "average_value": sum(values) / len(values),
-            "trend": "increasing" if trend > 0 else "decreasing" if trend < 0 else "stable",
+            "trend": (
+                "increasing" if trend > 0 else "decreasing" if trend < 0 else "stable"
+            ),
             "data_points": len(values),
             "period_hours": hours,
         }

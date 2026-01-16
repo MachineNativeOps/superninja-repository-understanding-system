@@ -121,7 +121,9 @@ class SLSAProvenance:
             "subject": [s.to_dict() for s in self.subjects],
             "predicateType": self.predicate_type,
             "predicate": {
-                "buildDefinition": self.build_definition.to_dict() if self.build_definition else {},
+                "buildDefinition": (
+                    self.build_definition.to_dict() if self.build_definition else {}
+                ),
                 "runDetails": self.run_details.to_dict() if self.run_details else {},
             },
             "metadata": {
@@ -259,7 +261,9 @@ class ArtifactSigner:
     對製品進行數字簽名以確保完整性。
     """
 
-    def __init__(self, key_id: str, algorithm: SignatureAlgorithm = SignatureAlgorithm.ECDSA_P256):
+    def __init__(
+        self, key_id: str, algorithm: SignatureAlgorithm = SignatureAlgorithm.ECDSA_P256
+    ):
         self.key_id = key_id
         self.algorithm = algorithm
 
@@ -285,7 +289,9 @@ class ArtifactSigner:
         # 生成簽名（模擬）
         # 在實際實現中，這裡會使用真正的密碼學簽名
         signature_data = f"{digest}:{self.key_id}:{self.algorithm.value}"
-        signature = base64.b64encode(hashlib.sha256(signature_data.encode()).digest()).decode()
+        signature = base64.b64encode(
+            hashlib.sha256(signature_data.encode()).digest()
+        ).decode()
 
         return SignedArtifact(
             artifact_name=artifact_name,

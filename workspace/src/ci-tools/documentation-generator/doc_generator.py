@@ -120,7 +120,12 @@ class DocumentationGenerator:
 
         # 默認配置
         return {
-            "source_paths": {"python": "src", "api": "src/api", "docs": "docs", "config": "config"},
+            "source_paths": {
+                "python": "src",
+                "api": "src/api",
+                "docs": "docs",
+                "config": "config",
+            },
             "output_directory": "generated-docs",
             "templates_directory": "templates/docs",
             "formats": ["html", "markdown"],
@@ -137,7 +142,11 @@ class DocumentationGenerator:
                 "include_git_info": True,
                 "auto_commit_docs": False,
             },
-            "publishing": {"auto_deploy": False, "deploy_target": "gh-pages", "base_url": ""},
+            "publishing": {
+                "auto_deploy": False,
+                "deploy_target": "gh-pages",
+                "base_url": "",
+            },
         }
 
     def _setup_logger(self) -> logging.Logger:
@@ -147,7 +156,9 @@ class DocumentationGenerator:
 
         if not logger.handlers:
             handler = logging.StreamHandler()
-            formatter = logging.Formatter("%(asctime)s - %(name)s - %(levelname)s - %(message)s")
+            formatter = logging.Formatter(
+                "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+            )
             handler.setFormatter(formatter)
             logger.addHandler(handler)
 
@@ -202,7 +213,10 @@ class DocumentationGenerator:
         }
 
     def generate_documentation(
-        self, doc_type: DocType, source_path: str = None, output_formats: List[OutputFormat] = None
+        self,
+        doc_type: DocType,
+        source_path: str = None,
+        output_formats: List[OutputFormat] = None,
     ) -> Dict[str, Documentation]:
         """生成文檔"""
 
@@ -233,7 +247,9 @@ class DocumentationGenerator:
             self.logger.error(f"文檔生成失敗: {e}")
             raise
 
-    def _extract_source_data(self, doc_type: DocType, source_path: str) -> Dict[str, Any]:
+    def _extract_source_data(
+        self, doc_type: DocType, source_path: str
+    ) -> Dict[str, Any]:
         """提取源數據"""
 
         source_path = Path(source_path)
@@ -263,7 +279,9 @@ class DocumentationGenerator:
 
         return generator.generate(source_data, self.config)
 
-    def _export_docs(self, docs: Dict[str, Documentation], output_formats: List[OutputFormat]):
+    def _export_docs(
+        self, docs: Dict[str, Documentation], output_formats: List[OutputFormat]
+    ):
         """導出文檔"""
 
         output_dir = Path(self.config["output_directory"])
@@ -278,7 +296,9 @@ class DocumentationGenerator:
                         file_path = exporter.export(doc, output_dir)
                         self.logger.info(f"已導出文檔: {file_path}")
                     except Exception as e:
-                        self.logger.error(f"導出文檔失敗 {doc_id} ({format_type.value}): {e}")
+                        self.logger.error(
+                            f"導出文檔失敗 {doc_id} ({format_type.value}): {e}"
+                        )
 
     def _get_default_source_path(self, doc_type: DocType) -> str:
         """獲取默認源路徑"""
@@ -311,11 +331,15 @@ class DocumentationGenerator:
         except ImportError:
             return f"<pre><code>{code}</code></pre>"
 
-    def generate_api_documentation(self, api_path: str = None) -> Dict[str, Documentation]:
+    def generate_api_documentation(
+        self, api_path: str = None
+    ) -> Dict[str, Documentation]:
         """生成 API 文檔"""
         return self.generate_documentation(DocType.API, api_path)
 
-    def generate_code_documentation(self, code_path: str = None) -> Dict[str, Documentation]:
+    def generate_code_documentation(
+        self, code_path: str = None
+    ) -> Dict[str, Documentation]:
         """生成代碼文檔"""
         return self.generate_documentation(DocType.CODE, code_path)
 
@@ -327,10 +351,14 @@ class DocumentationGenerator:
 
     def generate_readme(self, project_root: str = None) -> Documentation:
         """生成 README 文檔"""
-        docs = self.generate_documentation(DocType.README, project_root, [OutputFormat.MARKDOWN])
+        docs = self.generate_documentation(
+            DocType.README, project_root, [OutputFormat.MARKDOWN]
+        )
         return docs.get("readme")
 
-    def update_documentation(self, doc_id: str, source_changes: Dict[str, Any]) -> Documentation:
+    def update_documentation(
+        self, doc_id: str, source_changes: Dict[str, Any]
+    ) -> Documentation:
         """更新文檔"""
 
         if doc_id not in self.documentation_cache:
@@ -466,10 +494,14 @@ class PythonCodeExtractor(BaseExtractor):
             "docstring": ast.get_docstring(node),
             "args": [arg.arg for arg in node.args.args],
             "returns": (
-                ast.unparse(node.returns) if hasattr(ast, "unparse") and node.returns else None
+                ast.unparse(node.returns)
+                if hasattr(ast, "unparse") and node.returns
+                else None
             ),
             "decorators": (
-                [ast.unparse(dec) for dec in node.decorators] if hasattr(ast, "unparse") else []
+                [ast.unparse(dec) for dec in node.decorators]
+                if hasattr(ast, "unparse")
+                else []
             ),
             "is_async": isinstance(node, ast.AsyncFunctionDef),
             "complexity": self._calculate_complexity(node),
@@ -489,10 +521,16 @@ class PythonCodeExtractor(BaseExtractor):
             "name": node.name,
             "line_number": node.lineno,
             "docstring": ast.get_docstring(node),
-            "bases": [ast.unparse(base) for base in node.bases] if hasattr(ast, "unparse") else [],
+            "bases": (
+                [ast.unparse(base) for base in node.bases]
+                if hasattr(ast, "unparse")
+                else []
+            ),
             "methods": methods,
             "decorators": (
-                [ast.unparse(dec) for dec in node.decorators] if hasattr(ast, "unparse") else []
+                [ast.unparse(dec) for dec in node.decorators]
+                if hasattr(ast, "unparse")
+                else []
             ),
         }
 
@@ -507,7 +545,9 @@ class PythonCodeExtractor(BaseExtractor):
                     "name": target.id,
                     "line_number": node.lineno,
                     "value": (
-                        ast.unparse(node.value) if hasattr(ast, "unparse") else str(node.value)
+                        ast.unparse(node.value)
+                        if hasattr(ast, "unparse")
+                        else str(node.value)
                     ),
                     "is_uppercase": target.id.isupper(),
                 }
@@ -576,7 +616,9 @@ class APISpecExtractor(BaseExtractor):
         )
 
         for file_path in openapi_files:
-            if any(name in str(file_path).lower() for name in ["openapi", "swagger", "api"]):
+            if any(
+                name in str(file_path).lower() for name in ["openapi", "swagger", "api"]
+            ):
                 try:
                     spec_endpoints = self._extract_openapi_endpoints(file_path)
                     endpoints.extend(spec_endpoints)
@@ -713,7 +755,9 @@ class GitInfoExtractor(BaseExtractor):
                 "commit_message": repo.head.commit.message,
                 "author": str(repo.head.commit.author),
                 "last_modified": repo.head.commit.committed_date.isoformat(),
-                "remote_url": next(iter(repo.remotes.urls()), "") if repo.remotes else "",
+                "remote_url": (
+                    next(iter(repo.remotes.urls()), "") if repo.remotes else ""
+                ),
                 "is_dirty": repo.is_dirty(),
                 "untracked_files": len(repo.untracked_files),
             }
@@ -760,7 +804,9 @@ class APIDocGenerator(BaseDocGenerator):
         grouped_endpoints = {}
         for endpoint in endpoints:
             path_prefix = (
-                "/" + endpoint.path.split("/")[1] if len(endpoint.path.split("/")) > 1 else "root"
+                "/" + endpoint.path.split("/")[1]
+                if len(endpoint.path.split("/")) > 1
+                else "root"
             )
             if path_prefix not in grouped_endpoints:
                 grouped_endpoints[path_prefix] = []
@@ -856,7 +902,10 @@ class CodeDocGenerator(BaseDocGenerator):
             description="完整的代碼參考文檔",
             doc_type=DocType.CODE,
             sections=sections,
-            metadata={"total_modules": len(modules), "generated_at": datetime.now().isoformat()},
+            metadata={
+                "total_modules": len(modules),
+                "generated_at": datetime.now().isoformat(),
+            },
             created_at=datetime.now(),
             updated_at=datetime.now(),
         )

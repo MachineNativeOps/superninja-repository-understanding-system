@@ -3,37 +3,10 @@ Phase 9 單元測試
 Cross-platform Integration & Risk Management Tests
 """
 
-from crossplatform.web3_integration import (
-    BlockchainType,
-    ConsensusType,
-    DAppAssessment,
-    NFTAssetType,
-    NFTStrategy,
-    SmartContractDev,
-    Web3Integration,
-)
-from crossplatform.tech_stack_matrix import (
-    BackendArch,
-    DataProcessing,
-    DeploymentStrategy,
-    FrontendTech,
-    TechStackMatrix,
-)
-from crossplatform.risk_assessment import RiskAssessment, RiskCategory, RiskType
-from crossplatform.iot_integration import (
-    DeviceInterconnection,
-    EdgeComputing,
-    EdgeComputingType,
-    Industry40,
-    Industry40Component,
-    IoTIntegration,
-    IoTProtocol,
-)
-from crossplatform.emergency_response import (
-    EmergencyResponse,
-    PlanType,
-    TriggerCategory,
-)
+import os
+import sys
+import unittest
+
 from crossplatform.arvr_integration import (
     ARVRIntegration,
     HardwareRequirement,
@@ -43,9 +16,37 @@ from crossplatform.arvr_integration import (
     MixedReality,
     XRType,
 )
-import os
-import sys
-import unittest
+from crossplatform.emergency_response import (
+    EmergencyResponse,
+    PlanType,
+    TriggerCategory,
+)
+from crossplatform.iot_integration import (
+    DeviceInterconnection,
+    EdgeComputing,
+    EdgeComputingType,
+    Industry40,
+    Industry40Component,
+    IoTIntegration,
+    IoTProtocol,
+)
+from crossplatform.risk_assessment import RiskAssessment, RiskCategory, RiskType
+from crossplatform.tech_stack_matrix import (
+    BackendArch,
+    DataProcessing,
+    DeploymentStrategy,
+    FrontendTech,
+    TechStackMatrix,
+)
+from crossplatform.web3_integration import (
+    BlockchainType,
+    ConsensusType,
+    DAppAssessment,
+    NFTAssetType,
+    NFTStrategy,
+    SmartContractDev,
+    Web3Integration,
+)
 
 # 添加路徑
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "src"))
@@ -212,7 +213,10 @@ class TestARVRIntegration(unittest.TestCase):
             hardware_requirement=HardwareRequirement.STANDALONE,
             target_fov=100,
             target_fps=90,
-            interaction_modes=[InteractionMode.CONTROLLER, InteractionMode.HAND_TRACKING],
+            interaction_modes=[
+                InteractionMode.CONTROLLER,
+                InteractionMode.HAND_TRACKING,
+            ],
             use_case="Training Simulation",
         )
 
@@ -295,7 +299,10 @@ class TestTechStackMatrix(unittest.TestCase):
     def test_optimal_stack_recommendation(self):
         """測試最佳技術棧推薦"""
         result = self.matrix.recommend_optimal_stack(
-            project_type="startup", team_size=8, scalability_need="high", budget_level="medium"
+            project_type="startup",
+            team_size=8,
+            scalability_need="high",
+            budget_level="medium",
         )
 
         self.assertIsNotNone(result.frontend)
@@ -354,11 +361,15 @@ class TestRiskAssessment(unittest.TestCase):
         self.assertEqual(high_risk.category, RiskCategory.HIGH)
 
         # 中風險
-        medium_risk = self.assessment.add_risk(RiskType.MARKET_ACCEPTANCE, "中風險", "測試", 5, 6)
+        medium_risk = self.assessment.add_risk(
+            RiskType.MARKET_ACCEPTANCE, "中風險", "測試", 5, 6
+        )
         self.assertEqual(medium_risk.category, RiskCategory.MEDIUM)
 
         # 低風險
-        low_risk = self.assessment.add_risk(RiskType.TECHNICAL_DEBT, "低風險", "測試", 3, 4)
+        low_risk = self.assessment.add_risk(
+            RiskType.TECHNICAL_DEBT, "低風險", "測試", 3, 4
+        )
         self.assertEqual(low_risk.category, RiskCategory.LOW)
 
     def test_project_risk_assessment(self):
@@ -422,11 +433,19 @@ class TestEmergencyResponse(unittest.TestCase):
     def test_plan_recommendation(self):
         """測試預案推薦"""
         # 正常情況
-        normal_metrics = {"market_decline": 5, "tech_disruption": 0, "resource_reduction": 10}
+        normal_metrics = {
+            "market_decline": 5,
+            "tech_disruption": 0,
+            "resource_reduction": 10,
+        }
         self.assertEqual(self.response.recommend_plan(normal_metrics), PlanType.PLAN_A)
 
         # 需要調整
-        adjust_metrics = {"market_decline": 25, "tech_disruption": 0, "resource_reduction": 10}
+        adjust_metrics = {
+            "market_decline": 25,
+            "tech_disruption": 0,
+            "resource_reduction": 10,
+        }
         self.assertEqual(self.response.recommend_plan(adjust_metrics), PlanType.PLAN_B)
 
     def test_add_custom_trigger(self):

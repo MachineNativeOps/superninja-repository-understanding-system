@@ -30,8 +30,7 @@ except ImportError:
         @staticmethod
         def mapToAllFormats(entity):
             return {
-                "canonical": f"{entity['domain']}-{entity['name']}-{entity['type']}-{entity['version']}"
-            }
+                "canonical": f"{entity['domain']}-{entity['name']}-{entity['type']}-{entity['version']}"}
 
     class UnifiedNamingLogic:
         @staticmethod

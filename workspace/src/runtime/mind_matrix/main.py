@@ -42,7 +42,11 @@ def resolve_topology_path(topology_file: Optional[str] = None) -> str:
         base_dir / "config" / "topology-mind-matrix.yaml",
         Path("config/governance/topology-mind-matrix.yaml"),
         base_dir / "config" / "governance" / "topology-mind-matrix.yaml",
-        base_dir / "autonomous" / "infrastructure" / "config" / "topology-mind-matrix.yaml",
+        base_dir
+        / "autonomous"
+        / "infrastructure"
+        / "config"
+        / "topology-mind-matrix.yaml",
     ]:
         if candidate.exists():
             return str(candidate)
@@ -227,7 +231,9 @@ class MindMatrix:
         """
         return self.model.executive_layer.roles
 
-    def get_ceo_mission(self, ceo_id: str = "machinenativenops.ceo") -> Optional[list[str]]:
+    def get_ceo_mission(
+        self, ceo_id: str = "machinenativenops.ceo"
+    ) -> Optional[list[str]]:
         """
         取得特定執行長的使命 (Get mission for a specific executive).
 
@@ -337,8 +343,12 @@ class MindMatrix:
         tool_stages = mm.get_tool_pipeline_stages()
         yaml_stages = mm.get_yaml_validation_stages()
 
-        assert len(tool_stages) == 8, f"工具管線必須為八階段，目前有 {len(tool_stages)} 階段"
-        assert len(yaml_stages) == 7, f"YAML 驗證管線必須為七階段，目前有 {len(yaml_stages)} 階段"
+        assert (
+            len(tool_stages) == 8
+        ), f"工具管線必須為八階段，目前有 {len(tool_stages)} 階段"
+        assert (
+            len(yaml_stages) == 7
+        ), f"YAML 驗證管線必須為七階段，目前有 {len(yaml_stages)} 階段"
 
         print("✅ MindMatrix 啟動自檢通過：八階段工具管線、七階段 YAML 驗證")
 
@@ -365,7 +375,9 @@ if __name__ == "__main__":
 
         controller = ExecutiveAutoController()
         report = controller.run_once()
-        print(f"🚀 Autonomous Executive 完成一次閉環，審計事件數：{len(report['audit'])}")
+        print(
+            f"🚀 Autonomous Executive 完成一次閉環，審計事件數：{len(report['audit'])}"
+        )
     except ImportError as ex:
         print(f"[WARN] 自動執行長模組未載入：{ex}")
     except Exception as ex:

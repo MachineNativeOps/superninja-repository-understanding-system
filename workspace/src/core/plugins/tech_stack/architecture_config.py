@@ -146,16 +146,22 @@ class TechStackConfig:
     primary_pattern: str = "microservices"
     communication_pattern: str = "event-driven"
 
-    def get_frameworks_for_layer(self, layer: ArchitectureLayer) -> list[FrameworkConfig]:
+    def get_frameworks_for_layer(
+        self, layer: ArchitectureLayer
+    ) -> list[FrameworkConfig]:
         """Get all frameworks recommended for a specific layer"""
         if layer.value not in self.layers:
             return []
         layer_config = self.layers[layer.value]
         return [
-            self.frameworks[fw_id] for fw_id in layer_config.frameworks if fw_id in self.frameworks
+            self.frameworks[fw_id]
+            for fw_id in layer_config.frameworks
+            if fw_id in self.frameworks
         ]
 
-    def get_frameworks_by_category(self, category: FrameworkCategory) -> list[FrameworkConfig]:
+    def get_frameworks_by_category(
+        self, category: FrameworkCategory
+    ) -> list[FrameworkConfig]:
         """Get all frameworks in a specific category"""
         return [fw for fw in self.frameworks.values() if fw.category == category]
 
@@ -174,7 +180,9 @@ class TechStackConfig:
         if ArchitectureLayer.AI_CORE.value in self.layers:
             ai_layer = self.layers[ArchitectureLayer.AI_CORE.value]
             if ai_layer.primary_language != LanguageType.PYTHON:
-                warnings.append("AI core layer should use Python (80% of AI agents use Python)")
+                warnings.append(
+                    "AI core layer should use Python (80% of AI agents use Python)"
+                )
 
         return {"valid": len(issues) == 0, "issues": issues, "warnings": warnings}
 
@@ -237,7 +245,11 @@ def get_recommended_stack() -> TechStackConfig:
                 "Strong tooling",
                 "Modern language features",
             ],
-            weaknesses=["Compilation step required", "Complex type system", "Smaller AI ecosystem"],
+            weaknesses=[
+                "Compilation step required",
+                "Complex type system",
+                "Smaller AI ecosystem",
+            ],
             adoption_rate=30.0,
             ecosystem_maturity="mature",
         ),
@@ -261,7 +273,12 @@ def get_recommended_stack() -> TechStackConfig:
                 "Memory management",
                 "Prompt templates",
             ],
-            use_cases=["Conversational AI", "Document Q&A", "Code generation", "Task automation"],
+            use_cases=[
+                "Conversational AI",
+                "Document Q&A",
+                "Code generation",
+                "Task automation",
+            ],
             dependencies=["openai", "tiktoken", "pydantic"],
             integration_complexity="medium",
             documentation_url="https://python.langchain.com/docs/",
@@ -377,7 +394,12 @@ def get_recommended_stack() -> TechStackConfig:
                 "Inference optimization",
                 "Pipeline API",
             ],
-            use_cases=["NLP tasks", "Text generation", "Embeddings", "Sentiment analysis"],
+            use_cases=[
+                "NLP tasks",
+                "Text generation",
+                "Embeddings",
+                "Sentiment analysis",
+            ],
             dependencies=["pytorch", "tokenizers"],
             integration_complexity="low",
             documentation_url="https://huggingface.co/docs/transformers/",
@@ -398,7 +420,12 @@ def get_recommended_stack() -> TechStackConfig:
                 "Dependency injection",
                 "WebSocket support",
             ],
-            use_cases=["REST APIs", "ML model serving", "Microservices", "Real-time apps"],
+            use_cases=[
+                "REST APIs",
+                "ML model serving",
+                "Microservices",
+                "Real-time apps",
+            ],
             dependencies=["starlette", "pydantic"],
             integration_complexity="low",
             documentation_url="https://fastapi.tiangolo.com/",
@@ -418,7 +445,12 @@ def get_recommended_stack() -> TechStackConfig:
                 "Static files",
                 "Error handling",
             ],
-            use_cases=["REST APIs", "Web applications", "Microservices", "Real-time apps"],
+            use_cases=[
+                "REST APIs",
+                "Web applications",
+                "Microservices",
+                "Real-time apps",
+            ],
             dependencies=["node"],
             integration_complexity="low",
             documentation_url="https://expressjs.com/",
@@ -432,7 +464,14 @@ def get_recommended_stack() -> TechStackConfig:
             layer=ArchitectureLayer.AI_CORE,
             primary_language=LanguageType.PYTHON,
             secondary_languages=[],
-            frameworks=["langchain", "crewai", "autogen", "langgraph", "pytorch", "transformers"],
+            frameworks=[
+                "langchain",
+                "crewai",
+                "autogen",
+                "langgraph",
+                "pytorch",
+                "transformers",
+            ],
             responsibilities=[
                 "AI agent implementation",
                 "ML model training and inference",
@@ -505,7 +544,10 @@ def get_stack_summary() -> dict[str, Any]:
         "name": stack.name,
         "version": stack.version,
         "architecture_type": stack.architecture_type,
-        "primary_languages": {"ai_core": "Python 3.11+", "orchestration": "TypeScript 5.0+"},
+        "primary_languages": {
+            "ai_core": "Python 3.11+",
+            "orchestration": "TypeScript 5.0+",
+        },
         "key_frameworks": {
             "ai_agents": ["LangChain", "CrewAI", "AutoGen", "LangGraph"],
             "ml_libraries": ["PyTorch", "Transformers"],

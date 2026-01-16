@@ -49,10 +49,9 @@ sys.path.insert(0, str(REPO_ROOT / "tests" / "automation"))
 
 # Import dependencies
 try:
+    from ai.governance_engine import AIGovernanceEngine, DecisionType, RiskLevel
     from baseline_validation_engine import BaselineValidationEngine
     from test_framework_patterns import TestSuiteRunner
-
-    from ai.governance_engine import AIGovernanceEngine, DecisionType, RiskLevel
 except ImportError as e:
     print(f"⚠️  Import warning: {e}")
     print("Some features may be limited")
@@ -141,7 +140,9 @@ class InstantExecutionPipeline:
             )
 
             # Validation Engine
-            self.validation_engine = BaselineValidationEngine(namespace=self.context.namespace)
+            self.validation_engine = BaselineValidationEngine(
+                namespace=self.context.namespace
+            )
 
             # Test Runner
             self.test_runner = TestSuiteRunner()
@@ -152,9 +153,13 @@ class InstantExecutionPipeline:
     def log(self, message: str, level: str = "INFO"):
         """Log message with timestamp"""
         timestamp = datetime.now().strftime("%H:%M:%S")
-        emoji = {"INFO": "ℹ️", "SUCCESS": "✅", "ERROR": "❌", "WARNING": "⚠️", "PROGRESS": "🔄"}.get(
-            level, "📝"
-        )
+        emoji = {
+            "INFO": "ℹ️",
+            "SUCCESS": "✅",
+            "ERROR": "❌",
+            "WARNING": "⚠️",
+            "PROGRESS": "🔄",
+        }.get(level, "📝")
 
         print(f"[{timestamp}] {emoji}  {message}")
 
@@ -191,7 +196,9 @@ class InstantExecutionPipeline:
             # 1. Codebase Scan
             self.log("Step 1/4: Codebase Deep Scan", level="PROGRESS")
             metrics = self.ai_engine.analyze_codebase(REPO_ROOT)
-            self.log(f"  ✓ Analyzed {metrics.total_files} files ({metrics.total_lines} lines)")
+            self.log(
+                f"  ✓ Analyzed {metrics.total_files} files ({metrics.total_lines} lines)"
+            )
             self.log(f"  ✓ YAML: {metrics.yaml_files}, Python: {metrics.python_files}")
 
             # 2. Pattern Recognition
@@ -226,7 +233,9 @@ class InstantExecutionPipeline:
             self.log("")
             self.log(f"Decision: {decision.decision.value.upper()}", level="SUCCESS")
             self.log(f"Confidence: {decision.confidence:.1%}")
-            self.log(f"Risk Score: {decision.risk_score:.1f}/100 ({decision.risk_level.value})")
+            self.log(
+                f"Risk Score: {decision.risk_score:.1f}/100 ({decision.risk_level.value})"
+            )
             self.log(f"Duration: {duration:.2f}s")
 
             # Check if within time budget
@@ -235,7 +244,8 @@ class InstantExecutionPipeline:
 
             status = (
                 StageStatus.SUCCESS
-                if decision.decision in [DecisionType.APPROVE, DecisionType.CONDITIONAL_APPROVE]
+                if decision.decision
+                in [DecisionType.APPROVE, DecisionType.CONDITIONAL_APPROVE]
                 else StageStatus.FAILED
             )
 
@@ -290,19 +300,25 @@ class InstantExecutionPipeline:
             # 1. Run automated tests
             self.log("Step 1/3: Automated Testing", level="PROGRESS")
             test_results = self.test_runner.run_all_tests()
-            self.log(f"  ✓ Tests: {test_results['passed']}/{test_results['total_tests']} passed")
+            self.log(
+                f"  ✓ Tests: {test_results['passed']}/{test_results['total_tests']} passed"
+            )
 
             # 2. Configuration validation
             self.log("Step 2/3: Configuration Validation", level="PROGRESS")
             config_valid = self._validate_configurations()
-            self.log(f"  ✓ Configuration validation: {'PASS' if config_valid else 'FAIL'}")
+            self.log(
+                f"  ✓ Configuration validation: {'PASS' if config_valid else 'FAIL'}"
+            )
 
             # 3. Baseline validation (if cluster available)
             self.log("Step 3/3: Baseline Validation", level="PROGRESS")
             baseline_success = True
             try:
                 baseline_success = self.validation_engine.run_all_validations()
-                self.log(f"  ✓ Baseline validation: {'PASS' if baseline_success else 'FAIL'}")
+                self.log(
+                    f"  ✓ Baseline validation: {'PASS' if baseline_success else 'FAIL'}"
+                )
             except Exception as e:
                 self.log(f"  ⚠️  Baseline validation skipped: {e}", level="WARNING")
 
@@ -360,7 +376,9 @@ class InstantExecutionPipeline:
         self.log("=" * 60)
         self.log("STAGE 3: Automated Deployment", level="INFO")
         self.log("=" * 60)
-        self.log(f"Target Duration: < {self.context.max_stage_duration[stage]/60:.0f}min")
+        self.log(
+            f"Target Duration: < {self.context.max_stage_duration[stage]/60:.0f}min"
+        )
         print()
 
         try:
@@ -389,7 +407,10 @@ class InstantExecutionPipeline:
                 deploy_success = result.returncode == 0
                 self.log(f"  ✓ Deployment: {'SUCCESS' if deploy_success else 'FAILED'}")
             else:
-                self.log(f"  ⚠️  Deployment script not found: {deploy_script}", level="WARNING")
+                self.log(
+                    f"  ⚠️  Deployment script not found: {deploy_script}",
+                    level="WARNING",
+                )
                 deploy_success = False
 
             # 2. Health monitoring
@@ -405,7 +426,11 @@ class InstantExecutionPipeline:
 
             duration = time.time() - start_time
 
-            status = StageStatus.SUCCESS if deploy_success and verification else StageStatus.FAILED
+            status = (
+                StageStatus.SUCCESS
+                if deploy_success and verification
+                else StageStatus.FAILED
+            )
 
             self.log("")
             self.log(f"Deployment complete: {status.value.upper()}", level="SUCCESS")
@@ -451,7 +476,10 @@ class InstantExecutionPipeline:
         for pattern in yaml_patterns:
             for yaml_file in REPO_ROOT.rglob(pattern):
                 # Skip certain directories
-                if any(skip in yaml_file.parts for skip in [".git", "node_modules", ".venv"]):
+                if any(
+                    skip in yaml_file.parts
+                    for skip in [".git", "node_modules", ".venv"]
+                ):
                     continue
 
                 resources.append(
@@ -516,7 +544,10 @@ class InstantExecutionPipeline:
             result_2 = await self.run_stage_2_synthetic_validation()
             self.stage_results.append(result_2)
 
-            if result_2.status == StageStatus.FAILED and not self.context.skip_validation:
+            if (
+                result_2.status == StageStatus.FAILED
+                and not self.context.skip_validation
+            ):
                 self.log("❌ Pipeline stopped: Stage 2 failed", level="ERROR")
                 return self._generate_summary()
 
@@ -560,7 +591,8 @@ class InstantExecutionPipeline:
                 for result in self.stage_results
             ],
             "success": all(
-                r.status in [StageStatus.SUCCESS, StageStatus.SKIPPED] for r in self.stage_results
+                r.status in [StageStatus.SUCCESS, StageStatus.SKIPPED]
+                for r in self.stage_results
             ),
         }
 
@@ -575,13 +607,18 @@ class InstantExecutionPipeline:
             f"  Total Duration: {summary['total_duration']:.2f}s ({summary['total_duration']/60:.1f}min)"
         )
         print(f"  Stages Executed: {summary['stages']}/3")
-        print(f"  Overall Status: {'✅ SUCCESS' if summary['success'] else '❌ FAILED'}")
+        print(
+            f"  Overall Status: {'✅ SUCCESS' if summary['success'] else '❌ FAILED'}"
+        )
         print()
 
         for result in summary["results"]:
-            emoji = {"success": "✅", "failed": "❌", "skipped": "⏭️", "pending": "⏸️"}.get(
-                result["status"], "❓"
-            )
+            emoji = {
+                "success": "✅",
+                "failed": "❌",
+                "skipped": "⏭️",
+                "pending": "⏸️",
+            }.get(result["status"], "❓")
             print(
                 f"  {emoji} Stage {result['stage']}: {result['status'].upper()} ({result['duration']:.2f}s)"
             )
@@ -598,17 +635,26 @@ async def main():
         formatter_class=argparse.RawDescriptionHelpFormatter,
     )
 
-    parser.add_argument("action", choices=["run", "validate", "stage"], help="Action to perform")
     parser.add_argument(
-        "--stage", type=int, choices=[1, 2, 3], help="Specific stage to run (for 'stage' action)"
+        "action", choices=["run", "validate", "stage"], help="Action to perform"
+    )
+    parser.add_argument(
+        "--stage",
+        type=int,
+        choices=[1, 2, 3],
+        help="Specific stage to run (for 'stage' action)",
     )
     parser.add_argument(
         "--namespace", default="machinenativenops-system", help="Kubernetes namespace"
     )
     parser.add_argument(
-        "--dry-run", action="store_true", help="Perform dry run without actual deployment"
+        "--dry-run",
+        action="store_true",
+        help="Perform dry run without actual deployment",
     )
-    parser.add_argument("--skip-validation", action="store_true", help="Skip validation failures")
+    parser.add_argument(
+        "--skip-validation", action="store_true", help="Skip validation failures"
+    )
     parser.add_argument("--output", help="Output file for results (JSON)")
 
     args = parser.parse_args()

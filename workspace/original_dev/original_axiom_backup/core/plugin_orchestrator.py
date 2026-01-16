@@ -104,7 +104,9 @@ class PluginOrchestrator:
             # Build execution graph for this workflow
             self._build_workflow_graph(workflow)
 
-            logger.info(f"Loaded workflow: {workflow.name} with {len(workflow.plugins)} plugins")
+            logger.info(
+                f"Loaded workflow: {workflow.name} with {len(workflow.plugins)} plugins"
+            )
             return True
 
         except Exception as e:
@@ -209,7 +211,9 @@ class PluginOrchestrator:
         Returns:
             List[PluginExecutionResult]: Execution results
         """
-        logger.info(f"Executing {len(plugin_ids)} plugins in {execution_mode.value} mode")
+        logger.info(
+            f"Executing {len(plugin_ids)} plugins in {execution_mode.value} mode"
+        )
 
         # Build execution plan
         execution_plan = self._build_execution_plan(plugin_ids)
@@ -249,7 +253,9 @@ class PluginOrchestrator:
 
         # Calculate statistics
         total_executions = len(self.execution_history)
-        successful_executions = sum(1 for e in self.execution_history if e["status"] == "SUCCESS")
+        successful_executions = sum(
+            1 for e in self.execution_history if e["status"] == "SUCCESS"
+        )
 
         avg_execution_time = (
             sum(e["execution_time"] for e in self.execution_history) / total_executions
@@ -332,7 +338,10 @@ class PluginOrchestrator:
         for level_plugins in execution_plan:
             level_results = []
 
-            if context.execution_mode == ExecutionMode.PARALLEL and len(level_plugins) > 1:
+            if (
+                context.execution_mode == ExecutionMode.PARALLEL
+                and len(level_plugins) > 1
+            ):
                 # Execute level in parallel
                 level_results = self._execute_level_parallel(level_plugins, context)
             elif context.execution_mode == ExecutionMode.SEQUENTIAL:
@@ -366,7 +375,9 @@ class PluginOrchestrator:
 
         for plugin_id in plugins:
             if self._should_execute_plugin(plugin_id, context):
-                future = self.executor.submit(self._execute_plugin_with_retry, plugin_id, context)
+                future = self.executor.submit(
+                    self._execute_plugin_with_retry, plugin_id, context
+                )
                 futures[future] = plugin_id
 
         results = []
@@ -461,7 +472,9 @@ class PluginOrchestrator:
 
                 # Execute plugin
                 plugin_context = context.global_context.copy()
-                result = plugin_manager.execute_plugin(plugin_id, plugin_context, context.timeout)
+                result = plugin_manager.execute_plugin(
+                    plugin_id, plugin_context, context.timeout
+                )
 
                 # Update circuit breaker
                 self._update_circuit_breaker(plugin_id, result)
@@ -473,13 +486,17 @@ class PluginOrchestrator:
 
                     # Check if we should retry
                     if attempt < max_retries:
-                        wait_time = self._calculate_backoff_time(attempt, backoff_strategy)
+                        wait_time = self._calculate_backoff_time(
+                            attempt, backoff_strategy
+                        )
                         logger.warning(
                             f"Plugin {plugin_id} failed (attempt {attempt + 1}), retrying in {wait_time}s"
                         )
                         time.sleep(wait_time)
                     else:
-                        logger.error(f"Plugin {plugin_id} failed after {max_retries + 1} attempts")
+                        logger.error(
+                            f"Plugin {plugin_id} failed after {max_retries + 1} attempts"
+                        )
 
             except Exception as e:
                 last_result = PluginExecutionResult(
@@ -557,7 +574,9 @@ class PluginOrchestrator:
                 levels.append(current_level)
             else:
                 # Circular dependency or unresolved dependencies
-                raise PluginValidationError(f"Cannot resolve execution order for: {remaining}")
+                raise PluginValidationError(
+                    f"Cannot resolve execution order for: {remaining}"
+                )
 
         return levels
 
@@ -611,7 +630,9 @@ class PluginOrchestrator:
 
         return breaker["state"] == "OPEN"
 
-    def _update_circuit_breaker(self, plugin_id: str, result: PluginExecutionResult) -> None:
+    def _update_circuit_breaker(
+        self, plugin_id: str, result: PluginExecutionResult
+    ) -> None:
         """Update circuit breaker state based on execution result"""
         if plugin_id not in self.circuit_breakers:
             self.circuit_breakers[plugin_id] = {
@@ -658,7 +679,9 @@ class PluginOrchestrator:
             if len(self.execution_history) > 1000:
                 self.execution_history = self.execution_history[-1000:]
 
-    def _update_performance_metrics(self, workflow_name: str, result: Dict[str, Any]) -> None:
+    def _update_performance_metrics(
+        self, workflow_name: str, result: Dict[str, Any]
+    ) -> None:
         """Update performance metrics"""
         with self._lock:
             for plugin_result in result.get("results", []):
@@ -701,8 +724,7 @@ class PluginOrchestrator:
             if stats["avg_time"] > 30:
                 recommendations.append(
                     f"Plugin {plugin_id} has high average execution time ({stats['avg_time']:.1f}s). "
-                    "Consider optimization or running in parallel."
-                )
+                    "Consider optimization or running in parallel.")
 
         if not recommendations:
             recommendations.append("All plugins are performing well.")

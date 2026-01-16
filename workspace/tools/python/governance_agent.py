@@ -34,7 +34,9 @@ class GovernanceAgent:
     def _load_manifest(self):
         """Load the governance manifest."""
         if not self.manifest_path.exists():
-            raise FileNotFoundError(f"Governance manifest not found: {self.manifest_path}")
+            raise FileNotFoundError(
+                f"Governance manifest not found: {self.manifest_path}"
+            )
 
         with open(self.manifest_path, "r") as f:
             self.manifest = yaml.safe_load(f)
@@ -161,22 +163,20 @@ class GovernanceAgent:
                     "code": "INVALID_PATTERN",
                     "message": "Name must contain only lowercase alphanumeric characters and hyphens",
                     "message": "Name must not start or end with a hyphen",
-                }
-            )
+                })
 
         # Check environment prefix
         if not name.startswith(environment):
-            violations.append(
-                {
-                    "severity": "high",
-                    "code": "MISSING_ENVIRONMENT_PREFIX",
-                    "message": f"Name should start with environment prefix: {environment}",
-                    "suggestion": f"{environment}-{name}",
-                }
-            )
+            violations.append({"severity": "high",
+                               "code": "MISSING_ENVIRONMENT_PREFIX",
+                               "message": f"Name should start with environment prefix: {environment}",
+                               "suggestion": f"{environment}-{name}",
+                               })
 
         # Load naming policy for detailed validation
-        policy_path = Path("workspace/src/governance/10-policy/naming-governance-policy.yaml")
+        policy_path = Path(
+            "workspace/src/governance/10-policy/naming-governance-policy.yaml"
+        )
         if policy_path.exists():
             try:
                 with open(policy_path, "r") as f:
@@ -194,11 +194,15 @@ class GovernanceAgent:
             "timestamp": datetime.utcnow().isoformat(),
             "violations": violations,
             "suggestions": (
-                self._generate_suggestions(name, resource_type, environment) if violations else []
+                self._generate_suggestions(name, resource_type, environment)
+                if violations
+                else []
             ),
         }
 
-    def _generate_suggestions(self, name: str, resource_type: str, environment: str) -> List[str]:
+    def _generate_suggestions(
+        self, name: str, resource_type: str, environment: str
+    ) -> List[str]:
         """Generate suggested valid names."""
         suggestions = []
 
@@ -210,7 +214,9 @@ class GovernanceAgent:
         suggestions.append(f"{environment}-{normalized}")
 
         if "team" in name or "service" in name:
-            suggestions.append(f"{environment}-platform-{resource_type.replace('k8s-', '')}")
+            suggestions.append(
+                f"{environment}-platform-{resource_type.replace('k8s-', '')}"
+            )
 
         return suggestions[:3]
 
@@ -367,7 +373,9 @@ class GovernanceAgent:
             ],
         }
 
-    def create_exception_request(self, exception_data: Dict[str, Any]) -> Dict[str, Any]:
+    def create_exception_request(
+        self, exception_data: Dict[str, Any]
+    ) -> Dict[str, Any]:
         """
         Create an exception request.
 

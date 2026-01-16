@@ -132,7 +132,9 @@ class RepoSyncer:
 
         # Target directory
         target_dir = self.external_dir / name
-        temp_dir = Path(f"/tmp/keystone_sync_{name}_{datetime.now().strftime('%Y%m%d_%H%M%S')}")
+        temp_dir = Path(
+            f"/tmp/keystone_sync_{name}_{datetime.now().strftime('%Y%m%d_%H%M%S')}"
+        )
 
         try:
             # Clone repository
@@ -191,7 +193,9 @@ class RepoSyncer:
 
     def _apply_exclusions(self, repo_dir: Path) -> int:
         """Apply exclusion patterns"""
-        exclude_patterns = self.config.get("sync_options", {}).get("exclude_patterns", [])
+        exclude_patterns = self.config.get("sync_options", {}).get(
+            "exclude_patterns", []
+        )
         removed_count = 0
 
         for pattern in exclude_patterns:
@@ -231,7 +235,9 @@ class RepoSyncer:
         with open(metadata_file, "w") as f:
             json.dump(metadata, f, indent=2)
 
-    def sync_all(self, core_only: bool = False, exclude_core: bool = False, dry_run: bool = False):
+    def sync_all(
+        self, core_only: bool = False, exclude_core: bool = False, dry_run: bool = False
+    ):
         """Sync all repositories"""
         log_info("=" * 60)
         log_info("Multi-Repository Sync Tool")
@@ -249,7 +255,9 @@ class RepoSyncer:
         elif exclude_core:
             # Exclude core repositories (for hybrid mode)
             repos_to_sync = self.config.get("sync_repositories", [])
-            log_info(f"Syncing {len(repos_to_sync)} REGULAR repositories (excluding core)")
+            log_info(
+                f"Syncing {len(repos_to_sync)} REGULAR repositories (excluding core)"
+            )
         else:
             core_repos = self.config.get("core_repositories", [])
             sync_repos = self.config.get("sync_repositories", [])
@@ -314,10 +322,14 @@ class RepoSyncer:
         log_info("=" * 60)
 
         if self.stats["success"] > 0:
-            log_success(f"\n✨ {self.stats['success']} repositories synced to: {self.external_dir}")
+            log_success(
+                f"\n✨ {self.stats['success']} repositories synced to: {self.external_dir}"
+            )
             log_info("Next steps:")
             log_info("  1. Review changes: git status")
-            log_info("  2. Commit: git add external/ && git commit -m 'chore: sync external repos'")
+            log_info(
+                "  2. Commit: git add external/ && git commit -m 'chore: sync external repos'"
+            )
             log_info("  3. Push: git push")
 
 
@@ -329,14 +341,18 @@ def main():
         default=Path("config/external_repos.yaml"),
         help="Configuration file path",
     )
-    parser.add_argument("--core-only", action="store_true", help="Sync core repositories only")
+    parser.add_argument(
+        "--core-only", action="store_true", help="Sync core repositories only"
+    )
     parser.add_argument(
         "--exclude-core",
         action="store_true",
         help="Exclude core repositories (sync regular repos only, for hybrid mode)",
     )
     parser.add_argument("--repo", type=str, help="Sync single repository by name")
-    parser.add_argument("--dry-run", action="store_true", help="Dry run mode (no actual changes)")
+    parser.add_argument(
+        "--dry-run", action="store_true", help="Dry run mode (no actual changes)"
+    )
 
     args = parser.parse_args()
 
@@ -348,7 +364,9 @@ def main():
         syncer.sync_single(args.repo, dry_run=args.dry_run)
     else:
         syncer.sync_all(
-            core_only=args.core_only, exclude_core=args.exclude_core, dry_run=args.dry_run
+            core_only=args.core_only,
+            exclude_core=args.exclude_core,
+            dry_run=args.dry_run,
         )
 
 

@@ -67,11 +67,12 @@ class P0SafetyVerifier:
 
         # 檢查緊急停止實現文件
         emergency_files = [
-            self.repo_root / "src/core/safety/emergency_stop.py",
-            self.repo_root
-            / "src/services/agents/dependency-manager/src/crossplatform/emergency_response.py",
-            self.repo_root
-            / "src/ai/agents/dependency-manager/src/crossplatform/emergency_response.py",
+            self.repo_root /
+            "src/core/safety/emergency_stop.py",
+            self.repo_root /
+            "src/services/agents/dependency-manager/src/crossplatform/emergency_response.py",
+            self.repo_root /
+            "src/ai/agents/dependency-manager/src/crossplatform/emergency_response.py",
         ]
 
         found_files = [f for f in emergency_files if f.exists()]
@@ -128,7 +129,8 @@ class P0SafetyVerifier:
 
         config_files = [
             self.repo_root / "config/safety-mechanisms.yaml",
-            self.repo_root / "src/autonomous/infrastructure/config/safety-mechanisms.yaml",
+            self.repo_root
+            / "src/autonomous/infrastructure/config/safety-mechanisms.yaml",
         ]
 
         found_config = None
@@ -155,7 +157,9 @@ class P0SafetyVerifier:
             # 檢查關鍵配置項
             checks = {
                 "safety.enabled": config.get("safety", {}).get("enabled", False),
-                "circuit_breaker.enabled": config.get("circuit_breaker", {}).get("enabled", False),
+                "circuit_breaker.enabled": config.get("circuit_breaker", {}).get(
+                    "enabled", False
+                ),
                 "escalation_ladder.enabled": config.get("escalation_ladder", {}).get(
                     "enabled", False
                 ),
@@ -218,7 +222,9 @@ class P0SafetyVerifier:
                     message=f"監控配置已存在 ({len(prometheus_files)} 個 Prometheus 配置)",
                     details={
                         "prometheus_files": [str(f) for f in prometheus_files],
-                        "monitoring_dirs": [str(d) for d in monitoring_dirs if d.exists()],
+                        "monitoring_dirs": [
+                            str(d) for d in monitoring_dirs if d.exists()
+                        ],
                     },
                 )
             )
@@ -262,7 +268,10 @@ class P0SafetyVerifier:
                                     item="測試覆蓋率目標",
                                     status="PASS",
                                     message=f"覆蓋率目標已設置: {target}%",
-                                    details={"target": target, "config": str(pytest_config)},
+                                    details={
+                                        "target": target,
+                                        "config": str(pytest_config),
+                                    },
                                 )
                             )
                             print(f"   ✅ PASS: 覆蓋率目標 {target}%")
@@ -332,7 +341,9 @@ class P0SafetyVerifier:
             print("   ❌ FAIL: 未找到workflows目錄")
             return
 
-        workflow_files = list(workflows_dir.glob("*.yml")) + list(workflows_dir.glob("*.yaml"))
+        workflow_files = list(workflows_dir.glob("*.yml")) + list(
+            workflows_dir.glob("*.yaml")
+        )
 
         if not workflow_files:
             self.results.append(

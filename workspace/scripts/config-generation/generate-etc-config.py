@@ -51,7 +51,9 @@ class AAPSConfigGenerator:
         """儲存 YAML 文件"""
         try:
             with open(file_path, "w", encoding="utf-8") as f:
-                yaml.dump(data, f, default_flow_style=False, allow_unicode=True, indent=2)
+                yaml.dump(
+                    data, f, default_flow_style=False, allow_unicode=True, indent=2
+                )
             print(f"✅ Generated: {file_path.relative_to(self.root_dir)}")
         except Exception as e:
             print(f"❌ Error saving {file_path}: {e}")
@@ -61,7 +63,9 @@ class AAPSConfigGenerator:
         print("🔧 Generating main configuration...")
 
         # 載入權威配置
-        config_spec = self.load_yaml(self.root_config_dir / "policy" / "root.config.yaml")
+        config_spec = self.load_yaml(
+            self.root_config_dir / "policy" / "root.config.yaml"
+        )
         engine_config = self.load_yaml(self.root_config_dir / "engine" / "engine.yaml")
 
         # 生成部署配置
@@ -90,7 +94,9 @@ class AAPSConfigGenerator:
                 },
                 # 引擎配置
                 "engine": {
-                    "name": engine_config.get("spec", {}).get("engine", {}).get("name", "AAPS"),
+                    "name": engine_config.get("spec", {})
+                    .get("engine", {})
+                    .get("name", "AAPS"),
                     "version": engine_config.get("spec", {})
                     .get("engine", {})
                     .get("version", "1.0.0"),
@@ -118,7 +124,9 @@ class AAPSConfigGenerator:
                     "authorization": engine_config.get("spec", {})
                     .get("security", {})
                     .get("authorization", {}),
-                    "secrets": engine_config.get("spec", {}).get("security", {}).get("secrets", {}),
+                    "secrets": engine_config.get("spec", {})
+                    .get("security", {})
+                    .get("secrets", {}),
                 },
             },
         }
@@ -130,8 +138,12 @@ class AAPSConfigGenerator:
         print("🛡️  Generating governance configuration...")
 
         # 載入權威配置
-        governance_spec = self.load_yaml(self.root_config_dir / "policy" / "root.governance.yaml")
-        naming_policy = self.load_yaml(self.root_config_dir / "policy" / "root.naming-policy.yaml")
+        governance_spec = self.load_yaml(
+            self.root_config_dir / "policy" / "root.governance.yaml"
+        )
+        naming_policy = self.load_yaml(
+            self.root_config_dir / "policy" / "root.naming-policy.yaml"
+        )
 
         # 生成治理配置
         governance_config = {
@@ -201,7 +213,9 @@ class AAPSConfigGenerator:
         print("🔒 Generating integrity configuration...")
 
         # 載入權威配置
-        integrity_spec = self.load_yaml(self.root_config_dir / "evidence" / "root.integrity.yaml")
+        integrity_spec = self.load_yaml(
+            self.root_config_dir / "evidence" / "root.integrity.yaml"
+        )
 
         # 生成完整性配置
         integrity_config = {
@@ -222,7 +236,9 @@ class AAPSConfigGenerator:
                 # 驗證配置
                 "verification": integrity_spec.get("spec", {}).get("verification", {}),
                 # 偏移檢測
-                "driftDetection": integrity_spec.get("spec", {}).get("driftDetection", {}),
+                "driftDetection": integrity_spec.get("spec", {}).get(
+                    "driftDetection", {}
+                ),
             },
         }
 
@@ -233,7 +249,9 @@ class AAPSConfigGenerator:
         modules = modules_registry.get("spec", {}).get("modules", [])
         return sorted(modules, key=lambda x: x.get("priority", 999))
 
-    def _extract_dependencies(self, modules_registry: Dict[str, Any]) -> Dict[str, List[str]]:
+    def _extract_dependencies(
+        self, modules_registry: Dict[str, Any]
+    ) -> Dict[str, List[str]]:
         """提取依賴關係"""
         modules = modules_registry.get("spec", {}).get("modules", [])
         dependencies = {}
@@ -241,11 +259,15 @@ class AAPSConfigGenerator:
         for module in modules:
             name = module.get("name", "")
             deps = module.get("dependencies", [])
-            dependencies[name] = [dep.get("name", "") for dep in deps if dep.get("name")]
+            dependencies[name] = [
+                dep.get("name", "") for dep in deps if dep.get("name")
+            ]
 
         return dependencies
 
-    def _extract_resources(self, modules_registry: Dict[str, Any]) -> Dict[str, Dict[str, Any]]:
+    def _extract_resources(
+        self, modules_registry: Dict[str, Any]
+    ) -> Dict[str, Dict[str, Any]]:
         """提取資源配置"""
         modules = modules_registry.get("spec", {}).get("modules", [])
         resources = {}

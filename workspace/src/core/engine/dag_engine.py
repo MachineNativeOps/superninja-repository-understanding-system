@@ -229,7 +229,9 @@ class DAGEngine:
                         or self.nodes[nid].status == NodeStatus.COMPLETED
                     ]
                 ):
-                    results[node_id] = level_results[i] if i < len(level_results) else None
+                    results[node_id] = (
+                        level_results[i] if i < len(level_results) else None
+                    )
 
         return results
 

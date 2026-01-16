@@ -133,7 +133,9 @@ class AttestationManager:
     - Verify attestation chains
     """
 
-    def __init__(self, storage_backend: Optional[Any] = None, signer: Optional[Callable] = None):
+    def __init__(
+        self, storage_backend: Optional[Any] = None, signer: Optional[Callable] = None
+    ):
         """
         Initialize the manager
 
@@ -216,7 +218,9 @@ class AttestationManager:
             raise ValueError(f"Attestation not found: {attestation_id}")
 
         if attestation.status != AttestationStatus.DRAFT:
-            raise ValueError(f"Attestation is not in draft status: {attestation.status}")
+            raise ValueError(
+                f"Attestation is not in draft status: {attestation.status}"
+            )
 
         # Compute attestation digest
         digest = attestation.compute_digest()
@@ -251,7 +255,11 @@ class AttestationManager:
         """
         key = f"{algorithm}:{digest}"
         attestation_ids = self._subject_index.get(key, [])
-        return [self._attestations[aid] for aid in attestation_ids if aid in self._attestations]
+        return [
+            self._attestations[aid]
+            for aid in attestation_ids
+            if aid in self._attestations
+        ]
 
     def list_attestations(
         self,
@@ -279,7 +287,9 @@ class AttestationManager:
         return attestations
 
     def verify_attestation(
-        self, attestation_id: str, expected_subjects: Optional[List[Dict[str, Any]]] = None
+        self,
+        attestation_id: str,
+        expected_subjects: Optional[List[Dict[str, Any]]] = None,
     ) -> Dict[str, Any]:
         """
         Verify an attestation
@@ -298,26 +308,42 @@ class AttestationManager:
         result = {"valid": True, "attestation_id": attestation_id, "checks": []}
 
         # Check signature
-        if attestation.status not in (AttestationStatus.SIGNED, AttestationStatus.VERIFIED):
+        if attestation.status not in (
+            AttestationStatus.SIGNED,
+            AttestationStatus.VERIFIED,
+        ):
             result["valid"] = False
             result["checks"].append(
-                {"name": "signature", "passed": False, "error": "Attestation is not signed"}
+                {
+                    "name": "signature",
+                    "passed": False,
+                    "error": "Attestation is not signed",
+                }
             )
         else:
             result["checks"].append({"name": "signature", "passed": True})
 
         # Check expiration
-        if attestation.expires_at and datetime.now(timezone.utc) > attestation.expires_at:
+        if (
+            attestation.expires_at
+            and datetime.now(timezone.utc) > attestation.expires_at
+        ):
             result["valid"] = False
             result["checks"].append(
-                {"name": "expiration", "passed": False, "error": "Attestation has expired"}
+                {
+                    "name": "expiration",
+                    "passed": False,
+                    "error": "Attestation has expired",
+                }
             )
         else:
             result["checks"].append({"name": "expiration", "passed": True})
 
         # Check subjects match
         if expected_subjects:
-            subjects_match = self._verify_subjects(attestation.subjects, expected_subjects)
+            subjects_match = self._verify_subjects(
+                attestation.subjects, expected_subjects
+            )
             result["checks"].append(
                 {
                     "name": "subjects",
@@ -356,14 +382,20 @@ class AttestationManager:
         }
 
         if attestation.signature:
-            dsse_envelope["signatures"].append({"keyid": "", "sig": attestation.signature})
+            dsse_envelope["signatures"].append(
+                {"keyid": "", "sig": attestation.signature}
+            )
 
         # Create verification material
         verification_material = {}
         if attestation.certificate:
             verification_material["x509CertificateChain"] = {
                 "certificates": [
-                    {"rawBytes": base64.b64encode(attestation.certificate.encode()).decode()}
+                    {
+                        "rawBytes": base64.b64encode(
+                            attestation.certificate.encode()
+                        ).decode()
+                    }
                 ]
             }
 
@@ -421,7 +453,9 @@ class AttestationManager:
         logger.info(f"Deleted attestation: {attestation_id}")
         return True
 
-    def export_attestations(self, attestation_ids: Optional[List[str]] = None) -> Dict[str, Any]:
+    def export_attestations(
+        self, attestation_ids: Optional[List[str]] = None
+    ) -> Dict[str, Any]:
         """
         Export attestations
 
@@ -433,7 +467,9 @@ class AttestationManager:
         """
         if attestation_ids:
             attestations = [
-                self._attestations[aid] for aid in attestation_ids if aid in self._attestations
+                self._attestations[aid]
+                for aid in attestation_ids
+                if aid in self._attestations
             ]
         else:
             attestations = list(self._attestations.values())
@@ -463,7 +499,9 @@ class AttestationManager:
 
         return True
 
-    async def _default_signer(self, digest: str, identity_token: Optional[str]) -> Dict[str, Any]:
+    async def _default_signer(
+        self, digest: str, identity_token: Optional[str]
+    ) -> Dict[str, Any]:
         """Default signing function (for testing)"""
         # Simulate Sigstore signing
         signature_data = f"sig:{digest}"
@@ -508,8 +546,12 @@ def create_provenance_attestation(
             "builder": {"id": builder_id, "version": kwargs.get("builder_version", {})},
             "metadata": {
                 "invocationId": kwargs.get("invocation_id", str(uuid4())),
-                "startedOn": kwargs.get("started_on", datetime.now(timezone.utc).isoformat()),
-                "finishedOn": kwargs.get("finished_on", datetime.now(timezone.utc).isoformat()),
+                "startedOn": kwargs.get(
+                    "started_on", datetime.now(timezone.utc).isoformat()
+                ),
+                "finishedOn": kwargs.get(
+                    "finished_on", datetime.now(timezone.utc).isoformat()
+                ),
             },
             "byproducts": kwargs.get("byproducts", []),
         },

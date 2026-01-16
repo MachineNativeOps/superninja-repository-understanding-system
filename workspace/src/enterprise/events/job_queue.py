@@ -122,12 +122,18 @@ class Job:
             "result": self.result,
             "error": self.error,
             "created_at": self.created_at.isoformat(),
-            "scheduled_at": self.scheduled_at.isoformat() if self.scheduled_at else None,
+            "scheduled_at": (
+                self.scheduled_at.isoformat() if self.scheduled_at else None
+            ),
             "started_at": self.started_at.isoformat() if self.started_at else None,
-            "completed_at": self.completed_at.isoformat() if self.completed_at else None,
+            "completed_at": (
+                self.completed_at.isoformat() if self.completed_at else None
+            ),
             "attempt": self.attempt,
             "max_attempts": self.max_attempts,
-            "next_retry_at": self.next_retry_at.isoformat() if self.next_retry_at else None,
+            "next_retry_at": (
+                self.next_retry_at.isoformat() if self.next_retry_at else None
+            ),
             "visibility_timeout": self.visibility_timeout,
             "worker_id": self.worker_id,
             "timeout_seconds": self.timeout_seconds,
@@ -418,7 +424,9 @@ class JobQueue:
                 )
                 await self.dlq_storage.save(dlq_job)
 
-            logger.warning(f"Job moved to DLQ: id={job_id} attempts={job.attempt} error={error}")
+            logger.warning(
+                f"Job moved to DLQ: id={job_id} attempts={job.attempt} error={error}"
+            )
         else:
             # Schedule retry with exponential backoff
             delay = min(
@@ -486,7 +494,9 @@ class JobQueue:
         handler = self.handlers.get(job.job_type)
 
         if not handler:
-            return await self.fail_job(job.id, f"No handler for job type: {job.job_type}")
+            return await self.fail_job(
+                job.id, f"No handler for job type: {job.job_type}"
+            )
 
         try:
             # Execute with timeout
@@ -497,7 +507,9 @@ class JobQueue:
             return await self.complete_job(job.id, result)
 
         except TimeoutError:
-            return await self.fail_job(job.id, f"Job timed out after {job.timeout_seconds}s")
+            return await self.fail_job(
+                job.id, f"Job timed out after {job.timeout_seconds}s"
+            )
 
         except Exception as e:
             logger.exception(f"Job failed: id={job.id} error={e}")
@@ -584,7 +596,9 @@ class JobQueue:
 
         for queue in QueueType:
             pending = await self.storage.count_jobs(org_id, queue, JobStatus.PENDING)
-            processing = await self.storage.count_jobs(org_id, queue, JobStatus.PROCESSING)
+            processing = await self.storage.count_jobs(
+                org_id, queue, JobStatus.PROCESSING
+            )
 
             stats[queue.value] = {
                 "pending": pending,

@@ -24,7 +24,9 @@ logger = logging.getLogger(__name__)
 class MembershipRepository(Protocol):
     """Repository interface for membership data"""
 
-    async def get_membership(self, org_id: UUID, user_id: UUID) -> Membership | None: ...
+    async def get_membership(
+        self, org_id: UUID, user_id: UUID
+    ) -> Membership | None: ...
 
     async def list_memberships_for_user(self, user_id: UUID) -> list[Membership]: ...
 
@@ -165,7 +167,9 @@ class RBACManager:
         membership = await self.membership_repository.get_membership(org_id, user_id)
         return membership.role if membership and membership.is_active else None
 
-    async def get_user_permissions(self, org_id: UUID, user_id: UUID) -> set[Permission]:
+    async def get_user_permissions(
+        self, org_id: UUID, user_id: UUID
+    ) -> set[Permission]:
         """Get all permissions a user has in an organization"""
         role = await self.get_user_role(org_id, user_id)
         if not role:
@@ -174,7 +178,9 @@ class RBACManager:
 
     async def get_user_organizations(self, user_id: UUID) -> list[dict[str, Any]]:
         """Get all organizations a user belongs to with their roles"""
-        memberships = await self.membership_repository.list_memberships_for_user(user_id)
+        memberships = await self.membership_repository.list_memberships_for_user(
+            user_id
+        )
         return [
             {
                 "org_id": str(m.org_id),
@@ -217,7 +223,9 @@ class RBACManager:
         # Cannot add someone with higher role than yourself
         inviter_role = await self.get_user_role(org_id, invited_by)
         if not self._can_assign_role(inviter_role, role):
-            raise ValueError(f"Cannot assign role {role.value} - insufficient privileges")
+            raise ValueError(
+                f"Cannot assign role {role.value} - insufficient privileges"
+            )
 
         membership = Membership(
             org_id=org_id,
@@ -360,10 +368,16 @@ class RBACManager:
 
         # Check if user is last owner
         if membership.role == Role.OWNER:
-            all_memberships = await self.membership_repository.list_memberships_for_org(org_id)
-            owner_count = sum(1 for m in all_memberships if m.role == Role.OWNER and m.is_active)
+            all_memberships = await self.membership_repository.list_memberships_for_org(
+                org_id
+            )
+            owner_count = sum(
+                1 for m in all_memberships if m.role == Role.OWNER and m.is_active
+            )
             if owner_count <= 1:
-                raise ValueError("Cannot leave: you are the last owner. Transfer ownership first.")
+                raise ValueError(
+                    "Cannot leave: you are the last owner. Transfer ownership first."
+                )
 
         result = await self.membership_repository.delete_membership(org_id, user_id)
 

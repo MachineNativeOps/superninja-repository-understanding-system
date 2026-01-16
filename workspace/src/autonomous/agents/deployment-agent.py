@@ -132,10 +132,14 @@ class DeploymentAgent(BaseAgent):
         # 檢查 Docker Compose
         try:
             # 嘗試新版 docker compose
-            result = subprocess.run(["docker", "compose", "version"], capture_output=True)
+            result = subprocess.run(
+                ["docker", "compose", "version"], capture_output=True
+            )
             if result.returncode != 0:
                 # 嘗試舊版 docker-compose
-                subprocess.run(["docker-compose", "--version"], capture_output=True, check=True)
+                subprocess.run(
+                    ["docker-compose", "--version"], capture_output=True, check=True
+                )
             self.log_success("  Docker Compose ✓")
         except (FileNotFoundError, subprocess.CalledProcessError):
             self.log_error("  Docker Compose 未安裝")
@@ -154,7 +158,9 @@ class DeploymentAgent(BaseAgent):
         self.log_info(f"🔧 準備部署環境: {self.deploy_env}")
 
         # 載入環境配置
-        env_file = self.project_root / "config/dev" / "environments" / f"{self.deploy_env}.env"
+        env_file = (
+            self.project_root / "config/dev" / "environments" / f"{self.deploy_env}.env"
+        )
 
         if env_file.exists():
             self.log_info(f"  載入環境配置: {env_file}")
@@ -211,7 +217,9 @@ class DeploymentAgent(BaseAgent):
             )
         except subprocess.TimeoutExpired:
             self.log_warn("  安裝超時，嘗試 npm install")
-            subprocess.run(["npm", "install"], cwd=self.project_root, capture_output=True)
+            subprocess.run(
+                ["npm", "install"], cwd=self.project_root, capture_output=True
+            )
         except Exception:
             pass
 
@@ -263,12 +271,16 @@ class DeploymentAgent(BaseAgent):
         """執行 docker compose 命令"""
         try:
             # 嘗試新版 docker compose
-            result = subprocess.run(["docker", "compose"] + args, cwd=cwd, capture_output=True)
+            result = subprocess.run(
+                ["docker", "compose"] + args, cwd=cwd, capture_output=True
+            )
             if result.returncode == 0:
                 return True
 
             # 嘗試舊版 docker-compose
-            result = subprocess.run(["docker-compose"] + args, cwd=cwd, capture_output=True)
+            result = subprocess.run(
+                ["docker-compose"] + args, cwd=cwd, capture_output=True
+            )
             return result.returncode == 0
         except Exception:
             return False
@@ -305,7 +317,9 @@ class DeploymentAgent(BaseAgent):
                 pass
 
             if i < self.health_check_retries:
-                self.log_warn(f"  部分服務尚未就緒，等待 {self.health_check_interval}s...")
+                self.log_warn(
+                    f"  部分服務尚未就緒，等待 {self.health_check_interval}s..."
+                )
                 import time
 
                 time.sleep(self.health_check_interval)
@@ -340,7 +354,9 @@ class DeploymentAgent(BaseAgent):
         Returns:
             執行結果代碼
         """
-        core_script = self.project_root / "config/dev" / "automation" / "deployment-drone.sh"
+        core_script = (
+            self.project_root / "config/dev" / "automation" / "deployment-drone.sh"
+        )
 
         if not core_script.exists():
             self.log_error(f"核心部署腳本不存在: {core_script}")
@@ -349,7 +365,9 @@ class DeploymentAgent(BaseAgent):
         self.log_info(f"執行核心部署腳本: {core_script}")
 
         try:
-            result = subprocess.run(["bash", str(core_script), "status"], cwd=self.project_root)
+            result = subprocess.run(
+                ["bash", str(core_script), "status"], cwd=self.project_root
+            )
             return result.returncode
         except Exception as e:
             self.log_error(f"執行失敗: {e}")

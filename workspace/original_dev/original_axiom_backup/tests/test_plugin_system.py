@@ -3,9 +3,6 @@ AXIOM Plugin System - Comprehensive Test Suite
 Tests all components of the hot-swappable plugin architecture.
 """
 
-from core.plugin_orchestrator import ErrorHandlingStrategy, ExecutionMode, orchestrator
-from core.plugin_manager import PluginExecutionResult, PluginMetadata, plugin_manager
-from core.config_manager import config_manager
 import json
 import os
 import shutil
@@ -15,6 +12,10 @@ import time
 import unittest
 from pathlib import Path
 from unittest.mock import MagicMock, Mock, patch
+
+from core.config_manager import config_manager
+from core.plugin_manager import PluginExecutionResult, PluginMetadata, plugin_manager
+from core.plugin_orchestrator import ErrorHandlingStrategy, ExecutionMode, orchestrator
 
 # Add project root to path
 project_root = Path(__file__).parent.parent
@@ -43,11 +44,17 @@ class TestPluginInterface(unittest.TestCase):
     def test_plugin_metadata_validation(self):
         """Test plugin metadata validation"""
         valid_metadata = PluginMetadata(
-            plugin_id="test_plugin", version="1.0.0", priority=50, enabled=True, dependencies=[]
+            plugin_id="test_plugin",
+            version="1.0.0",
+            priority=50,
+            enabled=True,
+            dependencies=[],
         )
 
         # Test plugin ID validation
-        self.assertTrue(valid_metadata.plugin_id.replace("_", "").replace("-", "").isalnum())
+        self.assertTrue(
+            valid_metadata.plugin_id.replace("_", "").replace("-", "").isalnum()
+        )
         self.assertGreaterEqual(valid_metadata.priority, 1)
         self.assertLessEqual(valid_metadata.priority, 100)
 
@@ -240,7 +247,10 @@ class TestPluginOrchestrator(unittest.TestCase):
             "name": "dependency_test",
             "description": "Test dependency resolution",
             "plugins": ["plugin_a", "plugin_b", "plugin_c"],
-            "dependencies": {"plugin_c": ["plugin_a", "plugin_b"], "plugin_b": ["plugin_a"]},
+            "dependencies": {
+                "plugin_c": ["plugin_a", "plugin_b"],
+                "plugin_b": ["plugin_a"],
+            },
         }
 
         success = self.orchestrator.load_workflow(workflow_config)
@@ -252,8 +262,12 @@ class TestPluginOrchestrator(unittest.TestCase):
         self.assertIn("plugin_c", self.orchestrator.execution_graph.nodes)
 
         # Check dependency edges
-        self.assertTrue(self.orchestrator.execution_graph.has_edge("plugin_a", "plugin_b"))
-        self.assertTrue(self.orchestrator.execution_graph.has_edge("plugin_b", "plugin_c"))
+        self.assertTrue(
+            self.orchestrator.execution_graph.has_edge("plugin_a", "plugin_b")
+        )
+        self.assertTrue(
+            self.orchestrator.execution_graph.has_edge("plugin_b", "plugin_c")
+        )
 
     def test_execution_modes(self):
         """Test different execution modes"""

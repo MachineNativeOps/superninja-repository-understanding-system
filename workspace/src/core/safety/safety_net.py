@@ -92,7 +92,9 @@ class SafetyNet:
 
     def __init__(self, config: Optional[SafetyNetConfig] = None):
         self.config = config or SafetyNetConfig()
-        self._checks: Dict[SafetyLayer, List[SafetyCheck]] = {layer: [] for layer in SafetyLayer}
+        self._checks: Dict[SafetyLayer, List[SafetyCheck]] = {
+            layer: [] for layer in SafetyLayer
+        }
         self._results_history: List[List[SafetyCheckResult]] = []
         self._blocked_count = 0
         self._passed_count = 0
@@ -189,7 +191,9 @@ class SafetyNet:
             # Check for blocking failures
             if self.config.fail_fast:
                 blocking_failures = [
-                    r for r in layer_results if not r.passed and self._is_blocking(r.check_name)
+                    r
+                    for r in layer_results
+                    if not r.passed and self._is_blocking(r.check_name)
                 ]
                 if blocking_failures:
                     break
@@ -206,7 +210,9 @@ class SafetyNet:
 
         return results
 
-    async def _run_layer_checks(self, layer: SafetyLayer, data: Any) -> List[SafetyCheckResult]:
+    async def _run_layer_checks(
+        self, layer: SafetyLayer, data: Any
+    ) -> List[SafetyCheckResult]:
         """Run all checks for a specific layer"""
         results: List[SafetyCheckResult] = []
 
@@ -220,7 +226,10 @@ class SafetyNet:
                     passed = await passed
 
                 result = SafetyCheckResult(
-                    check_name=check.name, layer=layer, passed=passed, timestamp=datetime.now()
+                    check_name=check.name,
+                    layer=layer,
+                    passed=passed,
+                    timestamp=datetime.now(),
                 )
 
                 if not passed and check.on_failure:
@@ -275,7 +284,9 @@ class SafetyNet:
         results = await self.validate(data)
 
         # Check for failures
-        failures = [r for r in results if not r.passed and self._is_blocking(r.check_name)]
+        failures = [
+            r for r in results if not r.passed and self._is_blocking(r.check_name)
+        ]
 
         if failures:
             raise SafetyCheckError(
@@ -322,7 +333,9 @@ class SafetyNet:
                 "passed": len([r for r in results if r.passed]),
                 "failed": len([r for r in results if not r.passed]),
                 "failures": [
-                    {"check": r.check_name, "layer": r.layer.name} for r in results if not r.passed
+                    {"check": r.check_name, "layer": r.layer.name}
+                    for r in results
+                    if not r.passed
                 ],
             }
             for results in recent

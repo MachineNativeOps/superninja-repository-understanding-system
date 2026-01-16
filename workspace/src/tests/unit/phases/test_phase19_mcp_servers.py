@@ -2,6 +2,11 @@
 Tests for Phase 19: MCP Servers Enhanced Integration
 """
 
+import asyncio
+import os
+import sys
+
+import pytest
 from mcp_servers_enhanced import (
     ConnectionConfig,
     MCPServerConfig,
@@ -15,11 +20,6 @@ from mcp_servers_enhanced import (
     WorkflowOrchestrator,
     WorkflowStep,
 )
-import asyncio
-import os
-import sys
-
-import pytest
 
 # Add core to path
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "..", "core"))
@@ -91,10 +91,16 @@ class TestToolRegistry:
     def test_list_by_category(self, registry):
         """Test listing tools by category"""
         tool1 = ToolDefinition(
-            name="tool-1", description="Tool 1", input_schema={}, category=ToolCategory.SECURITY
+            name="tool-1",
+            description="Tool 1",
+            input_schema={},
+            category=ToolCategory.SECURITY,
         )
         tool2 = ToolDefinition(
-            name="tool-2", description="Tool 2", input_schema={}, category=ToolCategory.SECURITY
+            name="tool-2",
+            description="Tool 2",
+            input_schema={},
+            category=ToolCategory.SECURITY,
         )
 
         registry.register(tool1)
@@ -141,7 +147,10 @@ class TestWorkflowOrchestrator:
             name="Test Workflow",
             steps=[
                 WorkflowStep(
-                    id="step-1", name="Step 1", tool="test-tool", arguments={"key": "value"}
+                    id="step-1",
+                    name="Step 1",
+                    tool="test-tool",
+                    arguments={"key": "value"},
                 )
             ],
         )
@@ -160,7 +169,10 @@ class TestWorkflowOrchestrator:
             name="Test Workflow",
             steps=[
                 WorkflowStep(
-                    id="step-1", name="Step 1", tool="test-tool", arguments={"key": "value"}
+                    id="step-1",
+                    name="Step 1",
+                    tool="test-tool",
+                    arguments={"key": "value"},
                 )
             ],
         )
@@ -193,7 +205,9 @@ class TestRealTimeConnector:
         """Test establishing connection"""
         await connector.start()
 
-        config = ConnectionConfig(server_name="test-server", transport=TransportType.STDIO)
+        config = ConnectionConfig(
+            server_name="test-server", transport=TransportType.STDIO
+        )
 
         connection = await connector.connect(config)
 

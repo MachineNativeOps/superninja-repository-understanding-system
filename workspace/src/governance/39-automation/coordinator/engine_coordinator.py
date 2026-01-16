@@ -144,7 +144,9 @@ class EngineCoordinator:
         dimension_dirs = [
             d
             for d in self.governance_root.iterdir()
-            if d.is_dir() and d.name.endswith("-governance") or d.name.startswith("governance-")
+            if d.is_dir()
+            and d.name.endswith("-governance")
+            or d.name.startswith("governance-")
         ]
 
         discovered_engines = []
@@ -154,7 +156,9 @@ class EngineCoordinator:
                 # Extract engine ID from directory name
                 engine_id = dim_dir.name.replace("-", "_")
                 registration = EngineRegistration(
-                    engine_id=engine_id, dimension_name=dim_dir.name, dimension_path=str(dim_dir)
+                    engine_id=engine_id,
+                    dimension_name=dim_dir.name,
+                    dimension_path=str(dim_dir),
                 )
                 self.engines[engine_id] = registration
                 discovered_engines.append(engine_id)
@@ -212,7 +216,9 @@ class EngineCoordinator:
             self.logger.info(f"Initializing {registration.dimension_name}...")
 
             # Dynamically import and create engine instance
-            engine_module_path = Path(registration.dimension_path) / "automation_engine.py"
+            engine_module_path = (
+                Path(registration.dimension_path) / "automation_engine.py"
+            )
 
             if not engine_module_path.exists():
                 self.logger.error(f"Engine module not found: {engine_module_path}")
@@ -232,7 +238,9 @@ class EngineCoordinator:
             registration.status = "running"
 
             self.dimension_engines[engine_id] = engine_instance
-            self.logger.info(f"✅ {registration.dimension_name} initialized successfully")
+            self.logger.info(
+                f"✅ {registration.dimension_name} initialized successfully"
+            )
 
             return True
 
@@ -242,7 +250,9 @@ class EngineCoordinator:
             return False
 
     def register_message_handler(
-        self, message_type: str, handler: Callable[[CoordinationMessage], Awaitable[Any]]
+        self,
+        message_type: str,
+        handler: Callable[[CoordinationMessage], Awaitable[Any]],
     ) -> None:
         """Register a handler for a specific message type."""
         self.message_handlers[message_type].append(handler)
@@ -311,7 +321,9 @@ class EngineCoordinator:
 
         return results
 
-    def broadcast_to_all_engines(self, message_type: str, payload: Dict[str, Any]) -> int:
+    def broadcast_to_all_engines(
+        self, message_type: str, payload: Dict[str, Any]
+    ) -> int:
         """Broadcast a message to all engines."""
         count = 0
         for engine_id in self.engines.keys():
@@ -356,7 +368,9 @@ class EngineCoordinator:
                 healthy_count += 1
                 registration.last_heartbeat = datetime.now().isoformat()
 
-        self.logger.info(f"Health check: {healthy_count}/{len(self.engines)} engines healthy")
+        self.logger.info(
+            f"Health check: {healthy_count}/{len(self.engines)} engines healthy"
+        )
 
     def export_metrics(self, filepath: Optional[Path] = None) -> Dict[str, Any]:
         """Export coordinator metrics and engine status."""

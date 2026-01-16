@@ -152,7 +152,9 @@ class SchemaValidator:
         if isinstance(data, dict):
             for field, field_schema in properties.items():
                 if field in data:
-                    field_errors = self._validate_field(data[field], field_schema, field, file_path)
+                    field_errors = self._validate_field(
+                        data[field], field_schema, field, file_path
+                    )
                     errors.extend(field_errors)
 
         return errors
@@ -173,8 +175,7 @@ class SchemaValidator:
                         error_message=f"Field '{field_name}' should be string, got {type(value).__name__}",
                         error_type="type_mismatch",
                         severity="error",
-                    )
-                )
+                    ))
             elif expected_type == "number" and not isinstance(value, (int, float)):
                 errors.append(
                     ValidationError(
@@ -182,8 +183,7 @@ class SchemaValidator:
                         error_message=f"Field '{field_name}' should be number, got {type(value).__name__}",
                         error_type="type_mismatch",
                         severity="error",
-                    )
-                )
+                    ))
             elif expected_type == "array" and not isinstance(value, list):
                 errors.append(
                     ValidationError(
@@ -191,8 +191,7 @@ class SchemaValidator:
                         error_message=f"Field '{field_name}' should be array, got {type(value).__name__}",
                         error_type="type_mismatch",
                         severity="error",
-                    )
-                )
+                    ))
             elif expected_type == "object" and not isinstance(value, dict):
                 errors.append(
                     ValidationError(
@@ -200,8 +199,7 @@ class SchemaValidator:
                         error_message=f"Field '{field_name}' should be object, got {type(value).__name__}",
                         error_type="type_mismatch",
                         severity="error",
-                    )
-                )
+                    ))
 
         # Check format
         if field_schema.get("format") == "date":
@@ -217,8 +215,7 @@ class SchemaValidator:
                             error_message=f"Field '{field_name}' is not a valid date (YYYY-MM-DD): {value}",
                             error_type="format_error",
                             severity="error",
-                        )
-                    )
+                        ))
 
         # Check pattern (regex)
         if field_schema.get("pattern") and isinstance(value, str):
@@ -232,8 +229,7 @@ class SchemaValidator:
                         error_message=f"Field '{field_name}' doesn't match pattern {pattern}: {value}",
                         error_type="pattern_error",
                         severity="error",
-                    )
-                )
+                    ))
 
         # Check enum
         if "enum" in field_schema and value not in field_schema["enum"]:
@@ -243,12 +239,13 @@ class SchemaValidator:
                     error_message=f"Field '{field_name}' value '{value}' not in allowed values: {field_schema['enum']}",
                     error_type="enum_error",
                     severity="error",
-                )
-            )
+                ))
 
         return errors
 
-    def validate_directory(self, directory: Path, schema_name: str) -> Tuple[bool, Dict[str, Any]]:
+    def validate_directory(
+        self, directory: Path, schema_name: str
+    ) -> Tuple[bool, Dict[str, Any]]:
         """Validate all files in directory against schema"""
         print(f"🔍 Validating files against '{schema_name}' schema...")
         print("=" * 100)
@@ -276,7 +273,10 @@ class SchemaValidator:
                     for error in errors:
                         if error.severity == "error":
                             results["errors"].append(
-                                {"file": config_file.name, "message": error.error_message}
+                                {
+                                    "file": config_file.name,
+                                    "message": error.error_message,
+                                }
                             )
                             print(f"      • {error.error_message}")
 

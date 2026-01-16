@@ -82,25 +82,41 @@ class IslandConfig:
                     "name": "Rust 性能核心島",
                     "enabled": True,
                     "priority": 1,
-                    "capabilities": ["performance_monitor", "security_guardian", "data_pipeline"],
+                    "capabilities": [
+                        "performance_monitor",
+                        "security_guardian",
+                        "data_pipeline",
+                    ],
                 },
                 "go": {
                     "name": "Go 雲原生服務島",
                     "enabled": True,
                     "priority": 2,
-                    "capabilities": ["api_gateway", "microservice_mesh", "container_manager"],
+                    "capabilities": [
+                        "api_gateway",
+                        "microservice_mesh",
+                        "container_manager",
+                    ],
                 },
                 "typescript": {
                     "name": "TypeScript 全棧開發島",
                     "enabled": True,
                     "priority": 3,
-                    "capabilities": ["web_dashboard", "api_client_generator", "real_time_monitor"],
+                    "capabilities": [
+                        "web_dashboard",
+                        "api_client_generator",
+                        "real_time_monitor",
+                    ],
                 },
                 "python": {
                     "name": "Python AI 數據島",
                     "enabled": True,
                     "priority": 4,
-                    "capabilities": ["ai_code_assistant", "data_analysis", "ml_pipeline"],
+                    "capabilities": [
+                        "ai_code_assistant",
+                        "data_analysis",
+                        "ml_pipeline",
+                    ],
                 },
                 "java": {
                     "name": "Java 企業服務島",
@@ -160,5 +176,7 @@ class IslandConfig:
     def get_enabled_islands(self) -> list[str]:
         """取得所有啟用的島嶼"""
         return [
-            island_id for island_id, config in self.islands.items() if config.get("enabled", True)
+            island_id
+            for island_id, config in self.islands.items()
+            if config.get("enabled", True)
         ]

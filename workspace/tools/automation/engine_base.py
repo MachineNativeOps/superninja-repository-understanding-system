@@ -374,7 +374,9 @@ class BaseEngine(ABC):
 
         try:
             # 初始化組件
-            self._task_queue = asyncio.Queue(maxsize=self.config.resource.max_queue_size)
+            self._task_queue = asyncio.Queue(
+                maxsize=self.config.resource.max_queue_size
+            )
             self._shutdown_event = asyncio.Event()
 
             # 載入檢查點
@@ -440,7 +442,9 @@ class BaseEngine(ABC):
                 await self._save_checkpoint()
 
             # 執行子類關閉
-            success = await asyncio.wait_for(self._shutdown(), timeout=self.config.timeout.shutdown)
+            success = await asyncio.wait_for(
+                self._shutdown(), timeout=self.config.timeout.shutdown
+            )
 
             self._state = EngineState.STOPPED
             await self._emit_event("engine.stopped", {})
@@ -517,7 +521,9 @@ class BaseEngine(ABC):
                     continue
 
                 # 檢查並發限制
-                while len(self._active_tasks) >= self.config.resource.max_concurrent_tasks:
+                while (
+                    len(self._active_tasks) >= self.config.resource.max_concurrent_tasks
+                ):
                     await asyncio.sleep(0.1)
 
                 # 執行任務
@@ -583,7 +589,9 @@ class BaseEngine(ABC):
                     self._execute(task), timeout=self.config.timeout.execution
                 )
 
-                result.duration_ms = (datetime.now() - start_time).total_seconds() * 1000
+                result.duration_ms = (
+                    datetime.now() - start_time
+                ).total_seconds() * 1000
                 return result
 
             except tuple(retry_config.retry_on) as e:
@@ -595,7 +603,9 @@ class BaseEngine(ABC):
                     if retry_config.jitter:
                         import random
 
-                        delay *= retry_config.exponential_base + random.uniform(-0.1, 0.1)
+                        delay *= retry_config.exponential_base + random.uniform(
+                            -0.1, 0.1
+                        )
                     else:
                         delay *= retry_config.exponential_base
 
@@ -652,7 +662,9 @@ class BaseEngine(ABC):
                     {
                         "state": self._state.name,
                         "active_tasks": len(self._active_tasks),
-                        "queue_size": self._task_queue.qsize() if self._task_queue else 0,
+                        "queue_size": (
+                            self._task_queue.qsize() if self._task_queue else 0
+                        ),
                     },
                 )
                 await asyncio.sleep(self.config.timeout.heartbeat)
@@ -670,7 +682,9 @@ class BaseEngine(ABC):
             uptime_seconds=self.uptime.total_seconds(),
             tasks_completed=self._tasks_completed,
             tasks_failed=self._tasks_failed,
-            last_activity=self._last_activity.isoformat() if self._last_activity else "",
+            last_activity=(
+                self._last_activity.isoformat() if self._last_activity else ""
+            ),
             error_rate=error_rate,
             details={
                 "active_tasks": len(self._active_tasks),
@@ -727,8 +741,12 @@ class BaseEngine(ABC):
                 with open(checkpoint_file, "r", encoding="utf-8") as f:
                     checkpoint = json.load(f)
 
-                self._tasks_completed = checkpoint.get("statistics", {}).get("tasks_completed", 0)
-                self._tasks_failed = checkpoint.get("statistics", {}).get("tasks_failed", 0)
+                self._tasks_completed = checkpoint.get("statistics", {}).get(
+                    "tasks_completed", 0
+                )
+                self._tasks_failed = checkpoint.get("statistics", {}).get(
+                    "tasks_failed", 0
+                )
                 self._checkpoint_data = checkpoint.get("custom_data", {})
 
                 self._logger.info(f"已載入檢查點: {checkpoint_file}")

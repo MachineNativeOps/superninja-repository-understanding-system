@@ -67,8 +67,12 @@ class CodeGenerationAgent(BaseAgent):
                     "config_files": config_files,
                     "deployment_manifest": deployment_manifest,
                     "documentation": documentation,
-                    "generated_files": self._count_generated_files(code_components, config_files),
-                    "code_quality_score": self._calculate_quality_score(code_components),
+                    "generated_files": self._count_generated_files(
+                        code_components, config_files
+                    ),
+                    "code_quality_score": self._calculate_quality_score(
+                        code_components
+                    ),
                 },
                 execution_time=execution_time,
             )
@@ -92,11 +96,15 @@ class CodeGenerationAgent(BaseAgent):
 
         # 生成前端組件
         if "frontend" in tech_specs:
-            components["frontend"] = await self._generate_frontend(tech_specs["frontend"], analysis)
+            components["frontend"] = await self._generate_frontend(
+                tech_specs["frontend"], analysis
+            )
 
         # 生成後端組件
         if "backend" in tech_specs:
-            components["backend"] = await self._generate_backend(tech_specs["backend"], analysis)
+            components["backend"] = await self._generate_backend(
+                tech_specs["backend"], analysis
+            )
 
         # 生成數據庫腳本
         if "backend" in tech_specs and "database" in tech_specs["backend"]:
@@ -579,7 +587,9 @@ def get_db():
         db.close()
 """
 
-    async def _generate_database_scripts(self, database_config: Dict[str, Any]) -> Dict[str, str]:
+    async def _generate_database_scripts(
+        self, database_config: Dict[str, Any]
+    ) -> Dict[str, str]:
         """生成數據庫腳本"""
         return {
             "init.sql": """
@@ -618,7 +628,9 @@ CREATE INDEX IF NOT EXISTS idx_users_email ON users(email);
 
         return configs
 
-    async def _generate_docker_configs(self, tech_specs: Dict[str, Any]) -> Dict[str, str]:
+    async def _generate_docker_configs(
+        self, tech_specs: Dict[str, Any]
+    ) -> Dict[str, str]:
         """生成Docker配置"""
         return {
             "Dockerfile": self._generate_dockerfile(tech_specs),
@@ -721,7 +733,9 @@ ACCESS_TOKEN_EXPIRE_MINUTES=30
             "DEPLOYMENT.md": self._generate_deployment_guide(tech_specs),
         }
 
-    def _generate_readme(self, tech_specs: Dict[str, Any], analysis: Dict[str, Any]) -> str:
+    def _generate_readme(
+        self, tech_specs: Dict[str, Any], analysis: Dict[str, Any]
+    ) -> str:
         """生成README"""
         return """
 # Generated Application
@@ -833,12 +847,21 @@ cp .env.example .env
 - API docs: http://localhost:8000/docs
 """
 
-    def _extract_env_vars(self, components: Dict[str, Any], configs: Dict[str, Any]) -> List[str]:
+    def _extract_env_vars(
+        self, components: Dict[str, Any], configs: Dict[str, Any]
+    ) -> List[str]:
         """提取環境變量"""
-        env_vars = ["DATABASE_URL", "SECRET_KEY", "ALGORITHM", "ACCESS_TOKEN_EXPIRE_MINUTES"]
+        env_vars = [
+            "DATABASE_URL",
+            "SECRET_KEY",
+            "ALGORITHM",
+            "ACCESS_TOKEN_EXPIRE_MINUTES",
+        ]
         return env_vars
 
-    def _count_generated_files(self, components: Dict[str, Any], configs: Dict[str, Any]) -> int:
+    def _count_generated_files(
+        self, components: Dict[str, Any], configs: Dict[str, Any]
+    ) -> int:
         """計算生成的文件數量"""
         count = 0
         for component in components.values():
@@ -847,7 +870,9 @@ cp .env.example .env
                 # 遞歸計算子目錄中的文件
                 for sub_component in component.values():
                     if isinstance(sub_component, dict):
-                        count += len([k for k, v in sub_component.items() if isinstance(v, str)])
+                        count += len(
+                            [k for k, v in sub_component.items() if isinstance(v, str)]
+                        )
 
         for config in configs.values():
             if isinstance(config, dict):

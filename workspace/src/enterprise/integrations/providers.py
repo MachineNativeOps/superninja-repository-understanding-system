@@ -310,7 +310,9 @@ class GitProviderManager:
 
         installation = await self.repository.update_installation(installation)
 
-        logger.warning(f"Installation suspended: installation={installation_id} reason={reason}")
+        logger.warning(
+            f"Installation suspended: installation={installation_id} reason={reason}"
+        )
 
         return installation
 
@@ -493,11 +495,15 @@ class GitProviderManager:
         wait_seconds = (reset_at - datetime.utcnow()).total_seconds()
 
         if wait_seconds > 300:  # Don't wait more than 5 minutes
-            logger.warning(f"Rate limit reset too far: {wait_seconds}s for {installation_id}")
+            logger.warning(
+                f"Rate limit reset too far: {wait_seconds}s for {installation_id}"
+            )
             return False
 
         if wait_seconds > 0:
-            logger.info(f"Waiting {wait_seconds}s for rate limit reset: {installation_id}")
+            logger.info(
+                f"Waiting {wait_seconds}s for rate limit reset: {installation_id}"
+            )
             import asyncio
 
             await asyncio.sleep(wait_seconds)
@@ -538,7 +544,8 @@ class GitProviderManager:
         token = await self.get_installation_token(org_id, installation_id)
 
         response = await self.http_client.get(
-            f"https://api.github.com/installation/repositories" f"?page={page}&per_page={per_page}",
+            f"https://api.github.com/installation/repositories"
+            f"?page={page}&per_page={per_page}",
             headers={
                 "Authorization": f"token {token}",
                 "Accept": "application/vnd.github.v3+json",

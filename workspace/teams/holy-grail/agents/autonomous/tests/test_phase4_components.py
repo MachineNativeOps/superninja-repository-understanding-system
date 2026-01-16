@@ -7,15 +7,11 @@ Tests for:
 - AutoGovernanceHub
 """
 
-from core.autonomous_trust_engine import (
-    AutonomousTrustEngine,
-    AutonomyLevel,
-    DecisionOutcome,
-    ProposedAction,
-    RiskLevel,
-    SafetyNet,
-    TrustDomain,
-)
+import asyncio
+import os
+import sys
+
+import pytest
 from core.auto_governance_hub import (
     AutoGovernanceHub,
     ChangeRequest,
@@ -25,11 +21,15 @@ from core.auto_governance_hub import (
     PolicyEnforcement,
     PolicyType,
 )
-import asyncio
-import os
-import sys
-
-import pytest
+from core.autonomous_trust_engine import (
+    AutonomousTrustEngine,
+    AutonomyLevel,
+    DecisionOutcome,
+    ProposedAction,
+    RiskLevel,
+    SafetyNet,
+    TrustDomain,
+)
 
 # Add paths for imports
 sys.path.insert(0, "/home/runner/work/SynergyMesh/SynergyMesh")
@@ -269,7 +269,10 @@ class TestAutoGovernanceHub:
             change_type=ChangeType.ACCESS,
             description="Grant temporary access",
             requestor="auth-service",
-            parameters={"least_privilege_compliant": True, "no_permanent_elevation": True},
+            parameters={
+                "least_privilege_compliant": True,
+                "no_permanent_elevation": True,
+            },
             risk_score=0.4,
         )
 
@@ -376,8 +379,18 @@ class TestPhase4Integration:
 
         # Simulate multiple operations
         operations = [
-            ("config_update", TrustDomain.CONFIGURATION, RiskLevel.LOW, ChangeType.CONFIGURATION),
-            ("deploy_canary", TrustDomain.DEPLOYMENT, RiskLevel.MODERATE, ChangeType.DEPLOYMENT),
+            (
+                "config_update",
+                TrustDomain.CONFIGURATION,
+                RiskLevel.LOW,
+                ChangeType.CONFIGURATION,
+            ),
+            (
+                "deploy_canary",
+                TrustDomain.DEPLOYMENT,
+                RiskLevel.MODERATE,
+                ChangeType.DEPLOYMENT,
+            ),
             ("grant_access", TrustDomain.SECURITY, RiskLevel.LOW, ChangeType.ACCESS),
         ]
 
@@ -440,7 +453,10 @@ class TestPhase4Integration:
 
             # No decision should require human approval
             assert decision.outcome != "requires_human_approval"
-            assert "human" not in decision.reasoning.lower() or "not" in decision.reasoning.lower()
+            assert (
+                "human" not in decision.reasoning.lower()
+                or "not" in decision.reasoning.lower()
+            )
 
         # Check governance decisions don't escalate to humans
         for i in range(5):

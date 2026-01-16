@@ -94,7 +94,9 @@ class Workflow:
             "current_step": self.current_step,
             "total_steps": len(self.steps),
             "started_at": self.started_at.isoformat() if self.started_at else None,
-            "completed_at": self.completed_at.isoformat() if self.completed_at else None,
+            "completed_at": (
+                self.completed_at.isoformat() if self.completed_at else None
+            ),
             "results": self.results,
             "error": self.error,
             "metadata": self.metadata,
@@ -143,13 +145,17 @@ class SystemOrchestrator:
 
         self._is_running = True
         self._startup_time = datetime.now(timezone.utc)
-        self._workflow_semaphore = asyncio.Semaphore(self.config.max_concurrent_workflows)
+        self._workflow_semaphore = asyncio.Semaphore(
+            self.config.max_concurrent_workflows
+        )
         self._task_semaphore = asyncio.Semaphore(self.config.max_concurrent_tasks)
 
         # Start scheduler
         self._scheduler_task = asyncio.create_task(self._scheduler_loop())
 
-        await self._emit_event("orchestrator_started", {"timestamp": self._startup_time})
+        await self._emit_event(
+            "orchestrator_started", {"timestamp": self._startup_time}
+        )
         logger.info("SystemOrchestrator started")
 
     async def stop(self) -> None:
@@ -173,11 +179,16 @@ class SystemOrchestrator:
 
         self._running_workflows.clear()
 
-        await self._emit_event("orchestrator_stopped", {"timestamp": datetime.now(timezone.utc)})
+        await self._emit_event(
+            "orchestrator_stopped", {"timestamp": datetime.now(timezone.utc)}
+        )
         logger.info("SystemOrchestrator stopped")
 
     async def execute_workflow(
-        self, name: str, steps: List[Dict[str, Any]], metadata: Optional[Dict[str, Any]] = None
+        self,
+        name: str,
+        steps: List[Dict[str, Any]],
+        metadata: Optional[Dict[str, Any]] = None,
     ) -> Workflow:
         """
         Execute a workflow
@@ -190,7 +201,9 @@ class SystemOrchestrator:
         Returns:
             Workflow object
         """
-        workflow = Workflow(id=str(uuid4()), name=name, steps=steps, metadata=metadata or {})
+        workflow = Workflow(
+            id=str(uuid4()), name=name, steps=steps, metadata=metadata or {}
+        )
 
         self._workflows[workflow.id] = workflow
 
@@ -200,7 +213,10 @@ class SystemOrchestrator:
         return workflow
 
     async def execute_workflow_async(
-        self, name: str, steps: List[Dict[str, Any]], metadata: Optional[Dict[str, Any]] = None
+        self,
+        name: str,
+        steps: List[Dict[str, Any]],
+        metadata: Optional[Dict[str, Any]] = None,
     ) -> str:
         """
         Execute a workflow asynchronously
@@ -208,7 +224,9 @@ class SystemOrchestrator:
         Returns:
             Workflow ID
         """
-        workflow = Workflow(id=str(uuid4()), name=name, steps=steps, metadata=metadata or {})
+        workflow = Workflow(
+            id=str(uuid4()), name=name, steps=steps, metadata=metadata or {}
+        )
 
         self._workflows[workflow.id] = workflow
 
@@ -327,7 +345,9 @@ class SystemOrchestrator:
             "running_workflows": len(self._running_workflows),
             "workflow_states": workflow_states,
             "scheduled_tasks": len(self._scheduled_tasks),
-            "enabled_tasks": sum(1 for t in self._scheduled_tasks.values() if t.enabled),
+            "enabled_tasks": sum(
+                1 for t in self._scheduled_tasks.values() if t.enabled
+            ),
         }
 
     async def _run_workflow_with_semaphore(self, workflow: Workflow) -> None:
@@ -374,7 +394,8 @@ class SystemOrchestrator:
             workflow.completed_at = datetime.now(timezone.utc)
 
             await self._emit_event(
-                "workflow_completed", {"workflow_id": workflow.id, "results": workflow.results}
+                "workflow_completed",
+                {"workflow_id": workflow.id, "results": workflow.results},
             )
 
         except asyncio.CancelledError:
@@ -387,7 +408,9 @@ class SystemOrchestrator:
             workflow.error = str(e)
             workflow.completed_at = datetime.now(timezone.utc)
 
-            await self._emit_event("workflow_failed", {"workflow_id": workflow.id, "error": str(e)})
+            await self._emit_event(
+                "workflow_failed", {"workflow_id": workflow.id, "error": str(e)}
+            )
 
             logger.error(f"Workflow {workflow.id} failed: {e}")
 
@@ -449,6 +472,8 @@ class SystemOrchestrator:
 
 
 # Factory function
-def create_system_orchestrator(config: Optional[OrchestratorConfig] = None) -> SystemOrchestrator:
+def create_system_orchestrator(
+    config: Optional[OrchestratorConfig] = None,
+) -> SystemOrchestrator:
     """Create a new SystemOrchestrator instance"""
     return SystemOrchestrator(config)

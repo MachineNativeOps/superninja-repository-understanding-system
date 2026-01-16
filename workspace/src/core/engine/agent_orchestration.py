@@ -77,7 +77,9 @@ class ExecutionPlan:
 
     def get_ready_steps(self) -> List[ExecutionStep]:
         """Get steps that are ready to execute (all dependencies completed)"""
-        completed_ids = {s.step_id for s in self.steps if s.status == StepStatus.COMPLETED}
+        completed_ids = {
+            s.step_id for s in self.steps if s.status == StepStatus.COMPLETED
+        }
         ready = []
         for step in self.steps:
             if step.status == StepStatus.PENDING:
@@ -104,7 +106,12 @@ class ExecutionContext:
         """Set a context variable"""
         self._variables[key] = value
         self._history.append(
-            {"action": "set", "key": key, "value": value, "timestamp": datetime.now().isoformat()}
+            {
+                "action": "set",
+                "key": key,
+                "value": value,
+                "timestamp": datetime.now().isoformat(),
+            }
         )
 
     def get(self, key: str, default: Any = None) -> Any:
@@ -120,7 +127,11 @@ class ExecutionContext:
         if key in self._variables:
             del self._variables[key]
             self._history.append(
-                {"action": "delete", "key": key, "timestamp": datetime.now().isoformat()}
+                {
+                    "action": "delete",
+                    "key": key,
+                    "timestamp": datetime.now().isoformat(),
+                }
             )
 
     def has(self, key: str) -> bool:
@@ -179,7 +190,9 @@ class TaskPlanner:
         self._templates: Dict[str, List[Dict[str, Any]]] = {}
         self._plans: Dict[str, ExecutionPlan] = {}
 
-    def register_template(self, template_name: str, steps: List[Dict[str, Any]]) -> None:
+    def register_template(
+        self, template_name: str, steps: List[Dict[str, Any]]
+    ) -> None:
         """Register a plan template"""
         self._templates[template_name] = steps
 
@@ -213,7 +226,9 @@ class TaskPlanner:
         self._plans[plan.plan_id] = plan
         return plan
 
-    def decompose_task(self, task_description: str, available_tools: List[str]) -> ExecutionPlan:
+    def decompose_task(
+        self, task_description: str, available_tools: List[str]
+    ) -> ExecutionPlan:
         """
         Decompose a task description into executable steps
         Uses heuristics to break down complex tasks
@@ -280,7 +295,9 @@ class TaskPlanner:
             )
 
         return self.create_plan(
-            name=f"Plan for: {task_description[:50]}...", description=task_description, steps=steps
+            name=f"Plan for: {task_description[:50]}...",
+            description=task_description,
+            steps=steps,
         )
 
     def get_plan(self, plan_id: str) -> Optional[ExecutionPlan]:
@@ -395,8 +412,12 @@ class AgentOrchestrator:
 
                 try:
                     if step.tool_name and tool_executor:
-                        result = await tool_executor.execute(step.tool_name, step.params)
-                        step.result = result.output if hasattr(result, "output") else result
+                        result = await tool_executor.execute(
+                            step.tool_name, step.params
+                        )
+                        step.result = (
+                            result.output if hasattr(result, "output") else result
+                        )
                     else:
                         step.result = f"Executed {step.name} (simulated)"
 
@@ -429,7 +450,10 @@ class AgentOrchestrator:
         }
 
     async def orchestrate_task(
-        self, task_description: str, available_tools: List[str], tool_executor: Any = None
+        self,
+        task_description: str,
+        available_tools: List[str],
+        tool_executor: Any = None,
     ) -> Dict[str, Any]:
         """
         High-level task orchestration

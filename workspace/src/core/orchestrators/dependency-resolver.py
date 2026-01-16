@@ -64,7 +64,11 @@ class DependencyResolver:
         logger.info("🔄 DependencyResolver 初始化完成")
 
     def add_component(
-        self, component_id: str, component_type: str, priority: int = 0, weight: float = 1.0
+        self,
+        component_id: str,
+        component_type: str,
+        priority: int = 0,
+        weight: float = 1.0,
     ) -> bool:
         """添加組件"""
         try:
@@ -150,7 +154,9 @@ class DependencyResolver:
 
         while queue:
             # 按優先級排序
-            queue_list = sorted(queue, key=lambda x: (self.nodes[x].priority, x), reverse=True)
+            queue_list = sorted(
+                queue, key=lambda x: (self.nodes[x].priority, x), reverse=True
+            )
             current = queue_list.pop(0)
             queue = deque(queue_list)
             result.append(current)
@@ -194,7 +200,9 @@ class DependencyResolver:
                 break
 
             # 計算執行時間
-            estimated_time = sum(self.nodes[comp].weight * 100 for comp in current_phase)
+            estimated_time = sum(
+                self.nodes[comp].weight * 100 for comp in current_phase
+            )
 
             phase = ExecutionPhase(
                 phase_number=phase_number,
@@ -298,7 +306,9 @@ class DependencyResolver:
         if not dependencies:
             return 1
 
-        max_dep_depth = max(self._calculate_depth(dep, visited.copy()) for dep in dependencies)
+        max_dep_depth = max(
+            self._calculate_depth(dep, visited.copy()) for dep in dependencies
+        )
 
         return 1 + max_dep_depth
 

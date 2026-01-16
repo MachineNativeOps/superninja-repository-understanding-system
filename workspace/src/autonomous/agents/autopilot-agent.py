@@ -120,8 +120,12 @@ class AutopilotAgent(BaseAgent):
     def _check_tool(self, tool: str) -> dict[str, Any]:
         """檢查工具是否可用"""
         try:
-            result = subprocess.run([tool, "--version"], capture_output=True, text=True, timeout=5)
-            version = result.stdout.strip().split("\n")[0] if result.returncode == 0 else None
+            result = subprocess.run(
+                [tool, "--version"], capture_output=True, text=True, timeout=5
+            )
+            version = (
+                result.stdout.strip().split("\n")[0] if result.returncode == 0 else None
+            )
             return {
                 "tool": tool,
                 "status": "ok" if result.returncode == 0 else "error",
@@ -145,7 +149,9 @@ class AutopilotAgent(BaseAgent):
             print(f"  {icon} {check['tool']}: {version}")
 
         print()
-        self.log_info(f"診斷結果: {diagnosis['passed']} 通過, {diagnosis['failed']} 失敗")
+        self.log_info(
+            f"診斷結果: {diagnosis['passed']} 通過, {diagnosis['failed']} 失敗"
+        )
 
     def queue_task(self, task_name: str, options: dict | None = None) -> None:
         """
@@ -267,7 +273,9 @@ class AutopilotAgent(BaseAgent):
         self.log_info(f"執行核心自動駕駛: {core_script}")
 
         try:
-            result = subprocess.run(["node", str(core_script), "diagnose"], cwd=self.project_root)
+            result = subprocess.run(
+                ["node", str(core_script), "diagnose"], cwd=self.project_root
+            )
             return result.returncode
         except Exception as e:
             self.log_error(f"執行失敗: {e}")

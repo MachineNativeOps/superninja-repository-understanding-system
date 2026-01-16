@@ -47,12 +47,17 @@ class NamingMigrationTool:
         self.canonical_regex = self.spec["spec"]["naming"]["canonical_regex"]
         self.naming_modes = self.spec["spec"]["naming"]["naming_modes"]
         self.reserved_tokens = self.spec["spec"]["naming"]["reserved_tokens"]
-        self.environments = [e["name"] for e in self.spec["spec"]["naming"]["environments"]]
+        self.environments = [
+            e["name"] for e in self.spec["spec"]["naming"]["environments"]
+        ]
 
     def scan_cluster(self) -> List[Dict]:
         """掃描集群中的所有 Namespace"""
         if not K8S_AVAILABLE:
-            print("Error: kubernetes package required for cluster scanning", file=sys.stderr)
+            print(
+                "Error: kubernetes package required for cluster scanning",
+                file=sys.stderr,
+            )
             print("Install with: pip install kubernetes", file=sys.stderr)
             sys.exit(1)
 
@@ -131,7 +136,9 @@ class NamingMigrationTool:
             # 檢查相似命名（可能導致混淆）
             similar = self.find_similar_names(name, list(name_map.keys()))
             if similar:
-                conflicts.append({"type": "similar", "name": name, "similar_to": similar})
+                conflicts.append(
+                    {"type": "similar", "name": name, "similar_to": similar}
+                )
 
         return conflicts
 
@@ -268,13 +275,17 @@ class NamingMigrationTool:
         batch_size = 10
 
         for i in range(0, len(non_compliant), batch_size):
-            batch = non_compliant[i : i + batch_size]
+            batch = non_compliant[i: i + batch_size]
             batch_plan = {"batch_id": f"batch-{i//batch_size + 1}", "resources": []}
 
             for ns in batch:
                 suggestions = self.generate_suggestions(ns)
                 batch_plan["resources"].append(
-                    {"current_name": ns["name"], "issues": ns["issues"], "suggestions": suggestions}
+                    {
+                        "current_name": ns["name"],
+                        "issues": ns["issues"],
+                        "suggestions": suggestions,
+                    }
                 )
 
             plan["spec"]["batches"].append(batch_plan)
@@ -307,12 +318,18 @@ Examples:
     )
 
     parser.add_argument("--spec", required=True, help="Path to machine-spec.yaml")
-    parser.add_argument("--scan", action="store_true", help="Scan cluster for namespaces")
-    parser.add_argument("--detect-conflicts", action="store_true", help="Detect naming conflicts")
+    parser.add_argument(
+        "--scan", action="store_true", help="Scan cluster for namespaces"
+    )
+    parser.add_argument(
+        "--detect-conflicts", action="store_true", help="Detect naming conflicts"
+    )
     parser.add_argument(
         "--generate-plan", metavar="FILE", help="Generate migration plan (output path)"
     )
-    parser.add_argument("--output", metavar="FILE", help="Output results to file (JSON format)")
+    parser.add_argument(
+        "--output", metavar="FILE", help="Output results to file (JSON format)"
+    )
 
     args = parser.parse_args()
 
@@ -330,7 +347,9 @@ Examples:
         print(f"\n=== Namespace Scan Results ===")
         print(f"Total: {total}")
         print(
-            f"Compliant: {compliant} ({compliant/total*100:.1f}%)" if total > 0 else "Compliant: 0"
+            f"Compliant: {compliant} ({compliant/total*100:.1f}%)"
+            if total > 0
+            else "Compliant: 0"
         )
         print(
             f"Non-compliant: {non_compliant} ({non_compliant/total*100:.1f}%)"

@@ -232,7 +232,10 @@ class CircuitBreaker:
         self.last_failure_time = datetime.utcnow()
         self.success_count = 0
 
-        if self.state == CircuitState.HALF_OPEN or self.failure_count >= self.failure_threshold:
+        if (
+            self.state == CircuitState.HALF_OPEN
+            or self.failure_count >= self.failure_threshold
+        ):
             self._transition_to(CircuitState.OPEN)
 
     def _should_attempt_reset(self) -> bool:
@@ -256,7 +259,8 @@ class CircuitBreaker:
             self.success_count = 0
 
         logger.info(
-            f"Circuit breaker '{self.name}' transitioned: " f"{old_state.value} → {new_state.value}"
+            f"Circuit breaker '{self.name}' transitioned: "
+            f"{old_state.value} → {new_state.value}"
         )
 
 
@@ -485,14 +489,16 @@ class DegradationStrategy:
             result["action"] = "neutral"
             result["conclusion"] = "neutral"
             result["message"] = (
-                f"Dependency failure ({dependency}). " "Marked as neutral - retry later."
+                f"Dependency failure ({dependency}). "
+                "Marked as neutral - retry later."
             )
 
         elif mode == DegradationMode.FAIL_OPEN:
             result["action"] = "allow"
             result["conclusion"] = "neutral"
             result["message"] = (
-                f"Dependency failure ({dependency}). " "Allowing merge - verify manually."
+                f"Dependency failure ({dependency}). "
+                "Allowing merge - verify manually."
             )
 
         # Enter degraded mode
@@ -561,7 +567,9 @@ class DegradationStrategy:
             results[name] = await hc.check()
 
         # Check for degradation
-        unhealthy_count = sum(1 for r in results.values() if r.status == ServiceHealth.UNHEALTHY)
+        unhealthy_count = sum(
+            1 for r in results.values() if r.status == ServiceHealth.UNHEALTHY
+        )
 
         if unhealthy_count > 0 and not self.is_degraded:
             self._enter_degraded_mode(f"{unhealthy_count} services unhealthy")
@@ -617,7 +625,9 @@ class DegradationStrategy:
         """Get current degradation status"""
         return {
             "is_degraded": self.is_degraded,
-            "degraded_since": self.degraded_since.isoformat() if self.degraded_since else None,
+            "degraded_since": (
+                self.degraded_since.isoformat() if self.degraded_since else None
+            ),
             "degradation_reason": self.degradation_reason,
             "overall_health": self.get_overall_health().value,
             "circuit_breakers": {
@@ -627,5 +637,7 @@ class DegradationStrategy:
                 }
                 for name, cb in self.circuit_breakers.items()
             },
-            "health_checks": {name: hc.status.value for name, hc in self.health_checks.items()},
+            "health_checks": {
+                name: hc.status.value for name, hc in self.health_checks.items()
+            },
         }

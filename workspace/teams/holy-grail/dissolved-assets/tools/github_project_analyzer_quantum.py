@@ -21,7 +21,9 @@ from typing import Any, Dict, List
 
 import yaml
 
-logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
+logging.basicConfig(
+    level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
+)
 logger = logging.getLogger(__name__)
 
 
@@ -60,7 +62,11 @@ class QuantumComputeEngine:
         }
 
     def _qaoa(self, p):
-        return {"algo": "QAOA", "opt": random.random(), "fidelity": random.uniform(0.90, 0.98)}
+        return {
+            "algo": "QAOA",
+            "opt": random.random(),
+            "fidelity": random.uniform(0.90, 0.98),
+        }
 
     def _qml(self, p):
         return {
@@ -278,18 +284,28 @@ class WorkspaceValidator:
             # 檢查重複定義
             import re
 
-            const_declarations = re.findall(r"^const\s+(\w+)\s*[=:]", content, re.MULTILINE)
+            const_declarations = re.findall(
+                r"^const\s+(\w+)\s*[=:]", content, re.MULTILINE
+            )
             if len(const_declarations) != len(set(const_declarations)):
-                result["warnings"].append("Potential duplicate const declarations found")
+                result["warnings"].append(
+                    "Potential duplicate const declarations found"
+                )
 
-            interface_declarations = re.findall(r"^interface\s+(\w+)", content, re.MULTILINE)
+            interface_declarations = re.findall(
+                r"^interface\s+(\w+)", content, re.MULTILINE
+            )
             if len(interface_declarations) != len(set(interface_declarations)):
-                result["warnings"].append("Potential duplicate interface declarations found")
+                result["warnings"].append(
+                    "Potential duplicate interface declarations found"
+                )
 
             # 檢查重複的 import 語句
             # 一般 import（排除 type-only import）
             imports = re.findall(
-                r'^import\s+(?!type\b).*from\s+["\']([^"\']+)["\']', content, re.MULTILINE
+                r'^import\s+(?!type\b).*from\s+["\']([^"\']+)["\']',
+                content,
+                re.MULTILINE,
             )
             # type-only import
             type_imports = re.findall(
@@ -307,7 +323,9 @@ class WorkspaceValidator:
             seen_type_imports = set()
             for imp in type_imports:
                 if imp in seen_type_imports:
-                    result["warnings"].append(f"Duplicate type import from module: {imp}")
+                    result["warnings"].append(
+                        f"Duplicate type import from module: {imp}"
+                    )
                 else:
                     seen_type_imports.add(imp)
         except Exception as e:
@@ -415,12 +433,18 @@ class WorkspaceValidator:
             "typescript_files": len(ts_files),
             "python_files": len(py_files),
             "markdown_files": len(md_files),
-            "yaml_valid": sum(1 for r in self.validation_results["yaml_files"] if r["valid"]),
-            "json_valid": sum(1 for r in self.validation_results["json_files"] if r["valid"]),
+            "yaml_valid": sum(
+                1 for r in self.validation_results["yaml_files"] if r["valid"]
+            ),
+            "json_valid": sum(
+                1 for r in self.validation_results["json_files"] if r["valid"]
+            ),
             "typescript_valid": sum(
                 1 for r in self.validation_results["typescript_files"] if r["valid"]
             ),
-            "python_valid": sum(1 for r in self.validation_results["python_files"] if r["valid"]),
+            "python_valid": sum(
+                1 for r in self.validation_results["python_files"] if r["valid"]
+            ),
             "total_errors": len(self.validation_results["errors"]),
             "total_warnings": len(self.validation_results["warnings"]),
         }
@@ -433,7 +457,9 @@ class GitHubProjectAnalyzer:
 
     def __init__(self, config: GitHubAnalyzerConfig):
         self.config = config
-        self.base_url = f"https://api.github.com/repos/{config.repo_owner}/{config.repo_name}"
+        self.base_url = (
+            f"https://api.github.com/repos/{config.repo_owner}/{config.repo_name}"
+        )
         self.headers = {
             "Accept": "application/vnd.github.v3+json",
             "User-Agent": "namespace-mcp-Analyzer/3.0.0",
@@ -459,7 +485,9 @@ class GitHubProjectAnalyzer:
         analysis_result["sections"]["todo_list"] = self._analyze_todo_list()
         analysis_result["sections"]["diagnostics"] = self._analyze_diagnostics()
         analysis_result["sections"]["deep_details"] = self._analyze_deep_details()
-        analysis_result["sections"]["quantum_analysis"] = self._analyze_quantum_potential()
+        analysis_result["sections"][
+            "quantum_analysis"
+        ] = self._analyze_quantum_potential()
 
         return analysis_result
 
@@ -488,7 +516,9 @@ class GitHubProjectAnalyzer:
             "algorithms_tested": ["VQE", "QAOA", "QML"],
             "results": {"VQE": vqe_result, "QAOA": qaoa_result, "QML": qml_result},
             "average_fidelity": (
-                vqe_result["fidelity"] + qaoa_result["fidelity"] + qml_result["fidelity"]
+                vqe_result["fidelity"]
+                + qaoa_result["fidelity"]
+                + qml_result["fidelity"]
             )
             / 3,
         }
@@ -527,7 +557,10 @@ class GitHubProjectAnalyzer:
                     "dependencies": ["mcp-servers", "schemas"],
                     "dependents": ["governance", "ci-cd"],
                 },
-                "tools": {"dependencies": ["types"], "dependents": ["mcp-servers", "validation"]},
+                "tools": {
+                    "dependencies": ["types"],
+                    "dependents": ["mcp-servers", "validation"],
+                },
             },
         }
 
@@ -562,8 +595,16 @@ class GitHubProjectAnalyzer:
             ],
             "performance_metrics": {
                 "latency": {"current": "8ms", "target": "<10ms", "status": "met"},
-                "throughput": {"current": "100k rpm", "target": "200k rpm", "status": "met"},
-                "availability": {"current": "99.99%", "target": "99.999%", "status": "met"},
+                "throughput": {
+                    "current": "100k rpm",
+                    "target": "200k rpm",
+                    "status": "met",
+                },
+                "availability": {
+                    "current": "99.99%",
+                    "target": "99.999%",
+                    "status": "met",
+                },
                 "mcp_tools": {"current": "59", "target": "59", "status": "met"},
             },
         }
@@ -626,7 +667,11 @@ class GitHubProjectAnalyzer:
         """深度細節分析"""
         return {
             "code_quality": {
-                "best_practices": ["SOLID principles", "DRY", "MCP Protocol compliance"],
+                "best_practices": [
+                    "SOLID principles",
+                    "DRY",
+                    "MCP Protocol compliance",
+                ],
                 "quality_metrics": {
                     "test_coverage": "70%",
                     "code_complexity": "low",
@@ -635,14 +680,22 @@ class GitHubProjectAnalyzer:
             },
             "documentation": {
                 "completeness": "excellent",
-                "coverage_areas": ["API docs", "architecture", "deployment", "MCP tools"],
+                "coverage_areas": [
+                    "API docs",
+                    "architecture",
+                    "deployment",
+                    "MCP tools",
+                ],
             },
         }
 
     def _analyze_quantum_potential(self) -> Dict[str, Any]:
         """量子潛力分析"""
         return {
-            "quantum_algorithms_available": ["VQE", "QAOA", "QML"],
+            "quantum_algorithms_available": [
+                "VQE",
+                "QAOA",
+                "QML"],
             "current_utilization": "75%",
             "quantum_resource_allocation": {
                 "cpu_allocated": f"{self.resource_manager.alloc['cpu']}/{self.resource_manager.cpu}",
@@ -781,12 +834,16 @@ class GitHubProjectAnalyzer:
     def _format_capabilities(self, capabilities: List[Dict]) -> str:
         result = ""
         for cap in capabilities:
-            result += f"- **{cap['name']}** ({cap['status']}, 成熟度: {cap['maturity']})\n"
+            result += (
+                f"- **{cap['name']}** ({cap['status']}, 成熟度: {cap['maturity']})\n"
+            )
             result += f"  - {cap['description']}\n"
         return result
 
     def _format_performance_metrics(self, metrics: Dict) -> str:
-        result = "| 指標 | 當前值 | 目標值 | 狀態 |\n|------|--------|--------|------|\n"
+        result = (
+            "| 指標 | 當前值 | 目標值 | 狀態 |\n|------|--------|--------|------|\n"
+        )
         for metric, data in metrics.items():
             status = data.get("status")
             status_emoji = self.STATUS_EMOJI.get(status, "❌")
@@ -826,10 +883,16 @@ def main():
     parser.add_argument("--repo", default="namespace-mcp", help="倉庫名稱")
     parser.add_argument("--scope", default="entire", help="分析範圍")
     parser.add_argument(
-        "--workspace-path", default="workspace/teams", help="工作空間路徑（Teams 工作團隊）"
+        "--workspace-path",
+        default="workspace/teams",
+        help="工作空間路徑（Teams 工作團隊）",
     )
-    parser.add_argument("--output", default="workspace_teams_validation_report.md", help="輸出文件")
-    parser.add_argument("--quantum", action="store_true", default=True, help="啟用量子分析")
+    parser.add_argument(
+        "--output", default="workspace_teams_validation_report.md", help="輸出文件"
+    )
+    parser.add_argument(
+        "--quantum", action="store_true", default=True, help="啟用量子分析"
+    )
 
     args = parser.parse_args()
 

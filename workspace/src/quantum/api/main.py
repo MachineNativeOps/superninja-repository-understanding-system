@@ -44,7 +44,8 @@ if settings.cors_enabled:
 
 # Trusted host middleware
 app.add_middleware(
-    TrustedHostMiddleware, allowed_hosts=["*"] if settings.debug else settings.allowed_origins
+    TrustedHostMiddleware,
+    allowed_hosts=["*"] if settings.debug else settings.allowed_origins,
 )
 
 # Request timing middleware
@@ -69,7 +70,11 @@ async def quantumflow_exception_handler(request: Request, exc: QuantumFlowExcept
     logger.error(f"QuantumFlow exception: {exc.message}", exc_info=True)
     return JSONResponse(
         status_code=status.HTTP_400_BAD_REQUEST,
-        content={"error": exc.message, "details": exc.details, "type": exc.__class__.__name__},
+        content={
+            "error": exc.message,
+            "details": exc.details,
+            "type": exc.__class__.__name__,
+        },
     )
 
 
@@ -78,7 +83,8 @@ async def http_exception_handler(request: Request, exc: StarletteHTTPException):
     """Handle HTTP exceptions."""
     logger.warning(f"HTTP exception: {exc.status_code} - {exc.detail}")
     return JSONResponse(
-        status_code=exc.status_code, content={"error": exc.detail, "status_code": exc.status_code}
+        status_code=exc.status_code,
+        content={"error": exc.detail, "status_code": exc.status_code},
     )
 
 

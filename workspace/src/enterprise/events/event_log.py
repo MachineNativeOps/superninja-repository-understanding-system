@@ -98,7 +98,9 @@ class StoredEvent:
             "ref": self.ref,
             "payload": self.payload,
             "status": self.status.value,
-            "processed_at": self.processed_at.isoformat() if self.processed_at else None,
+            "processed_at": (
+                self.processed_at.isoformat() if self.processed_at else None
+            ),
             "process_error": self.process_error,
             "retry_count": self.retry_count,
             "job_ids": [str(j) for j in self.job_ids],
@@ -116,8 +118,12 @@ class StoredEvent:
             event_type=data.get("event_type", ""),
             source=data.get("source", ""),
             source_id=data.get("source_id", ""),
-            correlation_id=UUID(data["correlation_id"]) if data.get("correlation_id") else None,
-            causation_id=UUID(data["causation_id"]) if data.get("causation_id") else None,
+            correlation_id=(
+                UUID(data["correlation_id"]) if data.get("correlation_id") else None
+            ),
+            causation_id=(
+                UUID(data["causation_id"]) if data.get("causation_id") else None
+            ),
             repo_id=UUID(data["repo_id"]) if data.get("repo_id") else None,
             repo_full_name=data.get("repo_full_name", ""),
             head_sha=data.get("head_sha"),
@@ -126,7 +132,9 @@ class StoredEvent:
             payload=data.get("payload", {}),
             status=EventStatus(data.get("status", "received")),
             processed_at=(
-                datetime.fromisoformat(data["processed_at"]) if data.get("processed_at") else None
+                datetime.fromisoformat(data["processed_at"])
+                if data.get("processed_at")
+                else None
             ),
             process_error=data.get("process_error"),
             retry_count=data.get("retry_count", 0),

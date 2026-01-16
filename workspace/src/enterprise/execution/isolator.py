@@ -51,7 +51,9 @@ class IsolationPolicy:
 
     # Network policy
     network_policy: NetworkPolicy = NetworkPolicy.DENY_ALL
-    allowed_egress: list[str] = field(default_factory=list)  # Allowlist if ALLOW_SPECIFIC
+    allowed_egress: list[str] = field(
+        default_factory=list
+    )  # Allowlist if ALLOW_SPECIFIC
 
     # Resource limits
     cpu_limit: str = "1"  # CPU cores (e.g., "0.5", "1", "2")
@@ -302,7 +304,9 @@ class ExecutionIsolator:
         finally:
             result.completed_at = datetime.utcnow()
             if result.started_at:
-                result.duration_seconds = (result.completed_at - result.started_at).total_seconds()
+                result.duration_seconds = (
+                    result.completed_at - result.started_at
+                ).total_seconds()
 
         logger.info(
             f"Execution completed: spec={spec.id} "
@@ -352,7 +356,8 @@ class ExecutionIsolator:
         finally:
             # Always cleanup
             if container_id and (
-                self.cleanup_on_complete or (not result.success and self.cleanup_on_failure)
+                self.cleanup_on_complete
+                or (not result.success and self.cleanup_on_failure)
             ):
                 try:
                     await self.container_runtime.destroy_container(container_id)
@@ -400,7 +405,9 @@ class ExecutionIsolator:
 
         finally:
             # Cleanup
-            if self.cleanup_on_complete or (not result.success and self.cleanup_on_failure):
+            if self.cleanup_on_complete or (
+                not result.success and self.cleanup_on_failure
+            ):
                 try:
                     await self.kubernetes_client.delete_job(namespace, job_name)
                 except Exception as e:

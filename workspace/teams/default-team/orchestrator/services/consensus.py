@@ -76,7 +76,9 @@ class ConsensusManager:
         # Determine voters from agent weights if not specified
         if required_voters is None:
             required_voters = [
-                agent_id for agent_id, weight in self._agent_weights.items() if weight.required
+                agent_id
+                for agent_id, weight in self._agent_weights.items()
+                if weight.required
             ]
 
         if optional_voters is None:
@@ -88,7 +90,9 @@ class ConsensusManager:
 
         # Determine veto agents
         veto_agents = [
-            agent_id for agent_id, weight in self._agent_weights.items() if weight.has_veto
+            agent_id
+            for agent_id, weight in self._agent_weights.items()
+            if weight.has_veto
         ]
 
         request = ConsensusRequest(
@@ -236,9 +240,15 @@ class ConsensusManager:
 
             # Check for veto
             for vote in votes:
-                if vote.vote_type == VoteType.VETO and vote.agent_id in request.veto_agents:
+                if (
+                    vote.vote_type == VoteType.VETO
+                    and vote.agent_id in request.veto_agents
+                ):
                     result = await self._finalize_consensus(
-                        request, votes, ConsensusState.VETOED, f"Vetoed by {vote.agent_id}"
+                        request,
+                        votes,
+                        ConsensusState.VETOED,
+                        f"Vetoed by {vote.agent_id}",
                     )
                     return result
 
@@ -257,9 +267,15 @@ class ConsensusManager:
                 return None
 
             # Calculate weighted votes
-            total_weight = sum(v.weight for v in votes if v.vote_type != VoteType.ABSTAIN)
-            approve_weight = sum(v.weight for v in votes if v.vote_type == VoteType.APPROVE)
-            reject_weight = sum(v.weight for v in votes if v.vote_type == VoteType.REJECT)
+            total_weight = sum(
+                v.weight for v in votes if v.vote_type != VoteType.ABSTAIN
+            )
+            approve_weight = sum(
+                v.weight for v in votes if v.vote_type == VoteType.APPROVE
+            )
+            reject_weight = sum(
+                v.weight for v in votes if v.vote_type == VoteType.REJECT
+            )
 
             if total_weight == 0:
                 return None
@@ -272,9 +288,13 @@ class ConsensusManager:
                 deciding_factor = f"Approval threshold met: {approval_percentage:.1%}"
             else:
                 state = ConsensusState.REJECTED
-                deciding_factor = f"Approval threshold not met: {approval_percentage:.1%}"
+                deciding_factor = (
+                    f"Approval threshold not met: {approval_percentage:.1%}"
+                )
 
-            result = await self._finalize_consensus(request, votes, state, deciding_factor)
+            result = await self._finalize_consensus(
+                request, votes, state, deciding_factor
+            )
             return result
 
     async def _finalize_consensus(
@@ -298,7 +318,9 @@ class ConsensusManager:
 
         # Collect conditions
         conditions = [
-            v.conditions for v in votes if v.conditions and v.vote_type == VoteType.APPROVE
+            v.conditions
+            for v in votes
+            if v.conditions and v.vote_type == VoteType.APPROVE
         ]
 
         result = ConsensusResult(
@@ -395,17 +417,29 @@ class ConsensusManager:
     async def get_pending_requests(self) -> List[ConsensusRequest]:
         """Get all pending consensus requests."""
         async with self._lock:
-            return [r for r in self._requests.values() if r.consensus_id not in self._results]
+            return [
+                r
+                for r in self._requests.values()
+                if r.consensus_id not in self._results
+            ]
 
     async def get_statistics(self) -> Dict[str, Any]:
         """Get consensus statistics."""
         async with self._lock:
             total_requests = len(self._requests)
             pending = sum(1 for cid in self._requests if cid not in self._results)
-            approved = sum(1 for r in self._results.values() if r.state == ConsensusState.APPROVED)
-            rejected = sum(1 for r in self._results.values() if r.state == ConsensusState.REJECTED)
-            vetoed = sum(1 for r in self._results.values() if r.state == ConsensusState.VETOED)
-            expired = sum(1 for r in self._results.values() if r.state == ConsensusState.EXPIRED)
+            approved = sum(
+                1 for r in self._results.values() if r.state == ConsensusState.APPROVED
+            )
+            rejected = sum(
+                1 for r in self._results.values() if r.state == ConsensusState.REJECTED
+            )
+            vetoed = sum(
+                1 for r in self._results.values() if r.state == ConsensusState.VETOED
+            )
+            expired = sum(
+                1 for r in self._results.values() if r.state == ConsensusState.EXPIRED
+            )
 
         return {
             "total_requests": total_requests,
@@ -415,7 +449,9 @@ class ConsensusManager:
             "vetoed": vetoed,
             "expired": expired,
             "approval_rate": (
-                approved / (approved + rejected) * 100 if (approved + rejected) > 0 else 0
+                approved / (approved + rejected) * 100
+                if (approved + rejected) > 0
+                else 0
             ),
         }
 

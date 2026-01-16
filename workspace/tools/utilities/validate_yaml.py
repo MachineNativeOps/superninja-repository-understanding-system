@@ -229,7 +229,9 @@ def main():
                 data = load_yaml(yaml_file)
                 schema = load_json_schema(schema_path)
 
-                schema_ok, schema_msg = validate_against_schema(data, schema, yaml_file.name)
+                schema_ok, schema_msg = validate_against_schema(
+                    data, schema, yaml_file.name
+                )
                 print(f"  {schema_msg}")
 
                 if not schema_ok:

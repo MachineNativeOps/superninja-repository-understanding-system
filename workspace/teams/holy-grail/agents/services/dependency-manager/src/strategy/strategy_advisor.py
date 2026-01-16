@@ -103,7 +103,9 @@ class TechCapabilityAssessment:
         if not self.capabilities:
             return 0.0
 
-        cap_avg = sum(c.get_score() for c in self.capabilities.values()) / len(self.capabilities)
+        cap_avg = sum(c.get_score() for c in self.capabilities.values()) / len(
+            self.capabilities
+        )
 
         weighted = (
             cap_avg * 0.5
@@ -116,7 +118,9 @@ class TechCapabilityAssessment:
 
     def get_strengths(self) -> list[str]:
         """獲取優勢領域"""
-        return [name for name, cap in self.capabilities.items() if cap.get_score() >= 70]
+        return [
+            name for name, cap in self.capabilities.items() if cap.get_score() >= 70
+        ]
 
     def get_gaps(self) -> list[str]:
         """獲取能力缺口"""
@@ -254,7 +258,13 @@ class StrategyAdvisor:
                 "security",
                 "testing",
             ],
-            "data": ["analytics", "ml_ai", "data_engineering", "visualization", "governance"],
+            "data": [
+                "analytics",
+                "ml_ai",
+                "data_engineering",
+                "visualization",
+                "governance",
+            ],
             "business": [
                 "product_management",
                 "ux_design",
@@ -563,7 +573,9 @@ class StrategyAdvisor:
         if overall_score >= 70 and timing_score >= 60:
             # 高能力 + 好時機 → 積極擴張
             recommendations.append(
-                self._create_expansion_strategy(capability_assessment, market_analysis, constraints)
+                self._create_expansion_strategy(
+                    capability_assessment, market_analysis, constraints
+                )
             )
 
         if overall_score < 50:
@@ -574,7 +586,9 @@ class StrategyAdvisor:
 
         if "growth" in [g.lower() for g in business_goals]:
             # 追求增長 → 市場擴張策略
-            recommendations.append(self._create_growth_strategy(market_analysis, constraints))
+            recommendations.append(
+                self._create_growth_strategy(market_analysis, constraints)
+            )
 
         if "innovation" in [g.lower() for g in business_goals]:
             # 追求創新 → 技術創新策略
@@ -590,13 +604,19 @@ class StrategyAdvisor:
 
         # 按優先級和信心分數排序
         recommendations.sort(
-            key=lambda r: (list(StrategicPriority).index(r.priority), -r.confidence_score)
+            key=lambda r: (
+                list(StrategicPriority).index(r.priority),
+                -r.confidence_score,
+            )
         )
 
         return recommendations
 
     def _create_expansion_strategy(
-        self, cap: TechCapabilityAssessment, market: MarketTimingAnalysis, constraints: dict
+        self,
+        cap: TechCapabilityAssessment,
+        market: MarketTimingAnalysis,
+        constraints: dict,
     ) -> StrategyRecommendation:
         """創建擴張策略"""
         budget = constraints.get("budget", 1000000)
@@ -638,7 +658,11 @@ class StrategyAdvisor:
             strategy_name="技術能力建設",
             priority=StrategicPriority.CRITICAL,
             rationale=f"團隊能力存在缺口: {', '.join(gaps[:3])}",
-            prerequisites=["管理層認同投資需求", "確定重點發展領域", "建立人才招募管道"],
+            prerequisites=[
+                "管理層認同投資需求",
+                "確定重點發展領域",
+                "建立人才招募管道",
+            ],
             expected_outcomes=["技術能力提升 30%", "降低技術債務", "提升交付效率"],
             estimated_timeline_months=12,
             estimated_investment={

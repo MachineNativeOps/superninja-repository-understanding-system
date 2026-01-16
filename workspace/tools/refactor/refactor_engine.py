@@ -152,7 +152,9 @@ class DirectoryAnalyzer:
         self._build_files_cache()
 
         overview = self._analyze_overview()
-        print(f"  ✓ 目錄概覽: {overview['total_files']} 檔案, {overview['total_directories']} 目錄")
+        print(
+            f"  ✓ 目錄概覽: {overview['total_files']} 檔案, {overview['total_directories']} 目錄"
+        )
 
         problems = self._identify_problems()
         print(f"  ✓ 識別問題: {len(problems)} 個")
@@ -216,7 +218,9 @@ class DirectoryAnalyzer:
         for f in files:
             try:
                 size = f.stat().st_size
-                sized_files.append({"path": str(f.relative_to(self.target)), "size": size})
+                sized_files.append(
+                    {"path": str(f.relative_to(self.target)), "size": size}
+                )
             except BaseException:
                 pass
         return sorted(sized_files, key=lambda x: -x["size"])[:n]
@@ -429,7 +433,9 @@ class DirectoryAnalyzer:
                     if playbook_path and playbook_path != "_pending":
                         full_path = self.target / playbook_path
                         if not full_path.exists():
-                            issues.append(f"index.yaml 引用不存在的檔案: {playbook_path}")
+                            issues.append(
+                                f"index.yaml 引用不存在的檔案: {playbook_path}"
+                            )
             except Exception as e:
                 issues.append(f"無法解析 index.yaml: {e}")
 
@@ -530,7 +536,9 @@ class DirectoryAnalyzer:
             rec = {
                 "problem_id": problem.id,
                 "priority": (
-                    "P1" if problem.severity in [SEVERITY_CRITICAL, SEVERITY_HIGH] else "P2"
+                    "P1"
+                    if problem.severity in [SEVERITY_CRITICAL, SEVERITY_HIGH]
+                    else "P2"
                 ),
                 "action": problem.suggested_action,
                 "effort": "low" if problem.category == CATEGORY_NAMING else "medium",
@@ -572,7 +580,11 @@ class PlanGenerator:
                 "total_files": self.analysis.overview["total_files"],
                 "problems_count": len(self.analysis.problems),
                 "critical_problems": len(
-                    [p for p in self.analysis.problems if p.severity == SEVERITY_CRITICAL]
+                    [
+                        p
+                        for p in self.analysis.problems
+                        if p.severity == SEVERITY_CRITICAL
+                    ]
                 ),
                 "high_problems": len(
                     [p for p in self.analysis.problems if p.severity == SEVERITY_HIGH]
@@ -588,7 +600,10 @@ class PlanGenerator:
         phases = []
 
         # P1 階段 (1-3): 緊急結構修復
-        if any(p.severity in [SEVERITY_CRITICAL, SEVERITY_HIGH] for p in self.analysis.problems):
+        if any(
+            p.severity in [SEVERITY_CRITICAL, SEVERITY_HIGH]
+            for p in self.analysis.problems
+        ):
             phases.extend(self._generate_p1_phases())
 
         # P2 階段 (4-6): 組織優化
@@ -683,7 +698,10 @@ class PlanGenerator:
                         priority="P2",
                         description="建立 _legacy_scratch 子目錄結構",
                         steps=[
-                            {"operation": "create_directory", "target": "_legacy_scratch/intake/"},
+                            {
+                                "operation": "create_directory",
+                                "target": "_legacy_scratch/intake/",
+                            },
                             {
                                 "operation": "create_directory",
                                 "target": "_legacy_scratch/processing/",
@@ -692,7 +710,10 @@ class PlanGenerator:
                                 "operation": "create_directory",
                                 "target": "_legacy_scratch/analyzed/",
                             },
-                            {"operation": "create_directory", "target": "_legacy_scratch/archive/"},
+                            {
+                                "operation": "create_directory",
+                                "target": "_legacy_scratch/archive/",
+                            },
                         ],
                         validation={"check": "scratch_structure"},
                     )
@@ -916,7 +937,9 @@ class Executor:
         result = {"executed": [], "failed": []}
 
         for i, step in enumerate(phase.steps):
-            step_desc = f"  [{i+1}/{len(phase.steps)}] {step.get('operation', 'unknown')}"
+            step_desc = (
+                f"  [{i+1}/{len(phase.steps)}] {step.get('operation', 'unknown')}"
+            )
 
             if self.dry_run:
                 print(f"{step_desc} → 模擬完成")
@@ -1050,7 +1073,9 @@ class Executor:
 
                     for old_pattern, new_pattern in patterns:
                         if old_pattern in updated_content:
-                            updated_content = updated_content.replace(old_pattern, new_pattern)
+                            updated_content = updated_content.replace(
+                                old_pattern, new_pattern
+                            )
                             has_changes = True
 
                 # 如果有變更，寫回文件
@@ -1136,7 +1161,9 @@ class Validator:
                     if ref.startswith(("./", "../")) and not ref.startswith("http"):
                         ref_path = file.parent / ref
                         if not ref_path.exists():
-                            errors.append(f"{file.relative_to(self.target)}: 斷開的引用 {ref}")
+                            errors.append(
+                                f"{file.relative_to(self.target)}: 斷開的引用 {ref}"
+                            )
             except BaseException:
                 pass
 
@@ -1275,7 +1302,10 @@ def main():
     plan_parser.add_argument("--target", required=True, help="目標目錄")
     plan_parser.add_argument("--output", required=True, help="計畫輸出路徑")
     plan_parser.add_argument(
-        "--priority", default="all", choices=["P1", "P2", "P3", "all"], help="優先級篩選"
+        "--priority",
+        default="all",
+        choices=["P1", "P2", "P3", "all"],
+        help="優先級篩選",
     )
 
     # execute 命令
@@ -1318,7 +1348,9 @@ def main():
         if args.format == "md":
             output = report_gen.generate_markdown()
         elif args.format == "json":
-            output = json.dumps(report_gen.generate_yaml(), indent=2, ensure_ascii=False)
+            output = json.dumps(
+                report_gen.generate_yaml(), indent=2, ensure_ascii=False
+            )
         else:
             output = yaml.dump(
                 report_gen.generate_yaml(),
@@ -1343,7 +1375,13 @@ def main():
 
         plan_dict = asdict(plan)
         with open(args.output, "w", encoding="utf-8") as f:
-            yaml.dump(plan_dict, f, allow_unicode=True, default_flow_style=False, sort_keys=False)
+            yaml.dump(
+                plan_dict,
+                f,
+                allow_unicode=True,
+                default_flow_style=False,
+                sort_keys=False,
+            )
 
         print(f"\n✅ 計畫已生成: {args.output}")
         print(f"   階段數: {len(plan.phases)}")
@@ -1404,7 +1442,9 @@ def main():
         print(f"🔄 回滾到檢查點: {args.checkpoint}")
 
         # 確定目標目錄
-        target_dir = Path(args.target) if args.target else Path("docs/refactor_playbooks")
+        target_dir = (
+            Path(args.target) if args.target else Path("docs/refactor_playbooks")
+        )
         backup_base = target_dir / ".refactor_backup"
 
         if not backup_base.exists():
@@ -1414,7 +1454,9 @@ def main():
         # 找到檢查點
         if args.checkpoint == "latest":
             # 找最新的備份
-            checkpoints = sorted([d for d in backup_base.iterdir() if d.is_dir()], reverse=True)
+            checkpoints = sorted(
+                [d for d in backup_base.iterdir() if d.is_dir()], reverse=True
+            )
             if not checkpoints:
                 print("❌ 錯誤: 沒有可用的檢查點")
                 sys.exit(1)

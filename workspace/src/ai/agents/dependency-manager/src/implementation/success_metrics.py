@@ -61,7 +61,9 @@ class TechnicalMetric:
 
     def add_data_point(self, value: float, notes: str = "") -> None:
         """添加數據點"""
-        self.data_points.append(MetricDataPoint(value=value, timestamp=datetime.now(), notes=notes))
+        self.data_points.append(
+            MetricDataPoint(value=value, timestamp=datetime.now(), notes=notes)
+        )
 
     def current_value(self) -> Optional[float]:
         """獲取當前值"""
@@ -100,7 +102,7 @@ class TechnicalMetric:
             return MetricTrend.STABLE
 
         avg_first = statistics.mean(recent[: len(recent) // 2])
-        avg_second = statistics.mean(recent[len(recent) // 2 :])
+        avg_second = statistics.mean(recent[len(recent) // 2:])
 
         threshold = 0.05  # 5% 變化閾值
         if avg_second > avg_first * (1 + threshold):
@@ -155,7 +157,9 @@ class BusinessMetric:
 
     def add_data_point(self, value: float, notes: str = "") -> None:
         """添加數據點"""
-        self.data_points.append(MetricDataPoint(value=value, timestamp=datetime.now(), notes=notes))
+        self.data_points.append(
+            MetricDataPoint(value=value, timestamp=datetime.now(), notes=notes)
+        )
 
     def current_value(self) -> Optional[float]:
         """獲取當前值"""
@@ -194,7 +198,7 @@ class BusinessMetric:
             return MetricTrend.STABLE
 
         avg_first = statistics.mean(recent[: len(recent) // 2])
-        avg_second = statistics.mean(recent[len(recent) // 2 :])
+        avg_second = statistics.mean(recent[len(recent) // 2:])
 
         threshold = 0.05
         if avg_second > avg_first * (1 + threshold):
@@ -246,7 +250,9 @@ class OrganizationalMetric:
 
     def add_data_point(self, value: float, notes: str = "") -> None:
         """添加數據點"""
-        self.data_points.append(MetricDataPoint(value=value, timestamp=datetime.now(), notes=notes))
+        self.data_points.append(
+            MetricDataPoint(value=value, timestamp=datetime.now(), notes=notes)
+        )
 
     def current_value(self) -> Optional[float]:
         """獲取當前值"""

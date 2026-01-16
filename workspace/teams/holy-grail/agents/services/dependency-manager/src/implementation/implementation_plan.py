@@ -84,7 +84,9 @@ class Task:
             "dependencies": self.dependencies,
             "start_date": self.start_date.isoformat() if self.start_date else None,
             "end_date": self.end_date.isoformat() if self.end_date else None,
-            "completed_date": self.completed_date.isoformat() if self.completed_date else None,
+            "completed_date": (
+                self.completed_date.isoformat() if self.completed_date else None
+            ),
             "progress": self.progress_percentage(),
             "is_overdue": self.is_overdue(),
         }
@@ -139,7 +141,9 @@ class Milestone:
             "description": self.description,
             "target_date": self.target_date.isoformat(),
             "completed": self.completed,
-            "completed_date": self.completed_date.isoformat() if self.completed_date else None,
+            "completed_date": (
+                self.completed_date.isoformat() if self.completed_date else None
+            ),
             "progress": self.progress_percentage(),
             "is_on_track": self.is_on_track(),
             "deliverables": self.deliverables,
@@ -172,7 +176,9 @@ class Phase:
         """計算階段進度"""
         if not self.milestones:
             return 0.0
-        return sum(m.progress_percentage() for m in self.milestones) / len(self.milestones)
+        return sum(m.progress_percentage() for m in self.milestones) / len(
+            self.milestones
+        )
 
     def is_current(self, current_month: int) -> bool:
         """檢查是否為當前階段"""
@@ -315,7 +321,11 @@ class ImplementationPlan:
             description="評估策略成效、調整發展方向、準備下一年度規劃",
             start_month=10,
             end_month=12,
-            objectives=["評估各提示詞策略成效", "調整未來發展方向", "準備下一年度的技術路線圖"],
+            objectives=[
+                "評估各提示詞策略成效",
+                "調整未來發展方向",
+                "準備下一年度的技術路線圖",
+            ],
             key_activities=[
                 "收集並分析各項指標數據",
                 "進行策略成效評估",
@@ -427,7 +437,9 @@ class ImplementationPlan:
         ]
 
         for phase in self.phases:
-            lines.append(f"## {phase.name} (第 {phase.start_month}-{phase.end_month} 月)")
+            lines.append(
+                f"## {phase.name} (第 {phase.start_month}-{phase.end_month} 月)"
+            )
             lines.append("")
             lines.append(f"**階段類型：** {phase.phase_type.value}")
             lines.append(f"**進度：** {phase.progress_percentage():.1f}%")

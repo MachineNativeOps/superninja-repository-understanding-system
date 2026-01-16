@@ -214,7 +214,9 @@ class GeneticOptimizer:
                 return individual
         return sorted_pop[-1]
 
-    def _crossover(self, parent1: Individual, parent2: Individual) -> Tuple[Individual, Individual]:
+    def _crossover(
+        self, parent1: Individual, parent2: Individual
+    ) -> Tuple[Individual, Individual]:
         """Perform crossover between two parents."""
         child1_genes = {}
         child2_genes = {}

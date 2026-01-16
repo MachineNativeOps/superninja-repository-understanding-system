@@ -78,7 +78,9 @@ class InputAnalysisAgent(BaseAgent):
                 error_message=str(e),
             )
 
-    async def _analyze_input(self, user_input: str, context: Dict[str, Any]) -> Dict[str, Any]:
+    async def _analyze_input(
+        self, user_input: str, context: Dict[str, Any]
+    ) -> Dict[str, Any]:
         """深度分析用戶輸入"""
         analysis = {
             "original_input": user_input,
@@ -116,8 +118,16 @@ class InputAnalysisAgent(BaseAgent):
         """生成技術規格"""
         tech_specs = {
             "architecture": "microservices",
-            "frontend": {"framework": "react", "styling": "tailwind", "state_management": "redux"},
-            "backend": {"framework": "fastapi", "database": "postgresql", "cache": "redis"},
+            "frontend": {
+                "framework": "react",
+                "styling": "tailwind",
+                "state_management": "redux",
+            },
+            "backend": {
+                "framework": "fastapi",
+                "database": "postgresql",
+                "cache": "redis",
+            },
             "infrastructure": {
                 "deployment": "docker",
                 "orchestration": "kubernetes",
@@ -135,7 +145,9 @@ class InputAnalysisAgent(BaseAgent):
 
         return tech_specs
 
-    async def _create_execution_plan(self, tech_specs: Dict[str, Any]) -> Dict[str, Any]:
+    async def _create_execution_plan(
+        self, tech_specs: Dict[str, Any]
+    ) -> Dict[str, Any]:
         """創建執行計劃"""
         return {
             "phases": [

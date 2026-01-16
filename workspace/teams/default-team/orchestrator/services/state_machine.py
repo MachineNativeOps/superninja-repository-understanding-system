@@ -26,7 +26,9 @@ from .event_store import EventStore
 class TransitionError(Exception):
     """Error during state transition."""
 
-    def __init__(self, message: str, from_state: IncidentState, to_state: IncidentState):
+    def __init__(
+        self, message: str, from_state: IncidentState, to_state: IncidentState
+    ):
         super().__init__(message)
         self.from_state = from_state
         self.to_state = to_state
@@ -133,7 +135,9 @@ class IncidentStateMachine:
 
             # Validate transition
             if not incident.can_transition_to(to_state):
-                error = f"Invalid transition from {from_state.value} to {to_state.value}"
+                error = (
+                    f"Invalid transition from {from_state.value} to {to_state.value}"
+                )
                 return False, error
 
             # Execute pre-hooks

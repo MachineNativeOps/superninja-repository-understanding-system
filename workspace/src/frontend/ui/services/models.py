@@ -8,18 +8,16 @@
 ============================================================================
 """
 
-from sqlalchemy.orm import Session, sessionmaker
-from sqlalchemy import create_engine
-from contextlib import contextmanager
 import enum
+from contextlib import contextmanager
 from datetime import datetime
 from typing import Any, Dict, List, Optional
 
 from sqlalchemy import JSON, Column, DateTime
 from sqlalchemy import Enum as SQLEnum
-from sqlalchemy import Float, ForeignKey, Index, Integer, String, Text
+from sqlalchemy import Float, ForeignKey, Index, Integer, String, Text, create_engine
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import relationship
+from sqlalchemy.orm import Session, relationship, sessionmaker
 
 Base = declarative_base()
 
@@ -101,7 +99,9 @@ class AnalysisRecord(Base):
     error_message = Column(Text, nullable=True)
 
     # 關聯
-    issues = relationship("IssueRecord", back_populates="analysis", cascade="all, delete-orphan")
+    issues = relationship(
+        "IssueRecord", back_populates="analysis", cascade="all, delete-orphan"
+    )
 
     # 索引
     __table_args__ = (
@@ -120,7 +120,9 @@ class AnalysisRecord(Base):
             "strategy": self.strategy,
             "created_at": self.created_at.isoformat() if self.created_at else None,
             "started_at": self.started_at.isoformat() if self.started_at else None,
-            "completed_at": self.completed_at.isoformat() if self.completed_at else None,
+            "completed_at": (
+                self.completed_at.isoformat() if self.completed_at else None
+            ),
             "duration": self.duration,
             "total_issues": self.total_issues,
             "critical_issues": self.critical_issues,
@@ -141,7 +143,9 @@ class IssueRecord(Base):
     id = Column(String(36), primary_key=True)
 
     # 外鍵
-    analysis_id = Column(String(36), ForeignKey("analysis_records.id"), nullable=False, index=True)
+    analysis_id = Column(
+        String(36), ForeignKey("analysis_records.id"), nullable=False, index=True
+    )
 
     # 問題分類
     type = Column(SQLEnum(IssueType), nullable=False, index=True)
@@ -212,7 +216,9 @@ class DatabaseManager:
             echo=False,
             pool_pre_ping=True,
         )
-        self.SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=self.engine)
+        self.SessionLocal = sessionmaker(
+            autocommit=False, autoflush=False, bind=self.engine
+        )
 
     def create_tables(self):
         """創建所有表"""

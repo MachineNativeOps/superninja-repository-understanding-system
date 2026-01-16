@@ -1,13 +1,45 @@
 {
   "summary": {
-    "files_analyzed": 1149,
-    "lines_analyzed": 376574,
-    "total_issues": 959,
+    "files_analyzed": 1152,
+    "lines_analyzed": 390133,
+    "total_issues": 950,
     "high_severity": 0,
     "medium_severity": 0,
-    "low_severity": 871
+    "low_severity": 853
   },
   "issues": [
+    {
+      "severity": "低",
+      "location": "/workspace/machine-native-ops/fix_phase4a_safe_issues.py:25",
+      "issue_type": "代碼風格",
+      "description": "Import order: Standard library imports should come before third party imports",
+      "solution": "Reorder imports to follow PEP 8",
+      "fixed_code": null
+    },
+    {
+      "severity": "高危",
+      "location": "/workspace/machine-native-ops/fix_phase4a_safe_issues.py:38",
+      "issue_type": "安全漏洞",
+      "description": "高危：shell=True 可能導致命令注入",
+      "solution": "使用更安全的替代方案",
+      "fixed_code": null
+    },
+    {
+      "severity": "高危",
+      "location": "/workspace/machine-native-ops/fix_phase4a_safe_issues.py:101",
+      "issue_type": "安全漏洞",
+      "description": "高危：shell=True 可能導致命令注入",
+      "solution": "使用更安全的替代方案",
+      "fixed_code": null
+    },
+    {
+      "severity": "高危",
+      "location": "/workspace/machine-native-ops/fix_phase4a_safe_issues.py:168",
+      "issue_type": "安全漏洞",
+      "description": "高危：shell=True 可能導致命令注入",
+      "solution": "使用更安全的替代方案",
+      "fixed_code": null
+    },
     {
       "severity": "低",
       "location": "/workspace/machine-native-ops/fix_code_quality.py:11",
@@ -130,7 +162,7 @@
     },
     {
       "severity": "高危",
-      "location": "/workspace/machine-native-ops/fix_remaining_issues.py:161",
+      "location": "/workspace/machine-native-ops/fix_remaining_issues.py:172",
       "issue_type": "安全漏洞",
       "description": "高危：使用 eval() 可能導致代碼注入漏洞",
       "solution": "使用更安全的替代方案",
@@ -138,7 +170,7 @@
     },
     {
       "severity": "高危",
-      "location": "/workspace/machine-native-ops/fix_remaining_issues.py:166",
+      "location": "/workspace/machine-native-ops/fix_remaining_issues.py:177",
       "issue_type": "安全漏洞",
       "description": "高危：使用 eval() 可能導致代碼注入漏洞",
       "solution": "使用更安全的替代方案",
@@ -146,7 +178,7 @@
     },
     {
       "severity": "高危",
-      "location": "/workspace/machine-native-ops/fix_remaining_issues.py:169",
+      "location": "/workspace/machine-native-ops/fix_remaining_issues.py:180",
       "issue_type": "安全漏洞",
       "description": "高危：使用 eval() 可能導致代碼注入漏洞",
       "solution": "使用更安全的替代方案",
@@ -154,7 +186,7 @@
     },
     {
       "severity": "高危",
-      "location": "/workspace/machine-native-ops/fix_remaining_issues.py:173",
+      "location": "/workspace/machine-native-ops/fix_remaining_issues.py:184",
       "issue_type": "安全漏洞",
       "description": "高危：使用 eval() 可能導致代碼注入漏洞",
       "solution": "使用更安全的替代方案",
@@ -162,7 +194,7 @@
     },
     {
       "severity": "高危",
-      "location": "/workspace/machine-native-ops/fix_remaining_issues.py:175",
+      "location": "/workspace/machine-native-ops/fix_remaining_issues.py:186",
       "issue_type": "安全漏洞",
       "description": "高危：使用 eval() 可能導致代碼注入漏洞",
       "solution": "使用更安全的替代方案",
@@ -170,7 +202,7 @@
     },
     {
       "severity": "高危",
-      "location": "/workspace/machine-native-ops/fix_remaining_issues.py:178",
+      "location": "/workspace/machine-native-ops/fix_remaining_issues.py:189",
       "issue_type": "安全漏洞",
       "description": "高危：使用 eval() 可能導致代碼注入漏洞",
       "solution": "使用更安全的替代方案",
@@ -178,7 +210,7 @@
     },
     {
       "severity": "高危",
-      "location": "/workspace/machine-native-ops/fix_remaining_issues.py:181",
+      "location": "/workspace/machine-native-ops/fix_remaining_issues.py:192",
       "issue_type": "安全漏洞",
       "description": "高危：使用 eval() 可能導致代碼注入漏洞",
       "solution": "使用更安全的替代方案",
@@ -186,7 +218,7 @@
     },
     {
       "severity": "高危",
-      "location": "/workspace/machine-native-ops/fix_remaining_issues.py:230",
+      "location": "/workspace/machine-native-ops/fix_remaining_issues.py:241",
       "issue_type": "安全漏洞",
       "description": "高危：使用 eval() 可能導致代碼注入漏洞",
       "solution": "使用更安全的替代方案",
@@ -194,7 +226,7 @@
     },
     {
       "severity": "高危",
-      "location": "/workspace/machine-native-ops/fix_remaining_issues.py:310",
+      "location": "/workspace/machine-native-ops/fix_remaining_issues.py:325",
       "issue_type": "安全漏洞",
       "description": "高危：使用 eval() 可能導致代碼注入漏洞",
       "solution": "使用更安全的替代方案",
@@ -202,7 +234,7 @@
     },
     {
       "severity": "高危",
-      "location": "/workspace/machine-native-ops/fix_remaining_issues.py:344",
+      "location": "/workspace/machine-native-ops/fix_remaining_issues.py:361",
       "issue_type": "安全漏洞",
       "description": "高危：使用 eval() 可能導致代碼注入漏洞",
       "solution": "使用更安全的替代方案",
@@ -210,7 +242,7 @@
     },
     {
       "severity": "低",
-      "location": "/workspace/machine-native-ops/fix_remaining_issues.py:55",
+      "location": "/workspace/machine-native-ops/fix_remaining_issues.py:59",
       "issue_type": "代碼氣味",
       "description": "硬編碼的 HTTP URL",
       "solution": "Use configuration files or environment variables",
@@ -218,7 +250,7 @@
     },
     {
       "severity": "低",
-      "location": "/workspace/machine-native-ops/fix_remaining_issues.py:56",
+      "location": "/workspace/machine-native-ops/fix_remaining_issues.py:60",
       "issue_type": "代碼氣味",
       "description": "硬編碼的 HTTP URL",
       "solution": "Use configuration files or environment variables",
@@ -226,7 +258,7 @@
     },
     {
       "severity": "低",
-      "location": "/workspace/machine-native-ops/fix_remaining_issues.py:57",
+      "location": "/workspace/machine-native-ops/fix_remaining_issues.py:63",
       "issue_type": "代碼氣味",
       "description": "硬編碼的 HTTP URL",
       "solution": "Use configuration files or environment variables",
@@ -234,7 +266,7 @@
     },
     {
       "severity": "低",
-      "location": "/workspace/machine-native-ops/fix_remaining_issues.py:58",
+      "location": "/workspace/machine-native-ops/fix_remaining_issues.py:64",
       "issue_type": "代碼氣味",
       "description": "硬編碼的 HTTP URL",
       "solution": "Use configuration files or environment variables",
@@ -1010,7 +1042,7 @@
     },
     {
       "severity": "高危",
-      "location": "/workspace/machine-native-ops/workspace/teams/holy-grail/automation/architect/core/analysis/security_scanner.py:102",
+      "location": "/workspace/machine-native-ops/workspace/teams/holy-grail/automation/architect/core/analysis/security_scanner.py:114",
       "issue_type": "安全漏洞",
       "description": "高危：使用 eval() 可能導致代碼注入漏洞",
       "solution": "使用更安全的替代方案",
@@ -1210,23 +1242,7 @@
     },
     {
       "severity": "低",
-      "location": "/workspace/machine-native-ops/workspace/teams/holy-grail/agents/pipeline/code_generation_agent.py:757",
-      "issue_type": "代碼氣味",
-      "description": "硬編碼的 HTTP URL",
-      "solution": "Use configuration files or environment variables",
-      "fixed_code": null
-    },
-    {
-      "severity": "低",
-      "location": "/workspace/machine-native-ops/workspace/teams/holy-grail/agents/pipeline/code_generation_agent.py:818",
-      "issue_type": "代碼氣味",
-      "description": "硬編碼的 HTTP URL",
-      "solution": "Use configuration files or environment variables",
-      "fixed_code": null
-    },
-    {
-      "severity": "低",
-      "location": "/workspace/machine-native-ops/workspace/teams/holy-grail/agents/pipeline/code_generation_agent.py:819",
+      "location": "/workspace/machine-native-ops/workspace/teams/holy-grail/agents/pipeline/code_generation_agent.py:771",
       "issue_type": "代碼氣味",
       "description": "硬編碼的 HTTP URL",
       "solution": "Use configuration files or environment variables",
@@ -1243,6 +1259,22 @@
     {
       "severity": "低",
       "location": "/workspace/machine-native-ops/workspace/teams/holy-grail/agents/pipeline/code_generation_agent.py:833",
+      "issue_type": "代碼氣味",
+      "description": "硬編碼的 HTTP URL",
+      "solution": "Use configuration files or environment variables",
+      "fixed_code": null
+    },
+    {
+      "severity": "低",
+      "location": "/workspace/machine-native-ops/workspace/teams/holy-grail/agents/pipeline/code_generation_agent.py:846",
+      "issue_type": "代碼氣味",
+      "description": "硬編碼的 HTTP URL",
+      "solution": "Use configuration files or environment variables",
+      "fixed_code": null
+    },
+    {
+      "severity": "低",
+      "location": "/workspace/machine-native-ops/workspace/teams/holy-grail/agents/pipeline/code_generation_agent.py:847",
       "issue_type": "代碼氣味",
       "description": "硬編碼的 HTTP URL",
       "solution": "Use configuration files or environment variables",
@@ -1282,7 +1314,7 @@
     },
     {
       "severity": "低",
-      "location": "/workspace/machine-native-ops/workspace/teams/holy-grail/agents/pipeline/deployment_agent.py:495",
+      "location": "/workspace/machine-native-ops/workspace/teams/holy-grail/agents/pipeline/deployment_agent.py:542",
       "issue_type": "代碼氣味",
       "description": "硬編碼的 HTTP URL",
       "solution": "Use configuration files or environment variables",
@@ -1290,7 +1322,7 @@
     },
     {
       "severity": "低",
-      "location": "/workspace/machine-native-ops/workspace/teams/holy-grail/agents/pipeline/deployment_agent.py:502",
+      "location": "/workspace/machine-native-ops/workspace/teams/holy-grail/agents/pipeline/deployment_agent.py:549",
       "issue_type": "代碼氣味",
       "description": "硬編碼的 HTTP URL",
       "solution": "Use configuration files or environment variables",
@@ -1306,7 +1338,7 @@
     },
     {
       "severity": "高危",
-      "location": "/workspace/machine-native-ops/workspace/teams/holy-grail/agents/autonomous/pipeline_service.py:333",
+      "location": "/workspace/machine-native-ops/workspace/teams/holy-grail/agents/autonomous/pipeline_service.py:361",
       "issue_type": "安全漏洞",
       "description": "高危：使用 eval() 可能導致代碼注入漏洞",
       "solution": "使用更安全的替代方案",
@@ -1354,7 +1386,7 @@
     },
     {
       "severity": "中危",
-      "location": "/workspace/machine-native-ops/workspace/teams/holy-grail/agents/autonomous/auto_upgrade_env.py:118",
+      "location": "/workspace/machine-native-ops/workspace/teams/holy-grail/agents/autonomous/auto_upgrade_env.py:120",
       "issue_type": "安全漏洞",
       "description": "中危：MD5 不是安全的哈希算法",
       "solution": "使用更安全的替代方案",
@@ -1410,7 +1442,7 @@
     },
     {
       "severity": "高危",
-      "location": "/workspace/machine-native-ops/workspace/teams/holy-grail/agents/autonomous/test-vectors/generator.py:218",
+      "location": "/workspace/machine-native-ops/workspace/teams/holy-grail/agents/autonomous/test-vectors/generator.py:221",
       "issue_type": "安全漏洞",
       "description": "高危：使用 eval() 可能導致代碼注入漏洞",
       "solution": "使用更安全的替代方案",
@@ -1418,7 +1450,7 @@
     },
     {
       "severity": "低危",
-      "location": "/workspace/machine-native-ops/workspace/teams/holy-grail/agents/autonomous/test-vectors/generator.py:221",
+      "location": "/workspace/machine-native-ops/workspace/teams/holy-grail/agents/autonomous/test-vectors/generator.py:224",
       "issue_type": "安全漏洞",
       "description": "低危：明文密碼可能泄露",
       "solution": "使用更安全的替代方案",
@@ -1426,7 +1458,7 @@
     },
     {
       "severity": "低",
-      "location": "/workspace/machine-native-ops/workspace/teams/holy-grail/agents/autonomous/test-vectors/generator.py:221",
+      "location": "/workspace/machine-native-ops/workspace/teams/holy-grail/agents/autonomous/test-vectors/generator.py:224",
       "issue_type": "代碼氣味",
       "description": "可能的硬編碼密碼",
       "solution": "Use configuration files or environment variables",
@@ -1435,22 +1467,6 @@
     {
       "severity": "低",
       "location": "/workspace/machine-native-ops/workspace/teams/holy-grail/agents/autonomous/migration/migrator.py:8",
-      "issue_type": "代碼風格",
-      "description": "Import order: Standard library imports should come before third party imports",
-      "solution": "Reorder imports to follow PEP 8",
-      "fixed_code": null
-    },
-    {
-      "severity": "低",
-      "location": "/workspace/machine-native-ops/workspace/teams/holy-grail/agents/autonomous/migration/scripts/v2_to_v1.py:8",
-      "issue_type": "代碼風格",
-      "description": "Import order: Standard library imports should come before third party imports",
-      "solution": "Reorder imports to follow PEP 8",
-      "fixed_code": null
-    },
-    {
-      "severity": "低",
-      "location": "/workspace/machine-native-ops/workspace/teams/holy-grail/agents/autonomous/migration/scripts/v1_to_v2.py:8",
       "issue_type": "代碼風格",
       "description": "Import order: Standard library imports should come before third party imports",
       "solution": "Reorder imports to follow PEP 8",
@@ -1474,7 +1490,7 @@
     },
     {
       "severity": "高危",
-      "location": "/workspace/machine-native-ops/workspace/teams/holy-grail/agents/autonomous/agents/task_executor.py:129",
+      "location": "/workspace/machine-native-ops/workspace/teams/holy-grail/agents/autonomous/agents/task_executor.py:135",
       "issue_type": "安全漏洞",
       "description": "高危：使用 eval() 可能導致代碼注入漏洞",
       "solution": "使用更安全的替代方案",
@@ -1482,7 +1498,7 @@
     },
     {
       "severity": "高危",
-      "location": "/workspace/machine-native-ops/workspace/teams/holy-grail/agents/autonomous/agents/task_executor.py:129",
+      "location": "/workspace/machine-native-ops/workspace/teams/holy-grail/agents/autonomous/agents/task_executor.py:135",
       "issue_type": "安全漏洞",
       "description": "高危：使用 exec() 可能導致代碼注入漏洞",
       "solution": "使用更安全的替代方案",
@@ -1490,23 +1506,7 @@
     },
     {
       "severity": "高危",
-      "location": "/workspace/machine-native-ops/workspace/teams/holy-grail/agents/autonomous/agents/task_executor.py:231",
-      "issue_type": "安全漏洞",
-      "description": "高危：使用 eval() 可能導致代碼注入漏洞",
-      "solution": "使用更安全的替代方案",
-      "fixed_code": null
-    },
-    {
-      "severity": "高危",
-      "location": "/workspace/machine-native-ops/workspace/teams/holy-grail/agents/autonomous/agents/task_executor.py:231",
-      "issue_type": "安全漏洞",
-      "description": "高危：使用 exec() 可能導致代碼注入漏洞",
-      "solution": "使用更安全的替代方案",
-      "fixed_code": null
-    },
-    {
-      "severity": "高危",
-      "location": "/workspace/machine-native-ops/workspace/teams/holy-grail/agents/autonomous/agents/task_executor.py:233",
+      "location": "/workspace/machine-native-ops/workspace/teams/holy-grail/agents/autonomous/agents/task_executor.py:234",
       "issue_type": "安全漏洞",
       "description": "高危：使用 eval() 可能導致代碼注入漏洞",
       "solution": "使用更安全的替代方案",
@@ -1522,7 +1522,23 @@
     },
     {
       "severity": "高危",
-      "location": "/workspace/machine-native-ops/workspace/teams/holy-grail/agents/autonomous/agents/task_executor.py:290",
+      "location": "/workspace/machine-native-ops/workspace/teams/holy-grail/agents/autonomous/agents/task_executor.py:236",
+      "issue_type": "安全漏洞",
+      "description": "高危：使用 eval() 可能導致代碼注入漏洞",
+      "solution": "使用更安全的替代方案",
+      "fixed_code": null
+    },
+    {
+      "severity": "高危",
+      "location": "/workspace/machine-native-ops/workspace/teams/holy-grail/agents/autonomous/agents/task_executor.py:237",
+      "issue_type": "安全漏洞",
+      "description": "高危：使用 exec() 可能導致代碼注入漏洞",
+      "solution": "使用更安全的替代方案",
+      "fixed_code": null
+    },
+    {
+      "severity": "高危",
+      "location": "/workspace/machine-native-ops/workspace/teams/holy-grail/agents/autonomous/agents/task_executor.py:293",
       "issue_type": "安全漏洞",
       "description": "高危：使用 eval() 可能導致代碼注入漏洞",
       "solution": "使用更安全的替代方案",
@@ -1530,7 +1546,7 @@
     },
     {
       "severity": "低危",
-      "location": "/workspace/machine-native-ops/workspace/teams/holy-grail/agents/autonomous/agents/task_executor.py:291",
+      "location": "/workspace/machine-native-ops/workspace/teams/holy-grail/agents/autonomous/agents/task_executor.py:294",
       "issue_type": "安全漏洞",
       "description": "低危：明文密碼可能泄露",
       "solution": "使用更安全的替代方案",
@@ -1538,7 +1554,7 @@
     },
     {
       "severity": "低",
-      "location": "/workspace/machine-native-ops/workspace/teams/holy-grail/agents/autonomous/agents/task_executor.py:291",
+      "location": "/workspace/machine-native-ops/workspace/teams/holy-grail/agents/autonomous/agents/task_executor.py:294",
       "issue_type": "代碼氣味",
       "description": "可能的硬編碼密碼",
       "solution": "Use configuration files or environment variables",
@@ -1826,7 +1842,7 @@
     },
     {
       "severity": "中危",
-      "location": "/workspace/machine-native-ops/workspace/teams/holy-grail/agents/services/dependency-manager/src/enterprise/security.py:687",
+      "location": "/workspace/machine-native-ops/workspace/teams/holy-grail/agents/services/dependency-manager/src/enterprise/security.py:702",
       "issue_type": "安全漏洞",
       "description": "中危：MD5 不是安全的哈希算法",
       "solution": "使用更安全的替代方案",
@@ -2138,7 +2154,7 @@
     },
     {
       "severity": "中危",
-      "location": "/workspace/machine-native-ops/workspace/teams/holy-grail/agents/ai-experts/dependency-manager/src/enterprise/security.py:687",
+      "location": "/workspace/machine-native-ops/workspace/teams/holy-grail/agents/ai-experts/dependency-manager/src/enterprise/security.py:702",
       "issue_type": "安全漏洞",
       "description": "中危：MD5 不是安全的哈希算法",
       "solution": "使用更安全的替代方案",
@@ -2306,7 +2322,7 @@
     },
     {
       "severity": "低",
-      "location": "/workspace/machine-native-ops/workspace/teams/default-team/orchestrator/config.py:50",
+      "location": "/workspace/machine-native-ops/workspace/teams/default-team/orchestrator/config.py:51",
       "issue_type": "代碼氣味",
       "description": "硬編碼的 HTTP URL",
       "solution": "Use configuration files or environment variables",
@@ -2314,7 +2330,7 @@
     },
     {
       "severity": "低",
-      "location": "/workspace/machine-native-ops/workspace/teams/default-team/orchestrator/config.py:76",
+      "location": "/workspace/machine-native-ops/workspace/teams/default-team/orchestrator/config.py:89",
       "issue_type": "代碼氣味",
       "description": "硬編碼的 HTTP URL",
       "solution": "Use configuration files or environment variables",
@@ -2810,7 +2826,7 @@
     },
     {
       "severity": "中危",
-      "location": "/workspace/machine-native-ops/workspace/src/ai/agents/dependency-manager/src/enterprise/security.py:687",
+      "location": "/workspace/machine-native-ops/workspace/src/ai/agents/dependency-manager/src/enterprise/security.py:702",
       "issue_type": "安全漏洞",
       "description": "中危：MD5 不是安全的哈希算法",
       "solution": "使用更安全的替代方案",
@@ -2970,7 +2986,7 @@
     },
     {
       "severity": "高危",
-      "location": "/workspace/machine-native-ops/workspace/src/automation/architect/core/analysis/security_scanner.py:102",
+      "location": "/workspace/machine-native-ops/workspace/src/automation/architect/core/analysis/security_scanner.py:114",
       "issue_type": "安全漏洞",
       "description": "高危：使用 eval() 可能導致代碼注入漏洞",
       "solution": "使用更安全的替代方案",
@@ -3066,7 +3082,7 @@
     },
     {
       "severity": "高危",
-      "location": "/workspace/machine-native-ops/workspace/src/core/run-debug/cli.py:385",
+      "location": "/workspace/machine-native-ops/workspace/src/core/run-debug/cli.py:387",
       "issue_type": "安全漏洞",
       "description": "高危：使用 eval() 可能導致代碼注入漏洞",
       "solution": "使用更安全的替代方案",
@@ -3090,7 +3106,7 @@
     },
     {
       "severity": "低",
-      "location": "/workspace/machine-native-ops/workspace/src/core/run-debug/adapters/python_adapter.py:9",
+      "location": "/workspace/machine-native-ops/workspace/src/core/run-debug/adapters/python_adapter.py:8",
       "issue_type": "代碼風格",
       "description": "Import order: Standard library imports should come before third party imports",
       "solution": "Reorder imports to follow PEP 8",
@@ -3466,7 +3482,7 @@
     },
     {
       "severity": "中危",
-      "location": "/workspace/machine-native-ops/workspace/src/core/island_ai_runtime/knowledge_engine.py:306",
+      "location": "/workspace/machine-native-ops/workspace/src/core/island_ai_runtime/knowledge_engine.py:322",
       "issue_type": "安全漏洞",
       "description": "中危：MD5 不是安全的哈希算法",
       "solution": "使用更安全的替代方案",
@@ -4314,7 +4330,7 @@
     },
     {
       "severity": "高危",
-      "location": "/workspace/machine-native-ops/workspace/src/core/plugins/tech_stack/python_bridge.py:423",
+      "location": "/workspace/machine-native-ops/workspace/src/core/plugins/tech_stack/python_bridge.py:426",
       "issue_type": "安全漏洞",
       "description": "高危：使用 exec() 可能導致代碼注入漏洞",
       "solution": "使用更安全的替代方案",
@@ -4434,7 +4450,7 @@
     },
     {
       "severity": "高危",
-      "location": "/workspace/machine-native-ops/workspace/src/core/tech_stack/python_bridge.py:431",
+      "location": "/workspace/machine-native-ops/workspace/src/core/tech_stack/python_bridge.py:436",
       "issue_type": "安全漏洞",
       "description": "高危：使用 exec() 可能導致代碼注入漏洞",
       "solution": "使用更安全的替代方案",
@@ -4578,23 +4594,7 @@
     },
     {
       "severity": "低",
-      "location": "/workspace/machine-native-ops/workspace/src/core/instant_generation/agents/code_generation_agent.py:757",
-      "issue_type": "代碼氣味",
-      "description": "硬編碼的 HTTP URL",
-      "solution": "Use configuration files or environment variables",
-      "fixed_code": null
-    },
-    {
-      "severity": "低",
-      "location": "/workspace/machine-native-ops/workspace/src/core/instant_generation/agents/code_generation_agent.py:818",
-      "issue_type": "代碼氣味",
-      "description": "硬編碼的 HTTP URL",
-      "solution": "Use configuration files or environment variables",
-      "fixed_code": null
-    },
-    {
-      "severity": "低",
-      "location": "/workspace/machine-native-ops/workspace/src/core/instant_generation/agents/code_generation_agent.py:819",
+      "location": "/workspace/machine-native-ops/workspace/src/core/instant_generation/agents/code_generation_agent.py:771",
       "issue_type": "代碼氣味",
       "description": "硬編碼的 HTTP URL",
       "solution": "Use configuration files or environment variables",
@@ -4611,6 +4611,22 @@
     {
       "severity": "低",
       "location": "/workspace/machine-native-ops/workspace/src/core/instant_generation/agents/code_generation_agent.py:833",
+      "issue_type": "代碼氣味",
+      "description": "硬編碼的 HTTP URL",
+      "solution": "Use configuration files or environment variables",
+      "fixed_code": null
+    },
+    {
+      "severity": "低",
+      "location": "/workspace/machine-native-ops/workspace/src/core/instant_generation/agents/code_generation_agent.py:846",
+      "issue_type": "代碼氣味",
+      "description": "硬編碼的 HTTP URL",
+      "solution": "Use configuration files or environment variables",
+      "fixed_code": null
+    },
+    {
+      "severity": "低",
+      "location": "/workspace/machine-native-ops/workspace/src/core/instant_generation/agents/code_generation_agent.py:847",
       "issue_type": "代碼氣味",
       "description": "硬編碼的 HTTP URL",
       "solution": "Use configuration files or environment variables",
@@ -4650,7 +4666,7 @@
     },
     {
       "severity": "低",
-      "location": "/workspace/machine-native-ops/workspace/src/core/instant_generation/agents/deployment_agent.py:495",
+      "location": "/workspace/machine-native-ops/workspace/src/core/instant_generation/agents/deployment_agent.py:542",
       "issue_type": "代碼氣味",
       "description": "硬編碼的 HTTP URL",
       "solution": "Use configuration files or environment variables",
@@ -4658,7 +4674,7 @@
     },
     {
       "severity": "低",
-      "location": "/workspace/machine-native-ops/workspace/src/core/instant_generation/agents/deployment_agent.py:502",
+      "location": "/workspace/machine-native-ops/workspace/src/core/instant_generation/agents/deployment_agent.py:549",
       "issue_type": "代碼氣味",
       "description": "硬編碼的 HTTP URL",
       "solution": "Use configuration files or environment variables",
@@ -4722,42 +4738,10 @@
     },
     {
       "severity": "低",
-      "location": "/workspace/machine-native-ops/workspace/src/governance/26-tools/legacy-governance-governance-cli.py:72",
+      "location": "/workspace/machine-native-ops/workspace/src/governance/26-tools/legacy-governance-governance-cli.py:76",
       "issue_type": "代碼氣味",
       "description": "硬編碼的 HTTP URL",
       "solution": "Use configuration files or environment variables",
-      "fixed_code": null
-    },
-    {
-      "severity": "低",
-      "location": "/workspace/machine-native-ops/workspace/src/governance/08-process/automation_engine.py:12",
-      "issue_type": "代碼風格",
-      "description": "Import order: Standard library imports should come before third party imports",
-      "solution": "Reorder imports to follow PEP 8",
-      "fixed_code": null
-    },
-    {
-      "severity": "低",
-      "location": "/workspace/machine-native-ops/workspace/src/governance/11-tools-systems/automation_engine.py:12",
-      "issue_type": "代碼風格",
-      "description": "Import order: Standard library imports should come before third party imports",
-      "solution": "Reorder imports to follow PEP 8",
-      "fixed_code": null
-    },
-    {
-      "severity": "低",
-      "location": "/workspace/machine-native-ops/workspace/src/governance/01-architecture/automation_engine.py:12",
-      "issue_type": "代碼風格",
-      "description": "Import order: Standard library imports should come before third party imports",
-      "solution": "Reorder imports to follow PEP 8",
-      "fixed_code": null
-    },
-    {
-      "severity": "低",
-      "location": "/workspace/machine-native-ops/workspace/src/governance/02-decision/automation_engine.py:12",
-      "issue_type": "代碼風格",
-      "description": "Import order: Standard library imports should come before third party imports",
-      "solution": "Reorder imports to follow PEP 8",
       "fixed_code": null
     },
     {
@@ -4770,7 +4754,7 @@
     },
     {
       "severity": "低",
-      "location": "/workspace/machine-native-ops/workspace/src/governance/39-automation/deploy_dimension_engines.py:51",
+      "location": "/workspace/machine-native-ops/workspace/src/governance/39-automation/deploy_dimension_engines.py:55",
       "issue_type": "代碼風格",
       "description": "Import order: Standard library imports should come before third party imports",
       "solution": "Reorder imports to follow PEP 8",
@@ -4842,26 +4826,10 @@
     },
     {
       "severity": "低",
-      "location": "/workspace/machine-native-ops/workspace/src/governance/35-scripts/logical-consistency-engine.py:422",
+      "location": "/workspace/machine-native-ops/workspace/src/governance/35-scripts/logical-consistency-engine.py:426",
       "issue_type": "代碼氣味",
       "description": "硬編碼的 HTTP URL",
       "solution": "Use configuration files or environment variables",
-      "fixed_code": null
-    },
-    {
-      "severity": "低",
-      "location": "/workspace/machine-native-ops/workspace/src/governance/14-improvement/automation_engine.py:12",
-      "issue_type": "代碼風格",
-      "description": "Import order: Standard library imports should come before third party imports",
-      "solution": "Reorder imports to follow PEP 8",
-      "fixed_code": null
-    },
-    {
-      "severity": "低",
-      "location": "/workspace/machine-native-ops/workspace/src/governance/13-metrics-reporting/automation_engine.py:12",
-      "issue_type": "代碼風格",
-      "description": "Import order: Standard library imports should come before third party imports",
-      "solution": "Reorder imports to follow PEP 8",
       "fixed_code": null
     },
     {
@@ -4899,14 +4867,6 @@
     {
       "severity": "低",
       "location": "/workspace/machine-native-ops/workspace/src/governance/index/scripts/generate-embeddings.py:16",
-      "issue_type": "代碼風格",
-      "description": "Import order: Standard library imports should come before third party imports",
-      "solution": "Reorder imports to follow PEP 8",
-      "fixed_code": null
-    },
-    {
-      "severity": "低",
-      "location": "/workspace/machine-native-ops/workspace/src/governance/05-compliance/automation_engine.py:12",
       "issue_type": "代碼風格",
       "description": "Import order: Standard library imports should come before third party imports",
       "solution": "Reorder imports to follow PEP 8",
@@ -4954,38 +4914,6 @@
     },
     {
       "severity": "低",
-      "location": "/workspace/machine-native-ops/workspace/src/governance/03-change/automation_engine.py:12",
-      "issue_type": "代碼風格",
-      "description": "Import order: Standard library imports should come before third party imports",
-      "solution": "Reorder imports to follow PEP 8",
-      "fixed_code": null
-    },
-    {
-      "severity": "低",
-      "location": "/workspace/machine-native-ops/workspace/src/governance/04-risk/automation_engine.py:12",
-      "issue_type": "代碼風格",
-      "description": "Import order: Standard library imports should come before third party imports",
-      "solution": "Reorder imports to follow PEP 8",
-      "fixed_code": null
-    },
-    {
-      "severity": "低",
-      "location": "/workspace/machine-native-ops/workspace/src/governance/09-performance/automation_engine.py:12",
-      "issue_type": "代碼風格",
-      "description": "Import order: Standard library imports should come before third party imports",
-      "solution": "Reorder imports to follow PEP 8",
-      "fixed_code": null
-    },
-    {
-      "severity": "低",
-      "location": "/workspace/machine-native-ops/workspace/src/governance/07-audit/automation_engine.py:12",
-      "issue_type": "代碼風格",
-      "description": "Import order: Standard library imports should come before third party imports",
-      "solution": "Reorder imports to follow PEP 8",
-      "fixed_code": null
-    },
-    {
-      "severity": "低",
       "location": "/workspace/machine-native-ops/workspace/src/governance/07-audit/append_only_log_client.py:11",
       "issue_type": "代碼風格",
       "description": "Import order: Standard library imports should come before third party imports",
@@ -4994,23 +4922,7 @@
     },
     {
       "severity": "低",
-      "location": "/workspace/machine-native-ops/workspace/src/governance/12-culture-capability/automation_engine.py:12",
-      "issue_type": "代碼風格",
-      "description": "Import order: Standard library imports should come before third party imports",
-      "solution": "Reorder imports to follow PEP 8",
-      "fixed_code": null
-    },
-    {
-      "severity": "低",
       "location": "/workspace/machine-native-ops/workspace/src/governance/dimensions/99-metadata/knl-pack/reasoning/tasks/run_sync_knowledge.py:18",
-      "issue_type": "代碼風格",
-      "description": "Import order: Standard library imports should come before third party imports",
-      "solution": "Reorder imports to follow PEP 8",
-      "fixed_code": null
-    },
-    {
-      "severity": "低",
-      "location": "/workspace/machine-native-ops/workspace/src/governance/dimensions/82-stakeholder/automation_engine.py:12",
       "issue_type": "代碼風格",
       "description": "Import order: Standard library imports should come before third party imports",
       "solution": "Reorder imports to follow PEP 8",
@@ -5043,14 +4955,6 @@
     {
       "severity": "低",
       "location": "/workspace/machine-native-ops/workspace/src/governance/33-common/tools/governance_policy_checker.py:18",
-      "issue_type": "代碼風格",
-      "description": "Import order: Standard library imports should come before third party imports",
-      "solution": "Reorder imports to follow PEP 8",
-      "fixed_code": null
-    },
-    {
-      "severity": "低",
-      "location": "/workspace/machine-native-ops/workspace/src/governance/06-security/automation_engine.py:12",
       "issue_type": "代碼風格",
       "description": "Import order: Standard library imports should come before third party imports",
       "solution": "Reorder imports to follow PEP 8",
@@ -5114,7 +5018,7 @@
     },
     {
       "severity": "高危",
-      "location": "/workspace/machine-native-ops/workspace/src/autonomous/agents/pipeline_service.py:333",
+      "location": "/workspace/machine-native-ops/workspace/src/autonomous/agents/pipeline_service.py:361",
       "issue_type": "安全漏洞",
       "description": "高危：使用 eval() 可能導致代碼注入漏洞",
       "solution": "使用更安全的替代方案",
@@ -5162,7 +5066,7 @@
     },
     {
       "severity": "中危",
-      "location": "/workspace/machine-native-ops/workspace/src/autonomous/agents/auto_upgrade_env.py:118",
+      "location": "/workspace/machine-native-ops/workspace/src/autonomous/agents/auto_upgrade_env.py:120",
       "issue_type": "安全漏洞",
       "description": "中危：MD5 不是安全的哈希算法",
       "solution": "使用更安全的替代方案",
@@ -5218,7 +5122,7 @@
     },
     {
       "severity": "高危",
-      "location": "/workspace/machine-native-ops/workspace/src/autonomous/agents/test-vectors/generator.py:218",
+      "location": "/workspace/machine-native-ops/workspace/src/autonomous/agents/test-vectors/generator.py:221",
       "issue_type": "安全漏洞",
       "description": "高危：使用 eval() 可能導致代碼注入漏洞",
       "solution": "使用更安全的替代方案",
@@ -5226,7 +5130,7 @@
     },
     {
       "severity": "低危",
-      "location": "/workspace/machine-native-ops/workspace/src/autonomous/agents/test-vectors/generator.py:221",
+      "location": "/workspace/machine-native-ops/workspace/src/autonomous/agents/test-vectors/generator.py:224",
       "issue_type": "安全漏洞",
       "description": "低危：明文密碼可能泄露",
       "solution": "使用更安全的替代方案",
@@ -5234,7 +5138,7 @@
     },
     {
       "severity": "低",
-      "location": "/workspace/machine-native-ops/workspace/src/autonomous/agents/test-vectors/generator.py:221",
+      "location": "/workspace/machine-native-ops/workspace/src/autonomous/agents/test-vectors/generator.py:224",
       "issue_type": "代碼氣味",
       "description": "可能的硬編碼密碼",
       "solution": "Use configuration files or environment variables",
@@ -5243,22 +5147,6 @@
     {
       "severity": "低",
       "location": "/workspace/machine-native-ops/workspace/src/autonomous/agents/migration/migrator.py:8",
-      "issue_type": "代碼風格",
-      "description": "Import order: Standard library imports should come before third party imports",
-      "solution": "Reorder imports to follow PEP 8",
-      "fixed_code": null
-    },
-    {
-      "severity": "低",
-      "location": "/workspace/machine-native-ops/workspace/src/autonomous/agents/migration/scripts/v2_to_v1.py:8",
-      "issue_type": "代碼風格",
-      "description": "Import order: Standard library imports should come before third party imports",
-      "solution": "Reorder imports to follow PEP 8",
-      "fixed_code": null
-    },
-    {
-      "severity": "低",
-      "location": "/workspace/machine-native-ops/workspace/src/autonomous/agents/migration/scripts/v1_to_v2.py:8",
       "issue_type": "代碼風格",
       "description": "Import order: Standard library imports should come before third party imports",
       "solution": "Reorder imports to follow PEP 8",
@@ -5282,7 +5170,7 @@
     },
     {
       "severity": "高危",
-      "location": "/workspace/machine-native-ops/workspace/src/autonomous/agents/agents/task_executor.py:129",
+      "location": "/workspace/machine-native-ops/workspace/src/autonomous/agents/agents/task_executor.py:135",
       "issue_type": "安全漏洞",
       "description": "高危：使用 eval() 可能導致代碼注入漏洞",
       "solution": "使用更安全的替代方案",
@@ -5290,7 +5178,7 @@
     },
     {
       "severity": "高危",
-      "location": "/workspace/machine-native-ops/workspace/src/autonomous/agents/agents/task_executor.py:129",
+      "location": "/workspace/machine-native-ops/workspace/src/autonomous/agents/agents/task_executor.py:135",
       "issue_type": "安全漏洞",
       "description": "高危：使用 exec() 可能導致代碼注入漏洞",
       "solution": "使用更安全的替代方案",
@@ -5298,23 +5186,7 @@
     },
     {
       "severity": "高危",
-      "location": "/workspace/machine-native-ops/workspace/src/autonomous/agents/agents/task_executor.py:231",
-      "issue_type": "安全漏洞",
-      "description": "高危：使用 eval() 可能導致代碼注入漏洞",
-      "solution": "使用更安全的替代方案",
-      "fixed_code": null
-    },
-    {
-      "severity": "高危",
-      "location": "/workspace/machine-native-ops/workspace/src/autonomous/agents/agents/task_executor.py:231",
-      "issue_type": "安全漏洞",
-      "description": "高危：使用 exec() 可能導致代碼注入漏洞",
-      "solution": "使用更安全的替代方案",
-      "fixed_code": null
-    },
-    {
-      "severity": "高危",
-      "location": "/workspace/machine-native-ops/workspace/src/autonomous/agents/agents/task_executor.py:233",
+      "location": "/workspace/machine-native-ops/workspace/src/autonomous/agents/agents/task_executor.py:234",
       "issue_type": "安全漏洞",
       "description": "高危：使用 eval() 可能導致代碼注入漏洞",
       "solution": "使用更安全的替代方案",
@@ -5330,7 +5202,23 @@
     },
     {
       "severity": "高危",
-      "location": "/workspace/machine-native-ops/workspace/src/autonomous/agents/agents/task_executor.py:290",
+      "location": "/workspace/machine-native-ops/workspace/src/autonomous/agents/agents/task_executor.py:236",
+      "issue_type": "安全漏洞",
+      "description": "高危：使用 eval() 可能導致代碼注入漏洞",
+      "solution": "使用更安全的替代方案",
+      "fixed_code": null
+    },
+    {
+      "severity": "高危",
+      "location": "/workspace/machine-native-ops/workspace/src/autonomous/agents/agents/task_executor.py:237",
+      "issue_type": "安全漏洞",
+      "description": "高危：使用 exec() 可能導致代碼注入漏洞",
+      "solution": "使用更安全的替代方案",
+      "fixed_code": null
+    },
+    {
+      "severity": "高危",
+      "location": "/workspace/machine-native-ops/workspace/src/autonomous/agents/agents/task_executor.py:293",
       "issue_type": "安全漏洞",
       "description": "高危：使用 eval() 可能導致代碼注入漏洞",
       "solution": "使用更安全的替代方案",
@@ -5338,7 +5226,7 @@
     },
     {
       "severity": "低危",
-      "location": "/workspace/machine-native-ops/workspace/src/autonomous/agents/agents/task_executor.py:291",
+      "location": "/workspace/machine-native-ops/workspace/src/autonomous/agents/agents/task_executor.py:294",
       "issue_type": "安全漏洞",
       "description": "低危：明文密碼可能泄露",
       "solution": "使用更安全的替代方案",
@@ -5346,7 +5234,7 @@
     },
     {
       "severity": "低",
-      "location": "/workspace/machine-native-ops/workspace/src/autonomous/agents/agents/task_executor.py:291",
+      "location": "/workspace/machine-native-ops/workspace/src/autonomous/agents/agents/task_executor.py:294",
       "issue_type": "代碼氣味",
       "description": "可能的硬編碼密碼",
       "solution": "Use configuration files or environment variables",
@@ -5650,7 +5538,7 @@
     },
     {
       "severity": "中危",
-      "location": "/workspace/machine-native-ops/workspace/src/services/agents/dependency-manager/src/enterprise/security.py:687",
+      "location": "/workspace/machine-native-ops/workspace/src/services/agents/dependency-manager/src/enterprise/security.py:702",
       "issue_type": "安全漏洞",
       "description": "中危：MD5 不是安全的哈希算法",
       "solution": "使用更安全的替代方案",
@@ -5986,7 +5874,7 @@
     },
     {
       "severity": "中危",
-      "location": "/workspace/machine-native-ops/workspace/src/frontend/ui/services/code_analyzer.py:196",
+      "location": "/workspace/machine-native-ops/workspace/src/frontend/ui/services/code_analyzer.py:198",
       "issue_type": "安全漏洞",
       "description": "中危：MD5 不是安全的哈希算法",
       "solution": "使用更安全的替代方案",
@@ -6130,7 +6018,7 @@
     },
     {
       "severity": "低",
-      "location": "/workspace/machine-native-ops/workspace/src/ci-tools/monitoring-alerting/monitoring_system.py:742",
+      "location": "/workspace/machine-native-ops/workspace/src/ci-tools/monitoring-alerting/monitoring_system.py:774",
       "issue_type": "代碼氣味",
       "description": "硬編碼的 HTTP URL",
       "solution": "Use configuration files or environment variables",
@@ -6138,7 +6026,7 @@
     },
     {
       "severity": "低",
-      "location": "/workspace/machine-native-ops/workspace/src/ci-tools/monitoring-alerting/monitoring_system.py:808",
+      "location": "/workspace/machine-native-ops/workspace/src/ci-tools/monitoring-alerting/monitoring_system.py:840",
       "issue_type": "代碼氣味",
       "description": "硬編碼的 HTTP URL",
       "solution": "Use configuration files or environment variables",
@@ -6162,7 +6050,7 @@
     },
     {
       "severity": "低",
-      "location": "/workspace/machine-native-ops/workspace/src/ci-tools/deployment-rollback/rollback_manager.py:774",
+      "location": "/workspace/machine-native-ops/workspace/src/ci-tools/deployment-rollback/rollback_manager.py:824",
       "issue_type": "代碼氣味",
       "description": "硬編碼的 HTTP URL",
       "solution": "Use configuration files or environment variables",
@@ -6226,7 +6114,7 @@
     },
     {
       "severity": "低",
-      "location": "/workspace/machine-native-ops/workspace/src/ci-tools/test-automation/test_framework.py:692",
+      "location": "/workspace/machine-native-ops/workspace/src/ci-tools/test-automation/test_framework.py:724",
       "issue_type": "代碼氣味",
       "description": "硬編碼的 HTTP URL",
       "solution": "Use configuration files or environment variables",
@@ -6290,7 +6178,7 @@
     },
     {
       "severity": "低",
-      "location": "/workspace/machine-native-ops/workspace/src/developer-tools/team-collaboration-platform/collaboration_hub.py:588",
+      "location": "/workspace/machine-native-ops/workspace/src/developer-tools/team-collaboration-platform/collaboration_hub.py:606",
       "issue_type": "代碼氣味",
       "description": "硬編碼的 HTTP URL",
       "solution": "Use configuration files or environment variables",
@@ -6330,7 +6218,7 @@
     },
     {
       "severity": "低",
-      "location": "/workspace/machine-native-ops/workspace/src/developer-tools/ci-monitor-dashboard/app.py:805",
+      "location": "/workspace/machine-native-ops/workspace/src/developer-tools/ci-monitor-dashboard/app.py:868",
       "issue_type": "代碼氣味",
       "description": "硬編碼的 HTTP URL",
       "solution": "Use configuration files or environment variables",
@@ -6459,22 +6347,6 @@
     {
       "severity": "低",
       "location": "/workspace/machine-native-ops/workspace/scripts/ops/migration/migrator.py:8",
-      "issue_type": "代碼風格",
-      "description": "Import order: Standard library imports should come before third party imports",
-      "solution": "Reorder imports to follow PEP 8",
-      "fixed_code": null
-    },
-    {
-      "severity": "低",
-      "location": "/workspace/machine-native-ops/workspace/scripts/ops/migration/scripts/v2_to_v1.py:8",
-      "issue_type": "代碼風格",
-      "description": "Import order: Standard library imports should come before third party imports",
-      "solution": "Reorder imports to follow PEP 8",
-      "fixed_code": null
-    },
-    {
-      "severity": "低",
-      "location": "/workspace/machine-native-ops/workspace/scripts/ops/migration/scripts/v1_to_v2.py:8",
       "issue_type": "代碼風格",
       "description": "Import order: Standard library imports should come before third party imports",
       "solution": "Reorder imports to follow PEP 8",
@@ -6658,7 +6530,7 @@
     },
     {
       "severity": "低",
-      "location": "/workspace/machine-native-ops/workspace/engine/machinenativenops-auto-monitor/src/machinenativenops_auto_monitor/儲存.py:13",
+      "location": "/workspace/machine-native-ops/workspace/engine/machinenativenops-auto-monitor/src/machinenativenops_auto_monitor/儲存.py:14",
       "issue_type": "代碼風格",
       "description": "Import order: Standard library imports should come before third party imports",
       "solution": "Reorder imports to follow PEP 8",
@@ -6826,7 +6698,7 @@
     },
     {
       "severity": "中危",
-      "location": "/workspace/machine-native-ops/workspace/tools/find_duplicate_scripts.py:65",
+      "location": "/workspace/machine-native-ops/workspace/tools/find_duplicate_scripts.py:75",
       "issue_type": "安全漏洞",
       "description": "中危：MD5 不是安全的哈希算法",
       "solution": "使用更安全的替代方案",
@@ -6866,7 +6738,7 @@
     },
     {
       "severity": "中危",
-      "location": "/workspace/machine-native-ops/workspace/tools/autonomous_cleanup_toolkit.py:205",
+      "location": "/workspace/machine-native-ops/workspace/tools/autonomous_cleanup_toolkit.py:212",
       "issue_type": "安全漏洞",
       "description": "中危：MD5 不是安全的哈希算法",
       "solution": "使用更安全的替代方案",
@@ -6898,7 +6770,7 @@
     },
     {
       "severity": "低",
-      "location": "/workspace/machine-native-ops/workspace/tools/real-module-launcher.py:165",
+      "location": "/workspace/machine-native-ops/workspace/tools/real-module-launcher.py:169",
       "issue_type": "代碼氣味",
       "description": "硬編碼的 HTTP URL",
       "solution": "Use configuration files or environment variables",
@@ -6910,6 +6782,62 @@
       "issue_type": "代碼風格",
       "description": "Import order: Standard library imports should come before third party imports",
       "solution": "Reorder imports to follow PEP 8",
+      "fixed_code": null
+    },
+    {
+      "severity": "低",
+      "location": "/workspace/machine-native-ops/workspace/tools/security_audit.py:9",
+      "issue_type": "代碼風格",
+      "description": "Import order: Standard library imports should come before third party imports",
+      "solution": "Reorder imports to follow PEP 8",
+      "fixed_code": null
+    },
+    {
+      "severity": "高危",
+      "location": "/workspace/machine-native-ops/workspace/tools/security_audit.py:6",
+      "issue_type": "安全漏洞",
+      "description": "高危：使用 eval() 可能導致代碼注入漏洞",
+      "solution": "使用更安全的替代方案",
+      "fixed_code": null
+    },
+    {
+      "severity": "高危",
+      "location": "/workspace/machine-native-ops/workspace/tools/security_audit.py:150",
+      "issue_type": "安全漏洞",
+      "description": "高危：使用 eval() 可能導致代碼注入漏洞",
+      "solution": "使用更安全的替代方案",
+      "fixed_code": null
+    },
+    {
+      "severity": "高危",
+      "location": "/workspace/machine-native-ops/workspace/tools/security_audit.py:158",
+      "issue_type": "安全漏洞",
+      "description": "高危：使用 eval() 可能導致代碼注入漏洞",
+      "solution": "使用更安全的替代方案",
+      "fixed_code": null
+    },
+    {
+      "severity": "高危",
+      "location": "/workspace/machine-native-ops/workspace/tools/security_audit.py:190",
+      "issue_type": "安全漏洞",
+      "description": "高危：使用 eval() 可能導致代碼注入漏洞",
+      "solution": "使用更安全的替代方案",
+      "fixed_code": null
+    },
+    {
+      "severity": "高危",
+      "location": "/workspace/machine-native-ops/workspace/tools/security_audit.py:192",
+      "issue_type": "安全漏洞",
+      "description": "高危：使用 eval() 可能導致代碼注入漏洞",
+      "solution": "使用更安全的替代方案",
+      "fixed_code": null
+    },
+    {
+      "severity": "高危",
+      "location": "/workspace/machine-native-ops/workspace/tools/security_audit.py:193",
+      "issue_type": "安全漏洞",
+      "description": "高危：使用 eval() 可能導致代碼注入漏洞",
+      "solution": "使用更安全的替代方案",
       "fixed_code": null
     },
     {
@@ -6970,7 +6898,7 @@
     },
     {
       "severity": "低",
-      "location": "/workspace/machine-native-ops/workspace/tools/platform-bootstrap-runner.py:146",
+      "location": "/workspace/machine-native-ops/workspace/tools/platform-bootstrap-runner.py:165",
       "issue_type": "代碼氣味",
       "description": "硬編碼的 HTTP URL",
       "solution": "Use configuration files or environment variables",
@@ -6978,7 +6906,7 @@
     },
     {
       "severity": "低",
-      "location": "/workspace/machine-native-ops/workspace/tools/platform-bootstrap-runner.py:219",
+      "location": "/workspace/machine-native-ops/workspace/tools/platform-bootstrap-runner.py:247",
       "issue_type": "代碼氣味",
       "description": "硬編碼的 HTTP URL",
       "solution": "Use configuration files or environment variables",
@@ -7050,7 +6978,7 @@
     },
     {
       "severity": "高危",
-      "location": "/workspace/machine-native-ops/workspace/tools/bootstrap_from_manifest.py:96",
+      "location": "/workspace/machine-native-ops/workspace/tools/bootstrap_from_manifest.py:98",
       "issue_type": "安全漏洞",
       "description": "高危：shell=True 可能導致命令注入",
       "solution": "使用更安全的替代方案",
@@ -7122,7 +7050,7 @@
     },
     {
       "severity": "中危",
-      "location": "/workspace/machine-native-ops/workspace/tools/cleanup_duplicates.py:81",
+      "location": "/workspace/machine-native-ops/workspace/tools/cleanup_duplicates.py:83",
       "issue_type": "安全漏洞",
       "description": "中危：MD5 不是安全的哈希算法",
       "solution": "使用更安全的替代方案",
@@ -7130,7 +7058,7 @@
     },
     {
       "severity": "中危",
-      "location": "/workspace/machine-native-ops/workspace/tools/cleanup_duplicates.py:104",
+      "location": "/workspace/machine-native-ops/workspace/tools/cleanup_duplicates.py:106",
       "issue_type": "安全漏洞",
       "description": "中危：MD5 不是安全的哈希算法",
       "solution": "使用更安全的替代方案",
@@ -7178,7 +7106,7 @@
     },
     {
       "severity": "中危",
-      "location": "/workspace/machine-native-ops/workspace/tools/automation/engines/integration_automation_engine.py:151",
+      "location": "/workspace/machine-native-ops/workspace/tools/automation/engines/integration_automation_engine.py:153",
       "issue_type": "安全漏洞",
       "description": "中危：MD5 不是安全的哈希算法",
       "solution": "使用更安全的替代方案",
@@ -7202,7 +7130,7 @@
     },
     {
       "severity": "低",
-      "location": "/workspace/machine-native-ops/workspace/tools/automation/engines/validation_automation_engine.py:162",
+      "location": "/workspace/machine-native-ops/workspace/tools/automation/engines/validation_automation_engine.py:164",
       "issue_type": "代碼氣味",
       "description": "硬編碼的 HTTP URL",
       "solution": "Use configuration files or environment variables",
@@ -7274,7 +7202,7 @@
     },
     {
       "severity": "低",
-      "location": "/workspace/machine-native-ops/workspace/tools/path_tools/path_validator.py:275",
+      "location": "/workspace/machine-native-ops/workspace/tools/path_tools/path_validator.py:277",
       "issue_type": "代碼氣味",
       "description": "硬編碼的 HTTP URL",
       "solution": "Use configuration files or environment variables",
@@ -7290,7 +7218,7 @@
     },
     {
       "severity": "低",
-      "location": "/workspace/machine-native-ops/workspace/tools/path_tools/path_fixer.py:123",
+      "location": "/workspace/machine-native-ops/workspace/tools/path_tools/path_fixer.py:127",
       "issue_type": "代碼氣味",
       "description": "硬編碼的 HTTP URL",
       "solution": "Use configuration files or environment variables",
@@ -7298,7 +7226,7 @@
     },
     {
       "severity": "低",
-      "location": "/workspace/machine-native-ops/workspace/tools/path_tools/path_fixer.py:177",
+      "location": "/workspace/machine-native-ops/workspace/tools/path_tools/path_fixer.py:185",
       "issue_type": "代碼氣味",
       "description": "硬編碼的 HTTP URL",
       "solution": "Use configuration files or environment variables",
@@ -7314,7 +7242,7 @@
     },
     {
       "severity": "低",
-      "location": "/workspace/machine-native-ops/workspace/tools/path_tools/path_scanner.py:238",
+      "location": "/workspace/machine-native-ops/workspace/tools/path_tools/path_scanner.py:244",
       "issue_type": "代碼氣味",
       "description": "硬編碼的 HTTP URL",
       "solution": "Use configuration files or environment variables",
@@ -7322,7 +7250,7 @@
     },
     {
       "severity": "低",
-      "location": "/workspace/machine-native-ops/workspace/tools/path_tools/path_scanner.py:287",
+      "location": "/workspace/machine-native-ops/workspace/tools/path_tools/path_scanner.py:301",
       "issue_type": "代碼氣味",
       "description": "硬編碼的 HTTP URL",
       "solution": "Use configuration files or environment variables",
@@ -7378,7 +7306,7 @@
     },
     {
       "severity": "低",
-      "location": "/workspace/machine-native-ops/workspace/tools/refactor/validate_structure.py:315",
+      "location": "/workspace/machine-native-ops/workspace/tools/refactor/validate_structure.py:314",
       "issue_type": "代碼氣味",
       "description": "硬編碼的 HTTP URL",
       "solution": "Use configuration files or environment variables",
@@ -7386,7 +7314,7 @@
     },
     {
       "severity": "低",
-      "location": "/workspace/machine-native-ops/workspace/tools/refactor/validate_structure.py:396",
+      "location": "/workspace/machine-native-ops/workspace/tools/refactor/validate_structure.py:397",
       "issue_type": "代碼氣味",
       "description": "硬編碼的 HTTP URL",
       "solution": "Use configuration files or environment variables",
@@ -7418,7 +7346,7 @@
     },
     {
       "severity": "中危",
-      "location": "/workspace/machine-native-ops/workspace/tools/refactor/process_legacy_scratch.py:809",
+      "location": "/workspace/machine-native-ops/workspace/tools/refactor/process_legacy_scratch.py:827",
       "issue_type": "安全漏洞",
       "description": "中危：MD5 不是安全的哈希算法",
       "solution": "使用更安全的替代方案",
@@ -7426,7 +7354,7 @@
     },
     {
       "severity": "低",
-      "location": "/workspace/machine-native-ops/workspace/tools/refactor/process_legacy_scratch.py:336",
+      "location": "/workspace/machine-native-ops/workspace/tools/refactor/process_legacy_scratch.py:341",
       "issue_type": "代碼氣味",
       "description": "硬編碼的 HTTP URL",
       "solution": "Use configuration files or environment variables",
@@ -7546,7 +7474,7 @@
     },
     {
       "severity": "中危",
-      "location": "/workspace/machine-native-ops/workspace/tools/quantum-alignment-engine/src/core/transformer.py:137",
+      "location": "/workspace/machine-native-ops/workspace/tools/quantum-alignment-engine/src/core/transformer.py:139",
       "issue_type": "安全漏洞",
       "description": "中危：MD5 不是安全的哈希算法",
       "solution": "使用更安全的替代方案",
@@ -7554,7 +7482,7 @@
     },
     {
       "severity": "中危",
-      "location": "/workspace/machine-native-ops/workspace/tools/quantum-alignment-engine/src/core/transformer.py:218",
+      "location": "/workspace/machine-native-ops/workspace/tools/quantum-alignment-engine/src/core/transformer.py:225",
       "issue_type": "安全漏洞",
       "description": "中危：MD5 不是安全的哈希算法",
       "solution": "使用更安全的替代方案",
@@ -7562,7 +7490,7 @@
     },
     {
       "severity": "中危",
-      "location": "/workspace/machine-native-ops/workspace/tools/quantum-alignment-engine/src/core/transformer.py:749",
+      "location": "/workspace/machine-native-ops/workspace/tools/quantum-alignment-engine/src/core/transformer.py:764",
       "issue_type": "安全漏洞",
       "description": "中危：MD5 不是安全的哈希算法",
       "solution": "使用更安全的替代方案",

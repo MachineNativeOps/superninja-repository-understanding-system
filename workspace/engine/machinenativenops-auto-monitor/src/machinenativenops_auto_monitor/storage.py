@@ -113,7 +113,8 @@ class DatabaseManager:
             with self._get_connection() as conn:
                 cursor = conn.cursor()
                 cursor.execute(
-                    "INSERT INTO metrics (timestamp, data) VALUES (?, ?)", (timestamp, data_json)
+                    "INSERT INTO metrics (timestamp, data) VALUES (?, ?)",
+                    (timestamp, data_json),
                 )
                 conn.commit()
 
@@ -175,7 +176,9 @@ class DatabaseManager:
         try:
             with self._get_connection() as conn:
                 cursor = conn.cursor()
-                cursor.execute("SELECT * FROM metrics ORDER BY timestamp DESC LIMIT ?", (limit,))
+                cursor.execute(
+                    "SELECT * FROM metrics ORDER BY timestamp DESC LIMIT ?", (limit,)
+                )
                 rows = cursor.fetchall()
 
                 metrics = []
@@ -194,7 +197,11 @@ class DatabaseManager:
             raise
 
     def store_alert(
-        self, alert_type: str, severity: str, message: str, data: Optional[Dict[str, Any]] = None
+        self,
+        alert_type: str,
+        severity: str,
+        message: str,
+        data: Optional[Dict[str, Any]] = None,
     ):
         """Store alert data"""
         try:
@@ -254,9 +261,7 @@ class DatabaseManager:
                 cursor = conn.cursor()
                 cursor.execute(
                     """UPDATE alerts SET resolved = TRUE, resolved_at = CURRENT_TIMESTAMP
-                       WHERE id = ?""",
-                    (alert_id,),
-                )
+                       WHERE id = ?""", (alert_id,), )
                 conn.commit()
 
             self.logger.info(f"Resolved alert: {alert_id}")
@@ -266,7 +271,11 @@ class DatabaseManager:
             raise
 
     def store_system_event(
-        self, event_type: str, component: str, message: str, data: Optional[Dict[str, Any]] = None
+        self,
+        event_type: str,
+        component: str,
+        message: str,
+        data: Optional[Dict[str, Any]] = None,
     ):
         """Store system event"""
         try:
@@ -289,7 +298,10 @@ class DatabaseManager:
             raise
 
     def get_system_events(
-        self, event_type: Optional[str] = None, component: Optional[str] = None, limit: int = 100
+        self,
+        event_type: Optional[str] = None,
+        component: Optional[str] = None,
+        limit: int = 100,
     ) -> List[Dict[str, Any]]:
         """Get system events"""
         try:
@@ -343,7 +355,9 @@ class DatabaseManager:
                 cursor = conn.cursor()
 
                 # Clean old metrics
-                cursor.execute("DELETE FROM metrics WHERE created_at < ?", (cutoff_iso,))
+                cursor.execute(
+                    "DELETE FROM metrics WHERE created_at < ?", (cutoff_iso,)
+                )
                 metrics_deleted = cursor.rowcount
 
                 # Clean old resolved alerts
@@ -355,7 +369,9 @@ class DatabaseManager:
                 alerts_deleted = cursor.rowcount
 
                 # Clean old system events
-                cursor.execute("DELETE FROM system_events WHERE created_at < ?", (cutoff_iso,))
+                cursor.execute(
+                    "DELETE FROM system_events WHERE created_at < ?", (cutoff_iso,)
+                )
                 events_deleted = cursor.rowcount
 
                 conn.commit()

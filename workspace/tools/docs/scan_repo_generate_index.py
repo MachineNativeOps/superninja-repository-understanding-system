@@ -232,7 +232,9 @@ def extract_tags(file_path: Path, content: str = None) -> list[str]:
     return sorted(list(tags))[:5]  # Limit to 5 tags
 
 
-def scan_repository(repo_root: Path, include_patterns: list[str] = None) -> list[dict[str, Any]]:
+def scan_repository(
+    repo_root: Path, include_patterns: list[str] = None
+) -> list[dict[str, Any]]:
     """Scan repository and generate index entries."""
     if include_patterns is None:
         include_patterns = ["**/*.md", "**/README.md"]
@@ -255,7 +257,10 @@ def scan_repository(repo_root: Path, include_patterns: list[str] = None) -> list
             seen_paths.add(rel_str)
 
             # Skip node_modules, dist, etc.
-            if any(skip in rel_str for skip in ["node_modules", "dist/", "__pycache__", ".git/"]):
+            if any(
+                skip in rel_str
+                for skip in ["node_modules", "dist/", "__pycache__", ".git/"]
+            ):
                 continue
 
             # Generate entry
@@ -339,12 +344,18 @@ def generate_index(items: list[dict[str, Any]]) -> dict[str, Any]:
 
 
 def main():
-    parser = argparse.ArgumentParser(description="Scan repository and generate docs index")
+    parser = argparse.ArgumentParser(
+        description="Scan repository and generate docs index"
+    )
     parser.add_argument(
         "--output", "-o", default="docs/generated-index.yaml", help="Output file path"
     )
-    parser.add_argument("--dry-run", action="store_true", help="Print output without writing file")
-    parser.add_argument("--json", action="store_true", help="Output as JSON instead of YAML")
+    parser.add_argument(
+        "--dry-run", action="store_true", help="Print output without writing file"
+    )
+    parser.add_argument(
+        "--json", action="store_true", help="Output as JSON instead of YAML"
+    )
     parser.add_argument(
         "--include", nargs="+", default=["**/*.md"], help="Glob patterns to include"
     )
@@ -372,7 +383,11 @@ def main():
         if args.json:
             print(json.dumps(index, indent=2, ensure_ascii=False))
         else:
-            print(yaml.dump(index, allow_unicode=True, default_flow_style=False, sort_keys=False))
+            print(
+                yaml.dump(
+                    index, allow_unicode=True, default_flow_style=False, sort_keys=False
+                )
+            )
     else:
         output_path = repo_root / args.output
         output_path.parent.mkdir(parents=True, exist_ok=True)
@@ -381,7 +396,13 @@ def main():
             if args.json:
                 json.dump(index, f, indent=2, ensure_ascii=False)
             else:
-                yaml.dump(index, f, allow_unicode=True, default_flow_style=False, sort_keys=False)
+                yaml.dump(
+                    index,
+                    f,
+                    allow_unicode=True,
+                    default_flow_style=False,
+                    sort_keys=False,
+                )
 
         print(f"💾 索引已寫入: {output_path}")
 

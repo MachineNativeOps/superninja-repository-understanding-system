@@ -11,6 +11,11 @@
 6. 性能和可擴展性測試
 """
 
+import asyncio
+import sys
+from pathlib import Path
+
+import pytest
 from core.orchestrators import (
     ComponentType,
     DependencyResolver,
@@ -18,11 +23,6 @@ from core.orchestrators import (
     ExecutionStatus,
     TenantTier,
 )
-import asyncio
-import sys
-from pathlib import Path
-
-import pytest
 
 # 添加 src 到路徑
 project_root = Path(__file__).parent.parent
@@ -75,11 +75,20 @@ class TestMultiTenantIsolation:
         ent_config = orch.get_tenant(enterprise)
 
         # Basic < Pro < Enterprise
-        assert basic_config.quota.max_concurrent_tasks < pro_config.quota.max_concurrent_tasks
-        assert pro_config.quota.max_concurrent_tasks < ent_config.quota.max_concurrent_tasks
+        assert (
+            basic_config.quota.max_concurrent_tasks
+            < pro_config.quota.max_concurrent_tasks
+        )
+        assert (
+            pro_config.quota.max_concurrent_tasks
+            < ent_config.quota.max_concurrent_tasks
+        )
 
         assert basic_config.quota.max_memory_mb < ent_config.quota.max_memory_mb
-        assert basic_config.quota.rate_limit_per_second < ent_config.quota.rate_limit_per_second
+        assert (
+            basic_config.quota.rate_limit_per_second
+            < ent_config.quota.rate_limit_per_second
+        )
 
     def test_tenant_feature_isolation(self):
         """測試租戶功能隔離"""
@@ -354,7 +363,9 @@ class TestResourceQuotaIntegration:
         ent_config = orch.get_tenant(enterprise)
 
         # Basic 應該有更低的小時配額
-        assert basic_config.quota.max_tasks_per_hour < ent_config.quota.max_tasks_per_hour
+        assert (
+            basic_config.quota.max_tasks_per_hour < ent_config.quota.max_tasks_per_hour
+        )
 
 
 # ============================================================================

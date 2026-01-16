@@ -151,7 +151,9 @@ def analyze_runs(runs: list[dict[str, Any]]) -> dict[str, Any]:
     # Calculate averages
     for stats in workflow_stats.values():
         if stats["runs"] > 0:
-            stats["avg_duration_minutes"] = stats["total_duration_minutes"] / stats["runs"]
+            stats["avg_duration_minutes"] = (
+                stats["total_duration_minutes"] / stats["runs"]
+            )
 
     return {"workflows": dict(workflow_stats), "totals": total_stats}
 
@@ -174,7 +176,10 @@ def detect_anomalies(analysis: dict[str, Any]) -> list[str]:
             )
 
         # Check for excessive total minutes
-        if stats["total_duration_minutes"] > ANOMALY_THRESHOLDS["max_total_minutes_per_workflow"]:
+        if (
+            stats["total_duration_minutes"]
+            > ANOMALY_THRESHOLDS["max_total_minutes_per_workflow"]
+        ):
             anomalies.append(
                 f"⚠️ **{workflow_name}**: Excessive total minutes ({stats['total_duration_minutes']:.0f} min, threshold: {ANOMALY_THRESHOLDS['max_total_minutes_per_workflow']} min)"
             )
@@ -190,16 +195,18 @@ def detect_anomalies(analysis: dict[str, Any]) -> list[str]:
     return anomalies
 
 
-def generate_markdown_report(analysis: dict[str, Any], days: int, anomalies: list[str]) -> str:
+def generate_markdown_report(
+    analysis: dict[str, Any], days: int, anomalies: list[str]
+) -> str:
     """Generate markdown report."""
     now = datetime.utcnow()
-    report_period = (
-        f"{(now - timedelta(days=days)).strftime('%Y-%m-%d')} to {now.strftime('%Y-%m-%d')}"
-    )
+    report_period = f"{(now - timedelta(days=days)).strftime('%Y-%m-%d')} to {now.strftime('%Y-%m-%d')}"
 
     # Sort workflows by cost
     sorted_workflows = sorted(
-        analysis["workflows"].items(), key=lambda x: x[1]["total_cost_usd"], reverse=True
+        analysis["workflows"].items(),
+        key=lambda x: x[1]["total_cost_usd"],
+        reverse=True,
     )
 
     report = f"""# CI Cost Dashboard 📊
@@ -237,7 +244,9 @@ def generate_markdown_report(analysis: dict[str, Any], days: int, anomalies: lis
     report += "|------|----------|------|---------|-----------|--------------|-------------|\n"
 
     for idx, (workflow_name, stats) in enumerate(sorted_workflows[:10], 1):
-        success_rate = (stats["successful"] / stats["runs"] * 100) if stats["runs"] > 0 else 0
+        success_rate = (
+            (stats["successful"] / stats["runs"] * 100) if stats["runs"] > 0 else 0
+        )
         report += (
             f"| {idx} | {workflow_name} | {stats['runs']} | "
             f"{stats['total_duration_minutes']:.0f} | ${stats['total_cost_usd']:.2f} | "
@@ -248,8 +257,12 @@ def generate_markdown_report(analysis: dict[str, Any], days: int, anomalies: lis
     report += "\n## 📈 All Workflows Detailed Statistics\n\n"
 
     for workflow_name, stats in sorted_workflows:
-        success_rate = (stats["successful"] / stats["runs"] * 100) if stats["runs"] > 0 else 0
-        failure_rate = (stats["failed"] / stats["runs"] * 100) if stats["runs"] > 0 else 0
+        success_rate = (
+            (stats["successful"] / stats["runs"] * 100) if stats["runs"] > 0 else 0
+        )
+        failure_rate = (
+            (stats["failed"] / stats["runs"] * 100) if stats["runs"] > 0 else 0
+        )
 
         report += f"\n### {workflow_name}\n\n"
         report += "| Metric | Value |\n"
@@ -272,7 +285,9 @@ def generate_markdown_report(analysis: dict[str, Any], days: int, anomalies: lis
 
         # Top branches
         if stats["branches"]:
-            top_branches = sorted(stats["branches"].items(), key=lambda x: x[1], reverse=True)[:5]
+            top_branches = sorted(
+                stats["branches"].items(), key=lambda x: x[1], reverse=True
+            )[:5]
             report += "\n**Top Branches**:\n"
             for branch, count in top_branches:
                 report += f"- `{branch}`: {count} runs\n"
@@ -292,7 +307,9 @@ def generate_markdown_report(analysis: dict[str, Any], days: int, anomalies: lis
             report += "  - Consider: Reducing trigger frequency, using path filters, or consolidating jobs\n"
 
     long_running_workflows = [
-        name for name, stats in analysis["workflows"].items() if stats["avg_duration_minutes"] > 15
+        name
+        for name, stats in analysis["workflows"].items()
+        if stats["avg_duration_minutes"] > 15
     ]
     if long_running_workflows:
         report += "\n### Long-Running Workflows\n\n"
@@ -313,7 +330,9 @@ def main():
     parser = argparse.ArgumentParser(description="Generate CI cost dashboard")
     parser.add_argument("--days", type=int, default=7, help="Number of days to analyze")
     parser.add_argument("--output", type=str, help="Output file path")
-    parser.add_argument("--check-anomalies", action="store_true", help="Check for anomalies only")
+    parser.add_argument(
+        "--check-anomalies", action="store_true", help="Check for anomalies only"
+    )
 
     args = parser.parse_args()
 

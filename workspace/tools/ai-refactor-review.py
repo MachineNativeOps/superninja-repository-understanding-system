@@ -107,7 +107,9 @@ class RuleBasedSuggestionGenerator:
                     "title": "Language Policy Violations",
                     "severity": "ERROR",
                     "count": len(violations_list),
-                    "suggestion": self._generate_language_migration_advice(violations_list),
+                    "suggestion": self._generate_language_migration_advice(
+                        violations_list
+                    ),
                 }
             )
 
@@ -147,10 +149,16 @@ class RuleBasedSuggestionGenerator:
 
             # Specific suggestions based on language
             if lang == "JavaScript":
-                advice.append("- **Recommendation**: Convert to TypeScript for type safety")
-                advice.append("- **Tool**: Use `tsc` compiler or automated migration tools")
+                advice.append(
+                    "- **Recommendation**: Convert to TypeScript for type safety"
+                )
+                advice.append(
+                    "- **Tool**: Use `tsc` compiler or automated migration tools"
+                )
             elif lang == "Python":
-                advice.append("- **Recommendation**: Ensure Python is allowed in this directory")
+                advice.append(
+                    "- **Recommendation**: Ensure Python is allowed in this directory"
+                )
                 advice.append(
                     "- **Check**: Review `config/language-policy.yaml` for directory rules"
                 )
@@ -173,7 +181,9 @@ class RuleBasedSuggestionGenerator:
         for lang, vlist in by_lang.items():
             advice.append(f"**{lang} is Globally Forbidden ({len(vlist)} files)**:")
             advice.append(f"- **Critical Action**: Remove all {lang} files immediately")
-            advice.append(f"- **Files**: {', '.join([v.get('file', '') for v in vlist[:5]])}")
+            advice.append(
+                f"- **Files**: {', '.join([v.get('file', '') for v in vlist[:5]])}"
+            )
             if len(vlist) > 5:
                 advice.append(f"- ... and {len(vlist) - 5} more files")
             advice.append("")
@@ -313,7 +323,9 @@ class AIRefactorReviewer:
             if violations:
                 parts.append(f"## Language Governance Violations ({len(violations)})\n")
                 for v in violations[:20]:  # Top 20
-                    parts.append(f"- {v.get('severity', 'UNKNOWN')}: {v.get('message', '')}")
+                    parts.append(
+                        f"- {v.get('severity', 'UNKNOWN')}: {v.get('message', '')}"
+                    )
                     parts.append(f"  File: {v.get('file', '')}")
                 if len(violations) > 20:
                     parts.append(f"... and {len(violations) - 20} more violations")
@@ -356,7 +368,9 @@ class AIRefactorReviewer:
         # Header
         lines.append("# 🤖 AI-Powered Refactoring Suggestions")
         lines.append("")
-        lines.append(f"**Generated:** {datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S UTC')}")
+        lines.append(
+            f"**Generated:** {datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S UTC')}"
+        )
         lines.append("")
         lines.append("---")
         lines.append("")
@@ -379,7 +393,9 @@ class AIRefactorReviewer:
 
         lines.append(f"**Total Issues Detected:** {total_issues}")
         lines.append("")
-        lines.append("This report provides AI-powered and rule-based suggestions for addressing:")
+        lines.append(
+            "This report provides AI-powered and rule-based suggestions for addressing:"
+        )
         lines.append("- Language governance violations")
         lines.append("- Security vulnerabilities")
         lines.append("- Code quality issues")
@@ -394,10 +410,14 @@ class AIRefactorReviewer:
         if self.governance_data:
             violations = self.governance_data.get("violations", [])
             if violations:
-                suggestions = self.rule_generator.generate_language_suggestions(violations)
+                suggestions = self.rule_generator.generate_language_suggestions(
+                    violations
+                )
                 for sugg in suggestions:
                     emoji = "🔴" if sugg["severity"] == "CRITICAL" else "⚠️"
-                    lines.append(f"### {emoji} {sugg['title']} ({sugg['count']} issues)")
+                    lines.append(
+                        f"### {emoji} {sugg['title']} ({sugg['count']} issues)"
+                    )
                     lines.append("")
                     lines.append(sugg["suggestion"])
                     lines.append("")
@@ -461,7 +481,9 @@ class AIRefactorReviewer:
         lines.append("## 📚 Resources")
         lines.append("")
         lines.append("- [Language Stack Policy](docs/architecture/language-stack.md)")
-        lines.append("- [Language Governance Guide](docs/architecture/language-governance.md)")
+        lines.append(
+            "- [Language Governance Guide](docs/architecture/language-governance.md)"
+        )
         lines.append(
             "- [Exception Request Process](docs/architecture/language-governance.md#例外申請)"
         )
@@ -490,9 +512,15 @@ def main():
     parser = argparse.ArgumentParser(description="AI-Powered Refactor Review Tool")
     parser.add_argument("--governance-report", help="Path to governance report JSON")
     parser.add_argument("--semgrep-report", help="Path to Semgrep SARIF report")
-    parser.add_argument("--codeql-reports", help="Directory containing CodeQL SARIF reports")
-    parser.add_argument("--output", default="ai-refactor-suggestions.md", help="Output file path")
-    parser.add_argument("--ai-model", default="gpt-4", help="OpenAI model to use (default: gpt-4)")
+    parser.add_argument(
+        "--codeql-reports", help="Directory containing CodeQL SARIF reports"
+    )
+    parser.add_argument(
+        "--output", default="ai-refactor-suggestions.md", help="Output file path"
+    )
+    parser.add_argument(
+        "--ai-model", default="gpt-4", help="OpenAI model to use (default: gpt-4)"
+    )
 
     args = parser.parse_args()
 

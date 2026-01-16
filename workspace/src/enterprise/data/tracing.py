@@ -218,7 +218,9 @@ class Span:
             "name": self.name,
             "trace_id": self.context.trace_id,
             "span_id": self.context.span_id,
-            "parent_span_id": self.parent_context.span_id if self.parent_context else None,
+            "parent_span_id": (
+                self.parent_context.span_id if self.parent_context else None
+            ),
             "start_time": self.start_time,
             "end_time": self.end_time,
             "duration_ms": self.duration_ms,

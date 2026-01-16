@@ -211,7 +211,9 @@ class DomainGuideline:
 
         if "resource_constrained" in context and context["resource_constrained"]:
             if key == "batch_size":
-                recommendation = max(guideline.get("min", 100), guideline.get("value", 1000) // 2)
+                recommendation = max(
+                    guideline.get("min", 100), guideline.get("value", 1000) // 2
+                )
                 confidence = 0.75
 
         return GuidelineEvaluation(
@@ -239,7 +241,9 @@ class DomainGuideline:
             if feedback_type == "too_strict":
                 if "options" in guideline:
                     options = guideline["options"]
-                    current_idx = options.index(old_value) if old_value in options else 0
+                    current_idx = (
+                        options.index(old_value) if old_value in options else 0
+                    )
                     if current_idx > 0:
                         new_value = options[current_idx - 1]
                 elif isinstance(old_value, (int, float)):
@@ -248,7 +252,9 @@ class DomainGuideline:
             elif feedback_type == "too_lenient":
                 if "options" in guideline:
                     options = guideline["options"]
-                    current_idx = options.index(old_value) if old_value in options else 0
+                    current_idx = (
+                        options.index(old_value) if old_value in options else 0
+                    )
                     if current_idx < len(options) - 1:
                         new_value = options[current_idx + 1]
                 elif isinstance(old_value, (int, float)):
@@ -380,7 +386,11 @@ class LearningGuideline:
             self._learning_data[operation_type] = []
 
         self._learning_data[operation_type].append(
-            {"operation": operation, "outcome": outcome, "timestamp": datetime.utcnow().isoformat()}
+            {
+                "operation": operation,
+                "outcome": outcome,
+                "timestamp": datetime.utcnow().isoformat(),
+            }
         )
 
         # 當數據足夠時觸發學習
@@ -422,7 +432,9 @@ class LearningGuideline:
             for key, value in first_op.items():
                 if key not in ["type", "timestamp", "id"]:
                     # 檢查此參數在所有成功案例中是否一致
-                    consistent = all(r.get("operation", {}).get(key) == value for r in records)
+                    consistent = all(
+                        r.get("operation", {}).get(key) == value for r in records
+                    )
                     if consistent:
                         common_params[key] = value
 
@@ -551,7 +563,10 @@ class AdaptiveGuidelineEngine:
         return result
 
     def _merge_recommendations(
-        self, domain: dict[str, Any], contextual: dict[str, Any], learned: dict[str, Any]
+        self,
+        domain: dict[str, Any],
+        contextual: dict[str, Any],
+        learned: dict[str, Any],
     ) -> dict[str, Any]:
         """合併所有來源的建議"""
         merged = {}
@@ -574,7 +589,9 @@ class AdaptiveGuidelineEngine:
 
         return merged
 
-    def record_operation_outcome(self, operation: dict[str, Any], outcome: dict[str, Any]):
+    def record_operation_outcome(
+        self, operation: dict[str, Any], outcome: dict[str, Any]
+    ):
         """記錄操作結果供學習"""
         self.learning.record_outcome(operation, outcome)
 
@@ -590,7 +607,9 @@ class AdaptiveGuidelineEngine:
         return {
             "domains": list(self._domain_guidelines.keys()),
             "learned_patterns": len(self.learning.get_learned_patterns()),
-            "active_contextual_guidelines": len(self.contextual.get_all_active_guidelines()),
+            "active_contextual_guidelines": len(
+                self.contextual.get_all_active_guidelines()
+            ),
         }
 
 

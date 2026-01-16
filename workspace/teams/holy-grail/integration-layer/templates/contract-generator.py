@@ -102,7 +102,10 @@ class ContractGenerator:
                 "intent": "automate_deployment",
                 "conditions": {"triggers": [], "prerequisites": []},
                 "actions": [],
-                "validation_requirements": {"layers": ["L-A", "L-B", "L-C", "L-E"], "gates": []},
+                "validation_requirements": {
+                    "layers": ["L-A", "L-B", "L-C", "L-E"],
+                    "gates": [],
+                },
                 "metadata": {"owner": "", "category": "deployment", "tags": []},
             },
             required_fields=["name", "intent", "actions"],
@@ -128,7 +131,10 @@ class ContractGenerator:
                     "prerequisites": [],
                 },
                 "actions": [],
-                "validation_requirements": {"layers": ["L-A", "L-D", "L-E"], "gates": []},
+                "validation_requirements": {
+                    "layers": ["L-A", "L-D", "L-E"],
+                    "gates": [],
+                },
                 "metadata": {},
             },
             required_fields=["name", "metrics"],
@@ -151,7 +157,10 @@ class ContractGenerator:
                 "intent": "optimize_resources",
                 "conditions": {"triggers": [], "prerequisites": []},
                 "actions": [],
-                "validation_requirements": {"layers": ["L-A", "L-D", "L-E", "L-F"], "gates": []},
+                "validation_requirements": {
+                    "layers": ["L-A", "L-D", "L-E", "L-F"],
+                    "gates": [],
+                },
                 "metadata": {},
             },
             required_fields=["name", "optimization_targets"],
@@ -174,7 +183,10 @@ class ContractGenerator:
                 "intent": "enforce_security",
                 "conditions": {"triggers": [], "prerequisites": []},
                 "actions": [],
-                "validation_requirements": {"layers": ["L-A", "L-B", "L-C"], "gates": []},
+                "validation_requirements": {
+                    "layers": ["L-A", "L-B", "L-C"],
+                    "gates": [],
+                },
                 "metadata": {},
             },
             required_fields=["name", "security_controls"],
@@ -200,7 +212,10 @@ class ContractGenerator:
                     "prerequisites": [],
                 },
                 "actions": [],
-                "validation_requirements": {"layers": ["L-A", "L-B", "L-D"], "gates": []},
+                "validation_requirements": {
+                    "layers": ["L-A", "L-B", "L-D"],
+                    "gates": [],
+                },
                 "metadata": {},
             },
             required_fields=["name", "backup_targets"],
@@ -235,7 +250,9 @@ class ContractGenerator:
             template = self.templates["deployment"]
 
         # Generate contract
-        contract_def = self._build_contract_from_template(template, description, intent_analysis)
+        contract_def = self._build_contract_from_template(
+            template, description, intent_analysis
+        )
 
         # Validate
         validation = self._validate_contract(contract_def)
@@ -318,7 +335,9 @@ class ContractGenerator:
                 "intent": "monitor_system_health",
                 "actions": ["collect_metrics", "alert"],
             }
-        elif any(word in description_lower for word in ["optimize", "improve", "performance"]):
+        elif any(
+            word in description_lower for word in ["optimize", "improve", "performance"]
+        ):
             return {
                 "template": "optimization",
                 "confidence": 0.80,
@@ -332,7 +351,9 @@ class ContractGenerator:
                 "intent": "enforce_security",
                 "actions": ["scan", "enforce"],
             }
-        elif any(word in description_lower for word in ["backup", "snapshot", "archive"]):
+        elif any(
+            word in description_lower for word in ["backup", "snapshot", "archive"]
+        ):
             return {
                 "template": "backup",
                 "confidence": 0.90,
@@ -493,8 +514,12 @@ def main():
     """Command-line interface for contract generation"""
     import argparse
 
-    parser = argparse.ArgumentParser(description="Generate intelligent behavior contracts")
-    parser.add_argument("description", help="Natural language description of desired behavior")
+    parser = argparse.ArgumentParser(
+        description="Generate intelligent behavior contracts"
+    )
+    parser.add_argument(
+        "description", help="Natural language description of desired behavior"
+    )
     parser.add_argument(
         "--output", "-o", default="./generated-contract.yaml", help="Output file path"
     )

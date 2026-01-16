@@ -343,7 +343,7 @@ class PipAnalyzer(BaseAnalyzer):
 
         for prefix in prefixes:
             if cleaned.startswith(prefix):
-                cleaned = cleaned[len(prefix) :]
+                cleaned = cleaned[len(prefix):]
                 break
 
         # 移除空格

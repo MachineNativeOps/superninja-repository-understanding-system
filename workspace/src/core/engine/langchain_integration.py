@@ -174,21 +174,34 @@ class ReActAgentBuilder:
                 # Step 2: Action - Select tool (simplified)
                 if agent["tools"]:
                     selected_tool = agent["tools"][0]
-                    action = {"tool": selected_tool.name, "tool_input": {"query": current_input}}
+                    action = {
+                        "tool": selected_tool.name,
+                        "tool_input": {"query": current_input},
+                    }
                     intermediate_steps.append(
-                        {"type": "action", "content": action, "iteration": iteration + 1}
+                        {
+                            "type": "action",
+                            "content": action,
+                            "iteration": iteration + 1,
+                        }
                     )
 
                     # Step 3: Observation - Execute tool
                     if selected_tool.coroutine:
-                        observation = await selected_tool.coroutine(action["tool_input"])
+                        observation = await selected_tool.coroutine(
+                            action["tool_input"]
+                        )
                     elif selected_tool.func:
                         observation = selected_tool.func(action["tool_input"])
                     else:
                         observation = f"Tool {selected_tool.name} executed (simulated)"
 
                     intermediate_steps.append(
-                        {"type": "observation", "content": observation, "iteration": iteration + 1}
+                        {
+                            "type": "observation",
+                            "content": observation,
+                            "iteration": iteration + 1,
+                        }
                     )
 
                     # Check if task is complete
@@ -278,7 +291,9 @@ class ChainBuilder:
         self._chains[chain_name].append(step)
         return self
 
-    async def run_chain(self, chain_name: str, initial_input: Dict[str, Any]) -> Dict[str, Any]:
+    async def run_chain(
+        self, chain_name: str, initial_input: Dict[str, Any]
+    ) -> Dict[str, Any]:
         """Run a chain of tools"""
         if chain_name not in self._chains:
             return {"error": f"Chain not found: {chain_name}"}
@@ -301,17 +316,27 @@ class ChainBuilder:
             # Execute step
             try:
                 if self.tool_executor:
-                    result = await self.tool_executor.execute(step.tool_name, step_input)
+                    result = await self.tool_executor.execute(
+                        step.tool_name, step_input
+                    )
                     step_output = result.output if hasattr(result, "output") else result
                 else:
                     step_output = f"Executed {step.tool_name} (simulated)"
 
                 context[step.output_key] = step_output
-                results.append({"tool": step.tool_name, "output": step_output, "success": True})
+                results.append(
+                    {"tool": step.tool_name, "output": step_output, "success": True}
+                )
             except Exception as e:
                 if not step.continue_on_error:
-                    return {"error": str(e), "failed_at": step.tool_name, "results": results}
-                results.append({"tool": step.tool_name, "error": str(e), "success": False})
+                    return {
+                        "error": str(e),
+                        "failed_at": step.tool_name,
+                        "results": results,
+                    }
+                results.append(
+                    {"tool": step.tool_name, "error": str(e), "success": False}
+                )
 
         return {"success": True, "results": results, "final_context": context}
 

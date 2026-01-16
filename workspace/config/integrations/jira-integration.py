@@ -22,7 +22,10 @@ class JiraIntegration:
         # request debugging is disabled.
         self.auth = (username, api_token)
         self.project_key = project_key
-        self.headers = {"Content-Type": "application/json", "Accept": "application/json"}
+        self.headers = {
+            "Content-Type": "application/json",
+            "Accept": "application/json",
+        }
 
     def create_security_issue(
         self,
@@ -190,10 +193,15 @@ def main():
         sys.exit(1)
 
     # Get alert details from command line or environment
-    severity = os.getenv("ALERT_SEVERITY", sys.argv[1] if len(sys.argv) > 1 else "medium")
-    summary = os.getenv("ALERT_SUMMARY", sys.argv[2] if len(sys.argv) > 2 else "Security Alert")
+    severity = os.getenv(
+        "ALERT_SEVERITY", sys.argv[1] if len(sys.argv) > 1 else "medium"
+    )
+    summary = os.getenv(
+        "ALERT_SUMMARY", sys.argv[2] if len(sys.argv) > 2 else "Security Alert"
+    )
     description = os.getenv(
-        "ALERT_DESCRIPTION", sys.argv[3] if len(sys.argv) > 3 else "Security issue detected"
+        "ALERT_DESCRIPTION",
+        sys.argv[3] if len(sys.argv) > 3 else "Security issue detected",
     )
     alert_type = os.getenv("ALERT_TYPE", "Security Alert")
     repository = os.getenv("GITHUB_REPOSITORY", "unknown")

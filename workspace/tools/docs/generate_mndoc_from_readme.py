@@ -159,7 +159,9 @@ def split_sections(text: str) -> list[dict[str, Any]]:
                 "title": clean_title,
                 "type": classify_section(clean_title),
                 "content_preview": (
-                    section_content[:200] + "..." if len(section_content) > 200 else section_content
+                    section_content[:200] + "..."
+                    if len(section_content) > 200
+                    else section_content
                 ),
             }
         )

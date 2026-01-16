@@ -401,7 +401,9 @@ class ContractEngine:
         # Get ordered layers by priority
         ordered_layers = sorted(
             self.validation_gates.keys(),
-            key=lambda layer: self.config["validation"]["layers"][layer.name]["priority"],
+            key=lambda layer: self.config["validation"]["layers"][layer.name][
+                "priority"
+            ],
         )
 
         for layer in ordered_layers:
@@ -433,7 +435,9 @@ class ContractEngine:
                 context.validation_results.append(result)
 
                 if not result.success and result in [g for g in gates if g.required]:
-                    self.logger.warning(f"Required validation gate failed: {result.gate_name}")
+                    self.logger.warning(
+                        f"Required validation gate failed: {result.gate_name}"
+                    )
                     return False
 
         return True
@@ -520,7 +524,9 @@ class ContractEngine:
             **self.metrics,
             "active_contracts": len(self.active_contracts),
             "validation_layers": len(self.validation_gates),
-            "total_validation_gates": sum(len(gates) for gates in self.validation_gates.values()),
+            "total_validation_gates": sum(
+                len(gates) for gates in self.validation_gates.values()
+            ),
         }
 
     def get_contract_by_intent(self, intent: str) -> Optional[BehaviorContract]:

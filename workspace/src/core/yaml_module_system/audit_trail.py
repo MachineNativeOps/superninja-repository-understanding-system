@@ -283,9 +283,13 @@ class AuditLogger:
 
         return entries[:limit]
 
-    def get_resource_history(self, resource_type: str, resource_id: str) -> List[AuditEntry]:
+    def get_resource_history(
+        self, resource_type: str, resource_id: str
+    ) -> List[AuditEntry]:
         """獲取資源的完整歷史"""
-        return self.get_entries(resource_type=resource_type, resource_id=resource_id, limit=1000)
+        return self.get_entries(
+            resource_type=resource_type, resource_id=resource_id, limit=1000
+        )
 
     def export(self, format: str = "json") -> str:
         """導出審計日誌"""

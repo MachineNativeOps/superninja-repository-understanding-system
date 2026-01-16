@@ -254,7 +254,9 @@ class MobileAppGenerator:
             # 根據功能需求調整
             if feature_requirements.get("native_performance", False):
                 candidates = [MobilePlatform.IOS, MobilePlatform.ANDROID] + [
-                    p for p in candidates if p not in [MobilePlatform.IOS, MobilePlatform.ANDROID]
+                    p
+                    for p in candidates
+                    if p not in [MobilePlatform.IOS, MobilePlatform.ANDROID]
                 ]
 
             if feature_requirements.get("cross_platform", True):
@@ -293,7 +295,9 @@ class MobileAppGenerator:
             selected_framework = framework or platform_info["frameworks"][0]
 
             # 創建應用規格
-            app_spec = await self._create_app_spec(user_input, platform, selected_framework)
+            app_spec = await self._create_app_spec(
+                user_input, platform, selected_framework
+            )
 
             # 生成應用代碼
             generation_result = await self._generate_app_code(
@@ -301,7 +305,9 @@ class MobileAppGenerator:
             )
 
             # 生成UI組件
-            ui_components = await self.ui_component_library.generate_components(app_spec, platform)
+            ui_components = await self.ui_component_library.generate_components(
+                app_spec, platform
+            )
 
             # 生成配置文件
             configuration = await self._generate_configuration(app_spec, platform)
@@ -360,7 +366,9 @@ class MobileAppGenerator:
             self.logger.error(f"PWA support generation failed: {e}")
             return {"success": False, "error": str(e)}
 
-    async def create_device_adaptation(self, app_results: Dict[str, Any]) -> Dict[str, Any]:
+    async def create_device_adaptation(
+        self, app_results: Dict[str, Any]
+    ) -> Dict[str, Any]:
         """創建設備適配"""
         try:
             self.logger.info("Creating device adaptation...")
@@ -375,7 +383,9 @@ class MobileAppGenerator:
             device_styles = await self.device_adapter.generate_device_styles()
 
             # 生成交互適配
-            interaction_adaptation = await self.device_adapter.generate_interaction_adaptation()
+            interaction_adaptation = (
+                await self.device_adapter.generate_interaction_adaptation()
+            )
 
             return {
                 "success": True,
@@ -451,9 +461,12 @@ class MobileAppGenerator:
         user_input_lower = user_input.lower()
 
         features = {
-            "camera": any(word in user_input_lower for word in ["camera", "photo", "video"]),
+            "camera": any(
+                word in user_input_lower for word in ["camera", "photo", "video"]
+            ),
             "gps": any(
-                word in user_input_lower for word in ["gps", "location", "map", "navigation"]
+                word in user_input_lower
+                for word in ["gps", "location", "map", "navigation"]
             ),
             "push_notifications": any(
                 word in user_input_lower for word in ["push", "notification", "alert"]
@@ -465,16 +478,29 @@ class MobileAppGenerator:
                 word in user_input_lower for word in ["login", "auth", "security"]
             ),
             "payment": any(
-                word in user_input_lower for word in ["payment", "purchase", "buy", "shop"]
+                word in user_input_lower
+                for word in ["payment", "purchase", "buy", "shop"]
             ),
-            "social": any(word in user_input_lower for word in ["social", "share", "connect"]),
+            "social": any(
+                word in user_input_lower for word in ["social", "share", "connect"]
+            ),
             "media": any(
-                word in user_input_lower for word in ["media", "video", "audio", "streaming"]
+                word in user_input_lower
+                for word in ["media", "video", "audio", "streaming"]
             ),
-            "cloud": any(word in user_input_lower for word in ["cloud", "sync", "backup"]),
-            "ar_vr": any(word in user_input_lower for word in ["ar", "vr", "augmented", "virtual"]),
-            "wearable": any(word in user_input_lower for word in ["watch", "wearable", "fitness"]),
-            "iot": any(word in user_input_lower for word in ["iot", "smart", "connected"]),
+            "cloud": any(
+                word in user_input_lower for word in ["cloud", "sync", "backup"]
+            ),
+            "ar_vr": any(
+                word in user_input_lower
+                for word in ["ar", "vr", "augmented", "virtual"]
+            ),
+            "wearable": any(
+                word in user_input_lower for word in ["watch", "wearable", "fitness"]
+            ),
+            "iot": any(
+                word in user_input_lower for word in ["iot", "smart", "connected"]
+            ),
         }
 
         return features
@@ -485,10 +511,18 @@ class MobileAppGenerator:
 
         # 設備類型
         device_types = {
-            DeviceType.PHONE: any(word in user_input_lower for word in ["phone", "mobile"]),
-            DeviceType.TABLET: any(word in user_input_lower for word in ["tablet", "ipad"]),
-            DeviceType.WEARABLE: any(word in user_input_lower for word in ["watch", "wearable"]),
-            DeviceType.TV: any(word in user_input_lower for word in ["tv", "television"]),
+            DeviceType.PHONE: any(
+                word in user_input_lower for word in ["phone", "mobile"]
+            ),
+            DeviceType.TABLET: any(
+                word in user_input_lower for word in ["tablet", "ipad"]
+            ),
+            DeviceType.WEARABLE: any(
+                word in user_input_lower for word in ["watch", "wearable"]
+            ),
+            DeviceType.TV: any(
+                word in user_input_lower for word in ["tv", "television"]
+            ),
         }
 
         # 屏幕方向
@@ -504,12 +538,17 @@ class MobileAppGenerator:
         }
 
         return {
-            "device_types": [device for device, required in device_types.items() if required],
+            "device_types": [
+                device for device, required in device_types.items() if required
+            ],
             "orientations": [
-                orientation for orientation, required in orientations.items() if required
+                orientation
+                for orientation, required in orientations.items()
+                if required
             ],
             "responsive_design": any(
-                word in user_input_lower for word in ["responsive", "adaptive", "flexible"]
+                word in user_input_lower
+                for word in ["responsive", "adaptive", "flexible"]
             ),
         }
 
@@ -846,14 +885,20 @@ app.start();
 
         return permissions
 
-    def _generate_build_commands(self, platform: MobilePlatform, framework: str) -> List[str]:
+    def _generate_build_commands(
+        self, platform: MobilePlatform, framework: str
+    ) -> List[str]:
         """生成構建命令"""
         commands = []
 
         if platform == MobilePlatform.FLUTTER:
             commands = ["flutter pub get", "flutter build apk", "flutter build ios"]
         elif platform == MobilePlatform.REACT_NATIVE:
-            commands = ["npm install", "npx react-native run-android", "npx react-native run-ios"]
+            commands = [
+                "npm install",
+                "npx react-native run-android",
+                "npx react-native run-ios",
+            ]
         elif platform == MobilePlatform.IOS:
             commands = [
                 "xcodebuild -workspace MyApp.xcworkspace -scheme MyApp -configuration Debug build"
@@ -948,7 +993,10 @@ class UIComponentLibrary:
                 component_type="interactive",
                 props={"text": "Get Started"},
                 styles={"padding": "16px", "borderRadius": "8px"},
-                responsive_config={"phone": {"fontSize": 16}, "tablet": {"fontSize": 18}},
+                responsive_config={
+                    "phone": {"fontSize": 16},
+                    "tablet": {"fontSize": 18},
+                },
             )
         )
 

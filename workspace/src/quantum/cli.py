@@ -29,7 +29,10 @@ def cli():
 @cli.command()
 @click.option("--name", required=True, help="Name of the workflow")
 @click.option(
-    "--tasks-file", type=click.Path(exists=True), required=True, help="JSON file containing tasks"
+    "--tasks-file",
+    type=click.Path(exists=True),
+    required=True,
+    help="JSON file containing tasks",
 )
 def create_workflow(name: str, tasks_file: str):
     """
@@ -49,7 +52,9 @@ def create_workflow(name: str, tasks_file: str):
         if not isinstance(tasks, list) or not all(
             isinstance(t, dict) and "type" in t and "config" in t for t in tasks
         ):
-            raise ValueError("Tasks must be a list of dictionaries with 'type' and 'config' keys")
+            raise ValueError(
+                "Tasks must be a list of dictionaries with 'type' and 'config' keys"
+            )
 
         # Initialize use cases
         repository = WorkflowRepository()

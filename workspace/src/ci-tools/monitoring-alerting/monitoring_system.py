@@ -21,7 +21,13 @@ import prometheus_client
 import psutil
 import requests
 import yaml
-from prometheus_client import CollectorRegistry, Counter, Gauge, Histogram, generate_latest
+from prometheus_client import (
+    CollectorRegistry,
+    Counter,
+    Gauge,
+    Histogram,
+    generate_latest,
+)
 from redis import Redis
 
 
@@ -141,7 +147,11 @@ class MonitoringSystem:
         # 默認配置
         return {
             "prometheus": {"enabled": True, "port": 8090, "endpoint": "/metrics"},
-            "metrics": {"retention_hours": 24, "collection_interval": 30, "batch_size": 100},
+            "metrics": {
+                "retention_hours": 24,
+                "collection_interval": 30,
+                "batch_size": 100,
+            },
             "alerts": {
                 "evaluation_interval": 60,
                 "max_alerts_per_rule": 10,
@@ -168,7 +178,9 @@ class MonitoringSystem:
 
         if not logger.handlers:
             handler = logging.StreamHandler()
-            formatter = logging.Formatter("%(asctime)s - %(name)s - %(levelname)s - %(message)s")
+            formatter = logging.Formatter(
+                "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+            )
             handler.setFormatter(formatter)
             logger.addHandler(handler)
 
@@ -372,14 +384,18 @@ class MonitoringSystem:
             }
 
             self.redis_client.lpush(key, json.dumps(data))
-            self.redis_client.expire(key, self.config["metrics"]["retention_hours"] * 3600)
+            self.redis_client.expire(
+                key, self.config["metrics"]["retention_hours"] * 3600
+            )
 
         except Exception as e:
             self.logger.error(f"保存指標到 Redis 失敗: {e}")
 
     def _cleanup_old_metrics(self):
         """清理舊的指標數據"""
-        retention_time = datetime.now() - timedelta(hours=self.config["metrics"]["retention_hours"])
+        retention_time = datetime.now() - timedelta(
+            hours=self.config["metrics"]["retention_hours"]
+        )
 
         # 保留最近的數據
         max_items = self.config["metrics"]["batch_size"] * 10
@@ -480,7 +496,9 @@ class MonitoringSystem:
                 return
 
             # 評估條件
-            is_triggered = self._evaluate_condition(current_value, rule.condition, rule.threshold)
+            is_triggered = self._evaluate_condition(
+                current_value, rule.condition, rule.threshold
+            )
 
             # 檢查是否已經存在告警
             existing_alert = self.active_alerts.get(rule_id)
@@ -509,7 +527,9 @@ class MonitoringSystem:
         for metric_data in reversed(self.metric_data):
             if metric_data.name == metric_name:
                 # 檢查標籤是否匹配
-                if not labels or all(metric_data.labels.get(k) == v for k, v in labels.items()):
+                if not labels or all(
+                    metric_data.labels.get(k) == v for k, v in labels.items()
+                ):
                     return metric_data.value
 
         # 從 Redis 中查找
@@ -530,7 +550,9 @@ class MonitoringSystem:
 
         return None
 
-    def _evaluate_condition(self, value: float, condition: str, threshold: float) -> bool:
+    def _evaluate_condition(
+        self, value: float, condition: str, threshold: float
+    ) -> bool:
         """評估條件"""
         try:
             if condition == ">":
@@ -663,13 +685,21 @@ class MonitoringSystem:
                     "color": color,
                     "fields": [
                         {"title": "告警名稱", "value": rule.name, "short": True},
-                        {"title": "嚴重程度", "value": alert.severity.value.upper(), "short": True},
+                        {
+                            "title": "嚴重程度",
+                            "value": alert.severity.value.upper(),
+                            "short": True,
+                        },
                         {
                             "title": "開始時間",
                             "value": alert.start_time.strftime("%Y-%m-%d %H:%M:%S"),
                             "short": True,
                         },
-                        {"title": "評估次數", "value": str(alert.evaluation_count), "short": True},
+                        {
+                            "title": "評估次數",
+                            "value": str(alert.evaluation_count),
+                            "short": True,
+                        },
                     ],
                     "footer": "監控系統",
                     "ts": int(alert.start_time.timestamp()),
@@ -706,7 +736,9 @@ class MonitoringSystem:
         headers = channel.config.get("headers", {})
 
         async with aiohttp.ClientSession() as session:
-            async with session.post(webhook_url, json=payload, headers=headers) as response:
+            async with session.post(
+                webhook_url, json=payload, headers=headers
+            ) as response:
                 if response.status not in [200, 201, 204]:
                     self.logger.error(f"Webhook 通知發送失敗: {response.status}")
 
@@ -809,7 +841,10 @@ class MonitoringSystem:
         )
 
     def get_metrics_data(
-        self, metric_name: str = None, start_time: datetime = None, end_time: datetime = None
+        self,
+        metric_name: str = None,
+        start_time: datetime = None,
+        end_time: datetime = None,
     ) -> List[MetricData]:
         """獲取指標數據"""
 
@@ -831,7 +866,9 @@ class MonitoringSystem:
     def get_active_alerts(self) -> List[Alert]:
         """獲取活躍告警"""
         return [
-            alert for alert in self.active_alerts.values() if alert.status == AlertStatus.ACTIVE
+            alert
+            for alert in self.active_alerts.values()
+            if alert.status == AlertStatus.ACTIVE
         ]
 
     def get_alert_history(self, limit: int = 100) -> List[Alert]:
@@ -848,7 +885,9 @@ class MonitoringSystem:
         self.start_prometheus_server()
 
         # 啟動系統指標收集
-        system_metrics_thread = threading.Thread(target=self.collect_system_metrics, daemon=True)
+        system_metrics_thread = threading.Thread(
+            target=self.collect_system_metrics, daemon=True
+        )
         system_metrics_thread.start()
 
         # 啟動告警評估任務

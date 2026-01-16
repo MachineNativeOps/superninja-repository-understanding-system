@@ -168,7 +168,9 @@ class BaseEvaluator:
             evidences=evidences,
         )
 
-    def _evaluate_criterion(self, criterion: EvaluationCriteria, data: Dict[str, Any]) -> float:
+    def _evaluate_criterion(
+        self, criterion: EvaluationCriteria, data: Dict[str, Any]
+    ) -> float:
         """Evaluate a single criterion - override in subclass for custom logic
 
         Args:
@@ -188,7 +190,9 @@ class BaseEvaluator:
         if total_weight == 0:
             return sum(sub_scores.values()) / len(sub_scores)
         weighted_sum = sum(
-            sub_scores.get(c.name, 0) * c.weight for c in self.criteria if c.name in sub_scores
+            sub_scores.get(c.name, 0) * c.weight
+            for c in self.criteria
+            if c.name in sub_scores
         )
         return weighted_sum / total_weight
 
@@ -211,13 +215,19 @@ class ScalabilityEvaluator(BaseEvaluator):
     def _get_criteria(self) -> List[EvaluationCriteria]:
         return [
             EvaluationCriteria(
-                name="architecture_scalability", description="技術架構可擴展性", weight=0.35
+                name="architecture_scalability",
+                description="技術架構可擴展性",
+                weight=0.35,
             ),
             EvaluationCriteria(
                 name="user_growth_potential", description="用戶增長潛力", weight=0.30
             ),
-            EvaluationCriteria(name="load_capacity", description="系統負載承受能力", weight=0.20),
-            EvaluationCriteria(name="horizontal_scaling", description="水平擴展能力", weight=0.15),
+            EvaluationCriteria(
+                name="load_capacity", description="系統負載承受能力", weight=0.20
+            ),
+            EvaluationCriteria(
+                name="horizontal_scaling", description="水平擴展能力", weight=0.15
+            ),
         ]
 
     def evaluate(self, data: Dict[str, Any]) -> DimensionScore:
@@ -293,11 +303,15 @@ class MarketFitEvaluator(BaseEvaluator):
             EvaluationCriteria(
                 name="user_needs_match", description="目標用戶需求匹配度", weight=0.35
             ),
-            EvaluationCriteria(name="market_timing", description="市場時機成熟度", weight=0.25),
+            EvaluationCriteria(
+                name="market_timing", description="市場時機成熟度", weight=0.25
+            ),
             EvaluationCriteria(
                 name="competitive_analysis", description="競爭環境分析", weight=0.25
             ),
-            EvaluationCriteria(name="market_size", description="市場規模潛力", weight=0.15),
+            EvaluationCriteria(
+                name="market_size", description="市場規模潛力", weight=0.15
+            ),
         ]
 
     def evaluate(self, data: Dict[str, Any]) -> DimensionScore:
@@ -355,9 +369,15 @@ class AchievabilityEvaluator(BaseEvaluator):
             EvaluationCriteria(
                 name="team_capability", description="團隊技術能力匹配度", weight=0.35
             ),
-            EvaluationCriteria(name="budget_timeline", description="預算與時程合理性", weight=0.30),
-            EvaluationCriteria(name="technical_risk", description="技術風險評估", weight=0.20),
-            EvaluationCriteria(name="resource_availability", description="資源可用性", weight=0.15),
+            EvaluationCriteria(
+                name="budget_timeline", description="預算與時程合理性", weight=0.30
+            ),
+            EvaluationCriteria(
+                name="technical_risk", description="技術風險評估", weight=0.20
+            ),
+            EvaluationCriteria(
+                name="resource_availability", description="資源可用性", weight=0.15
+            ),
         ]
 
     def evaluate(self, data: Dict[str, Any]) -> DimensionScore:
@@ -365,7 +385,9 @@ class AchievabilityEvaluator(BaseEvaluator):
             "team_capability": self._eval_team(data),
             "budget_timeline": self._eval_budget(data),
             "technical_risk": self._eval_risk(data),
-            "resource_availability": min(data.get("resource_availability_score", 5), 10),
+            "resource_availability": min(
+                data.get("resource_availability_score", 5), 10
+            ),
         }
         return DimensionScore(
             dimension=self.dimension,
@@ -401,7 +423,13 @@ class AchievabilityEvaluator(BaseEvaluator):
 
     def _eval_risk(self, data: Dict[str, Any]) -> float:
         risk = data.get("risk_level", "medium")
-        scores = {"very_low": 10.0, "low": 8.0, "medium": 6.0, "high": 4.0, "very_high": 2.0}
+        scores = {
+            "very_low": 10.0,
+            "low": 8.0,
+            "medium": 6.0,
+            "high": 4.0,
+            "very_high": 2.0,
+        }
         base = scores.get(risk, 5.0)
         mitigation = min(len(data.get("mitigation_plans", [])) * 0.5, 2.0)
         return min(base + mitigation, 10.0)
@@ -414,9 +442,15 @@ class ROIEvaluator(BaseEvaluator):
 
     def _get_criteria(self) -> List[EvaluationCriteria]:
         return [
-            EvaluationCriteria(name="financial_return", description="預期財務回報", weight=0.40),
-            EvaluationCriteria(name="cost_benefit", description="成本效益分析", weight=0.35),
-            EvaluationCriteria(name="resource_efficiency", description="資源利用效率", weight=0.25),
+            EvaluationCriteria(
+                name="financial_return", description="預期財務回報", weight=0.40
+            ),
+            EvaluationCriteria(
+                name="cost_benefit", description="成本效益分析", weight=0.35
+            ),
+            EvaluationCriteria(
+                name="resource_efficiency", description="資源利用效率", weight=0.25
+            ),
         ]
 
     def evaluate(self, data: Dict[str, Any]) -> DimensionScore:
@@ -443,7 +477,11 @@ class ROIEvaluator(BaseEvaluator):
         payback_score = (
             10.0
             if payback <= 6
-            else 8.0 if payback <= 12 else 6.0 if payback <= 24 else 4.0 if payback <= 36 else 2.0
+            else (
+                8.0
+                if payback <= 12
+                else 6.0 if payback <= 24 else 4.0 if payback <= 36 else 2.0
+            )
         )
         return roi_score * 0.6 + payback_score * 0.4
 
@@ -474,9 +512,15 @@ class TechnologyMaturityEvaluator(BaseEvaluator):
 
     def _get_criteria(self) -> List[EvaluationCriteria]:
         return [
-            EvaluationCriteria(name="tech_stability", description="相關技術穩定程度", weight=0.35),
-            EvaluationCriteria(name="ecosystem", description="生態系統完整性", weight=0.35),
-            EvaluationCriteria(name="learning_curve", description="學習曲線陡峭程度", weight=0.30),
+            EvaluationCriteria(
+                name="tech_stability", description="相關技術穩定程度", weight=0.35
+            ),
+            EvaluationCriteria(
+                name="ecosystem", description="生態系統完整性", weight=0.35
+            ),
+            EvaluationCriteria(
+                name="learning_curve", description="學習曲線陡峭程度", weight=0.30
+            ),
         ]
 
     def evaluate(self, data: Dict[str, Any]) -> DimensionScore:
@@ -550,8 +594,12 @@ class ValueCreationEvaluator(BaseEvaluator):
             EvaluationCriteria(
                 name="competitive_advantage", description="長期競爭優勢", weight=0.35
             ),
-            EvaluationCriteria(name="brand_value", description="品牌價值提升", weight=0.30),
-            EvaluationCriteria(name="innovation_impact", description="創新影響力", weight=0.35),
+            EvaluationCriteria(
+                name="brand_value", description="品牌價值提升", weight=0.30
+            ),
+            EvaluationCriteria(
+                name="innovation_impact", description="創新影響力", weight=0.35
+            ),
         ]
 
     def evaluate(self, data: Dict[str, Any]) -> DimensionScore:

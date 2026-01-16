@@ -10,11 +10,11 @@ Handles metric and alert data storage.
 處理指標和告警數據的儲存。
 """
 
-from abc import ABC, abstractmethod
-from collections import deque
 import json
 import logging
 import sqlite3
+from abc import ABC, abstractmethod
+from collections import deque
 from dataclasses import dataclass
 from datetime import datetime, timedelta
 from pathlib import Path
@@ -141,7 +141,9 @@ class TimeSeriesStorage:
         except Exception as e:
             self.logger.error(f"Error storing metric {name}: {e}")
 
-    def store_metrics(self, metrics: Dict[str, float], timestamp: Optional[datetime] = None):
+    def store_metrics(
+        self, metrics: Dict[str, float], timestamp: Optional[datetime] = None
+    ):
         """
         批量儲存指標 / Store multiple metrics in batch.
 
@@ -156,7 +158,10 @@ class TimeSeriesStorage:
             cursor = self.connection.cursor()
 
             # 準備批量插入數據 / Prepare batch insert data
-            data = [(name, value, timestamp, json.dumps({})) for name, value in metrics.items()]
+            data = [
+                (name, value, timestamp, json.dumps({}))
+                for name, value in metrics.items()
+            ]
 
             cursor.executemany(
                 """
@@ -413,11 +418,13 @@ class MemoryStorage(MetricStorage):
         if metric_name not in self.metrics:
             self.metrics[metric_name] = []
 
-        self.metrics[metric_name].append({"value": value, "timestamp": timestamp.isoformat()})
+        self.metrics[metric_name].append(
+            {"value": value, "timestamp": timestamp.isoformat()}
+        )
 
         # Trim if exceeds max size
         if len(self.metrics[metric_name]) > self.max_size:
-            self.metrics[metric_name] = self.metrics[metric_name][-self.max_size :]
+            self.metrics[metric_name] = self.metrics[metric_name][-self.max_size:]
 
         logger.debug(f"Stored metric {metric_name} = {value}")
 

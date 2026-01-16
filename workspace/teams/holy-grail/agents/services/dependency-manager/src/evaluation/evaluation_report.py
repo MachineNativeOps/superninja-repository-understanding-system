@@ -86,7 +86,9 @@ class EvaluationReportGenerator:
 
     def _get_dimension_name(self, dim: str) -> str:
         """獲取維度名稱"""
-        names = self.DIMENSION_NAMES.get(self.config.language, self.DIMENSION_NAMES["zh-TW"])
+        names = self.DIMENSION_NAMES.get(
+            self.config.language, self.DIMENSION_NAMES["zh-TW"]
+        )
         return names.get(dim, dim)
 
     def _generate_markdown(self, result: SMARTVResult) -> str:
@@ -140,7 +142,9 @@ class EvaluationReportGenerator:
 
                 lines.append(f"### {indicator} {dim_name}")
                 lines.append("")
-                lines.append(f"- **分數**: {score.score:.1f} / 10.0 ({score.percentage:.1f}%)")
+                lines.append(
+                    f"- **分數**: {score.score:.1f} / 10.0 ({score.percentage:.1f}%)"
+                )
                 lines.append(f"- **等級**: {score.level.value}")
                 lines.append("")
 
@@ -353,7 +357,9 @@ class EvaluationReportGenerator:
             lines.append(f"### {result.project_name}")
 
             # 找出最高和最低分維度
-            sorted_dims = sorted(result.scores.items(), key=lambda x: x[1].score, reverse=True)
+            sorted_dims = sorted(
+                result.scores.items(), key=lambda x: x[1].score, reverse=True
+            )
 
             best = sorted_dims[0]
             worst = sorted_dims[-1]
@@ -373,7 +379,9 @@ class EvaluationReportGenerator:
         emoji = self.GRADE_EMOJIS.get(result.overall_grade, "📊")
 
         # 找出優勢和劣勢
-        sorted_dims = sorted(result.scores.items(), key=lambda x: x[1].score, reverse=True)
+        sorted_dims = sorted(
+            result.scores.items(), key=lambda x: x[1].score, reverse=True
+        )
 
         strengths = [d for d in sorted_dims[:2] if d[1].score >= 7]
         weaknesses = [d for d in sorted_dims[-2:] if d[1].score < 6]
@@ -390,13 +398,17 @@ class EvaluationReportGenerator:
         if strengths:
             summary += "**優勢領域**:\n"
             for dim, score in strengths:
-                summary += f"- {self._get_dimension_name(dim.value)}: {score.score:.1f}\n"
+                summary += (
+                    f"- {self._get_dimension_name(dim.value)}: {score.score:.1f}\n"
+                )
             summary += "\n"
 
         if weaknesses:
             summary += "**需要關注**:\n"
             for dim, score in weaknesses:
-                summary += f"- {self._get_dimension_name(dim.value)}: {score.score:.1f}\n"
+                summary += (
+                    f"- {self._get_dimension_name(dim.value)}: {score.score:.1f}\n"
+                )
             summary += "\n"
 
         if result.recommendations:

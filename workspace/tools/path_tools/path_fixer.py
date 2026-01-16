@@ -117,7 +117,11 @@ class PathFixer:
                 for match in re.finditer(r"\[([^\]]+)\]\(([^)]+)\)", content):
                     link_text = match.group(1)
                     link_href = match.group(2).split("#")[0]
-                    anchor = match.group(2)[len(link_href) :] if "#" in match.group(2) else ""
+                    anchor = (
+                        match.group(2)[len(link_href):]
+                        if "#" in match.group(2)
+                        else ""
+                    )
                     line_num = content[: match.start()].count("\n") + 1
 
                     if link_href.startswith(("http://", "https://", "mailto:", "#")):
@@ -164,13 +168,17 @@ class PathFixer:
             except Exception:
                 pass
 
-    def _scan_yaml_for_fixes(self, data: Any, yaml_file: Path, content: str, key_path: str = ""):
+    def _scan_yaml_for_fixes(
+        self, data: Any, yaml_file: Path, content: str, key_path: str = ""
+    ):
         """遞迴掃描 YAML 中需要修復的路徑"""
         if isinstance(data, dict):
             for key, value in data.items():
                 new_path = f"{key_path}.{key}" if key_path else key
 
-                if key.endswith(("_path", "_file", "path", "file")) and isinstance(value, str):
+                if key.endswith(("_path", "_file", "path", "file")) and isinstance(
+                    value, str
+                ):
                     if (
                         value
                         and value != "_pending"
@@ -348,7 +356,9 @@ class PathFixer:
 def main():
     parser = argparse.ArgumentParser(description="路徑修復器 - 自動修復路徑問題")
     parser.add_argument("--target", "-t", default=".", help="目標目錄")
-    parser.add_argument("--dry-run", "-n", action="store_true", help="乾運行模式 (只分析不修改)")
+    parser.add_argument(
+        "--dry-run", "-n", action="store_true", help="乾運行模式 (只分析不修改)"
+    )
     parser.add_argument("--fix", action="store_true", help="套用修復")
     parser.add_argument("--backup", "-b", action="store_true", help="修復前備份")
     parser.add_argument("--report", "-r", help="輸出報告檔案")

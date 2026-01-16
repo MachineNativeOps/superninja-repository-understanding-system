@@ -182,7 +182,9 @@ class RemediationExecutor:
 
         try:
             # Execute with timeout
-            result = await asyncio.wait_for(handler(action), timeout=action.timeout_seconds)
+            result = await asyncio.wait_for(
+                handler(action), timeout=action.timeout_seconds
+            )
 
             if result:
                 # Check post-conditions
@@ -234,7 +236,10 @@ class AutoRemediationEngine:
             if playbook.is_in_cooldown():
                 continue
             for condition in playbook.trigger_conditions:
-                if condition.lower() in trigger.lower() or trigger.lower() in condition.lower():
+                if (
+                    condition.lower() in trigger.lower()
+                    or trigger.lower() in condition.lower()
+                ):
                     matching.append(playbook)
                     break
 

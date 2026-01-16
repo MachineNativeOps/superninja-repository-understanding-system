@@ -159,12 +159,16 @@ class VisualWorkflow:
         errors = []
 
         # 檢查是否有觸發器
-        triggers = [n for n in self.nodes.values() if n.node_type == WorkflowNodeType.TRIGGER]
+        triggers = [
+            n for n in self.nodes.values() if n.node_type == WorkflowNodeType.TRIGGER
+        ]
         if not triggers:
             errors.append("工作流必須有至少一個觸發器")
 
         # 檢查是否有輸出
-        outputs = [n for n in self.nodes.values() if n.node_type == WorkflowNodeType.OUTPUT]
+        outputs = [
+            n for n in self.nodes.values() if n.node_type == WorkflowNodeType.OUTPUT
+        ]
         if not outputs:
             errors.append("工作流必須有至少一個輸出節點")
 
@@ -254,9 +258,7 @@ class AutoGenerator:
             config, default_flow_style=False, allow_unicode=True, sort_keys=False
         )
 
-        return (
-            f"# 自動生成的依賴管理配置\n# 生成時間: {datetime.now().isoformat()}\n\n{yaml_content}"
-        )
+        return f"# 自動生成的依賴管理配置\n# 生成時間: {datetime.now().isoformat()}\n\n{yaml_content}"
 
     def _generate_json(self, config: dict[str, Any]) -> str:
         """生成 JSON 配置"""
@@ -358,7 +360,9 @@ if __name__ == '__main__':
 
         # 根據生態系統添加依賴安裝
         if ecosystem == "npm":
-            dockerfile_lines.extend(["COPY package*.json ./", "RUN npm ci --only=production", ""])
+            dockerfile_lines.extend(
+                ["COPY package*.json ./", "RUN npm ci --only=production", ""]
+            )
         elif ecosystem == "pip":
             dockerfile_lines.extend(
                 [
@@ -368,7 +372,9 @@ if __name__ == '__main__':
                 ]
             )
         elif ecosystem == "go":
-            dockerfile_lines.extend(["COPY go.mod go.sum ./", "RUN go mod download", ""])
+            dockerfile_lines.extend(
+                ["COPY go.mod go.sum ./", "RUN go mod download", ""]
+            )
 
         dockerfile_lines.extend(["COPY . .", "", 'CMD ["npm", "start"]'])
 
@@ -410,7 +416,10 @@ if __name__ == '__main__':
         elif ecosystem == "pip":
             steps.extend(
                 [
-                    {"uses": "actions/setup-python@v4", "with": {"python-version": "3.11"}},
+                    {
+                        "uses": "actions/setup-python@v4",
+                        "with": {"python-version": "3.11"},
+                    },
                     {"run": "pip install -r requirements.txt"},
                     {"run": "pip-audit"},
                 ]
@@ -547,7 +556,10 @@ class LowCodeIntegration:
             CitizenDeveloper: 新創建的公民開發者
         """
         user = CitizenDeveloper(
-            user_id=user_id, name=name, skill_level=skill_level, last_activity=datetime.now()
+            user_id=user_id,
+            name=name,
+            skill_level=skill_level,
+            last_activity=datetime.now(),
         )
 
         # 根據技能等級設置權限
@@ -572,7 +584,10 @@ class LowCodeIntegration:
             VisualWorkflow: 新創建的工作流
         """
         workflow = VisualWorkflow(
-            workflow_id=workflow_id, name=name, description=description, created_by=created_by
+            workflow_id=workflow_id,
+            name=name,
+            description=description,
+            created_by=created_by,
         )
 
         self.workflows[workflow_id] = workflow
@@ -585,7 +600,10 @@ class LowCodeIntegration:
         return workflow
 
     def apply_template(
-        self, template_id: str, workflow_id: str, customizations: dict[str, Any] | None = None
+        self,
+        template_id: str,
+        workflow_id: str,
+        customizations: dict[str, Any] | None = None,
     ) -> VisualWorkflow:
         """
         應用模板創建工作流
@@ -619,7 +637,10 @@ class LowCodeIntegration:
         # 創建觸發器節點
         trigger = definition.get("trigger", {})
         trigger_node = WorkflowNode(
-            node_id="trigger_1", node_type=WorkflowNodeType.TRIGGER, name="觸發器", config=trigger
+            node_id="trigger_1",
+            node_type=WorkflowNodeType.TRIGGER,
+            name="觸發器",
+            config=trigger,
         )
         workflow.add_node(trigger_node)
 
@@ -640,7 +661,10 @@ class LowCodeIntegration:
 
         # 添加輸出節點
         output_node = WorkflowNode(
-            node_id="output_1", node_type=WorkflowNodeType.OUTPUT, name="輸出", config={}
+            node_id="output_1",
+            node_type=WorkflowNodeType.OUTPUT,
+            name="輸出",
+            config={},
         )
         workflow.add_node(output_node)
         workflow.connect_nodes(prev_node_id, "output_1")
@@ -769,8 +793,12 @@ class LowCodeIntegration:
 
         if reqs:
             progress = {
-                "workflows_progress": min(100, user.workflows_created / reqs["workflows"] * 100),
-                "templates_progress": min(100, user.templates_used / reqs["templates"] * 100),
+                "workflows_progress": min(
+                    100, user.workflows_created / reqs["workflows"] * 100
+                ),
+                "templates_progress": min(
+                    100, user.templates_used / reqs["templates"] * 100
+                ),
             }
 
         return {
@@ -782,5 +810,7 @@ class LowCodeIntegration:
             "tutorials_completed": user.tutorials_completed,
             "achievements": user.achievements,
             "next_level_progress": progress,
-            "last_activity": user.last_activity.isoformat() if user.last_activity else None,
+            "last_activity": (
+                user.last_activity.isoformat() if user.last_activity else None
+            ),
         }

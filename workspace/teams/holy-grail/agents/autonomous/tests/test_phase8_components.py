@@ -5,6 +5,11 @@
 ═══════════════════════════════════════════════════════════
 """
 
+import asyncio
+import os
+import sys
+
+import pytest
 from core.execution_engine import (
     ActionExecutor,
     ActionPlan,
@@ -31,11 +36,6 @@ from core.execution_engine import (
     VerificationResult,
     VerificationStrategy,
 )
-import asyncio
-import os
-import sys
-
-import pytest
 
 # Add parent directory to path for imports
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(__file__))))
@@ -514,7 +514,9 @@ class TestRollbackManager:
     @pytest.mark.asyncio
     async def test_rollback_execution(self, manager):
         """測試回滾執行"""
-        manager.create_checkpoint("step1", {"database_table1": {}}, execution_id="exec_rb")
+        manager.create_checkpoint(
+            "step1", {"database_table1": {}}, execution_id="exec_rb"
+        )
         manager.create_checkpoint("step2", {"file_config": {}}, execution_id="exec_rb")
 
         plan = await manager.rollback_execution("exec_rb")
@@ -633,7 +635,10 @@ class TestPhase8Integration:
         # 如果需要回滾
         if not result.verification_passed and not context.dry_run:
             rollback_plan = await rollback_manager.rollback_to_checkpoint(checkpoint.id)
-            assert rollback_plan.status in [RollbackStatus.COMPLETED, RollbackStatus.PARTIAL]
+            assert rollback_plan.status in [
+                RollbackStatus.COMPLETED,
+                RollbackStatus.PARTIAL,
+            ]
 
     def test_capability_requirement_check(self):
         """測試能力需求檢查"""

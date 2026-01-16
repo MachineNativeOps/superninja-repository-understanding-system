@@ -84,7 +84,9 @@ class ChangeManager:
             print(f"錯誤: YAML 解析失敗 - {e}")
             sys.exit(1)
 
-    def validate_change_type(self, change_type: ChangeType, risk_level: RiskLevel) -> bool:
+    def validate_change_type(
+        self, change_type: ChangeType, risk_level: RiskLevel
+    ) -> bool:
         """驗證變更類型與風險等級的匹配性"""
         type_config = self.change_config.get("types", [])
 
@@ -124,13 +126,16 @@ class ChangeManager:
                     "rollback_complexity": change_request.impact_assessment.rollback_complexity,
                     "user_impact": change_request.impact_assessment.user_impact,
                 },
-                "implementation_plan": {"steps": change_request.implementation_plan},
-                "rollback_plan": {"steps": change_request.rollback_plan},
+                "implementation_plan": {
+                    "steps": change_request.implementation_plan},
+                "rollback_plan": {
+                    "steps": change_request.rollback_plan},
                 "metrics": change_request.metrics,
-            }
-        }
+            }}
 
-        return yaml.dump(rfc_dict, allow_unicode=True, default_flow_style=False, sort_keys=False)
+        return yaml.dump(
+            rfc_dict, allow_unicode=True, default_flow_style=False, sort_keys=False
+        )
 
     def load_rfc(self, rfc_path: str) -> Optional[ChangeRequest]:
         """載入 RFC 變更請求文檔"""
@@ -150,11 +155,15 @@ class ChangeManager:
                 impact_assessment=ImpactAssessment(
                     services_affected=impact_data.get("services_affected", []),
                     downtime_expected=impact_data.get("downtime_expected", "0 min"),
-                    data_migration_required=impact_data.get("data_migration_required", False),
+                    data_migration_required=impact_data.get(
+                        "data_migration_required", False
+                    ),
                     rollback_complexity=impact_data.get("rollback_complexity", "low"),
                     user_impact=impact_data.get("user_impact", "none"),
                 ),
-                implementation_plan=cr_data.get("implementation_plan", {}).get("steps", []),
+                implementation_plan=cr_data.get("implementation_plan", {}).get(
+                    "steps", []
+                ),
                 rollback_plan=cr_data.get("rollback_plan", {}).get("steps", []),
                 approval_method=cr_data.get("approval", {}).get("method", "CAB"),
                 status=cr_data.get("status", "Pending"),
@@ -170,7 +179,9 @@ class ChangeManager:
             print(f"錯誤: 無法載入 RFC - {e}")
             return None
 
-    def approve_change(self, change_request: ChangeRequest, approver: str) -> ChangeRequest:
+    def approve_change(
+        self, change_request: ChangeRequest, approver: str
+    ) -> ChangeRequest:
         """批准變更請求"""
         change_request.status = "Approved"
         change_request.approved_by = approver
@@ -178,7 +189,9 @@ class ChangeManager:
 
         return change_request
 
-    def reject_change(self, change_request: ChangeRequest, reason: str) -> ChangeRequest:
+    def reject_change(
+        self, change_request: ChangeRequest, reason: str
+    ) -> ChangeRequest:
         """拒絕變更請求"""
         change_request.status = "Rejected"
         change_request.metrics["rejection_reason"] = reason
@@ -207,7 +220,9 @@ class ChangeManager:
                 errors.append(f"缺少必要欄位: {field}")
 
         # 驗證變更類型與風險等級
-        if not self.validate_change_type(change_request.type, change_request.risk_level):
+        if not self.validate_change_type(
+            change_request.type, change_request.risk_level
+        ):
             errors.append("變更類型與風險等級不匹配")
 
         # 驗證實施計畫
@@ -228,7 +243,9 @@ class ChangeManager:
 def main():
     """主函數"""
     parser = argparse.ArgumentParser(description="變更管理工具 v1.0.0")
-    parser.add_argument("--spec", default="config/machine-spec.yaml", help="命名規範文件路徑")
+    parser.add_argument(
+        "--spec", default="config/machine-spec.yaml", help="命名規範文件路徑"
+    )
 
     subparsers = parser.add_subparsers(dest="command", help="可用命令")
 
@@ -236,7 +253,10 @@ def main():
     create_parser = subparsers.add_parser("create", help="創建新的變更請求")
     create_parser.add_argument("--title", required=True, help="變更標題")
     create_parser.add_argument(
-        "--type", required=True, choices=["standard", "normal", "emergency"], help="變更類型"
+        "--type",
+        required=True,
+        choices=["standard", "normal", "emergency"],
+        help="變更類型",
     )
     create_parser.add_argument("--requester", required=True, help="請求人")
     create_parser.add_argument(

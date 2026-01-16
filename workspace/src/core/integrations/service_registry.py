@@ -129,14 +129,18 @@ class ServiceMetadata:
             "health": {
                 "status": self.health.status.value,
                 "last_check": (
-                    self.health.last_check.isoformat() if self.health.last_check else None
+                    self.health.last_check.isoformat()
+                    if self.health.last_check
+                    else None
                 ),
                 "consecutive_failures": self.health.consecutive_failures,
                 "latency_ms": self.health.latency_ms,
                 "details": self.health.details,
             },
             "registered_at": self.registered_at.isoformat(),
-            "last_heartbeat": self.last_heartbeat.isoformat() if self.last_heartbeat else None,
+            "last_heartbeat": (
+                self.last_heartbeat.isoformat() if self.last_heartbeat else None
+            ),
             "config": self.config,
         }
 
@@ -221,7 +225,9 @@ class ServiceRegistry:
         self._is_running = True
         self._health_check_task = asyncio.create_task(self._health_check_loop())
 
-        await self._emit_event("registry_started", {"timestamp": datetime.now(timezone.utc)})
+        await self._emit_event(
+            "registry_started", {"timestamp": datetime.now(timezone.utc)}
+        )
         logger.info("ServiceRegistry started - 服務註冊表已啟動")
 
     async def stop(self) -> None:
@@ -235,7 +241,9 @@ class ServiceRegistry:
             except asyncio.CancelledError:
                 pass
 
-        await self._emit_event("registry_stopped", {"timestamp": datetime.now(timezone.utc)})
+        await self._emit_event(
+            "registry_stopped", {"timestamp": datetime.now(timezone.utc)}
+        )
         logger.info("ServiceRegistry stopped - 服務註冊表已停止")
 
     def register_service(
@@ -360,7 +368,9 @@ class ServiceRegistry:
             "service_deregistered", {"service_id": service_id, "name": service.name}
         )
 
-        logger.info(f"Service deregistered: {service.name} ({service_id}) - 服務已取消註冊")
+        logger.info(
+            f"Service deregistered: {service.name} ({service_id}) - 服務已取消註冊"
+        )
         return True
 
     def get_service(self, service_id: str) -> Optional[ServiceMetadata]:
@@ -406,7 +416,9 @@ class ServiceRegistry:
         self._stats["discoveries"] += 1
         return [service for service in self._services.values() if tag in service.tags]
 
-    def discover_healthy(self, category: Optional[ServiceCategory] = None) -> List[ServiceMetadata]:
+    def discover_healthy(
+        self, category: Optional[ServiceCategory] = None
+    ) -> List[ServiceMetadata]:
         """
         Discover healthy services
 
@@ -417,9 +429,15 @@ class ServiceRegistry:
 
         if category:
             service_ids = self._services_by_category.get(category, set())
-            services = [self._services[sid] for sid in service_ids if sid in self._services]
+            services = [
+                self._services[sid] for sid in service_ids if sid in self._services
+            ]
 
-        return [service for service in services if service.health.status == ServiceStatus.HEALTHY]
+        return [
+            service
+            for service in services
+            if service.health.status == ServiceStatus.HEALTHY
+        ]
 
     def heartbeat(self, service_id: str) -> bool:
         """
@@ -483,7 +501,9 @@ class ServiceRegistry:
 
         return True
 
-    def resolve_dependencies(self, service_id: str) -> Dict[str, Optional[ServiceMetadata]]:
+    def resolve_dependencies(
+        self, service_id: str
+    ) -> Dict[str, Optional[ServiceMetadata]]:
         """
         Resolve dependencies for a service
 
@@ -499,7 +519,9 @@ class ServiceRegistry:
         resolved = {}
         for dep_name in service.dependencies:
             candidates = self.discover_healthy()
-            matching = [s for s in candidates if s.name == dep_name or dep_name in s.provides]
+            matching = [
+                s for s in candidates if s.name == dep_name or dep_name in s.provides
+            ]
             resolved[dep_name] = matching[0] if matching else None
 
         return resolved
@@ -522,7 +544,10 @@ class ServiceRegistry:
 
         獲取服務依賴圖
         """
-        return {service_id: service.dependencies for service_id, service in self._services.items()}
+        return {
+            service_id: service.dependencies
+            for service_id, service in self._services.items()
+        }
 
     def on(self, event: str, handler: Callable) -> None:
         """Register an event handler"""
@@ -588,7 +613,9 @@ class ServiceRegistry:
                     latency_ms = (asyncio.get_event_loop().time() - start_time) * 1000
 
                     if isinstance(result, bool):
-                        status = ServiceStatus.HEALTHY if result else ServiceStatus.UNHEALTHY
+                        status = (
+                            ServiceStatus.HEALTHY if result else ServiceStatus.UNHEALTHY
+                        )
                     elif isinstance(result, dict):
                         status = ServiceStatus(result.get("status", "healthy"))
                     else:

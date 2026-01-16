@@ -8,7 +8,13 @@ __version__ = "1.0.0"
 __author__ = "SynergyMesh Team"
 
 from .config import BaseConfig
-from .constants import BRIDGE_PROTOCOLS, ISLAND_TYPES, SUPPORTED_MODES, SYSTEM_NAME, VERSION
+from .constants import (
+    BRIDGE_PROTOCOLS,
+    ISLAND_TYPES,
+    SUPPORTED_MODES,
+    SYSTEM_NAME,
+    VERSION,
+)
 from .utils import (
     Colors,
     get_project_root,

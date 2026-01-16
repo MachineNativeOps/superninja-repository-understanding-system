@@ -4,7 +4,11 @@ Phase 7 測試 - SMART-V 評估框架
 測試 SMART-V 量化評估系統的各項功能。
 """
 
-from evaluation.weight_config import CompanyStage, WeightConfigManager
+import os
+import sys
+import unittest
+
+from evaluation.evaluation_report import EvaluationReportGenerator, ReportConfig
 from evaluation.smartv_framework import (
     AchievabilityEvaluator,
     EvaluationDimension,
@@ -15,10 +19,7 @@ from evaluation.smartv_framework import (
     TechnologyMaturityEvaluator,
     ValueCreationEvaluator,
 )
-from evaluation.evaluation_report import EvaluationReportGenerator, ReportConfig
-import os
-import sys
-import unittest
+from evaluation.weight_config import CompanyStage, WeightConfigManager
 
 # 添加 src 目錄到路徑
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "src"))
@@ -199,7 +200,11 @@ class TestSMARTVFramework(unittest.TestCase):
                 "market_maturity": "growing",
                 "competitor_count": 5,
             },
-            "achievability": {"skill_coverage": 75, "experience_years": 4, "budget_adequate": True},
+            "achievability": {
+                "skill_coverage": 75,
+                "experience_years": 4,
+                "budget_adequate": True,
+            },
             "roi": {"roi_percentage": 150, "payback_months": 12},
             "technology_maturity": {"tech_age_years": 5, "library_count": 10000},
             "value_creation": {"moat_strength": "medium", "brand_recognition": 60},
@@ -209,7 +214,8 @@ class TestSMARTVFramework(unittest.TestCase):
 
         self.assertEqual(result.project_name, "測試專案")
         self.assertIn(
-            result.overall_grade, ["A+", "A", "A-", "B+", "B", "B-", "C+", "C", "C-", "D", "F"]
+            result.overall_grade,
+            ["A+", "A", "A-", "B+", "B", "B-", "C+", "C", "C-", "D", "F"],
         )
         self.assertEqual(len(result.scores), 6)
         self.assertGreater(result.weighted_total, 0)
@@ -259,7 +265,10 @@ class TestWeightConfigManager(unittest.TestCase):
         }
 
         profile = self.manager.create_custom_profile(
-            name="custom_test", stage=CompanyStage.GROWTH, weights=weights, description="測試配置"
+            name="custom_test",
+            stage=CompanyStage.GROWTH,
+            weights=weights,
+            description="測試配置",
         )
 
         self.assertEqual(profile.name, "custom_test")

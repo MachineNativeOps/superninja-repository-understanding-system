@@ -75,7 +75,9 @@ class TokenRepository(Protocol):
 
     async def get_token_by_hash(self, token_hash: str) -> APIToken | None: ...
 
-    async def get_token_by_id(self, org_id: UUID, token_id: UUID) -> APIToken | None: ...
+    async def get_token_by_id(
+        self, org_id: UUID, token_id: UUID
+    ) -> APIToken | None: ...
 
     async def list_tokens(
         self,
@@ -219,7 +221,9 @@ class TokenManager:
                 },
             )
 
-        logger.info(f"Token created: {token_prefix}... org={org_id} scope={scope.value}")
+        logger.info(
+            f"Token created: {token_prefix}... org={org_id} scope={scope.value}"
+        )
 
         return raw_token, token
 
@@ -286,7 +290,9 @@ class TokenManager:
 
         # Parse permissions
         permissions = [
-            Permission(p) for p in token.permissions if p in [e.value for e in Permission]
+            Permission(p)
+            for p in token.permissions
+            if p in [e.value for e in Permission]
         ]
 
         return TokenValidationResult(
@@ -442,7 +448,9 @@ class TokenManager:
                 },
             )
 
-        logger.info(f"Token rotated: {old_token.token_prefix}... -> {new_token.token_prefix}...")
+        logger.info(
+            f"Token rotated: {old_token.token_prefix}... -> {new_token.token_prefix}..."
+        )
 
         return raw_token, new_token
 
@@ -483,10 +491,15 @@ class TokenManager:
                     "scope": token.scope.value,
                     "is_personal": token.is_personal,
                     "created_at": token.created_at.isoformat(),
-                    "expires_at": token.expires_at.isoformat() if token.expires_at else None,
-                    "last_used_at": token.last_used_at.isoformat() if token.last_used_at else None,
+                    "expires_at": (
+                        token.expires_at.isoformat() if token.expires_at else None
+                    ),
+                    "last_used_at": (
+                        token.last_used_at.isoformat() if token.last_used_at else None
+                    ),
                     "is_expired": (
-                        token.expires_at is not None and datetime.utcnow() > token.expires_at
+                        token.expires_at is not None
+                        and datetime.utcnow() > token.expires_at
                     ),
                     "is_revoked": token.revoked_at is not None,
                 }
@@ -518,7 +531,9 @@ class TokenManager:
                     await self.repository.delete_token(org_id, token.id)
                 expired_count += 1
 
-        logger.info(f"Expired token cleanup: org={org_id} count={expired_count} dry_run={dry_run}")
+        logger.info(
+            f"Expired token cleanup: org={org_id} count={expired_count} dry_run={dry_run}"
+        )
 
         return expired_count
 

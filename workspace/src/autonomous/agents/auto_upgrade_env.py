@@ -30,7 +30,9 @@ from packaging import version
 from packaging.requirements import Requirement
 
 # Configure logging
-logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
+logging.basicConfig(
+    level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
+)
 logger = logging.getLogger(__name__)
 
 
@@ -217,7 +219,9 @@ class AutoUpgradeEnvironment:
 
         return recommendations.get(dep_name, [])
 
-    def install_package(self, pip_package: str, use_cache: bool = True) -> Tuple[bool, str]:
+    def install_package(
+        self, pip_package: str, use_cache: bool = True
+    ) -> Tuple[bool, str]:
         """
         Install a package using pip with caching support
 
@@ -257,7 +261,9 @@ class AutoUpgradeEnvironment:
                     "package": pip_package,
                     "success": True,
                     "timestamp": (
-                        subprocess.check_output(["date", "+%Y-%m-%d %H:%M:%S"], text=True).strip()
+                        subprocess.check_output(
+                            ["date", "+%Y-%m-%d %H:%M:%S"], text=True
+                        ).strip()
                         if sys.platform != "win32"
                         else "now"
                     ),
@@ -295,7 +301,9 @@ class AutoUpgradeEnvironment:
         results = {}
 
         with concurrent.futures.ThreadPoolExecutor(max_workers=max_workers) as executor:
-            future_to_pkg = {executor.submit(self.install_package, pkg): pkg for pkg in packages}
+            future_to_pkg = {
+                executor.submit(self.install_package, pkg): pkg for pkg in packages
+            }
 
             for future in concurrent.futures.as_completed(future_to_pkg):
                 pkg = future_to_pkg[future]
@@ -352,9 +360,13 @@ class AutoUpgradeEnvironment:
                     results[dep_name] = False
 
                     if not dep_info.get("optional", False):
-                        logger.error(f"✗ 必需依賴安裝失敗 Required dependency failed: {dep_name}")
+                        logger.error(
+                            f"✗ 必需依賴安裝失敗 Required dependency failed: {dep_name}"
+                        )
                     else:
-                        logger.warning(f"⚠ 可選依賴安裝失敗 Optional dependency failed: {dep_name}")
+                        logger.warning(
+                            f"⚠ 可選依賴安裝失敗 Optional dependency failed: {dep_name}"
+                        )
             else:
                 self.missing_deps.append(dep_name)
                 results[dep_name] = False
@@ -422,7 +434,9 @@ class AutoUpgradeEnvironment:
                 with open(config_path, "r") as f:
                     content = f.read()
                     # Extract dependencies from [project.dependencies]
-                    deps_match = re.search(r"\[project\.dependencies\](.*?)\[", content, re.DOTALL)
+                    deps_match = re.search(
+                        r"\[project\.dependencies\](.*?)\[", content, re.DOTALL
+                    )
                     if deps_match:
                         deps_section = deps_match.group(1)
                         for line in deps_section.split("\n"):
@@ -444,7 +458,9 @@ class AutoUpgradeEnvironment:
                 with open(config_path, "r") as f:
                     content = f.read()
                     # Extract pip dependencies
-                    pip_match = re.search(r"- pip:(.*?)(?:\n[^ ]|\Z)", content, re.DOTALL)
+                    pip_match = re.search(
+                        r"- pip:(.*?)(?:\n[^ ]|\Z)", content, re.DOTALL
+                    )
                     if pip_match:
                         pip_section = pip_match.group(1)
                         for line in pip_section.split("\n"):
@@ -452,14 +468,18 @@ class AutoUpgradeEnvironment:
                             if line:
                                 packages.append(line)
 
-            logger.info(f"✓ 從配置文件加載 Loaded {len(packages)} dependencies from {config_path}")
+            logger.info(
+                f"✓ 從配置文件加載 Loaded {len(packages)} dependencies from {config_path}"
+            )
 
         except Exception as e:
             logger.error(f"✗ 加載配置文件失敗 Failed to load config: {e}")
 
         return packages
 
-    def upgrade_from_config(self, config_path: Path, parallel: bool = True) -> Dict[str, bool]:
+    def upgrade_from_config(
+        self, config_path: Path, parallel: bool = True
+    ) -> Dict[str, bool]:
         """
         Upgrade dependencies from configuration file
 
@@ -479,7 +499,9 @@ class AutoUpgradeEnvironment:
         # Detect conflicts
         conflicts = self.detect_version_conflicts(packages)
         if conflicts:
-            logger.warning(f"⚠ 檢測到 {len(conflicts)} 個版本衝突 Detected version conflicts:")
+            logger.warning(
+                f"⚠ 檢測到 {len(conflicts)} 個版本衝突 Detected version conflicts:"
+            )
             for conflict in conflicts:
                 logger.warning(
                     f"  - {conflict['package']}: {conflict['existing']} vs {conflict['new']}"
@@ -488,7 +510,9 @@ class AutoUpgradeEnvironment:
 
         # Install packages
         if parallel and len(packages) > 1:
-            logger.info(f"使用並行安裝 Using parallel installation for {len(packages)} packages")
+            logger.info(
+                f"使用並行安裝 Using parallel installation for {len(packages)} packages"
+            )
             install_results = self.install_packages_parallel(packages)
 
             results = {}
@@ -532,9 +556,7 @@ class AutoUpgradeEnvironment:
                     # Show recommendations
                     recommendations = self.recommend_dependencies(dep)
                     if recommendations:
-                        summary += (
-                            f"    💡 推薦相關依賴 Recommended: {', '.join(recommendations)}\n"
-                        )
+                        summary += f"    💡 推薦相關依賴 Recommended: {', '.join(recommendations)}\n"
                 else:
                     summary += f"  - {dep}\n"
 
@@ -544,18 +566,14 @@ class AutoUpgradeEnvironment:
                 if dep in self.DEPENDENCY_MAP:
                     summary += f"  - {dep}: {self.DEPENDENCY_MAP[dep]['description']}\n"
                     if self.DEPENDENCY_MAP[dep].get("optional", False):
-                        summary += (
-                            f"    (可選依賴，功能可能受限 Optional, features may be limited)\n"
-                        )
+                        summary += f"    (可選依賴，功能可能受限 Optional, features may be limited)\n"
                 else:
                     summary += f"  - {dep}\n"
 
         if self.conflict_log:
             summary += f"\n⚠ 版本衝突 Version Conflicts ({len(self.conflict_log)}):\n"
             for conflict in self.conflict_log:
-                summary += (
-                    f"  - {conflict['package']}: {conflict['existing']} ⇄ {conflict['new']}\n"
-                )
+                summary += f"  - {conflict['package']}: {conflict['existing']} ⇄ {conflict['new']}\n"
 
         # Cache statistics
         if hasattr(self, "cache") and self.cache:
@@ -592,14 +610,20 @@ def auto_upgrade_on_import():
 if __name__ == "__main__":
     import argparse
 
-    parser = argparse.ArgumentParser(description="Auto Upgrade Environment Configuration")
+    parser = argparse.ArgumentParser(
+        description="Auto Upgrade Environment Configuration"
+    )
     parser.add_argument(
         "--upgrade-all", action="store_true", help="Upgrade all optional dependencies"
     )
     parser.add_argument(
-        "--check-only", action="store_true", help="Check dependencies without installing"
+        "--check-only",
+        action="store_true",
+        help="Check dependencies without installing",
     )
-    parser.add_argument("--deps", nargs="+", help="Specific dependencies to check/upgrade")
+    parser.add_argument(
+        "--deps", nargs="+", help="Specific dependencies to check/upgrade"
+    )
     parser.add_argument(
         "--from-config",
         type=str,
@@ -615,15 +639,21 @@ if __name__ == "__main__":
         action="store_true",
         help="Detect version conflicts without installing",
     )
-    parser.add_argument("--clear-cache", action="store_true", help="Clear installation cache")
-    parser.add_argument("--recommend", type=str, help="Show recommended dependencies for a package")
+    parser.add_argument(
+        "--clear-cache", action="store_true", help="Clear installation cache"
+    )
+    parser.add_argument(
+        "--recommend", type=str, help="Show recommended dependencies for a package"
+    )
 
     args = parser.parse_args()
 
     # Create upgrader
     upgrader = AutoUpgradeEnvironment(auto_install=not args.check_only)
 
-    print("=== 智能環境升級系統 - 企業版 Intelligent Environment Upgrade System - Enterprise ===\n")
+    print(
+        "=== 智能環境升級系統 - 企業版 Intelligent Environment Upgrade System - Enterprise ===\n"
+    )
 
     # Handle clear cache
     if args.clear_cache:

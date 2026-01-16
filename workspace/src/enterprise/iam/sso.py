@@ -16,14 +16,13 @@ from urllib.parse import urlencode, urlparse
 from uuid import UUID
 
 import jwt as pyjwt
-from jwt import PyJWKClient
-
 from enterprise.iam.models import (
     Membership,
     Role,
     SSOConfig,
     User,
 )
+from jwt import PyJWKClient
 
 logger = logging.getLogger(__name__)
 
@@ -45,7 +44,9 @@ class UserRepository(Protocol):
 
     async def get_user_by_email(self, email: str) -> User | None: ...
 
-    async def get_user_by_sso(self, sso_provider: str, sso_subject: str) -> User | None: ...
+    async def get_user_by_sso(
+        self, sso_provider: str, sso_subject: str
+    ) -> User | None: ...
 
     async def save_user(self, user: User) -> User: ...
 
@@ -55,7 +56,9 @@ class UserRepository(Protocol):
 class MembershipRepository(Protocol):
     """Repository interface for membership operations"""
 
-    async def get_membership(self, org_id: UUID, user_id: UUID) -> Membership | None: ...
+    async def get_membership(
+        self, org_id: UUID, user_id: UUID
+    ) -> Membership | None: ...
 
     async def save_membership(self, membership: Membership) -> Membership: ...
 
@@ -250,7 +253,9 @@ class SSOManager:
             raise ValueError("SSO is not configured for this organization")
 
         # Discover endpoints
-        discovery_url = f"{config.issuer_url.rstrip('/')}/.well-known/openid-configuration"
+        discovery_url = (
+            f"{config.issuer_url.rstrip('/')}/.well-known/openid-configuration"
+        )
         discovery = await self.http_client.get(discovery_url)
 
         authorization_endpoint = discovery.get("authorization_endpoint")
@@ -266,7 +271,9 @@ class SSOManager:
         code_challenge = hashlib.sha256(code_verifier.encode()).digest()
         import base64
 
-        code_challenge_b64 = base64.urlsafe_b64encode(code_challenge).decode().rstrip("=")
+        code_challenge_b64 = (
+            base64.urlsafe_b64encode(code_challenge).decode().rstrip("=")
+        )
 
         # Store pending auth for validation
         self._pending_auth[state] = {
@@ -335,7 +342,9 @@ class SSOManager:
             raise ValueError("SSO configuration not found")
 
         # Discover token endpoint
-        discovery_url = f"{config.issuer_url.rstrip('/')}/.well-known/openid-configuration"
+        discovery_url = (
+            f"{config.issuer_url.rstrip('/')}/.well-known/openid-configuration"
+        )
         discovery = await self.http_client.get(discovery_url)
         token_endpoint = discovery.get("token_endpoint")
 
@@ -379,7 +388,11 @@ class SSOManager:
                 algorithms=["RS256", "RS384", "RS512", "ES256", "ES384", "ES512"],
                 audience=config.client_id,
                 issuer=discovery.get("issuer"),
-                options={"verify_signature": True, "verify_exp": True, "verify_aud": True},
+                options={
+                    "verify_signature": True,
+                    "verify_exp": True,
+                    "verify_aud": True,
+                },
             )
 
             # Validate nonce to prevent replay attacks
@@ -421,7 +434,9 @@ class SSOManager:
             user_info=user_info,
         )
 
-        logger.info(f"OIDC login completed: org={org_id} user={user.id} email={user.email}")
+        logger.info(
+            f"OIDC login completed: org={org_id} user={user.id} email={user.email}"
+        )
 
         return user, membership
 

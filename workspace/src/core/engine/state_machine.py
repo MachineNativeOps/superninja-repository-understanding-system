@@ -102,7 +102,9 @@ class StateMachine:
         """
         self.listeners[state].append(callback)
 
-    async def transition_to(self, new_state: ExecutionState, reason: str = "", **metadata) -> bool:
+    async def transition_to(
+        self, new_state: ExecutionState, reason: str = "", **metadata
+    ) -> bool:
         """
         Transition to a new state
 
@@ -120,7 +122,8 @@ class StateMachine:
         # Check if transition is valid
         if new_state not in self.VALID_TRANSITIONS.get(self.current_state, []):
             raise ValueError(
-                f"Invalid transition from {self.current_state.value} " f"to {new_state.value}"
+                f"Invalid transition from {self.current_state.value} "
+                f"to {new_state.value}"
             )
 
         # Record transition
@@ -209,7 +212,9 @@ class ExecutionOrchestrator:
     async def start(self) -> None:
         """Start execution"""
         self.start_time = datetime.now()
-        await self.state_machine.transition_to(ExecutionState.RUNNING, reason="Execution started")
+        await self.state_machine.transition_to(
+            ExecutionState.RUNNING, reason="Execution started"
+        )
 
     async def pause(self, reason: str = "") -> None:
         """Pause execution"""
@@ -219,7 +224,9 @@ class ExecutionOrchestrator:
 
     async def resume(self) -> None:
         """Resume execution"""
-        await self.state_machine.transition_to(ExecutionState.RESUMED, reason="Execution resumed")
+        await self.state_machine.transition_to(
+            ExecutionState.RESUMED, reason="Execution resumed"
+        )
         # Transition back to running
         await self.state_machine.transition_to(
             ExecutionState.RUNNING, reason="Resumed to running state"

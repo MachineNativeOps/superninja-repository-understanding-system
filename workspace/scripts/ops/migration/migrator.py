@@ -92,20 +92,28 @@ class Migrator:
             "v1_exists": self.v1_path.exists(),
             "v2_exists": self.v2_path.exists(),
             "drone_config_exists": (self._project_root / "drone-config.yml").exists(),
-            "island_config_exists": (self._project_root / "island-control.yml").exists(),
+            "island_config_exists": (
+                self._project_root / "island-control.yml"
+            ).exists(),
             "can_migrate_v1_to_v2": False,
             "can_migrate_v2_to_v1": False,
         }
 
-        result["can_migrate_v1_to_v2"] = result["v1_exists"] and result["drone_config_exists"]
-        result["can_migrate_v2_to_v1"] = result["v2_exists"] and result["island_config_exists"]
+        result["can_migrate_v1_to_v2"] = (
+            result["v1_exists"] and result["drone_config_exists"]
+        )
+        result["can_migrate_v2_to_v1"] = (
+            result["v2_exists"] and result["island_config_exists"]
+        )
 
         # 顯示檢查結果
         print("\n📋 遷移前檢查結果:")
         print(f"  v1-python-drones: {'✅' if result['v1_exists'] else '❌'}")
         print(f"  v2-multi-islands: {'✅' if result['v2_exists'] else '❌'}")
         print(f"  drone-config.yml: {'✅' if result['drone_config_exists'] else '❌'}")
-        print(f"  island-control.yml: {'✅' if result['island_config_exists'] else '❌'}")
+        print(
+            f"  island-control.yml: {'✅' if result['island_config_exists'] else '❌'}"
+        )
         print(f"  可執行 v1 → v2: {'✅' if result['can_migrate_v1_to_v2'] else '❌'}")
         print(f"  可執行 v2 → v1: {'✅' if result['can_migrate_v2_to_v1'] else '❌'}")
         print()
@@ -323,7 +331,11 @@ def main() -> int:
     parser = argparse.ArgumentParser(description="SynergyMesh 版本遷移工具")
 
     parser.add_argument(
-        "--direction", "-d", choices=["v1-to-v2", "v2-to-v1"], required=True, help="遷移方向"
+        "--direction",
+        "-d",
+        choices=["v1-to-v2", "v2-to-v1"],
+        required=True,
+        help="遷移方向",
     )
 
     parser.add_argument("--dry-run", action="store_true", help="乾跑模式（不實際執行）")

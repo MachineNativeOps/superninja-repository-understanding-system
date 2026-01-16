@@ -6,8 +6,18 @@ Implements application-specific business logic.
 from datetime import datetime
 from typing import List, Optional
 
-from backend.python.core.entities import Task, TaskStatus, TaskType, Workflow, WorkflowStatus
-from backend.python.core.exceptions import TaskExecutionError, ValidationError, WorkflowError
+from backend.python.core.entities import (
+    Task,
+    TaskStatus,
+    TaskType,
+    Workflow,
+    WorkflowStatus,
+)
+from backend.python.core.exceptions import (
+    TaskExecutionError,
+    ValidationError,
+    WorkflowError,
+)
 from backend.python.core.logging_config import get_logger
 
 logger = get_logger(__name__)
@@ -60,14 +70,19 @@ class WorkflowUseCases:
                     config = task_dict.get("config", {})
                     dependencies = task_dict.get("dependencies", [])
 
-                    task = Task(id=i, type=task_type, config=config, dependencies=dependencies)
+                    task = Task(
+                        id=i, type=task_type, config=config, dependencies=dependencies
+                    )
                     task_entities.append(task)
                 except (ValueError, KeyError) as e:
                     raise ValidationError(f"Invalid task at index {i}: {str(e)}")
 
             # Create workflow entity
             workflow = Workflow(
-                id=None, name=name.strip(), tasks=task_entities, status=WorkflowStatus.PENDING
+                id=None,
+                name=name.strip(),
+                tasks=task_entities,
+                status=WorkflowStatus.PENDING,
             )
 
             # Save to repository
@@ -170,7 +185,9 @@ class WorkflowUseCases:
                 self.workflow_repository.update(workflow)
             raise
         except Exception as e:
-            logger.error(f"Error executing workflow {workflow_id}: {str(e)}", exc_info=True)
+            logger.error(
+                f"Error executing workflow {workflow_id}: {str(e)}", exc_info=True
+            )
             raise WorkflowError(f"Failed to execute workflow: {str(e)}")
 
     def get_workflow_status(self, workflow_id: int) -> Optional[dict]:
@@ -192,8 +209,12 @@ class WorkflowUseCases:
                 "workflow_id": workflow.id,
                 "name": workflow.name,
                 "status": workflow.status.value,
-                "created_at": workflow.created_at.isoformat() if workflow.created_at else None,
-                "started_at": workflow.started_at.isoformat() if workflow.started_at else None,
+                "created_at": (
+                    workflow.created_at.isoformat() if workflow.created_at else None
+                ),
+                "started_at": (
+                    workflow.started_at.isoformat() if workflow.started_at else None
+                ),
                 "completed_at": (
                     workflow.completed_at.isoformat() if workflow.completed_at else None
                 ),

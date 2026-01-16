@@ -93,7 +93,10 @@ class NamespaceConverter:
                     # 轉換 kind
                     if "kind" in doc:
                         old_kind = doc["kind"]
-                        if "GlobalBaseline" in old_kind and old_kind != self.TARGET_KIND:
+                        if (
+                            "GlobalBaseline" in old_kind
+                            and old_kind != self.TARGET_KIND
+                        ):
                             doc["kind"] = self.TARGET_KIND
                             self.stats.kind_updates += 1
                             modified = True
@@ -115,8 +118,12 @@ class NamespaceConverter:
                                 for key, value in labels.items():
                                     if not key.startswith(self.TARGET_LABEL_PREFIX):
                                         # 提取 key 的後半部分
-                                        key_suffix = key.split("/")[-1] if "/" in key else key
-                                        new_key = f"{self.TARGET_LABEL_PREFIX}{key_suffix}"
+                                        key_suffix = (
+                                            key.split("/")[-1] if "/" in key else key
+                                        )
+                                        new_key = (
+                                            f"{self.TARGET_LABEL_PREFIX}{key_suffix}"
+                                        )
                                         new_labels[new_key] = value
                                         self.stats.label_updates += 1
                                         modified = True
@@ -136,8 +143,9 @@ class NamespaceConverter:
                                             # 提取 URN 的後半部分
                                             urn_parts = value.split(":")
                                             if len(urn_parts) > 2:
-                                                new_value = self.TARGET_URN_PREFIX + ":".join(
-                                                    urn_parts[2:]
+                                                new_value = (
+                                                    self.TARGET_URN_PREFIX
+                                                    + ":".join(urn_parts[2:])
                                                 )
                                                 new_annotations[key] = new_value
                                                 self.stats.urn_updates += 1
@@ -148,8 +156,12 @@ class NamespaceConverter:
                                             new_annotations[key] = value
                                     # 轉換 annotation key
                                     elif not key.startswith(self.TARGET_LABEL_PREFIX):
-                                        key_suffix = key.split("/")[-1] if "/" in key else key
-                                        new_key = f"{self.TARGET_LABEL_PREFIX}{key_suffix}"
+                                        key_suffix = (
+                                            key.split("/")[-1] if "/" in key else key
+                                        )
+                                        new_key = (
+                                            f"{self.TARGET_LABEL_PREFIX}{key_suffix}"
+                                        )
                                         new_annotations[new_key] = value
                                         self.stats.label_updates += 1
                                         modified = True
@@ -160,7 +172,10 @@ class NamespaceConverter:
                 if modified:
                     # 重新序列化 YAML
                     new_content = yaml.dump_all(
-                        docs, default_flow_style=False, sort_keys=False, allow_unicode=True
+                        docs,
+                        default_flow_style=False,
+                        sort_keys=False,
+                        allow_unicode=True,
                     )
 
                     if not self.dry_run:
@@ -168,7 +183,9 @@ class NamespaceConverter:
                             f.write(new_content)
 
                     new_hash = self.calculate_file_hash(new_content)
-                    self.stats.hash_changes.append((str(file_path), original_hash, new_hash))
+                    self.stats.hash_changes.append(
+                        (str(file_path), original_hash, new_hash)
+                    )
                     self.stats.files_modified += 1
                     return True
 
@@ -195,7 +212,9 @@ class NamespaceConverter:
 
         # 過濾排除目錄
         yaml_files = [
-            f for f in yaml_files if not any(excluded in f.parts for excluded in self.exclude_dirs)
+            f
+            for f in yaml_files
+            if not any(excluded in f.parts for excluded in self.exclude_dirs)
         ]
 
         print(f"📁 找到 {len(yaml_files)} 個 YAML 文件")
@@ -254,7 +273,9 @@ def main():
 
     parser = argparse.ArgumentParser(description="MachineNativeOps 命名空間轉換工具")
     parser.add_argument("directory", help="要轉換的目錄路徑")
-    parser.add_argument("--dry-run", action="store_true", help="乾跑模式（不實際修改文件）")
+    parser.add_argument(
+        "--dry-run", action="store_true", help="乾跑模式（不實際修改文件）"
+    )
 
     args = parser.parse_args()
 

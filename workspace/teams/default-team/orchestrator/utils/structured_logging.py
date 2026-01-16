@@ -18,9 +18,13 @@ from datetime import datetime
 from typing import Any, Dict, Optional
 
 # Context variables for request tracking
-current_trace_id: ContextVar[Optional[str]] = ContextVar("current_trace_id", default=None)
+current_trace_id: ContextVar[Optional[str]] = ContextVar(
+    "current_trace_id", default=None
+)
 current_span_id: ContextVar[Optional[str]] = ContextVar("current_span_id", default=None)
-current_request_id: ContextVar[Optional[str]] = ContextVar("current_request_id", default=None)
+current_request_id: ContextVar[Optional[str]] = ContextVar(
+    "current_request_id", default=None
+)
 
 
 class JSONFormatter(logging.Formatter):
@@ -77,7 +81,9 @@ class JSONFormatter(logging.Formatter):
                 "type": record.exc_info[0].__name__ if record.exc_info[0] else None,
                 "message": str(record.exc_info[1]) if record.exc_info[1] else None,
                 "traceback": (
-                    traceback.format_exception(*record.exc_info) if record.exc_info[2] else None
+                    traceback.format_exception(*record.exc_info)
+                    if record.exc_info[2]
+                    else None
                 ),
             }
 
@@ -208,7 +214,9 @@ class StructuredLogger:
 
     def critical(self, message: str, exc_info: bool = False, **extra) -> None:
         """Log critical message."""
-        self._log(logging.CRITICAL, message, extra if extra else None, exc_info=exc_info)
+        self._log(
+            logging.CRITICAL, message, extra if extra else None, exc_info=exc_info
+        )
 
     def exception(self, message: str, **extra) -> None:
         """Log exception with traceback."""

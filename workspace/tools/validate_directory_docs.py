@@ -124,7 +124,9 @@ class DirectoryDocValidator:
         """檢查檔案說明格式"""
         # 提取檔案說明章節
         file_section_match = re.search(
-            r"(## 檔案說明|## 檔案速覽（人話版）)\s*\n(.*?)(?=\n## |$)", content, re.DOTALL
+            r"(## 檔案說明|## 檔案速覽（人話版）)\s*\n(.*?)(?=\n## |$)",
+            content,
+            re.DOTALL,
         )
 
         if not file_section_match:
@@ -139,7 +141,8 @@ class DirectoryDocValidator:
         for file_name in file_entries:
             # 檢查是否有職責、功能、依賴三項
             file_desc_pattern = re.compile(
-                rf"### {re.escape(file_name)}\s*\n" r"(.*?)(?=\n### |\n## |$)", re.DOTALL
+                rf"### {re.escape(file_name)}\s*\n" r"(.*?)(?=\n### |\n## |$)",
+                re.DOTALL,
             )
 
             match = file_desc_pattern.search(file_section)
@@ -173,7 +176,9 @@ class DirectoryDocValidator:
             actual_files = [
                 f.name
                 for f in dir_path.iterdir()
-                if f.is_file() and f.name != "DIRECTORY.md" and not f.name.startswith(".")
+                if f.is_file()
+                and f.name != "DIRECTORY.md"
+                and not f.name.startswith(".")
             ]
 
             documented_files = set(file_entries)
@@ -183,10 +188,14 @@ class DirectoryDocValidator:
             extra = documented_files - actual_files_set
 
             if missing:
-                result["warnings"].append(f'以下檔案未在文檔中說明: {", ".join(missing)}')
+                result["warnings"].append(
+                    f'以下檔案未在文檔中說明: {", ".join(missing)}'
+                )
 
             if extra:
-                result["warnings"].append(f'文檔中說明了不存在的檔案: {", ".join(extra)}')
+                result["warnings"].append(
+                    f'文檔中說明了不存在的檔案: {", ".join(extra)}'
+                )
         except Exception as e:
             result["warnings"].append(f"無法檢查實際檔案: {str(e)}")
 
@@ -209,7 +218,10 @@ class DirectoryDocValidator:
 
                 if match:
                     section_content = match.group(1).strip()
-                    if not section_content or len(section_content) < MIN_SECTION_CONTENT_LENGTH:
+                    if (
+                        not section_content
+                        or len(section_content) < MIN_SECTION_CONTENT_LENGTH
+                    ):
                         result["warnings"].append(f"章節 {section} 內容過少或為空")
 
     def check_markdown_format(self, content: str, result: Dict):
@@ -319,7 +331,9 @@ class DirectoryDocValidator:
             for error in all_errors:
                 error_counts[error] = error_counts.get(error, 0) + 1
 
-            for error, count in sorted(error_counts.items(), key=lambda x: x[1], reverse=True)[:5]:
+            for error, count in sorted(
+                error_counts.items(), key=lambda x: x[1], reverse=True
+            )[:5]:
                 report += f"- {error} ({count}次)\n"
 
         if all_warnings:
@@ -328,9 +342,9 @@ class DirectoryDocValidator:
             for warning in all_warnings:
                 warning_counts[warning] = warning_counts.get(warning, 0) + 1
 
-            for warning, count in sorted(warning_counts.items(), key=lambda x: x[1], reverse=True)[
-                :5
-            ]:
+            for warning, count in sorted(
+                warning_counts.items(), key=lambda x: x[1], reverse=True
+            )[:5]:
                 report += f"- {warning} ({count}次)\n"
 
         return report

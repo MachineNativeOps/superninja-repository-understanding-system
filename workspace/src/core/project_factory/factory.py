@@ -33,7 +33,11 @@ class GeneratedProject:
     """
 
     def __init__(
-        self, spec: ProjectSpec, root_path: Path, files: Dict[str, str], metadata: Dict[str, Any]
+        self,
+        spec: ProjectSpec,
+        root_path: Path,
+        files: Dict[str, str],
+        metadata: Dict[str, Any],
     ):
         self.spec = spec
         self.root_path = root_path
@@ -171,7 +175,9 @@ class ProjectFactory:
     """
 
     def __init__(
-        self, template_dir: Optional[Path] = None, governance_config: Optional[Path] = None
+        self,
+        template_dir: Optional[Path] = None,
+        governance_config: Optional[Path] = None,
     ):
         """
         Initialize Project Factory.
@@ -183,7 +189,9 @@ class ProjectFactory:
             governance_config: Path to governance configuration
         """
         self.template_dir = template_dir or self._get_default_template_dir()
-        self.governance_config = governance_config or self._get_default_governance_config()
+        self.governance_config = (
+            governance_config or self._get_default_governance_config()
+        )
 
         self.template_engine = TemplateEngine(self.template_dir)
         self.generator = ProjectGenerator(self.template_engine)
@@ -200,7 +208,10 @@ class ProjectFactory:
         return Path(__file__).parents[2] / "governance" / "governance.yaml"
 
     def generate(
-        self, spec: ProjectSpec, output_path: Optional[Path] = None, validate: bool = True
+        self,
+        spec: ProjectSpec,
+        output_path: Optional[Path] = None,
+        validate: bool = True,
     ) -> GeneratedProject:
         """
         Generate complete project from specification.
@@ -315,7 +326,9 @@ class ProjectFactory:
             "generator_version": "1.0.0",
         }
 
-    def _create_metadata(self, spec: ProjectSpec, context: Dict[str, Any]) -> Dict[str, Any]:
+    def _create_metadata(
+        self, spec: ProjectSpec, context: Dict[str, Any]
+    ) -> Dict[str, Any]:
         """
         Create generation metadata.
 

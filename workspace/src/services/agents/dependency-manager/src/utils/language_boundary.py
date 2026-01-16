@@ -51,7 +51,9 @@ class LanguageRegistry:
     TERMS = {
         # 依賴相關
         "dependency": TranslationEntry("dependency", "依賴項", "Dependency", "依赖项"),
-        "dependencies": TranslationEntry("dependencies", "依賴項", "Dependencies", "依赖项"),
+        "dependencies": TranslationEntry(
+            "dependencies", "依賴項", "Dependencies", "依赖项"
+        ),
         "direct_dependency": TranslationEntry(
             "direct_dependency", "直接依賴", "Direct Dependency", "直接依赖"
         ),
@@ -75,15 +77,21 @@ class LanguageRegistry:
         "minor": TranslationEntry("minor", "次版本", "Minor", "次版本"),
         "patch": TranslationEntry("patch", "修補版本", "Patch", "修补版本"),
         # 漏洞相關
-        "vulnerability": TranslationEntry("vulnerability", "漏洞", "Vulnerability", "漏洞"),
-        "vulnerabilities": TranslationEntry("vulnerabilities", "漏洞", "Vulnerabilities", "漏洞"),
+        "vulnerability": TranslationEntry(
+            "vulnerability", "漏洞", "Vulnerability", "漏洞"
+        ),
+        "vulnerabilities": TranslationEntry(
+            "vulnerabilities", "漏洞", "Vulnerabilities", "漏洞"
+        ),
         "critical": TranslationEntry("critical", "嚴重", "Critical", "严重"),
         "high": TranslationEntry("high", "高", "High", "高"),
         "medium": TranslationEntry("medium", "中", "Medium", "中"),
         "low": TranslationEntry("low", "低", "Low", "低"),
         "severity": TranslationEntry("severity", "嚴重程度", "Severity", "严重程度"),
         "cve": TranslationEntry("cve", "漏洞編號", "CVE", "漏洞编号"),
-        "fixed_version": TranslationEntry("fixed_version", "修復版本", "Fixed Version", "修复版本"),
+        "fixed_version": TranslationEntry(
+            "fixed_version", "修復版本", "Fixed Version", "修复版本"
+        ),
         # 許可證相關
         "license": TranslationEntry("license", "許可證", "License", "许可证"),
         "allowed": TranslationEntry("allowed", "允許", "Allowed", "允许"),
@@ -93,9 +101,15 @@ class LanguageRegistry:
         # 更新相關
         "update": TranslationEntry("update", "更新", "Update", "更新"),
         "updates": TranslationEntry("updates", "更新", "Updates", "更新"),
-        "auto_update": TranslationEntry("auto_update", "自動更新", "Auto Update", "自动更新"),
-        "manual_review": TranslationEntry("manual_review", "人工審查", "Manual Review", "人工审查"),
-        "pull_request": TranslationEntry("pull_request", "拉取請求", "Pull Request", "拉取请求"),
+        "auto_update": TranslationEntry(
+            "auto_update", "自動更新", "Auto Update", "自动更新"
+        ),
+        "manual_review": TranslationEntry(
+            "manual_review", "人工審查", "Manual Review", "人工审查"
+        ),
+        "pull_request": TranslationEntry(
+            "pull_request", "拉取請求", "Pull Request", "拉取请求"
+        ),
         "rollback": TranslationEntry("rollback", "回滾", "Rollback", "回滚"),
         # 操作相關
         "analysis": TranslationEntry("analysis", "分析", "Analysis", "分析"),
@@ -107,7 +121,9 @@ class LanguageRegistry:
         "skipped": TranslationEntry("skipped", "跳過", "Skipped", "跳过"),
         # 風險相關
         "risk": TranslationEntry("risk", "風險", "Risk", "风险"),
-        "risk_level": TranslationEntry("risk_level", "風險等級", "Risk Level", "风险等级"),
+        "risk_level": TranslationEntry(
+            "risk_level", "風險等級", "Risk Level", "风险等级"
+        ),
         "breaking_change": TranslationEntry(
             "breaking_change", "破壞性變更", "Breaking Change", "破坏性变更"
         ),
@@ -125,7 +141,9 @@ class LanguageRegistry:
         "minutes": TranslationEntry("minutes", "分鐘", "Minutes", "分钟"),
         # 策略相關
         "policy": TranslationEntry("policy", "策略", "Policy", "策略"),
-        "conservative": TranslationEntry("conservative", "保守", "Conservative", "保守"),
+        "conservative": TranslationEntry(
+            "conservative", "保守", "Conservative", "保守"
+        ),
         "balanced": TranslationEntry("balanced", "平衡", "Balanced", "平衡"),
         "aggressive": TranslationEntry("aggressive", "積極", "Aggressive", "积极"),
         "security_first": TranslationEntry(
@@ -378,7 +396,8 @@ class LanguageBoundary:
                     result[local_key] = localize_dict(value)
                 elif isinstance(value, list):
                     result[local_key] = [
-                        localize_dict(item) if isinstance(item, dict) else item for item in value
+                        localize_dict(item) if isinstance(item, dict) else item
+                        for item in value
                     ]
                 else:
                     result[local_key] = value

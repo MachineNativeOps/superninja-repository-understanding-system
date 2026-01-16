@@ -4,33 +4,19 @@ Tests for Tool System, LangChain Integration, Agent Orchestration,
 Function Calling, and MCP Integration
 """
 
-from core.execution_architecture.tool_system import (
-    Tool,
-    ToolCategory,
-    ToolExecutor,
-    ToolRegistry,
-    ToolResult,
-    ToolStatus,
-    create_api_tool,
-    create_code_tool,
-    create_database_tool,
-)
-from core.execution_architecture.mcp_integration import (
-    MCPBridge,
-    MCPMessageType,
-    MCPServerConfig,
-    MCPTool,
-    MCPToolCall,
-    MCPToolConsumer,
-    MCPToolProvider,
-    MCPToolResult,
-)
-from core.execution_architecture.langchain_integration import (
-    AgentConfig,
-    ChainBuilder,
-    LangChainToolAdapter,
-    LangChainToolFormat,
-    ReActAgentBuilder,
+import asyncio
+import sys
+from datetime import datetime
+
+import pytest
+from core.execution_architecture.agent_orchestration import (
+    AgentOrchestrator,
+    ExecutionContext,
+    ExecutionPlan,
+    ExecutionStep,
+    OrchestratorConfig,
+    StepStatus,
+    TaskPlanner,
 )
 from core.execution_architecture.function_calling import (
     FunctionCallHandler,
@@ -43,20 +29,34 @@ from core.execution_architecture.function_calling import (
     create_code_function,
     create_query_function,
 )
-from core.execution_architecture.agent_orchestration import (
-    AgentOrchestrator,
-    ExecutionContext,
-    ExecutionPlan,
-    ExecutionStep,
-    OrchestratorConfig,
-    StepStatus,
-    TaskPlanner,
+from core.execution_architecture.langchain_integration import (
+    AgentConfig,
+    ChainBuilder,
+    LangChainToolAdapter,
+    LangChainToolFormat,
+    ReActAgentBuilder,
 )
-import asyncio
-import sys
-from datetime import datetime
-
-import pytest
+from core.execution_architecture.mcp_integration import (
+    MCPBridge,
+    MCPMessageType,
+    MCPServerConfig,
+    MCPTool,
+    MCPToolCall,
+    MCPToolConsumer,
+    MCPToolProvider,
+    MCPToolResult,
+)
+from core.execution_architecture.tool_system import (
+    Tool,
+    ToolCategory,
+    ToolExecutor,
+    ToolRegistry,
+    ToolResult,
+    ToolStatus,
+    create_api_tool,
+    create_code_tool,
+    create_database_tool,
+)
 
 sys.path.insert(0, "/home/runner/work/SynergyMesh/SynergyMesh")
 
@@ -154,10 +154,14 @@ class TestToolRegistry:
         """Test searching tools"""
         registry = ToolRegistry()
         tool1 = Tool(
-            name="query_users", description="Query user data", category=ToolCategory.DATABASE
+            name="query_users",
+            description="Query user data",
+            category=ToolCategory.DATABASE,
         )
         tool2 = Tool(
-            name="send_email", description="Send email", category=ToolCategory.COMMUNICATION
+            name="send_email",
+            description="Send email",
+            category=ToolCategory.COMMUNICATION,
         )
 
         registry.register(tool1)
@@ -207,7 +211,10 @@ class TestLangChainToolAdapter:
         """Test adapting a tool to LangChain format"""
         adapter = LangChainToolAdapter()
         tool = Tool(
-            name="test", description="Test tool", category=ToolCategory.CODE, execute_fn=lambda x: x
+            name="test",
+            description="Test tool",
+            category=ToolCategory.CODE,
+            execute_fn=lambda x: x,
         )
         adapted = adapter.adapt(tool)
         assert isinstance(adapted, LangChainToolFormat)
@@ -472,7 +479,9 @@ class TestMCPTool:
 
     def test_to_mcp_format(self):
         """Test conversion to MCP format"""
-        tool = MCPTool(name="test_tool", description="A test tool", input_schema={"type": "object"})
+        tool = MCPTool(
+            name="test_tool", description="A test tool", input_schema={"type": "object"}
+        )
         mcp_format = tool.to_mcp_format()
         assert mcp_format["name"] == "test_tool"
         assert "inputSchema" in mcp_format
@@ -611,7 +620,9 @@ class TestToolFactories:
     def test_create_code_tool(self):
         """Test code tool factory"""
         tool = create_code_tool(
-            name="execute", description="Execute code", execute_fn=lambda x: "code result"
+            name="execute",
+            description="Execute code",
+            execute_fn=lambda x: "code result",
         )
         assert tool.category == ToolCategory.CODE
         assert "code" in tool.tags

@@ -155,7 +155,9 @@ def load_spec_from_yaml(spec_file: Path) -> ProjectSpec:
             spec.deliverables.tests.unit = tests.get("unit", True)
             spec.deliverables.tests.integration = tests.get("integration", True)
             spec.deliverables.tests.e2e = tests.get("e2e", False)
-            spec.deliverables.tests.coverage_threshold = tests.get("coverage_threshold", 80)
+            spec.deliverables.tests.coverage_threshold = tests.get(
+                "coverage_threshold", 80
+            )
 
         if "ci_cd" in deliv:
             cicd = deliv["ci_cd"]
@@ -275,14 +277,20 @@ Examples:
 
     # Generate command
     gen_parser = subparsers.add_parser("generate", help="Generate project artifacts")
-    gen_subparsers = gen_parser.add_subparsers(dest="generate_type", help="What to generate")
+    gen_subparsers = gen_parser.add_subparsers(
+        dest="generate_type", help="What to generate"
+    )
 
     # Generate project
-    project_parser = gen_subparsers.add_parser("project", help="Generate complete project")
+    project_parser = gen_subparsers.add_parser(
+        "project", help="Generate complete project"
+    )
 
     # Specification source (mutually exclusive)
     spec_group = project_parser.add_mutually_exclusive_group(required=True)
-    spec_group.add_argument("--spec-file", type=str, help="Load specification from YAML file")
+    spec_group.add_argument(
+        "--spec-file", type=str, help="Load specification from YAML file"
+    )
     spec_group.add_argument("--name", type=str, help="Project name")
 
     # Basic project options
@@ -302,7 +310,9 @@ Examples:
         "--framework", type=str, help="Framework (e.g., fastapi, nestjs, gin)"
     )
     project_parser.add_argument("--description", type=str, help="Project description")
-    project_parser.add_argument("--version", type=str, default="1.0.0", help="Project version")
+    project_parser.add_argument(
+        "--version", type=str, default="1.0.0", help="Project version"
+    )
 
     # Architecture
     project_parser.add_argument(
@@ -316,11 +326,15 @@ Examples:
     project_parser.add_argument(
         "--database", type=str, help="Database type (postgresql, mysql, mongodb, etc.)"
     )
-    project_parser.add_argument("--orm", type=str, help="ORM framework (sqlalchemy, typeorm, etc.)")
+    project_parser.add_argument(
+        "--orm", type=str, help="ORM framework (sqlalchemy, typeorm, etc.)"
+    )
     project_parser.add_argument(
         "--migrations", type=str, help="Migration tool (alembic, flyway, etc.)"
     )
-    project_parser.add_argument("--cache", type=str, help="Cache type (redis, memcached, etc.)")
+    project_parser.add_argument(
+        "--cache", type=str, help="Cache type (redis, memcached, etc.)"
+    )
     project_parser.add_argument(
         "--messaging", type=str, help="Messaging system (kafka, rabbitmq, etc.)"
     )
@@ -329,17 +343,26 @@ Examples:
     )
 
     # Tests
-    project_parser.add_argument("--tests-unit", type=bool, default=True, help="Generate unit tests")
     project_parser.add_argument(
-        "--tests-integration", type=bool, default=True, help="Generate integration tests"
+        "--tests-unit", type=bool, default=True, help="Generate unit tests"
     )
-    project_parser.add_argument("--tests-e2e", type=bool, default=False, help="Generate E2E tests")
+    project_parser.add_argument(
+        "--tests-integration",
+        type=bool,
+        default=True,
+        help="Generate integration tests",
+    )
+    project_parser.add_argument(
+        "--tests-e2e", type=bool, default=False, help="Generate E2E tests"
+    )
     project_parser.add_argument(
         "--coverage-threshold", type=int, default=80, help="Test coverage threshold"
     )
 
     # Infrastructure
-    project_parser.add_argument("--docker", type=bool, default=True, help="Generate Dockerfile")
+    project_parser.add_argument(
+        "--docker", type=bool, default=True, help="Generate Dockerfile"
+    )
     project_parser.add_argument(
         "--kubernetes", type=bool, default=True, help="Generate Kubernetes manifests"
     )
@@ -352,9 +375,14 @@ Examples:
         "--compliance", type=str, help="Comma-separated compliance standards"
     )
     project_parser.add_argument(
-        "--security-level", type=str, default="high", choices=["low", "medium", "high", "critical"]
+        "--security-level",
+        type=str,
+        default="high",
+        choices=["low", "medium", "high", "critical"],
     )
-    project_parser.add_argument("--license", type=str, default="MIT", help="License type")
+    project_parser.add_argument(
+        "--license", type=str, default="MIT", help="License type"
+    )
 
     # Output
     project_parser.add_argument("--output", type=str, help="Output directory")
@@ -367,7 +395,9 @@ Examples:
     # List templates command
     list_parser = subparsers.add_parser("list", help="List available resources")
     list_subparsers = list_parser.add_subparsers(dest="list_type", help="What to list")
-    templates_parser = list_subparsers.add_parser("templates", help="List available templates")
+    templates_parser = list_subparsers.add_parser(
+        "templates", help="List available templates"
+    )
     templates_parser.set_defaults(func=cmd_list_templates)
 
     # Parse arguments

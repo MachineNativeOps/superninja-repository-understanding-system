@@ -146,7 +146,9 @@ class EnterpriseIntegration:
         return self._integrations.get(name)
 
     def list_integrations(
-        self, integration_type: Optional[IntegrationType] = None, enabled_only: bool = False
+        self,
+        integration_type: Optional[IntegrationType] = None,
+        enabled_only: bool = False,
     ) -> List[IntegrationConfig]:
         """
         列出整合
@@ -217,7 +219,10 @@ class EnterpriseIntegration:
 
         # 建立事件
         event = WebhookEvent(
-            event_type=event_type, payload=payload, timestamp=datetime.now(), signature=signature
+            event_type=event_type,
+            payload=payload,
+            timestamp=datetime.now(),
+            signature=signature,
         )
 
         self._event_history.append(event)
@@ -251,10 +256,14 @@ class EnterpriseIntegration:
             duration_ms=duration,
         )
 
-    def _verify_signature(self, payload: Dict[str, Any], signature: str, secret: str) -> bool:
+    def _verify_signature(
+        self, payload: Dict[str, Any], signature: str, secret: str
+    ) -> bool:
         """驗證 Webhook 簽名"""
         payload_str = json.dumps(payload, sort_keys=True)
-        expected = hmac.new(secret.encode(), payload_str.encode(), hashlib.sha256).hexdigest()
+        expected = hmac.new(
+            secret.encode(), payload_str.encode(), hashlib.sha256
+        ).hexdigest()
         return hmac.compare_digest(signature, expected)
 
     # ==================== 訊息通知 ====================
@@ -358,7 +367,9 @@ class EnterpriseIntegration:
 
         # 清理舊記錄
         self._rate_limiters[integration_name] = [
-            t for t in self._rate_limiters[integration_name] if t.timestamp() > window_start
+            t
+            for t in self._rate_limiters[integration_name]
+            if t.timestamp() > window_start
         ]
 
         # 檢查是否超過限制
@@ -461,7 +472,11 @@ class EnterpriseIntegration:
                 error=f"整合 '{integration_name}' 不存在",
             )
 
-        issue_types = [IntegrationType.GITHUB, IntegrationType.GITLAB, IntegrationType.JIRA]
+        issue_types = [
+            IntegrationType.GITHUB,
+            IntegrationType.GITLAB,
+            IntegrationType.JIRA,
+        ]
 
         if config.type not in issue_types:
             return IntegrationResult(
@@ -523,7 +538,9 @@ class EnterpriseIntegration:
         report = {
             "generated_at": datetime.now().isoformat(),
             "total_integrations": len(self._integrations),
-            "enabled_integrations": len([i for i in self._integrations.values() if i.enabled]),
+            "enabled_integrations": len(
+                [i for i in self._integrations.values() if i.enabled]
+            ),
             "integrations_by_type": {},
             "webhook_handlers": {},
             "recent_events": [],

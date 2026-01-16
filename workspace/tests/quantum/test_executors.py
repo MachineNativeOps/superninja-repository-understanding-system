@@ -85,7 +85,9 @@ class TestTaskExecutor:
 
     def test_execute_invalid_task(self, executor):
         """Test executing an invalid task."""
-        task = Task(id=0, type=TaskType.CLASSICAL, config={"operation": "invalid_operation"})
+        task = Task(
+            id=0, type=TaskType.CLASSICAL, config={"operation": "invalid_operation"}
+        )
 
         with pytest.raises(TaskExecutionError):
             executor.execute(task)

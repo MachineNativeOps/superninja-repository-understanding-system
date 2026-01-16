@@ -62,7 +62,9 @@ class StageResult:
             "stage_type": self.stage_type.value,
             "status": self.status.value,
             "started_at": self.started_at.isoformat(),
-            "completed_at": self.completed_at.isoformat() if self.completed_at else None,
+            "completed_at": (
+                self.completed_at.isoformat() if self.completed_at else None
+            ),
             "duration_ms": self.duration_ms,
             "outputs": self.outputs,
             "errors": self.errors,
@@ -132,10 +134,19 @@ class Evidence:
 
     @classmethod
     def create(
-        cls, type: str, name: str, description: str, data: Any, source: str | None = None
+        cls,
+        type: str,
+        name: str,
+        description: str,
+        data: Any,
+        source: str | None = None,
     ) -> "Evidence":
         """創建證據"""
-        data_str = json.dumps(data, sort_keys=True) if isinstance(data, (dict, list)) else str(data)
+        data_str = (
+            json.dumps(data, sort_keys=True)
+            if isinstance(data, (dict, list))
+            else str(data)
+        )
         data_hash = hashlib.sha256(data_str.encode()).hexdigest()
 
         return cls(
@@ -173,7 +184,12 @@ class EvidenceCollector:
         self._evidence: list[Evidence] = []
 
     def collect(
-        self, type: str, name: str, description: str, data: Any, source: str | None = None
+        self,
+        type: str,
+        name: str,
+        description: str,
+        data: Any,
+        source: str | None = None,
     ) -> Evidence:
         """收集證據"""
         evidence = Evidence.create(type, name, description, data, source)
@@ -223,7 +239,9 @@ class VerificationReport:
     def passed(self) -> bool:
         """是否全部通過"""
         return all(
-            s.status == StageStatus.PASSED for s in self.stages if s.status != StageStatus.SKIPPED
+            s.status == StageStatus.PASSED
+            for s in self.stages
+            if s.status != StageStatus.SKIPPED
         )
 
     @property
@@ -243,7 +261,9 @@ class VerificationReport:
             "stages": [s.to_dict() for s in self.stages],
             "evidence": [e.to_dict() for e in self.evidence],
             "started_at": self.started_at.isoformat(),
-            "completed_at": self.completed_at.isoformat() if self.completed_at else None,
+            "completed_at": (
+                self.completed_at.isoformat() if self.completed_at else None
+            ),
             "total_duration_ms": self.total_duration_ms,
             "failed_stages": [s.stage_id for s in self.failed_stages],
         }
@@ -256,7 +276,11 @@ class VerificationReport:
             f"- **Pipeline ID**: {self.pipeline_id}",
             f"- **Module**: {self.module_id} v{self.module_version}",
             f"- **Status**: {'✅ PASSED' if self.passed else '❌ FAILED'}",
-            f"- **Duration**: {self.total_duration_ms}ms" if self.total_duration_ms else "",
+            (
+                f"- **Duration**: {self.total_duration_ms}ms"
+                if self.total_duration_ms
+                else ""
+            ),
             "",
             "## Stages",
             "",
@@ -272,7 +296,9 @@ class VerificationReport:
                 StageStatus.CANCELLED: "🚫",
             }.get(stage.status, "❓")
 
-            lines.append(f"- {status_icon} **{stage.stage_type.value}**: {stage.status.value}")
+            lines.append(
+                f"- {status_icon} **{stage.stage_type.value}**: {stage.status.value}"
+            )
 
             if stage.errors:
                 for error in stage.errors:
@@ -325,7 +351,11 @@ class CIVerificationPipeline:
         return None
 
     def run(
-        self, data: Any, module_id: str, module_version: str, context: dict[str, Any] | None = None
+        self,
+        data: Any,
+        module_id: str,
+        module_version: str,
+        context: dict[str, Any] | None = None,
     ) -> VerificationReport:
         """
         執行驗證管道
@@ -352,7 +382,8 @@ class CIVerificationPipeline:
         for stage in self._stages:
             # 檢查依賴
             dependencies_met = all(
-                dep in completed_stages and completed_stages[dep].status == StageStatus.PASSED
+                dep in completed_stages
+                and completed_stages[dep].status == StageStatus.PASSED
                 for dep in stage.depends_on
             )
 
@@ -393,7 +424,7 @@ class CIVerificationPipeline:
             # 如果必需階段失敗，停止執行
             if stage.required and result.status == StageStatus.FAILED:
                 # 標記剩餘階段為跳過
-                for remaining_stage in self._stages[self._stages.index(stage) + 1 :]:
+                for remaining_stage in self._stages[self._stages.index(stage) + 1:]:
                     stage_results.append(
                         StageResult(
                             stage_id=remaining_stage.id,

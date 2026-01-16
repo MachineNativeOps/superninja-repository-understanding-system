@@ -235,7 +235,9 @@ class YAMLModuleDefinition:
             "lifecycle": {
                 "state": self.lifecycle.state.value,
                 "approved_at": (
-                    self.lifecycle.approved_at.isoformat() if self.lifecycle.approved_at else None
+                    self.lifecycle.approved_at.isoformat()
+                    if self.lifecycle.approved_at
+                    else None
                 ),
                 "approved_by": self.lifecycle.approved_by,
             },

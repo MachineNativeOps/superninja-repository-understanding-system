@@ -43,11 +43,17 @@ class PreDeployTester:
             else:
                 logger.error(f"❌ 測試失敗: {test_name}")
                 self.test_results.append(
-                    {"name": test_name, "status": "FAIL", "reason": "Test returned False"}
+                    {
+                        "name": test_name,
+                        "status": "FAIL",
+                        "reason": "Test returned False",
+                    }
                 )
         except Exception as e:
             logger.error(f"❌ 測試異常: {test_name} - {str(e)}")
-            self.test_results.append({"name": test_name, "status": "ERROR", "reason": str(e)})
+            self.test_results.append(
+                {"name": test_name, "status": "ERROR", "reason": str(e)}
+            )
 
     def test_core_imports(self):
         """測試核心模組導入"""
@@ -94,7 +100,9 @@ class PreDeployTester:
             task = Task(id="task-123", project_id="test-123", name="Test Task")
 
             # 測試業務指標
-            metrics = BusinessMetrics(total_projects=1, active_projects=1, total_tasks=1)
+            metrics = BusinessMetrics(
+                total_projects=1, active_projects=1, total_tasks=1
+            )
 
             return (
                 project.id == "test-123"
@@ -171,7 +179,10 @@ class PreDeployTester:
             with open("docker-compose.prod.yml", "r") as f:
                 compose_config = yaml.safe_load(f)
 
-            return "services" in compose_config and "mno-business" in compose_config["services"]
+            return (
+                "services" in compose_config
+                and "mno-business" in compose_config["services"]
+            )
         except Exception as e:
             logger.error(f"Docker 文件測試失敗: {e}")
             return False
@@ -277,7 +288,9 @@ class PreDeployTester:
                 "passed_tests": self.passed_tests,
                 "failed_tests": self.total_tests - self.passed_tests,
                 "success_rate": (
-                    (self.passed_tests / self.total_tests * 100) if self.total_tests > 0 else 0
+                    (self.passed_tests / self.total_tests * 100)
+                    if self.total_tests > 0
+                    else 0
                 ),
             },
             "results": self.test_results,
@@ -334,7 +347,9 @@ class PreDeployTester:
         if failed_tests:
             logger.error("失敗的測試:")
             for test in failed_tests:
-                logger.error(f"  ❌ {test['name']}: {test.get('reason', 'Unknown error')}")
+                logger.error(
+                    f"  ❌ {test['name']}: {test.get('reason', 'Unknown error')}"
+                )
 
         logger.info(f"📊 詳細報告已保存到: test-results.json")
 
@@ -350,7 +365,9 @@ def main():
         logger.info("\n🎯 下一步:")
         logger.info("1. 複製 .env.example 到 .env 並配置環境變量")
         logger.info("2. 運行部署腳本: ./scripts/deploy.sh")
-        logger.info("3. 監控部署日誌: docker-compose -f docker-compose.prod.yml logs -f")
+        logger.info(
+            "3. 監控部署日誌: docker-compose -f docker-compose.prod.yml logs -f"
+        )
         sys.exit(0)
     else:
         logger.error("\n🛠️  請修復失敗的測試後重新運行")

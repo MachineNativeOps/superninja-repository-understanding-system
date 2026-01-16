@@ -145,7 +145,8 @@ class QuantumFeatureExtractor:
             name=path.name,
             path=str(path.absolute()),
             size=len(content),
-            last_modified=datetime.fromtimestamp(path.stat().st_mtime).isoformat() + "Z",
+            last_modified=datetime.fromtimestamp(path.stat().st_mtime).isoformat()
+            + "Z",
             sha256=hashlib.sha256(content).hexdigest(),
             sha512=hashlib.sha512(content).hexdigest(),
         )
@@ -183,7 +184,9 @@ class QuantumFeatureExtractor:
             error_mitigated=self.error_mitigation,
         )
 
-    def generate_quantum_signature(self, doc_path: str, features: QuantumFeatures) -> str:
+    def generate_quantum_signature(
+        self, doc_path: str, features: QuantumFeatures
+    ) -> str:
         """
         生成量子簽名
 
@@ -195,7 +198,9 @@ class QuantumFeatureExtractor:
             str: 量子簽名字符串
         """
         # 組合特徵生成簽名種子
-        seed_data = f"{doc_path}:{features.metrics.coherence}:{features.metrics.fidelity}"
+        seed_data = (
+            f"{doc_path}:{features.metrics.coherence}:{features.metrics.fidelity}"
+        )
         signature_hash = hashlib.sha256(seed_data.encode()).hexdigest()[:16]
 
         return f"qsig:2:{self.backend}:0x{signature_hash}"
@@ -255,11 +260,17 @@ def main():
     """主函數"""
     import argparse
 
-    parser = argparse.ArgumentParser(description="量子特徵提取器 - MachineNativeOps 驗證系統")
+    parser = argparse.ArgumentParser(
+        description="量子特徵提取器 - MachineNativeOps 驗證系統"
+    )
     parser.add_argument("document", nargs="?", default=None, help="要處理的文檔路徑")
-    parser.add_argument("--backend", default="ibm_kyiv", help="量子後端 (default: ibm_kyiv)")
+    parser.add_argument(
+        "--backend", default="ibm_kyiv", help="量子後端 (default: ibm_kyiv)"
+    )
     parser.add_argument("--depth", type=int, default=8, help="電路深度 (default: 8)")
-    parser.add_argument("--shots", type=int, default=1024, help="測量次數 (default: 1024)")
+    parser.add_argument(
+        "--shots", type=int, default=1024, help="測量次數 (default: 1024)"
+    )
     parser.add_argument("--output", default=None, help="輸出文件路徑")
 
     args = parser.parse_args()

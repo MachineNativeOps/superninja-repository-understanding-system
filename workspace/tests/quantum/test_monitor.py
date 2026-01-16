@@ -39,7 +39,10 @@ def client():
 
 
 def test_track_metrics_success(performance_monitor):
-    task_config = {"type": "quantum", "config": {"circuit": "simple_x", "shots": 100, "depth": 5}}
+    task_config = {
+        "type": "quantum",
+        "config": {"circuit": "simple_x", "shots": 100, "depth": 5},
+    }
     workflow_id = 1
     task_id = 0
 
@@ -64,7 +67,10 @@ def test_track_metrics_success(performance_monitor):
 
 
 def test_get_metrics_workflow_success(performance_monitor):
-    task_config = {"type": "quantum", "config": {"circuit": "simple_x", "shots": 100, "depth": 5}}
+    task_config = {
+        "type": "quantum",
+        "config": {"circuit": "simple_x", "shots": 100, "depth": 5},
+    }
     workflow_id = 1
     task_id = 0
     performance_monitor.track_metrics(workflow_id, task_id, task_config)
@@ -80,7 +86,10 @@ def test_get_metrics_workflow_success(performance_monitor):
 
 
 def test_get_metrics_task_success(performance_monitor):
-    task_config = {"type": "quantum", "config": {"circuit": "simple_x", "shots": 100, "depth": 5}}
+    task_config = {
+        "type": "quantum",
+        "config": {"circuit": "simple_x", "shots": 100, "depth": 5},
+    }
     workflow_id = 1
     task_id = 0
     performance_monitor.track_metrics(workflow_id, task_id, task_config)
@@ -104,7 +113,10 @@ def test_get_metrics_not_found(performance_monitor):
 
 
 def test_api_get_workflow_metrics(client, performance_monitor):
-    task_config = {"type": "quantum", "config": {"circuit": "simple_x", "shots": 100, "depth": 5}}
+    task_config = {
+        "type": "quantum",
+        "config": {"circuit": "simple_x", "shots": 100, "depth": 5},
+    }
     workflow_id = 1
     task_id = 0
     performance_monitor.track_metrics(workflow_id, task_id, task_config)
@@ -120,7 +132,10 @@ def test_api_get_workflow_metrics(client, performance_monitor):
 
 
 def test_api_get_task_metrics(client, performance_monitor):
-    task_config = {"type": "quantum", "config": {"circuit": "simple_x", "shots": 100, "depth": 5}}
+    task_config = {
+        "type": "quantum",
+        "config": {"circuit": "simple_x", "shots": 100, "depth": 5},
+    }
     workflow_id = 1
     task_id = 0
     performance_monitor.track_metrics(workflow_id, task_id, task_config)

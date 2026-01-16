@@ -6,12 +6,13 @@ SynergyMesh 島嶼協調器 (Island Orchestrator)
 對應 config/dev/automation/drone-coordinator.py
 """
 
-from utils import print_error, print_info, print_success
 import subprocess
 import sys
 from datetime import datetime
 from pathlib import Path
 from typing import Any
+
+from utils import print_error, print_info, print_success
 
 _current_dir = Path(__file__).resolve().parent
 sys.path.insert(0, str(_current_dir.parent))
@@ -197,11 +198,15 @@ class IslandOrchestrator:
 
         for lang, (cmd, arg) in language_tools.items():
             try:
-                result = subprocess.run([cmd, arg], capture_output=True, text=True, timeout=5)
+                result = subprocess.run(
+                    [cmd, arg], capture_output=True, text=True, timeout=5
+                )
                 analysis["tools"][lang] = {
                     "installed": result.returncode == 0,
                     "version": (
-                        result.stdout.strip().split("\n")[0] if result.returncode == 0 else None
+                        result.stdout.strip().split("\n")[0]
+                        if result.returncode == 0
+                        else None
                     ),
                 }
             except (FileNotFoundError, subprocess.TimeoutExpired):

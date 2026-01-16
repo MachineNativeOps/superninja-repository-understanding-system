@@ -3,12 +3,12 @@
 Phase 3 Tests - Policy Simulator and Language Boundary
 """
 
-from utils.policy_simulator import (
-    PolicySimulator,
-    SimulationMode,
-    SimulationResult,
-    SimulationScenario,
-)
+import sys
+from pathlib import Path
+
+import pytest
+from models.dependency import Dependency, DependencyAnalysis, DependencyType, Ecosystem
+from models.update import UpdatePolicy
 from utils.language_boundary import (
     LanguageBoundary,
     LanguageRegistry,
@@ -17,12 +17,12 @@ from utils.language_boundary import (
     msg,
     t,
 )
-from models.update import UpdatePolicy
-from models.dependency import Dependency, DependencyAnalysis, DependencyType, Ecosystem
-import sys
-from pathlib import Path
-
-import pytest
+from utils.policy_simulator import (
+    PolicySimulator,
+    SimulationMode,
+    SimulationResult,
+    SimulationScenario,
+)
 
 # 添加 src 目錄到路徑
 sys.path.insert(0, str(Path(__file__).parent.parent / "src"))
@@ -247,7 +247,9 @@ class TestLanguageBoundary:
 
     def test_format_message_with_language(self):
         """測試指定語言消息"""
-        result = self.lb.msg("analysis_started", lang=OutputLanguage.EN, project="test-project")
+        result = self.lb.msg(
+            "analysis_started", lang=OutputLanguage.EN, project="test-project"
+        )
         assert "test-project" in result
         assert "Starting" in result
 

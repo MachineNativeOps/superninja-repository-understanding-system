@@ -142,7 +142,9 @@ class SynergyMeshCore:
         ]
 
         for phase_id, name, description in phase_definitions:
-            self._phases[phase_id] = PhaseInfo(id=phase_id, name=name, description=description)
+            self._phases[phase_id] = PhaseInfo(
+                id=phase_id, name=name, description=description
+            )
 
     def initialize(self) -> bool:
         """

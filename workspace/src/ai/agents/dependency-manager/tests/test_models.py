@@ -3,8 +3,10 @@
 Tests for Dependency Manager Agent
 """
 
-from models.vulnerability import Vulnerability, VulnerabilitySeverity, VulnerabilitySource
-from models.update import Update, UpdatePolicy, UpdateResult, UpdateStatus, UpdateType
+import sys
+from pathlib import Path
+
+import pytest
 from models.dependency import (
     Dependency,
     DependencyAnalysis,
@@ -12,10 +14,12 @@ from models.dependency import (
     DependencyType,
     Ecosystem,
 )
-import sys
-from pathlib import Path
-
-import pytest
+from models.update import Update, UpdatePolicy, UpdateResult, UpdateStatus, UpdateType
+from models.vulnerability import (
+    Vulnerability,
+    VulnerabilitySeverity,
+    VulnerabilitySource,
+)
 
 # 添加 src 目錄到路徑
 sys.path.insert(0, str(Path(__file__).parent.parent / "src"))
@@ -51,7 +55,10 @@ class TestDependencyModel:
 
         # 最新版本
         dep_current = Dependency(
-            name="axios", current_version="1.6.0", ecosystem=Ecosystem.NPM, latest_version="1.6.0"
+            name="axios",
+            current_version="1.6.0",
+            ecosystem=Ecosystem.NPM,
+            latest_version="1.6.0",
         )
 
         assert dep_current.is_outdated() is False
@@ -160,11 +167,17 @@ class TestUpdateModel:
         result = UpdateResult(result_id="update-123")
 
         success_update = Update(
-            package="axios", from_version="1.5.0", to_version="1.6.0", status=UpdateStatus.SUCCESS
+            package="axios",
+            from_version="1.5.0",
+            to_version="1.6.0",
+            status=UpdateStatus.SUCCESS,
         )
 
         failed_update = Update(
-            package="moment", from_version="2.29.0", to_version="2.30.0", status=UpdateStatus.FAILED
+            package="moment",
+            from_version="2.29.0",
+            to_version="2.30.0",
+            status=UpdateStatus.FAILED,
         )
 
         result.add_update(success_update)

@@ -4,16 +4,15 @@ Phase 8 單元測試
 Tests for Advanced Prompt Combination Strategy Modules
 """
 
-from combination.quarterly_review import (
-    QuarterlyReviewEngine,
-    ReviewCategory,
-    ReviewStatus,
-)
-from combination.dynamic_adjuster import (
-    AdjustmentDirection,
-    AdjustmentTrigger,
-    DynamicAdjuster,
-    KPIMetric,
+import sys
+import unittest
+from datetime import datetime
+from pathlib import Path
+
+from combination.combination_templates import (
+    CombinationTemplateManager,
+    CompanyStage,
+    TemplateCategory,
 )
 from combination.core_satellite import (
     AllocationRole,
@@ -22,15 +21,17 @@ from combination.core_satellite import (
     PromptAllocation,
     PromptCategory,
 )
-from combination.combination_templates import (
-    CombinationTemplateManager,
-    CompanyStage,
-    TemplateCategory,
+from combination.dynamic_adjuster import (
+    AdjustmentDirection,
+    AdjustmentTrigger,
+    DynamicAdjuster,
+    KPIMetric,
 )
-import sys
-import unittest
-from datetime import datetime
-from pathlib import Path
+from combination.quarterly_review import (
+    QuarterlyReviewEngine,
+    ReviewCategory,
+    ReviewStatus,
+)
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 
@@ -188,7 +189,9 @@ class TestQuarterlyReviewEngine(unittest.TestCase):
     def test_complete_review(self):
         """測試完成審查"""
         self.engine.create_review("2024Q3")
-        self.engine.add_review_item("2024Q3", ReviewCategory.MARKET_FEEDBACK, "滿意度", 80, 70, "%")
+        self.engine.add_review_item(
+            "2024Q3", ReviewCategory.MARKET_FEEDBACK, "滿意度", 80, 70, "%"
+        )
 
         review = self.engine.complete_review("2024Q3")
 
@@ -228,7 +231,9 @@ class TestIntegration(unittest.TestCase):
 
         # 2. 獲取範本
         template_manager = CombinationTemplateManager()
-        template = template_manager.recommend_template(CompanyStage.STARTUP, "monetization")
+        template = template_manager.recommend_template(
+            CompanyStage.STARTUP, "monetization"
+        )
 
         # 3. 設置動態調整
         adjuster = DynamicAdjuster()

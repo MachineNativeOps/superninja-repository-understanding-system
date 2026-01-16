@@ -15,7 +15,9 @@ def run_verification_stage(script_name: str, directory: str) -> bool:
 
     try:
         result = subprocess.run(
-            [sys.executable, str(script_path), directory], capture_output=False, text=True
+            [sys.executable, str(script_path), directory],
+            capture_output=False,
+            text=True,
         )
         return result.returncode == 0
     except Exception as e:

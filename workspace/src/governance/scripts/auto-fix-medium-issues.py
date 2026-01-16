@@ -72,7 +72,9 @@ def save_yaml_file(file_path: Path, data: Dict[str, Any]) -> bool:
     """Save YAML file with proper formatting."""
     try:
         with open(file_path, "w", encoding="utf-8") as f:
-            yaml.dump(data, f, default_flow_style=False, sort_keys=False, allow_unicode=True)
+            yaml.dump(
+                data, f, default_flow_style=False, sort_keys=False, allow_unicode=True
+            )
         return True
     except Exception as e:
         print(f"Error saving {file_path}: {e}")
@@ -145,7 +147,9 @@ def fix_compliance_frameworks(governance_root: Path) -> int:
             or not data["spec"]["compliance"]["frameworks"]
         ):
             # Get appropriate frameworks for this dimension
-            frameworks = COMPLIANCE_FRAMEWORKS.get(dim_name, COMPLIANCE_FRAMEWORKS["_default"])
+            frameworks = COMPLIANCE_FRAMEWORKS.get(
+                dim_name, COMPLIANCE_FRAMEWORKS["_default"]
+            )
 
             data["spec"]["compliance"]["frameworks"] = frameworks
 
@@ -162,7 +166,11 @@ def fix_compliance_frameworks(governance_root: Path) -> int:
                 ]
                 if not existing:
                     data["spec"]["compliance"]["framework_mappings"].append(
-                        {"framework": framework, "controls": [], "compliance_status": "in_progress"}
+                        {
+                            "framework": framework,
+                            "controls": [],
+                            "compliance_status": "in_progress",
+                        }
                     )
 
             if save_yaml_file(dim_file, data):
@@ -200,7 +208,9 @@ def update_governance_map_execution(governance_root: Path) -> int:
 
     if updated_count > 0:
         if save_yaml_file(map_file, data):
-            print(f"  {GREEN}✓{RESET} Updated {updated_count} dimensions to required execution")
+            print(
+                f"  {GREEN}✓{RESET} Updated {updated_count} dimensions to required execution"
+            )
         else:
             print(f"  ✗ Failed to save governance-map.yaml")
             updated_count = 0
@@ -253,9 +263,15 @@ def main():
 
     print(f"\n{GREEN}✓ Auto-fix completed successfully{RESET}")
     print(f"\nNext steps:")
-    print(f"  1. Run validation: python governance/scripts/validate-governance-structure.py")
-    print(f"  2. Re-scan problems: python governance/scripts/extreme-problem-identifier.py")
-    print(f"  3. Commit changes: git add . && git commit -m 'fix: Auto-fix MEDIUM severity issues'")
+    print(
+        f"  1. Run validation: python governance/scripts/validate-governance-structure.py"
+    )
+    print(
+        f"  2. Re-scan problems: python governance/scripts/extreme-problem-identifier.py"
+    )
+    print(
+        f"  3. Commit changes: git add . && git commit -m 'fix: Auto-fix MEDIUM severity issues'"
+    )
 
     return 0
 

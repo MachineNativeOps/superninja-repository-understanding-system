@@ -35,9 +35,24 @@ class RunState(Enum):
 
 # Valid state transitions
 VALID_TRANSITIONS: dict[RunState, set[RunState]] = {
-    RunState.QUEUED: {RunState.PREPARING, RunState.RUNNING, RunState.CANCELED, RunState.SKIPPED},
-    RunState.PREPARING: {RunState.RUNNING, RunState.FAILED, RunState.CANCELED, RunState.TIMED_OUT},
-    RunState.RUNNING: {RunState.COMPLETED, RunState.FAILED, RunState.CANCELED, RunState.TIMED_OUT},
+    RunState.QUEUED: {
+        RunState.PREPARING,
+        RunState.RUNNING,
+        RunState.CANCELED,
+        RunState.SKIPPED,
+    },
+    RunState.PREPARING: {
+        RunState.RUNNING,
+        RunState.FAILED,
+        RunState.CANCELED,
+        RunState.TIMED_OUT,
+    },
+    RunState.RUNNING: {
+        RunState.COMPLETED,
+        RunState.FAILED,
+        RunState.CANCELED,
+        RunState.TIMED_OUT,
+    },
     RunState.COMPLETED: set(),  # Terminal state
     RunState.FAILED: set(),  # Terminal state
     RunState.CANCELED: set(),  # Terminal state
@@ -184,7 +199,9 @@ class Run:
             "ref": self.ref,
             "pr_number": self.pr_number,
             "state": self.state.value,
-            "previous_state": self.previous_state.value if self.previous_state else None,
+            "previous_state": (
+                self.previous_state.value if self.previous_state else None
+            ),
             "run_type": self.run_type,
             "policy_ids": [str(p) for p in self.policy_ids],
             "tools": self.tools,
@@ -195,7 +212,9 @@ class Run:
             "created_at": self.created_at.isoformat(),
             "queued_at": self.queued_at.isoformat() if self.queued_at else None,
             "started_at": self.started_at.isoformat() if self.started_at else None,
-            "completed_at": self.completed_at.isoformat() if self.completed_at else None,
+            "completed_at": (
+                self.completed_at.isoformat() if self.completed_at else None
+            ),
             "timeout_seconds": self.timeout_seconds,
             "worker_id": self.worker_id,
             "attempt": self.attempt,
@@ -336,7 +355,8 @@ class RunStateMachine:
             )
 
         logger.info(
-            f"Run created: id={run.id} type={run_type} " f"repo={repo_full_name} sha={head_sha[:8]}"
+            f"Run created: id={run.id} type={run_type} "
+            f"repo={repo_full_name} sha={head_sha[:8]}"
         )
 
         return run
@@ -409,7 +429,12 @@ class RunStateMachine:
             run.started_at = datetime.utcnow()
             run.worker_id = worker_id
 
-        if to_state in {RunState.COMPLETED, RunState.FAILED, RunState.CANCELED, RunState.TIMED_OUT}:
+        if to_state in {
+            RunState.COMPLETED,
+            RunState.FAILED,
+            RunState.CANCELED,
+            RunState.TIMED_OUT,
+        }:
             run.completed_at = datetime.utcnow()
 
         if error:
@@ -660,7 +685,8 @@ class RunStateMachine:
         await self.storage.update(new_run)
 
         logger.info(
-            f"Run replayed: original={run_id} new={new_run.id} " f"attempt={new_run.attempt}"
+            f"Run replayed: original={run_id} new={new_run.id} "
+            f"attempt={new_run.attempt}"
         )
 
         return new_run

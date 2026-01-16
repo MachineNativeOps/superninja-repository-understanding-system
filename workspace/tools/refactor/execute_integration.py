@@ -341,7 +341,12 @@ class DirectoryMapper:
         return "\n".join(lines)
 
     def _build_tree(
-        self, path: Path, lines: List[str], prefix: str, max_depth: int, current_depth: int
+        self,
+        path: Path,
+        lines: List[str],
+        prefix: str,
+        max_depth: int,
+        current_depth: int,
     ):
         """遞迴建立樹結構"""
         if current_depth >= max_depth:
@@ -640,7 +645,9 @@ class IntegrationExecutor:
         if embed_marker in target_content:
             # 在現有段落後添加
             parts = target_content.split(embed_marker)
-            new_content = parts[0] + embed_marker + source_content + "\n\n" + "".join(parts[1:])
+            new_content = (
+                parts[0] + embed_marker + source_content + "\n\n" + "".join(parts[1:])
+            )
         else:
             # 添加新段落
             new_content = target_content + embed_marker + source_content
@@ -674,7 +681,9 @@ class IntegrationExecutor:
             changes=[f"Updated index: {op.target}"],
         )
 
-    def _check_dependencies(self, op: Operation, results: List[OperationResult]) -> bool:
+    def _check_dependencies(
+        self, op: Operation, results: List[OperationResult]
+    ) -> bool:
         """檢查依賴是否滿足"""
         for dep_id in op.depends_on:
             dep_result = next((r for r in results if r.op_id == dep_id), None)
@@ -731,7 +740,9 @@ class IntegrationExecutor:
                 op_id=decision.get("asset_id", "op_001"),
                 op_type=OperationType.MOVE_FILE,
                 source=decision.get("source_path"),
-                target=decision.get("target_directory") + "/" + decision.get("target_filename", ""),
+                target=decision.get("target_directory")
+                + "/"
+                + decision.get("target_filename", ""),
             )
         elif integration_type == "embedded_integration":
             return Operation(
@@ -870,7 +881,9 @@ def main():
     # map 命令
     map_parser = subparsers.add_parser("map", help="生成目錄圖譜")
     map_parser.add_argument("--target", "-t", required=True, help="目標目錄")
-    map_parser.add_argument("--format", "-f", choices=["ascii", "mermaid"], default="ascii")
+    map_parser.add_argument(
+        "--format", "-f", choices=["ascii", "mermaid"], default="ascii"
+    )
     map_parser.add_argument("--output", "-o", help="輸出檔案")
 
     args = parser.parse_args()

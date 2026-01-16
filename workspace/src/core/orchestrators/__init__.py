@@ -14,7 +14,9 @@ from pathlib import Path
 
 
 # ===== 工具函數：動態導入 kebab-case 模塊 =====
-def _import_kebab_module(module_alias: str, file_name: str, legacy_alias: str | None = None):
+def _import_kebab_module(
+    module_alias: str, file_name: str, legacy_alias: str | None = None
+):
     """
     動態導入 kebab-case 的 Python 模塊並註冊命名空間別名。
 
@@ -92,7 +94,9 @@ enterprise_mesh = _import_kebab_module(
     legacy_alias="enterprise_synergy_mesh_orchestrator",
 )
 if enterprise_mesh:
-    EnterpriseSynergyMeshOrchestrator = enterprise_mesh.EnterpriseSynergyMeshOrchestrator
+    EnterpriseSynergyMeshOrchestrator = (
+        enterprise_mesh.EnterpriseSynergyMeshOrchestrator
+    )
     TenantConfig = enterprise_mesh.TenantConfig
     TenantTier = enterprise_mesh.TenantTier
     ResourceQuota = enterprise_mesh.ResourceQuota

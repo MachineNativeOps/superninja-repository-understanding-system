@@ -58,7 +58,9 @@ class MessageMetadata(BaseModel):
     """Metadata for message envelope."""
 
     trace_id: str = Field(..., description="Unique trace ID for distributed tracing")
-    span_id: str = Field(default_factory=lambda: str(uuid.uuid4()), description="Span ID")
+    span_id: str = Field(
+        default_factory=lambda: str(uuid.uuid4()), description="Span ID"
+    )
     timestamp: str = Field(
         default_factory=lambda: datetime.now().isoformat(),
         description="Message timestamp in ISO 8601 format",
@@ -70,8 +72,12 @@ class MessageMetadata(BaseModel):
     idempotency_key: Optional[str] = Field(
         default=None, description="Key for idempotent processing"
     )
-    signature: Optional[str] = Field(default=None, description="Ed25519 signature for verification")
-    correlation_id: Optional[str] = Field(default=None, description="ID linking related messages")
+    signature: Optional[str] = Field(
+        default=None, description="Ed25519 signature for verification"
+    )
+    correlation_id: Optional[str] = Field(
+        default=None, description="ID linking related messages"
+    )
     reply_to: Optional[str] = Field(default=None, description="Agent to reply to")
 
     @field_validator("trace_id")
@@ -93,7 +99,9 @@ class MessageContext(BaseModel):
 
     namespace: str = Field(..., description="Kubernetes namespace")
     cluster: str = Field(..., description="Cluster identifier")
-    urgency: Optional[Urgency] = Field(default=Urgency.P3, description="Message urgency")
+    urgency: Optional[Urgency] = Field(
+        default=Urgency.P3, description="Message urgency"
+    )
     constraints_ref: Optional[str] = Field(
         default=None, description="Reference to policy constraints"
     )
@@ -101,7 +109,9 @@ class MessageContext(BaseModel):
         default="production", description="Environment (prod/staging/dev)"
     )
     region: Optional[str] = Field(default=None, description="Geographic region")
-    tags: Optional[Dict[str, str]] = Field(default=None, description="Additional context tags")
+    tags: Optional[Dict[str, str]] = Field(
+        default=None, description="Additional context tags"
+    )
 
 
 class MessageEnvelope(BaseModel):
@@ -180,7 +190,8 @@ class MessageResponse(BaseModel):
     status: str = Field(..., description="Processing status (success/error)")
     trace_id: str = Field(..., description="Trace ID from request")
     timestamp: str = Field(
-        default_factory=lambda: datetime.now().isoformat(), description="Response timestamp"
+        default_factory=lambda: datetime.now().isoformat(),
+        description="Response timestamp",
     )
     processing_result: Optional[Dict[str, Any]] = Field(
         default=None, description="Processing result details"

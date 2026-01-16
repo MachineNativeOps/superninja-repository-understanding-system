@@ -934,7 +934,8 @@ class UltimateSupplyChainVerifier:
                 ],
                 "verified": True,
                 "trust_level": "TRUSTED",
-                "timestamp": datetime.now(timezone.utc).isoformat(),
+                "timestamp": datetime.now(
+                    timezone.utc).isoformat(),
             }
             signatures.append(signature_data)
 

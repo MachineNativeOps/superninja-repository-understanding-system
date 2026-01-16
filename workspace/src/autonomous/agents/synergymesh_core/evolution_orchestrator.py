@@ -112,7 +112,9 @@ class EvolutionOrchestrator:
         self.config: dict[str, Any] = {}
         self.constraints: list[str] = []
 
-        logger.info(f"Evolution Orchestrator initialized with repo root: {self.repo_root}")
+        logger.info(
+            f"Evolution Orchestrator initialized with repo root: {self.repo_root}"
+        )
 
     def load_evolution_state(self) -> EvolutionState:
         """Load the current evolution state from YAML
@@ -121,7 +123,9 @@ class EvolutionOrchestrator:
             EvolutionState object with current metrics and scores
         """
         if not self.evolution_state_path.exists():
-            raise FileNotFoundError(f"Evolution state not found: {self.evolution_state_path}")
+            raise FileNotFoundError(
+                f"Evolution state not found: {self.evolution_state_path}"
+            )
 
         with self.evolution_state_path.open("r", encoding="utf-8") as f:
             data = yaml.safe_load(f)
@@ -155,7 +159,8 @@ class EvolutionOrchestrator:
         self.constraints = self.config.get("constraints", [])
 
         logger.info(
-            f"Loaded config v{self.config.get('version')}: " f"{len(self.constraints)} constraints"
+            f"Loaded config v{self.config.get('version')}: "
+            f"{len(self.constraints)} constraints"
         )
         return self.config
 
@@ -166,10 +171,14 @@ class EvolutionOrchestrator:
             List of objectives sorted by priority (lowest score first)
         """
         if not self.evolution_state:
-            raise RuntimeError("Evolution state not loaded. Call load_evolution_state() first.")
+            raise RuntimeError(
+                "Evolution state not loaded. Call load_evolution_state() first."
+            )
 
         # Sort objectives by score (lowest first = highest priority)
-        sorted_objectives = sorted(self.evolution_state.objectives, key=lambda obj: obj["score"])
+        sorted_objectives = sorted(
+            self.evolution_state.objectives, key=lambda obj: obj["score"]
+        )
 
         logger.info(
             f"Analyzed {len(sorted_objectives)} objectives. "
@@ -179,7 +188,9 @@ class EvolutionOrchestrator:
 
         return sorted_objectives
 
-    def generate_actions_for_objective(self, objective: dict[str, Any]) -> list[RefactorAction]:
+    def generate_actions_for_objective(
+        self, objective: dict[str, Any]
+    ) -> list[RefactorAction]:
         """Generate refactor actions for a specific objective
 
         Args:
@@ -336,7 +347,8 @@ class EvolutionOrchestrator:
                     is_valid, violations = self.check_constraints(action)
                     if not is_valid:
                         logger.warning(
-                            f"Action {action.action_id} has constraint violations: " f"{violations}"
+                            f"Action {action.action_id} has constraint violations: "
+                            f"{violations}"
                         )
                         action.status = ActionStatus.BLOCKED
 
@@ -391,7 +403,9 @@ class EvolutionOrchestrator:
             days = total_hours / 8
             return f"{days:.1f} days"
 
-    def export_plan_to_markdown(self, plan: ActionPlan, output_path: Path | None = None) -> str:
+    def export_plan_to_markdown(
+        self, plan: ActionPlan, output_path: Path | None = None
+    ) -> str:
         """Export action plan to markdown format
 
         Args:
@@ -424,11 +438,15 @@ class EvolutionOrchestrator:
             if not priority_actions:
                 continue
 
-            lines.append(f"## {priority.value}: {priority.name.replace('_', ' ').title()}")
+            lines.append(
+                f"## {priority.value}: {priority.name.replace('_', ' ').title()}"
+            )
             lines.append(f"**{len(priority_actions)} 個動作**\n")
 
             for action in priority_actions:
-                lines.append(f"### [{action.status.value.upper()}] {action.description}")
+                lines.append(
+                    f"### [{action.status.value.upper()}] {action.description}"
+                )
                 lines.append(f"- **Action ID**: `{action.action_id}`")
                 lines.append(f"- **Objective**: {action.objective_id}")
                 lines.append(f"- **Cluster**: {action.cluster}")
@@ -440,7 +458,9 @@ class EvolutionOrchestrator:
                     lines.append(f"- **Playbook**: `{action.playbook_path}`")
 
                 if action.constraints_checked:
-                    status_icon = "✅" if action.status != ActionStatus.BLOCKED else "❌"
+                    status_icon = (
+                        "✅" if action.status != ActionStatus.BLOCKED else "❌"
+                    )
                     lines.append(f"- **Constraints**: {status_icon} Checked")
 
                 if action.commands:

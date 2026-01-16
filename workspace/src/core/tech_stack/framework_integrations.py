@@ -218,12 +218,19 @@ class LangChainIntegration(FrameworkIntegration):
         self.chains[chain_id] = chain_config
         return chain_id
 
-    async def register_tool(self, tool_id: str, name: str, description: str, func: Callable) -> str:
+    async def register_tool(
+        self, tool_id: str, name: str, description: str, func: Callable
+    ) -> str:
         """Register a tool for agents to use
 
         註冊工具供代理使用
         """
-        tool_config = {"id": tool_id, "name": name, "description": description, "func": func}
+        tool_config = {
+            "id": tool_id,
+            "name": name,
+            "description": description,
+            "func": func,
+        }
         self.tools[tool_id] = tool_config
         return tool_id
 
@@ -256,10 +263,16 @@ class LangChainIntegration(FrameworkIntegration):
                 success=True,
                 result=result,
                 execution_time=execution_time,
-                metadata={"agent_id": agent_id, "framework": "langchain", "context": context},
+                metadata={
+                    "agent_id": agent_id,
+                    "framework": "langchain",
+                    "context": context,
+                },
             )
         except Exception as e:
-            return TaskResult(task_id=str(uuid.uuid4()), success=False, result=None, error=str(e))
+            return TaskResult(
+                task_id=str(uuid.uuid4()), success=False, result=None, error=str(e)
+            )
 
     async def shutdown(self) -> bool:
         """Shutdown LangChain connection"""
@@ -373,7 +386,10 @@ class CrewAIIntegration(FrameworkIntegration):
 
         if crew_id not in self.crews:
             return TaskResult(
-                task_id=crew_id, success=False, result=None, error=f"Crew {crew_id} not found"
+                task_id=crew_id,
+                success=False,
+                result=None,
+                error=f"Crew {crew_id} not found",
             )
 
         try:
@@ -387,7 +403,11 @@ class CrewAIIntegration(FrameworkIntegration):
                 success=True,
                 result=f"Crew {crew_id} completed {len(task_ids)} tasks",
                 execution_time=execution_time,
-                metadata={"crew_id": crew_id, "task_ids": task_ids, "framework": "crewai"},
+                metadata={
+                    "crew_id": crew_id,
+                    "task_ids": task_ids,
+                    "framework": "crewai",
+                },
             )
         except Exception as e:
             return TaskResult(task_id=crew_id, success=False, result=None, error=str(e))
@@ -485,7 +505,9 @@ class AutoGenIntegration(FrameworkIntegration):
         self.group_chats[chat_id] = chat_config
         return chat_id
 
-    async def initiate_chat(self, initiator_id: str, recipient_id: str, message: str) -> TaskResult:
+    async def initiate_chat(
+        self, initiator_id: str, recipient_id: str, message: str
+    ) -> TaskResult:
         """Initiate a two-agent chat
 
         發起雙代理對話
@@ -494,7 +516,11 @@ class AutoGenIntegration(FrameworkIntegration):
 
         conversation_id = f"conv_{uuid.uuid4()}"
         self.conversations[conversation_id] = [
-            {"sender": initiator_id, "content": message, "timestamp": datetime.now().isoformat()}
+            {
+                "sender": initiator_id,
+                "content": message,
+                "timestamp": datetime.now().isoformat(),
+            }
         ]
 
         try:
@@ -526,7 +552,9 @@ class AutoGenIntegration(FrameworkIntegration):
                 },
             )
         except Exception as e:
-            return TaskResult(task_id=conversation_id, success=False, result=None, error=str(e))
+            return TaskResult(
+                task_id=conversation_id, success=False, result=None, error=str(e)
+            )
 
     async def execute_task(
         self, agent_id: str, task: str, context: Optional[Dict] = None
@@ -535,7 +563,11 @@ class AutoGenIntegration(FrameworkIntegration):
         # Create a temporary assistant for task execution
         assistant_id = f"assistant_{uuid.uuid4()}"
         await self.create_agent(
-            AgentConfig(id=assistant_id, name="AssistantAgent", agent_type=AgentType.TASK_ORIENTED)
+            AgentConfig(
+                id=assistant_id,
+                name="AssistantAgent",
+                agent_type=AgentType.TASK_ORIENTED,
+            )
         )
 
         return await self.initiate_chat(agent_id, assistant_id, task)
@@ -623,7 +655,11 @@ class LangGraphIntegration(FrameworkIntegration):
         return graph_id
 
     async def add_conditional_edge(
-        self, graph_id: str, source: str, condition_func: Callable, destinations: Dict[str, str]
+        self,
+        graph_id: str,
+        source: str,
+        condition_func: Callable,
+        destinations: Dict[str, str],
     ) -> bool:
         """Add a conditional edge to a graph
 
@@ -642,7 +678,9 @@ class LangGraphIntegration(FrameworkIntegration):
         )
         return True
 
-    async def execute_graph(self, graph_id: str, initial_state: Dict[str, Any]) -> TaskResult:
+    async def execute_graph(
+        self, graph_id: str, initial_state: Dict[str, Any]
+    ) -> TaskResult:
         """Execute a graph with initial state
 
         執行圖並返回最終狀態
@@ -651,7 +689,10 @@ class LangGraphIntegration(FrameworkIntegration):
 
         if graph_id not in self.graphs:
             return TaskResult(
-                task_id=graph_id, success=False, result=None, error=f"Graph {graph_id} not found"
+                task_id=graph_id,
+                success=False,
+                result=None,
+                error=f"Graph {graph_id} not found",
             )
 
         try:
@@ -676,7 +717,9 @@ class LangGraphIntegration(FrameworkIntegration):
                 metadata={"graph_id": graph_id, "framework": "langgraph"},
             )
         except Exception as e:
-            return TaskResult(task_id=graph_id, success=False, result=None, error=str(e))
+            return TaskResult(
+                task_id=graph_id, success=False, result=None, error=str(e)
+            )
 
     async def execute_task(
         self, agent_id: str, task: str, context: Optional[Dict] = None
@@ -685,7 +728,10 @@ class LangGraphIntegration(FrameworkIntegration):
         # Create a simple single-node graph
         graph_id = f"task_graph_{uuid.uuid4()}"
         await self.create_graph(
-            graph_id, nodes=[{"id": agent_id, "type": "agent"}], edges=[], entry_point=agent_id
+            graph_id,
+            nodes=[{"id": agent_id, "type": "agent"}],
+            edges=[],
+            entry_point=agent_id,
         )
 
         return await self.execute_graph(graph_id, {"task": task, "context": context})
@@ -725,7 +771,9 @@ class FrameworkOrchestrator:
             self.default_framework = framework.name.lower()
         return framework.id
 
-    async def initialize_all(self, credentials: Dict[str, FrameworkCredentials]) -> Dict[str, bool]:
+    async def initialize_all(
+        self, credentials: Dict[str, FrameworkCredentials]
+    ) -> Dict[str, bool]:
         """Initialize all registered frameworks
 
         初始化所有註冊的框架
@@ -738,7 +786,9 @@ class FrameworkOrchestrator:
                 results[name] = False
         return results
 
-    def get_framework(self, name: Optional[str] = None) -> Optional[FrameworkIntegration]:
+    def get_framework(
+        self, name: Optional[str] = None
+    ) -> Optional[FrameworkIntegration]:
         """Get a framework by name or default"""
         if name is None:
             name = self.default_framework
@@ -789,4 +839,6 @@ class FrameworkOrchestrator:
 
         獲取所有框架的狀態
         """
-        return {name: framework.get_status() for name, framework in self.frameworks.items()}
+        return {
+            name: framework.get_status() for name, framework in self.frameworks.items()
+        }

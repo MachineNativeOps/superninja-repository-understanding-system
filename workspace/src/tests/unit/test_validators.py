@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 """Unit tests for validators"""
 import pytest
-
 from core.validators import SecurityValidator, SyntaxValidator
 
 

@@ -3,12 +3,12 @@ Unit tests for SecurityScanner
 安全掃描器單元測試
 """
 
-from core.analysis.security_scanner import SecurityIssue, SecurityScanner
 import sys
 import tempfile
 from pathlib import Path
 
 import pytest
+from core.analysis.security_scanner import SecurityIssue, SecurityScanner
 
 sys.path.insert(0, str(Path(__file__).parent.parent.parent))
 
@@ -113,7 +113,9 @@ async def test_detect_weak_crypto(scanner, vulnerable_python_file):
 async def test_severity_filter(scanner, vulnerable_python_file):
     """測試嚴重程度過濾"""
     # 只獲取 critical 問題
-    critical_issues = await scanner.scan(str(vulnerable_python_file), severity_filter=["critical"])
+    critical_issues = await scanner.scan(
+        str(vulnerable_python_file), severity_filter=["critical"]
+    )
 
     assert all(issue.severity == "critical" for issue in critical_issues)
 

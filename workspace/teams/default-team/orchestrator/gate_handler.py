@@ -29,7 +29,9 @@ class GateValidationHandler:
             "security_scan": self.validate_security,
         }
 
-    async def handle_gate_validation_request(self, request_data: Dict[str, Any]) -> Dict[str, Any]:
+    async def handle_gate_validation_request(
+        self, request_data: Dict[str, Any]
+    ) -> Dict[str, Any]:
         """
         Handle comprehensive gate validation request
 
@@ -56,7 +58,9 @@ class GateValidationHandler:
             for validation_type, enabled in requirements.items():
                 if enabled and validation_type in self.validation_steps:
                     try:
-                        result = await self.validation_steps[validation_type](artifacts, metadata)
+                        result = await self.validation_steps[validation_type](
+                            artifacts, metadata
+                        )
                         validation_results[validation_type] = result
 
                         if result["status"] != "PASSED":
@@ -140,7 +144,11 @@ class GateValidationHandler:
             for spec_file in spec_dir.glob("*.yaml"):
                 try:
                     result = subprocess.run(
-                        ["python", "-c", f'import yaml; yaml.safe_load(open("{spec_file}"))'],
+                        [
+                            "python",
+                            "-c",
+                            f'import yaml; yaml.safe_load(open("{spec_file}"))',
+                        ],
                         capture_output=True,
                         text=True,
                         timeout=30,
@@ -158,14 +166,20 @@ class GateValidationHandler:
             }
 
         except Exception as e:
-            return {"status": "FAILED", "error": str(e), "timestamp": datetime.now().isoformat()}
+            return {
+                "status": "FAILED",
+                "error": str(e),
+                "timestamp": datetime.now().isoformat(),
+            }
 
     async def validate_module_registry(
         self, artifacts: Dict[str, Any], metadata: Dict[str, Any]
     ) -> Dict[str, Any]:
         """Validate module registry consistency"""
         try:
-            registry_file = Path(artifacts.get("registry", "root/registry/modules.yaml"))
+            registry_file = Path(
+                artifacts.get("registry", "root/registry/modules.yaml")
+            )
 
             if not registry_file.exists():
                 return {
@@ -223,7 +237,11 @@ print("Registry validation passed")
             }
 
         except Exception as e:
-            return {"status": "FAILED", "error": str(e), "timestamp": datetime.now().isoformat()}
+            return {
+                "status": "FAILED",
+                "error": str(e),
+                "timestamp": datetime.now().isoformat(),
+            }
 
     async def validate_naming_conventions(
         self, artifacts: Dict[str, Any], metadata: Dict[str, Any]
@@ -245,7 +263,9 @@ print("Registry validation passed")
 
             for file_path in root_files:
                 if file_path.suffix not in [".yaml", ".yml", ".sh"]:
-                    naming_violations.append(f"Invalid file extension: {file_path.name}")
+                    naming_violations.append(
+                        f"Invalid file extension: {file_path.name}"
+                    )
 
             return {
                 "status": "PASSED" if not naming_violations else "FAILED",
@@ -255,7 +275,11 @@ print("Registry validation passed")
             }
 
         except Exception as e:
-            return {"status": "FAILED", "error": str(e), "timestamp": datetime.now().isoformat()}
+            return {
+                "status": "FAILED",
+                "error": str(e),
+                "timestamp": datetime.now().isoformat(),
+            }
 
     async def validate_builds(
         self, artifacts: Dict[str, Any], metadata: Dict[str, Any]
@@ -288,7 +312,9 @@ print("Registry validation passed")
                         timeout=15,
                     )
                     if result.returncode != 0:
-                        build_errors.append(f"{build_file.parent.name}: {result.stderr}")
+                        build_errors.append(
+                            f"{build_file.parent.name}: {result.stderr}"
+                        )
                 except Exception as e:
                     build_errors.append(f"{build_file.parent.name}: {str(e)}")
 
@@ -300,7 +326,11 @@ print("Registry validation passed")
             }
 
         except Exception as e:
-            return {"status": "FAILED", "error": str(e), "timestamp": datetime.now().isoformat()}
+            return {
+                "status": "FAILED",
+                "error": str(e),
+                "timestamp": datetime.now().isoformat(),
+            }
 
     async def validate_security(
         self, artifacts: Dict[str, Any], metadata: Dict[str, Any]
@@ -319,7 +349,9 @@ print("Registry validation passed")
                         content = f.read()
                         for pattern in secret_patterns:
                             if f"{pattern} =" in content.lower():
-                                security_issues.append(f"{py_file}: potential hardcoded {pattern}")
+                                security_issues.append(
+                                    f"{py_file}: potential hardcoded {pattern}"
+                                )
                 except Exception:
                     continue  # Skip files that can't be read
 
@@ -332,7 +364,11 @@ print("Registry validation passed")
             }
 
         except Exception as e:
-            return {"status": "FAILED", "error": str(e), "timestamp": datetime.now().isoformat()}
+            return {
+                "status": "FAILED",
+                "error": str(e),
+                "timestamp": datetime.now().isoformat(),
+            }
 
     def _generate_file_hash(self, file_paths: List[str]) -> str:
         """Generate SHA3-512 hash for evidence"""

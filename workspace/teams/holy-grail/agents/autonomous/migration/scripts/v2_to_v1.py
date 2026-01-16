@@ -5,9 +5,10 @@ v2 → v1 降級遷移腳本
 將 v2-multi-islands 降級至 v1-python-drones 架構。
 """
 
-from migration.migrator import Migrator
 import sys
 from pathlib import Path
+
+from migration.migrator import Migrator
 
 # 添加父目錄到路徑
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent.parent))

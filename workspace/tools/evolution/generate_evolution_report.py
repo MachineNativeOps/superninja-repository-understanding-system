@@ -81,7 +81,9 @@ def count_semgrep_high(semgrep_path: Path) -> int:
     return high
 
 
-def compute_playbook_coverage(cluster_heatmap_path: Path, playbooks_root: Path) -> float:
+def compute_playbook_coverage(
+    cluster_heatmap_path: Path, playbooks_root: Path
+) -> float:
     """
     概念：
       - 從 cluster-heatmap.json 抽出所有 clusters 名稱（扁平結構，如 "core/", "services/" 等）
@@ -160,7 +162,9 @@ def main():
     # 1) 收集原始指標
     language_violations_total = count_language_violations(lang_report_path)
     semgrep_high_total = count_semgrep_high(semgrep_path)
-    playbook_coverage_ratio = compute_playbook_coverage(cluster_heatmap_path, playbooks_root)
+    playbook_coverage_ratio = compute_playbook_coverage(
+        cluster_heatmap_path, playbooks_root
+    )
 
     metrics = {
         "language_violations_total": language_violations_total,
@@ -219,7 +223,9 @@ def main():
         yaml.safe_dump(state, f, sort_keys=False, allow_unicode=True)
 
     # 4) 準備 SYSTEM_EVOLUTION_REPORT.md（人類可讀）
-    report_path = ROOT / outputs.get("report_markdown", "docs/SYSTEM_EVOLUTION_REPORT.md")
+    report_path = ROOT / outputs.get(
+        "report_markdown", "docs/SYSTEM_EVOLUTION_REPORT.md"
+    )
     report_path.parent.mkdir(parents=True, exist_ok=True)
 
     lines = []
@@ -237,7 +243,9 @@ def main():
     for obj in scored_objectives:
         lines.append(f"### {obj['name']} (`{obj['id']}`)")
         lines.append(f"- 指標：`{obj['metric']}`")
-        lines.append(f"- 目前值：`{obj['value']}`，目標：`{obj['target']}`（{obj['direction']}）")
+        lines.append(
+            f"- 目前值：`{obj['value']}`，目標：`{obj['target']}`（{obj['direction']}）"
+        )
         lines.append(f"- 權重：{obj['weight']}")
         lines.append(f"- 得分：**{obj['score']}/100**\n")
 

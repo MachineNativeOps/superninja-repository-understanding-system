@@ -5,23 +5,11 @@ Comprehensive tests for the unified integration layer that connects
 all SynergyMesh phases into a cohesive system.
 """
 
-from unified_integration.unified_controller import (
-    PhaseCategory,
-    PhaseDefinition,
-    SystemState,
-)
-from unified_integration.system_orchestrator import (
-    TaskType,
-    WorkflowState,
-)
-from unified_integration.integration_hub import (
-    MessagePriority,
-    MessageType,
-)
-from unified_integration.configuration_manager import (
-    Environment,
-    PhaseConfig,
-)
+import asyncio
+import sys
+from datetime import datetime, timezone
+
+import pytest
 from unified_integration import (
     ConfigurationManager,
     IntegrationConfig,
@@ -31,11 +19,23 @@ from unified_integration import (
     SystemOrchestrator,
     UnifiedSystemController,
 )
-import asyncio
-import sys
-from datetime import datetime, timezone
-
-import pytest
+from unified_integration.configuration_manager import (
+    Environment,
+    PhaseConfig,
+)
+from unified_integration.integration_hub import (
+    MessagePriority,
+    MessageType,
+)
+from unified_integration.system_orchestrator import (
+    TaskType,
+    WorkflowState,
+)
+from unified_integration.unified_controller import (
+    PhaseCategory,
+    PhaseDefinition,
+    SystemState,
+)
 
 sys.path.insert(0, str(__file__).rsplit("/tests", 1)[0] + "/core")
 
@@ -111,7 +111,10 @@ class TestUnifiedSystemController:
         await controller.initialize()
         await controller.start()
 
-        request = {"type": "natural_language", "payload": {"text": "Hello, SynergyMesh"}}
+        request = {
+            "type": "natural_language",
+            "payload": {"text": "Hello, SynergyMesh"},
+        }
 
         result = await controller.process_request(request)
 
@@ -189,7 +192,9 @@ class TestIntegrationHub:
     @pytest.fixture
     def config(self):
         """Create an IntegrationConfig"""
-        return IntegrationConfig(name="test-hub", max_queue_size=100, message_timeout_seconds=10)
+        return IntegrationConfig(
+            name="test-hub", max_queue_size=100, message_timeout_seconds=10
+        )
 
     def test_initialization(self, hub):
         """Test hub initialization"""
@@ -288,7 +293,9 @@ class TestSystemOrchestrator:
     def config(self):
         """Create an OrchestratorConfig"""
         return OrchestratorConfig(
-            name="test-orchestrator", max_concurrent_workflows=5, max_concurrent_tasks=20
+            name="test-orchestrator",
+            max_concurrent_workflows=5,
+            max_concurrent_tasks=20,
         )
 
     def test_initialization(self, orchestrator):
@@ -312,7 +319,9 @@ class TestSystemOrchestrator:
 
         steps = [{"name": "step1"}, {"name": "step2"}, {"name": "step3"}]
 
-        workflow = await orchestrator.execute_workflow(name="test-workflow", steps=steps)
+        workflow = await orchestrator.execute_workflow(
+            name="test-workflow", steps=steps
+        )
 
         assert workflow.state == WorkflowState.COMPLETED
         assert "step1" in workflow.results
@@ -328,7 +337,9 @@ class TestSystemOrchestrator:
 
         steps = [{"name": "async_step"}]
 
-        workflow_id = await orchestrator.execute_workflow_async(name="async-workflow", steps=steps)
+        workflow_id = await orchestrator.execute_workflow_async(
+            name="async-workflow", steps=steps
+        )
 
         assert workflow_id is not None
 
@@ -380,7 +391,10 @@ class TestSystemOrchestrator:
     def test_unschedule_task(self, orchestrator):
         """Test task unscheduling"""
         task_id = orchestrator.schedule_task(
-            name="test-task", task_type=TaskType.CLEANUP, handler=lambda: None, interval_seconds=60
+            name="test-task",
+            task_type=TaskType.CLEANUP,
+            handler=lambda: None,
+            interval_seconds=60,
         )
 
         result = orchestrator.unschedule_task(task_id)
@@ -565,7 +579,9 @@ class TestUnifiedIntegration:
 
         hub.register_phase(2, handler)
 
-        await hub.send_message(source_phase=1, target_phase=2, payload={"action": "coordinate"})
+        await hub.send_message(
+            source_phase=1, target_phase=2, payload={"action": "coordinate"}
+        )
 
         assert len(messages_received) == 1
 
@@ -589,7 +605,9 @@ class TestUnifiedIntegration:
             {"name": "finalize", "handler": lambda: step_handler("finalize")},
         ]
 
-        workflow = await orchestrator.execute_workflow(name="multi-step-workflow", steps=steps)
+        workflow = await orchestrator.execute_workflow(
+            name="multi-step-workflow", steps=steps
+        )
 
         assert workflow.state == WorkflowState.COMPLETED
 

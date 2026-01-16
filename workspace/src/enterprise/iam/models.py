@@ -480,7 +480,9 @@ class OIDCProvider:
     jwks_uri: str | None = None
 
     # Scopes
-    default_scopes: list[str] = field(default_factory=lambda: ["openid", "email", "profile"])
+    default_scopes: list[str] = field(
+        default_factory=lambda: ["openid", "email", "profile"]
+    )
 
     # Claim mapping
     claim_mapping: dict[str, str] = field(

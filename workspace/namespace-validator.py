@@ -144,7 +144,14 @@ class NamespaceValidator:
         for file_path in directory.rglob("*"):
             if file_path.is_file() and file_path.suffix in extensions:
                 # Skip certain directories
-                skip_dirs = {".git", "node_modules", "__pycache__", "dist", "build", "archive"}
+                skip_dirs = {
+                    ".git",
+                    "node_modules",
+                    "__pycache__",
+                    "dist",
+                    "build",
+                    "archive",
+                }
                 if any(skip_dir in file_path.parts for skip_dir in skip_dirs):
                     continue
 
@@ -187,7 +194,9 @@ class NamespaceValidator:
 """
 
         if compliance_rate == 100:
-            report += "✅ **All files are 100% compliant with MachineNativeOps namespace!**\n"
+            report += (
+                "✅ **All files are 100% compliant with MachineNativeOps namespace!**\n"
+            )
         elif compliance_rate >= 90:
             report += "⚠️  Most files are compliant, but some violations found.\n"
         else:
@@ -212,7 +221,9 @@ class NamespaceValidator:
 
 
 def main():
-    parser = argparse.ArgumentParser(description="Validate MachineNativeOps namespace compliance")
+    parser = argparse.ArgumentParser(
+        description="Validate MachineNativeOps namespace compliance"
+    )
     parser.add_argument(
         "directory",
         nargs="?",
@@ -220,7 +231,9 @@ def main():
         help="Directory to validate (default: current directory)",
     )
     parser.add_argument(
-        "--verbose", action="store_true", help="Show all checked files, not just violations"
+        "--verbose",
+        action="store_true",
+        help="Show all checked files, not just violations",
     )
     parser.add_argument("--output", help="Output report to file")
 

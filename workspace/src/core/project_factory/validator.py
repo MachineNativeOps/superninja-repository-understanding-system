@@ -29,7 +29,9 @@ class ValidationResult:
         self.checks: Dict[str, Dict[str, Any]] = {}
         self.overall_status: str = "PENDING"
 
-    def add_check(self, check_name: str, status: str, details: str, **extra_data) -> None:
+    def add_check(
+        self, check_name: str, status: str, details: str, **extra_data
+    ) -> None:
         """Add validation check result."""
         self.checks[check_name] = {"status": status, "details": details, **extra_data}
 
@@ -142,7 +144,9 @@ class GovernanceValidator:
         logger.info(f"Validation complete: {result.overall_status}")
         return result.to_dict()
 
-    def _check_language_policy(self, project: "GeneratedProject", result: ValidationResult) -> None:
+    def _check_language_policy(
+        self, project: "GeneratedProject", result: ValidationResult
+    ) -> None:
         """Check language policy compliance."""
         spec = project.spec
 
@@ -166,7 +170,9 @@ class GovernanceValidator:
 
         required_version = version_requirements.get(spec.language.value)
         if required_version:
-            details = f"Language {spec.language.value} requires version {required_version}"
+            details = (
+                f"Language {spec.language.value} requires version {required_version}"
+            )
         else:
             details = "All language constraints satisfied"
 
@@ -201,7 +207,9 @@ class GovernanceValidator:
                 issues.append("Dockerfile runs as root (security risk)")
 
         if issues:
-            result.add_check("security", "WARNING", f"Security issues found: {', '.join(issues)}")
+            result.add_check(
+                "security", "WARNING", f"Security issues found: {', '.join(issues)}"
+            )
         else:
             result.add_check("security", "PASSED", "No security issues found")
 
@@ -213,13 +221,20 @@ class GovernanceValidator:
 
         # Check if architecture pattern is correctly implemented
         if spec.architecture.pattern.value == "clean-architecture":
-            expected_layers = {"presentation", "application", "domain", "infrastructure"}
+            expected_layers = {
+                "presentation",
+                "application",
+                "domain",
+                "infrastructure",
+            }
             actual_layers = set(spec.architecture.layers)
 
             if not expected_layers.issubset(actual_layers):
                 missing = expected_layers - actual_layers
                 result.add_check(
-                    "architecture", "WARNING", f"Clean architecture missing layers: {missing}"
+                    "architecture",
+                    "WARNING",
+                    f"Clean architecture missing layers: {missing}",
                 )
             else:
                 result.add_check(
@@ -229,10 +244,14 @@ class GovernanceValidator:
                 )
         else:
             result.add_check(
-                "architecture", "PASSED", f"Architecture pattern: {spec.architecture.pattern.value}"
+                "architecture",
+                "PASSED",
+                f"Architecture pattern: {spec.architecture.pattern.value}",
             )
 
-    def _check_cicd_standards(self, project: "GeneratedProject", result: ValidationResult) -> None:
+    def _check_cicd_standards(
+        self, project: "GeneratedProject", result: ValidationResult
+    ) -> None:
         """Check CI/CD standards compliance."""
         spec = project.spec
         files = project.files
@@ -257,7 +276,9 @@ class GovernanceValidator:
                 )
             else:
                 result.add_check(
-                    "ci_cd", "WARNING", "CI/CD configured but pipeline file not generated"
+                    "ci_cd",
+                    "WARNING",
+                    "CI/CD configured but pipeline file not generated",
                 )
 
     def _check_compliance_requirements(
@@ -290,4 +311,6 @@ class GovernanceValidator:
                 artifacts=compliance_artifacts,
             )
         else:
-            result.add_check("compliance", "WARNING", "Missing compliance documentation")
+            result.add_check(
+                "compliance", "WARNING", "Missing compliance documentation"
+            )

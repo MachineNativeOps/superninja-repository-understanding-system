@@ -251,9 +251,13 @@ class ContractRegistry:
 
         # Build dependency graph
         if contract.metadata.dependencies:
-            self._dependency_graph[contract.contract_id] = set(contract.metadata.dependencies)
+            self._dependency_graph[contract.contract_id] = set(
+                contract.metadata.dependencies
+            )
 
-        logger.info(f"Contract registered: {contract.contract_id} ({contract.metadata.name})")
+        logger.info(
+            f"Contract registered: {contract.contract_id} ({contract.metadata.name})"
+        )
         return contract.contract_id
 
     def get(self, contract_id: str) -> Optional[ContractDefinition]:
@@ -273,7 +277,9 @@ class ContractRegistry:
         contract_ids = self._type_index.get(contract_type, [])
         return [self._contracts[cid] for cid in contract_ids if cid in self._contracts]
 
-    def list_all(self, status: Optional[ContractStatus] = None) -> List[ContractDefinition]:
+    def list_all(
+        self, status: Optional[ContractStatus] = None
+    ) -> List[ContractDefinition]:
         """List all contracts, optionally filtered by status"""
         contracts = list(self._contracts.values())
         if status:
@@ -290,7 +296,9 @@ class ContractRegistry:
         contract.status = new_status
         contract.metadata.updated_at = datetime.utcnow()
 
-        logger.info(f"Contract status updated: {contract_id} {old_status} -> {new_status}")
+        logger.info(
+            f"Contract status updated: {contract_id} {old_status} -> {new_status}"
+        )
         return True
 
     def resolve_dependencies(self, contract_id: str) -> List[str]:
@@ -389,7 +397,9 @@ class ContractValidator:
             except Exception as e:
                 errors.append(f"Validator error: {str(e)}")
 
-        is_valid = len(errors) == 0 if self.execution_mode == ExecutionMode.STRICT else True
+        is_valid = (
+            len(errors) == 0 if self.execution_mode == ExecutionMode.STRICT else True
+        )
         severity = (
             ValidationSeverity.CRITICAL
             if errors
@@ -446,7 +456,9 @@ class ContractValidator:
         if metadata.version:
             parts = metadata.version.split(".")
             if len(parts) != 3 or not all(p.isdigit() for p in parts):
-                errors.append(f"Invalid version format: {metadata.version} (expected semver)")
+                errors.append(
+                    f"Invalid version format: {metadata.version} (expected semver)"
+                )
 
         return ValidationResult(
             is_valid=len(errors) == 0,
@@ -574,7 +586,10 @@ class ContractExecutor:
     """
 
     def __init__(
-        self, registry: ContractRegistry, validator: ContractValidator, timeout_seconds: int = 30
+        self,
+        registry: ContractRegistry,
+        validator: ContractValidator,
+        timeout_seconds: int = 30,
     ):
         """
         Initialize contract executor
@@ -598,7 +613,10 @@ class ContractExecutor:
         logger.info(f"Registered handler for contract type: {contract_type}")
 
     async def execute(
-        self, contract_id: str, input_data: Dict[str, Any], context: Optional[Dict[str, Any]] = None
+        self,
+        contract_id: str,
+        input_data: Dict[str, Any],
+        context: Optional[Dict[str, Any]] = None,
     ) -> ExecutionResult:
         """
         Execute contract
@@ -644,7 +662,8 @@ class ContractExecutor:
 
             # Execute with timeout
             output = await asyncio.wait_for(
-                handler(contract, input_data, context or {}), timeout=self.timeout_seconds
+                handler(contract, input_data, context or {}),
+                timeout=self.timeout_seconds,
             )
 
             # Post-execution validation
@@ -721,7 +740,10 @@ class ContractLifecycleManager:
     """
 
     def __init__(
-        self, registry: ContractRegistry, deprecation_period_days: int = 90, max_versions: int = 5
+        self,
+        registry: ContractRegistry,
+        deprecation_period_days: int = 90,
+        max_versions: int = 5,
     ):
         """
         Initialize lifecycle manager
@@ -737,8 +759,7 @@ class ContractLifecycleManager:
 
         logger.info(
             f"Lifecycle manager initialized: "
-            f"deprecation_period={deprecation_period_days}d, max_versions={max_versions}"
-        )
+            f"deprecation_period={deprecation_period_days}d, max_versions={max_versions}")
 
     def deprecate(self, contract_id: str, reason: str) -> bool:
         """
@@ -781,14 +802,16 @@ class ContractLifecycleManager:
         if elapsed_days < self.deprecation_period_days:
             logger.warning(
                 f"Cannot retire contract {contract_id}: "
-                f"deprecation period not elapsed ({elapsed_days}/{self.deprecation_period_days} days)"
-            )
+                f"deprecation period not elapsed ({elapsed_days}/{self.deprecation_period_days} days)")
             return False
 
         return self.registry.update_status(contract_id, ContractStatus.RETIRED)
 
     def upgrade(
-        self, old_contract_id: str, new_contract: ContractDefinition, validate: bool = True
+        self,
+        old_contract_id: str,
+        new_contract: ContractDefinition,
+        validate: bool = True,
     ) -> Tuple[bool, Optional[str]]:
         """
         Upgrade a contract to a new version
@@ -833,7 +856,9 @@ class ContractLifecycleManager:
             new_contract_id = self.registry.register(new_contract)
 
             # Deprecate old version
-            self.deprecate(old_contract_id, f"Upgraded to version {new_contract.metadata.version}")
+            self.deprecate(
+                old_contract_id, f"Upgraded to version {new_contract.metadata.version}"
+            )
 
             logger.info(f"Contract upgraded: {old_contract_id} -> {new_contract_id}")
             return True, new_contract_id
@@ -908,11 +933,15 @@ class ContractEngine:
 
         status_counts = {}
         for status in ContractStatus:
-            status_counts[status.value] = sum(1 for c in contracts if c.status == status)
+            status_counts[status.value] = sum(
+                1 for c in contracts if c.status == status
+            )
 
         type_counts = {}
         for contract_type in ContractType:
-            type_counts[contract_type.value] = len(self.registry.get_by_type(contract_type))
+            type_counts[contract_type.value] = len(
+                self.registry.get_by_type(contract_type)
+            )
 
         return {
             "total_contracts": len(contracts),
@@ -937,7 +966,9 @@ def main():
 
     parser = argparse.ArgumentParser(description="SynergyMesh Contract Engine")
     parser.add_argument("--config", type=str, help="Configuration file path")
-    parser.add_argument("--stats", action="store_true", help="Display engine statistics")
+    parser.add_argument(
+        "--stats", action="store_true", help="Display engine statistics"
+    )
 
     args = parser.parse_args()
 
@@ -954,6 +985,7 @@ def main():
 
 if __name__ == "__main__":
     logging.basicConfig(
-        level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+        level=logging.INFO,
+        format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
     )
     main()

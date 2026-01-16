@@ -97,7 +97,9 @@ class Secret:
             return False
         if not self.last_rotated_at:
             return True
-        rotation_due = self.last_rotated_at + timedelta(days=self.rotation_interval_days)
+        rotation_due = self.last_rotated_at + timedelta(
+            days=self.rotation_interval_days
+        )
         return datetime.utcnow() > rotation_due
 
 
@@ -308,7 +310,10 @@ class SecretsManager:
                 },
             )
 
-        logger.info(f"Secret created: name={name} type={secret_type.value} " f"scope={scope.value}")
+        logger.info(
+            f"Secret created: name={name} type={secret_type.value} "
+            f"scope={scope.value}"
+        )
 
         return secret
 
@@ -349,7 +354,9 @@ class SecretsManager:
                 context,
             )
         except Exception as e:
-            secret_id_hash = hashlib.sha256(str(secret_id).encode("utf-8")).hexdigest()[:8]
+            secret_id_hash = hashlib.sha256(str(secret_id).encode("utf-8")).hexdigest()[
+                :8
+            ]
             logger.error(f"Failed to decrypt secret (id_hash={secret_id_hash}): {e}")
             return None
 
@@ -381,7 +388,9 @@ class SecretsManager:
         accessed_by: UUID | None = None,
     ) -> str | None:
         """Get secret value by name and scope"""
-        result = await self.storage.get_by_name(name, scope, org_id, project_id, repo_id)
+        result = await self.storage.get_by_name(
+            name, scope, org_id, project_id, repo_id
+        )
         if not result:
             return None
 

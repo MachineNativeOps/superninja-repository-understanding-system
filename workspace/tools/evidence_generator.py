@@ -29,7 +29,11 @@ def hash_tree(root: Path):
     for p in sorted(root.rglob("*")):
         if p.is_file():
             items.append(
-                {"path": str(p.relative_to(root)), "hash": hash_file(p), "size": p.stat().st_size}
+                {
+                    "path": str(p.relative_to(root)),
+                    "hash": hash_file(p),
+                    "size": p.stat().st_size,
+                }
             )
     # tree hash：以（path + sha3-512）串接再 sha3-512（簡單可重播）
     h3 = hashlib.sha3_512()
@@ -123,7 +127,12 @@ def main():
                 "name": "aaps-rootfs",
                 "versionInfo": provenance["commit"],
                 "checksums": (
-                    [{"algorithm": "SHA3-512", "checksumValue": rootfs_hash["sha3-512"]}]
+                    [
+                        {
+                            "algorithm": "SHA3-512",
+                            "checksumValue": rootfs_hash["sha3-512"],
+                        }
+                    ]
                     if rootfs_hash["sha3-512"]
                     else []
                 ),
@@ -152,7 +161,8 @@ def main():
         json.dumps(sbom, ensure_ascii=False, indent=2), encoding="utf-8"
     )
     (evidence_dir / "gate-report.json").write_text(
-        json.dumps({"gates": gate_reports}, ensure_ascii=False, indent=2), encoding="utf-8"
+        json.dumps({"gates": gate_reports}, ensure_ascii=False, indent=2),
+        encoding="utf-8",
     )
 
     print("Evidence generated under dist/evidence/")

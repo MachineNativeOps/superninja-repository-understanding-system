@@ -196,7 +196,9 @@ class SecretPatternManager:
 
 
 def main():
-    parser = argparse.ArgumentParser(description="Manage GitHub Secret Scanning custom patterns")
+    parser = argparse.ArgumentParser(
+        description="Manage GitHub Secret Scanning custom patterns"
+    )
     parser.add_argument(
         "action",
         choices=["list", "create", "update", "delete", "deploy", "export", "import"],
@@ -204,7 +206,9 @@ def main():
     )
     parser.add_argument("--org", required=True, help="GitHub organization name")
     parser.add_argument("--token", help="GitHub token (or set GITHUB_TOKEN env var)")
-    parser.add_argument("--pattern-id", type=int, help="Pattern ID for update/delete/get")
+    parser.add_argument(
+        "--pattern-id", type=int, help="Pattern ID for update/delete/get"
+    )
     parser.add_argument("--file", help="File path for export/import")
     parser.add_argument("--name", help="Pattern name for create")
     parser.add_argument("--regex", help="Pattern regex for create")
@@ -215,7 +219,9 @@ def main():
     # Get token from args or environment
     token = args.token or os.getenv("GITHUB_TOKEN")
     if not token:
-        print("❌ Error: GitHub token required. Set GITHUB_TOKEN env var or use --token")
+        print(
+            "❌ Error: GitHub token required. Set GITHUB_TOKEN env var or use --token"
+        )
         sys.exit(1)
 
     manager = SecretPatternManager(token)
@@ -229,10 +235,16 @@ def main():
 
         elif args.action == "create":
             if not all([args.name, args.regex, args.secret_type]):
-                print("❌ Error: --name, --regex, and --secret-type required for create")
+                print(
+                    "❌ Error: --name, --regex, and --secret-type required for create"
+                )
                 sys.exit(1)
 
-            pattern_data = {"name": args.name, "regex": args.regex, "secret_type": args.secret_type}
+            pattern_data = {
+                "name": args.name,
+                "regex": args.regex,
+                "secret_type": args.secret_type,
+            }
             manager.create_custom_pattern(args.org, pattern_data)
 
         elif args.action == "update":

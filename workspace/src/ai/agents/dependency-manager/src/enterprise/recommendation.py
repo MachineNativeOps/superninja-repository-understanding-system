@@ -147,13 +147,19 @@ class IntelligentRecommendation:
     KNOWN_PACKAGES = {
         # npm
         "lodash": {"alternatives": ["ramda", "underscore"], "category": "utility"},
-        "moment": {"alternatives": ["dayjs", "date-fns", "luxon"], "category": "datetime"},
+        "moment": {
+            "alternatives": ["dayjs", "date-fns", "luxon"],
+            "category": "datetime",
+        },
         "request": {"alternatives": ["axios", "got", "node-fetch"], "category": "http"},
         "express": {"alternatives": ["fastify", "koa", "hapi"], "category": "web"},
         "jquery": {"alternatives": ["vanilla-js", "cash-dom"], "category": "dom"},
         # python
         "requests": {"alternatives": ["httpx", "aiohttp"], "category": "http"},
-        "django": {"alternatives": ["flask", "fastapi", "starlette"], "category": "web"},
+        "django": {
+            "alternatives": ["flask", "fastapi", "starlette"],
+            "category": "web",
+        },
         "pandas": {"alternatives": ["polars", "vaex"], "category": "data"},
         "numpy": {"alternatives": ["jax", "cupy"], "category": "numeric"},
     }
@@ -174,7 +180,10 @@ class IntelligentRecommendation:
     # ==================== 健康度評估 ====================
 
     def calculate_health_score(
-        self, dependency_name: str, version: str, metadata: Optional[Dict[str, Any]] = None
+        self,
+        dependency_name: str,
+        version: str,
+        metadata: Optional[Dict[str, Any]] = None,
     ) -> HealthScore:
         """
         計算依賴項健康度評分
@@ -316,7 +325,9 @@ class IntelligentRecommendation:
                 {"stars": 5000, "weekly_downloads": 500000, "has_documentation": True},
             )
 
-            migration_effort = self._estimate_migration_effort(dependency_name, alt_name)
+            migration_effort = self._estimate_migration_effort(
+                dependency_name, alt_name
+            )
 
             compatibility = self._estimate_compatibility(dependency_name, alt_name)
 
@@ -478,7 +489,11 @@ class IntelligentRecommendation:
                         risk_type="deprecation",
                         probability=0.9,
                         impact_level=RiskLevel.HIGH,
-                        mitigation_actions=[f"考慮替換 {name}", "檢視替代方案", "規劃遷移時程"],
+                        mitigation_actions=[
+                            f"考慮替換 {name}",
+                            "檢視替代方案",
+                            "規劃遷移時程",
+                        ],
                     )
                 )
 
@@ -491,7 +506,11 @@ class IntelligentRecommendation:
                         risk_type="stability",
                         probability=0.6,
                         impact_level=RiskLevel.MEDIUM,
-                        mitigation_actions=["監控版本更新", "準備升級計畫", "增加測試覆蓋"],
+                        mitigation_actions=[
+                            "監控版本更新",
+                            "準備升級計畫",
+                            "增加測試覆蓋",
+                        ],
                     )
                 )
 
@@ -503,8 +522,14 @@ class IntelligentRecommendation:
                         dependency_name=name,
                         risk_type="security",
                         probability=0.95,
-                        impact_level=RiskLevel.CRITICAL if vuln_count >= 3 else RiskLevel.HIGH,
-                        mitigation_actions=["立即修補漏洞", "升級至安全版本", "評估影響範圍"],
+                        impact_level=(
+                            RiskLevel.CRITICAL if vuln_count >= 3 else RiskLevel.HIGH
+                        ),
+                        mitigation_actions=[
+                            "立即修補漏洞",
+                            "升級至安全版本",
+                            "評估影響範圍",
+                        ],
                     )
                 )
 
@@ -513,7 +538,9 @@ class IntelligentRecommendation:
 
     # ==================== 建議生成 ====================
 
-    def generate_recommendations(self, dependencies: List[Dict[str, Any]]) -> List[Recommendation]:
+    def generate_recommendations(
+        self, dependencies: List[Dict[str, Any]]
+    ) -> List[Recommendation]:
         """
         生成建議
 
@@ -538,7 +565,11 @@ class IntelligentRecommendation:
                         priority=10,
                         title=f"修復 {name} 的安全漏洞",
                         description=f"發現 {dep.get('vulnerabilities', 0)} 個安全漏洞",
-                        actions=[f"升級 {name} 至最新版本", "執行安全掃描確認", "更新相關測試"],
+                        actions=[
+                            f"升級 {name} 至最新版本",
+                            "執行安全掃描確認",
+                            "更新相關測試",
+                        ],
                         estimated_effort_hours=2.0,
                         confidence=0.95,
                     )
@@ -590,7 +621,9 @@ class IntelligentRecommendation:
 
     # ==================== 報告生成 ====================
 
-    def generate_insight_report(self, dependencies: List[Dict[str, Any]]) -> Dict[str, Any]:
+    def generate_insight_report(
+        self, dependencies: List[Dict[str, Any]]
+    ) -> Dict[str, Any]:
         """
         生成洞察報告
 
@@ -607,7 +640,11 @@ class IntelligentRecommendation:
                 dep.get("name", "unknown"), dep.get("version", "0.0.0"), dep
             )
             health_scores.append(
-                {"name": dep.get("name"), "score": score.overall_score, "grade": score.grade}
+                {
+                    "name": dep.get("name"),
+                    "score": score.overall_score,
+                    "grade": score.grade,
+                }
             )
 
         # 預測風險
@@ -618,7 +655,9 @@ class IntelligentRecommendation:
 
         # 統計
         avg_health = (
-            sum(h["score"] for h in health_scores) / len(health_scores) if health_scores else 0
+            sum(h["score"] for h in health_scores) / len(health_scores)
+            if health_scores
+            else 0
         )
         critical_risks = len([r for r in risks if r.impact_level == RiskLevel.CRITICAL])
         high_priority_recs = len([r for r in recommendations if r.priority >= 8])
@@ -681,7 +720,9 @@ class IntelligentRecommendation:
         ]
 
         # 健康度排行
-        sorted_health = sorted(report["health_scores"], key=lambda x: x["score"], reverse=True)
+        sorted_health = sorted(
+            report["health_scores"], key=lambda x: x["score"], reverse=True
+        )
         for h in sorted_health[:10]:
             grade_emoji = {"A": "🌟", "B": "✅", "C": "⚠️", "D": "🔶", "F": "🔴"}
             emoji = grade_emoji.get(h["grade"], "❓")

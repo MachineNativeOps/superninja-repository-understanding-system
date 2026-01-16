@@ -80,8 +80,7 @@ class NamingValidator:
                     rule="canonical_naming_pattern",
                     description=f"名稱不符合標準命名規範: {canonical_regex}",
                     suggested_fix=f"請遵循格式: environment-app-resourceType-version (例: prod-payment-deploy-v1.2.3)",
-                )
-            )
+                ))
 
         # 檢查長度限制
         max_length = self.naming_config.get("max_length", 63)
@@ -190,8 +189,7 @@ class NamingValidator:
                             rule="label_validation",
                             description=f"標籤 {label_name} 的值 '{labels[label_name]}' 不符合規範 '{pattern}'",
                             suggested_fix=f"更新標籤值以符合規範",
-                        )
-                    )
+                        ))
 
         return violations
 
@@ -258,7 +256,9 @@ class NamingValidator:
 
         return len(all_violations) == 0, all_violations
 
-    def generate_report(self, violations: List[Violation], output_format: str = "text") -> str:
+    def generate_report(
+        self, violations: List[Violation], output_format: str = "text"
+    ) -> str:
         """生成稽核報告"""
         if not violations:
             return "✅ 所有資源均符合命名規範！"
@@ -314,7 +314,9 @@ class NamingValidator:
             ]:
                 severity_violations = violations_by_severity[severity]
                 if severity_violations:
-                    report.append(f"\n{severity.value.upper()} ({len(severity_violations)}):")
+                    report.append(
+                        f"\n{severity.value.upper()} ({len(severity_violations)}):"
+                    )
                     report.append("")
 
                     for i, violation in enumerate(severity_violations, 1):
@@ -388,15 +390,24 @@ class NamingValidator:
 def main():
     """主函數"""
     parser = argparse.ArgumentParser(description="命名稽核工具 v1.0.0")
-    parser.add_argument("--spec", default="config/machine-spec.yaml", help="命名規範文件路徑")
+    parser.add_argument(
+        "--spec", default="config/machine-spec.yaml", help="命名規範文件路徑"
+    )
     parser.add_argument("--file", help="驗證單一 YAML 文件")
     parser.add_argument("--directory", help="驗證目錄中的所有 YAML 文件")
-    parser.add_argument("--pattern", default="*.yaml", help="目錄驗證的文件模式 (預設: *.yaml)")
+    parser.add_argument(
+        "--pattern", default="*.yaml", help="目錄驗證的文件模式 (預設: *.yaml)"
+    )
     parser.add_argument("--output", help="輸出報告文件路徑")
     parser.add_argument(
-        "--format", choices=["text", "json", "yaml"], default="text", help="輸出格式 (預設: text)"
+        "--format",
+        choices=["text", "json", "yaml"],
+        default="text",
+        help="輸出格式 (預設: text)",
     )
-    parser.add_argument("--strict", action="store_true", help="嚴格模式，任何違規都返回非零退出碼")
+    parser.add_argument(
+        "--strict", action="store_true", help="嚴格模式，任何違規都返回非零退出碼"
+    )
 
     args = parser.parse_args()
 
@@ -410,7 +421,9 @@ def main():
         is_compliant, violations = validator.validate_k8s_manifest(args.file)
         all_violations.extend(violations)
     elif args.directory:
-        is_compliant, violations = validator.validate_directory(args.directory, args.pattern)
+        is_compliant, violations = validator.validate_directory(
+            args.directory, args.pattern
+        )
         all_violations.extend(violations)
     else:
         parser.print_help()

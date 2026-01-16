@@ -311,7 +311,8 @@ class DisasterRecovery:
             # Create storage location
             timestamp = datetime.utcnow().strftime("%Y%m%d_%H%M%S")
             record.storage_location = (
-                f"s3://{self.config.backup_bucket}/backups/" f"{backup_type.value}/{timestamp}"
+                f"s3://{self.config.backup_bucket}/backups/"
+                f"{backup_type.value}/{timestamp}"
             )
 
             total_size = 0
@@ -328,8 +329,12 @@ class DisasterRecovery:
             if include_events and self.event_log_service:
                 end_time = datetime.utcnow()
                 if backup_type == BackupType.INCREMENTAL and record.parent_backup_id:
-                    parent = await self.backup_storage.get_backup(record.parent_backup_id)
-                    start_time = parent.completed_at if parent else end_time - timedelta(hours=1)
+                    parent = await self.backup_storage.get_backup(
+                        record.parent_backup_id
+                    )
+                    start_time = (
+                        parent.completed_at if parent else end_time - timedelta(hours=1)
+                    )
                 else:
                     start_time = end_time - timedelta(days=30)
 
@@ -343,7 +348,9 @@ class DisasterRecovery:
             record.size_bytes = total_size
             record.status = BackupStatus.COMPLETED
             record.completed_at = datetime.utcnow()
-            record.duration_seconds = (record.completed_at - record.started_at).total_seconds()
+            record.duration_seconds = (
+                record.completed_at - record.started_at
+            ).total_seconds()
 
             # Verify if configured
             if self.config.verify_after_backup:
@@ -420,7 +427,9 @@ class DisasterRecovery:
 
         # Filter by time range
         relevant = [
-            b for b in backups if b.completed_at and start_time <= b.completed_at <= end_time
+            b
+            for b in backups
+            if b.completed_at and start_time <= b.completed_at <= end_time
         ]
 
         # Create recovery points
@@ -497,7 +506,9 @@ class DisasterRecovery:
 
             # Restore database
             if recovery_point.database_recoverable and self.db_backup_service:
-                backup = await self.backup_storage.get_backup(recovery_point.required_backups[0])
+                backup = await self.backup_storage.get_backup(
+                    recovery_point.required_backups[0]
+                )
                 await self.db_backup_service.restore_backup(
                     f"{backup.storage_location}/database",
                     f"{target_environment}_db",
@@ -506,8 +517,12 @@ class DisasterRecovery:
 
             # Restore events
             if recovery_point.event_log_recoverable and self.event_log_service:
-                backup = await self.backup_storage.get_backup(recovery_point.required_backups[0])
-                await self.event_log_service.import_events(f"{backup.storage_location}/events")
+                backup = await self.backup_storage.get_backup(
+                    recovery_point.required_backups[0]
+                )
+                await self.event_log_service.import_events(
+                    f"{backup.storage_location}/events"
+                )
                 result["steps_completed"].append("event_log_restore")
 
             result["status"] = RecoveryStatus.VERIFYING.value

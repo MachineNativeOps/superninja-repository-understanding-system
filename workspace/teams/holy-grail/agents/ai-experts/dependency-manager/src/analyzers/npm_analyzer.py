@@ -67,7 +67,9 @@ class NpmAnalyzer(BaseAnalyzer):
             # 解析可選依賴
             if "optionalDependencies" in package_data:
                 for name, version in package_data["optionalDependencies"].items():
-                    dep = self._create_dependency(name, version, DependencyType.OPTIONAL)
+                    dep = self._create_dependency(
+                        name, version, DependencyType.OPTIONAL
+                    )
                     dependencies.append(dep)
 
             logger.info(f"從 {manifest_path} 解析出 {len(dependencies)} 個依賴項")
@@ -97,7 +99,10 @@ class NpmAnalyzer(BaseAnalyzer):
         version = self._clean_version(version_spec)
 
         return Dependency(
-            name=name, current_version=version, ecosystem=Ecosystem.NPM, dep_type=dep_type
+            name=name,
+            current_version=version,
+            ecosystem=Ecosystem.NPM,
+            dep_type=dep_type,
         )
 
     def _clean_version(self, version_spec: str) -> str:
@@ -118,7 +123,7 @@ class NpmAnalyzer(BaseAnalyzer):
 
         for prefix in prefixes:
             if cleaned.startswith(prefix):
-                cleaned = cleaned[len(prefix) :]
+                cleaned = cleaned[len(prefix):]
                 break
 
         # 處理範圍版本 (例如 1.0.0 - 2.0.0)
@@ -216,7 +221,9 @@ class NpmAnalyzer(BaseAnalyzer):
                 name=name,
                 current_version=version,
                 ecosystem=Ecosystem.NPM,
-                dep_type=DependencyType.DIRECT if depth == 0 else DependencyType.TRANSITIVE,
+                dep_type=(
+                    DependencyType.DIRECT if depth == 0 else DependencyType.TRANSITIVE
+                ),
             )
             result.append(dep)
 

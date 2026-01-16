@@ -153,14 +153,19 @@ class UnmannedIslandValidator:
 
         # 檢查關鍵配置文件
         critical_files = [
-            ("governance/00-vision-strategy/AI-BEHAVIOR-CONTRACT.md", "AI 行為契約"),
-            ("governance/00-vision-strategy/INSTANT-EXECUTION-MANIFEST.yaml", "即時執行清單"),
-            ("governance/14-improvement/self-healing-self-healing.yaml", "自我修復框架"),
-            (
-                "governance/dimensions/83-integration/self-healing-integration-manifest.md",
+            ("governance/00-vision-strategy/AI-BEHAVIOR-CONTRACT.md",
+             "AI 行為契約"),
+            ("governance/00-vision-strategy/INSTANT-EXECUTION-MANIFEST.yaml",
+                "即時執行清單",
+             ),
+            ("governance/14-improvement/self-healing-self-healing.yaml",
+                "自我修復框架",
+             ),
+            ("governance/dimensions/83-integration/self-healing-integration-manifest.md",
                 "整合清單",
-            ),
-            ("governance/39-automation/self_healing_integration_engine.py", "整合引擎"),
+             ),
+            ("governance/39-automation/self_healing_integration_engine.py",
+             "整合引擎"),
         ]
 
         for file_path, description in critical_files:
@@ -211,11 +216,14 @@ class UnmannedIslandValidator:
                 result.add_pass(f"{agent_name} ({agent_role}) 目錄存在", str(full_path))
             else:
                 result.add_warning(
-                    f"{agent_name} ({agent_role}) 目錄不存在", f"路徑: {full_path} (可能尚未實現)"
+                    f"{agent_name} ({agent_role}) 目錄不存在",
+                    f"路徑: {full_path} (可能尚未實現)",
                 )
 
         # 檢查整合引擎是否能註冊所有 Agents
-        engine_path = self.governance_root / "39-automation/self_healing_integration_engine.py"
+        engine_path = (
+            self.governance_root / "39-automation/self_healing_integration_engine.py"
+        )
         if engine_path.exists():
             try:
                 with open(engine_path, "r", encoding="utf-8") as f:
@@ -254,15 +262,20 @@ class UnmannedIslandValidator:
                 legacy_files = list(dim_path.glob("*legacy*"))
                 if legacy_files:
                     result.add_pass(
-                        f"{dim_name} 有無人島整合文件", f"找到 {len(legacy_files)} 個相關文件"
+                        f"{dim_name} 有無人島整合文件",
+                        f"找到 {len(legacy_files)} 個相關文件",
                     )
                 else:
-                    result.add_warning(f"{dim_name} 無無人島整合文件", "可能需要添加整合配置")
+                    result.add_warning(
+                        f"{dim_name} 無無人島整合文件", "可能需要添加整合配置"
+                    )
             else:
                 result.add_fail(f"{dim_name} ({dim_id}) 維度不存在", str(dim_path))
 
         # 檢查 AUTONOMOUS_AGENT_STATE.md 是否包含無人島整合狀態
-        state_file = self.governance_root / "00-vision-strategy/AUTONOMOUS_AGENT_STATE.md"
+        state_file = (
+            self.governance_root / "00-vision-strategy/AUTONOMOUS_AGENT_STATE.md"
+        )
         if state_file.exists():
             try:
                 with open(state_file, "r", encoding="utf-8") as f:
@@ -284,7 +297,9 @@ class UnmannedIslandValidator:
         result = ValidationResult("API Endpoints")
 
         # 檢查整合清單中定義的 API 端點
-        manifest_path = self.governance_root / "83-integration/self-healing-integration-manifest.md"
+        manifest_path = (
+            self.governance_root / "83-integration/self-healing-integration-manifest.md"
+        )
         if manifest_path.exists():
             result.add_pass("整合清單存在")
 
@@ -306,7 +321,9 @@ class UnmannedIslandValidator:
                         if endpoint in content:
                             result.add_pass(f"API 端點 {endpoint} 已定義")
                         else:
-                            result.add_warning(f"API 端點 {endpoint} 未找到", "可能使用不同路徑")
+                            result.add_warning(
+                                f"API 端點 {endpoint} 未找到", "可能使用不同路徑"
+                            )
             except Exception as e:
                 result.add_fail("無法讀取整合清單", str(e))
         else:
@@ -319,7 +336,9 @@ class UnmannedIslandValidator:
         result = ValidationResult("Performance Baselines")
 
         # 檢查 INSTANT-EXECUTION-MANIFEST.yaml 中的性能定義
-        manifest_path = self.governance_root / "00-vision-strategy/INSTANT-EXECUTION-MANIFEST.yaml"
+        manifest_path = (
+            self.governance_root / "00-vision-strategy/INSTANT-EXECUTION-MANIFEST.yaml"
+        )
         if manifest_path.exists():
             try:
                 with open(manifest_path, "r", encoding="utf-8") as f:
@@ -345,7 +364,9 @@ class UnmannedIslandValidator:
                             if "2-3 minutes" in target or "3 minutes" in target:
                                 result.add_pass("執行時間目標正確設置 (2-3 分鐘)")
                             else:
-                                result.add_warning("執行時間目標可能需要調整", f"當前: {target}")
+                                result.add_warning(
+                                    "執行時間目標可能需要調整", f"當前: {target}"
+                                )
 
                     # 檢查自我修復時間
                     if "self_healing_standards" in data:
@@ -357,18 +378,25 @@ class UnmannedIslandValidator:
                             if "< 45 seconds" in mttr or "45 seconds" in mttr:
                                 result.add_pass("MTTR 目標正確設置 (< 45 秒)")
                             else:
-                                result.add_warning("MTTR 目標可能需要調整", f"當前: {mttr}")
+                                result.add_warning(
+                                    "MTTR 目標可能需要調整", f"當前: {mttr}"
+                                )
 
             except Exception as e:
                 result.add_fail("無法解析 INSTANT-EXECUTION-MANIFEST.yaml", str(e))
         else:
-            result.add_fail("INSTANT-EXECUTION-MANIFEST.yaml 不存在", str(manifest_path))
+            result.add_fail(
+                "INSTANT-EXECUTION-MANIFEST.yaml 不存在", str(manifest_path)
+            )
 
         self.results["Performance Baselines"] = result
 
     def _save_report(self):
         """保存詳細報告"""
-        report_path = self.governance_root / "28-tests/reports/self_healing_validation_report.json"
+        report_path = (
+            self.governance_root
+            / "28-tests/reports/self_healing_validation_report.json"
+        )
         report_path.parent.mkdir(parents=True, exist_ok=True)
 
         report = {

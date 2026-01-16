@@ -99,7 +99,9 @@ class CheckpointManager:
             compression_enabled,
         )
 
-    def create_checkpoint(self, execution_id: str, phase_id: str, state: dict[str, Any]) -> str:
+    def create_checkpoint(
+        self, execution_id: str, phase_id: str, state: dict[str, Any]
+    ) -> str:
         """
         Create a checkpoint for the current state.
 
@@ -191,7 +193,9 @@ class CheckpointManager:
 
         # Verify checksum
         if not self._verify_checksum(checkpoint):
-            raise ValueError(f"Checksum verification failed for checkpoint: {checkpoint_id}")
+            raise ValueError(
+                f"Checksum verification failed for checkpoint: {checkpoint_id}"
+            )
 
         # Update status
         checkpoint.status = CheckpointStatus.RESTORED
@@ -319,7 +323,9 @@ class CheckpointManager:
             }
 
         total_size = sum(cp.original_size for cp in checkpoints)
-        compressed_size = sum(cp.compressed_size or 0 for cp in checkpoints if cp.compressed)
+        compressed_size = sum(
+            cp.compressed_size or 0 for cp in checkpoints if cp.compressed
+        )
         compressed_count = sum(1 for cp in checkpoints if cp.compressed)
 
         return {
@@ -328,7 +334,9 @@ class CheckpointManager:
             "compressed_checkpoints": compressed_count,
             "total_size": total_size,
             "compressed_size": compressed_size,
-            "compression_ratio": (1 - compressed_size / total_size) * 100 if total_size > 0 else 0,
+            "compression_ratio": (
+                (1 - compressed_size / total_size) * 100 if total_size > 0 else 0
+            ),
             "oldest_checkpoint": min(cp.timestamp for cp in checkpoints),
             "newest_checkpoint": max(cp.timestamp for cp in checkpoints),
         }
@@ -425,7 +433,9 @@ class CheckpointManager:
                 del self._checkpoints[execution_id]
 
         logger.info(
-            "Cleaned up %d expired checkpoints (older than %d days)", removed_count, max_age_days
+            "Cleaned up %d expired checkpoints (older than %d days)",
+            removed_count,
+            max_age_days,
         )
 
         return removed_count

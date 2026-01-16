@@ -145,7 +145,11 @@ class EmergencyResponse:
                 "marketing": 0.15,
                 "reserve": 0.15,
             },
-            success_metrics={"revenue_growth": 0.15, "user_retention": 0.85, "nps_score": 50},
+            success_metrics={
+                "revenue_growth": 0.15,
+                "user_retention": 0.85,
+                "nps_score": 50,
+            },
             rollback_plan="無需回滾，持續監控關鍵指標",
         )
 
@@ -493,5 +497,7 @@ class EmergencyResponse:
             "active_plan": self.active_plan.value,
             "plans": {k.value: v.to_dict() for k, v in self.plans.items()},
             "triggers": {k: v.to_dict() for k, v in self.triggers.items()},
-            "triggered_count": len([t for t in self.triggers.values() if t.is_triggered]),
+            "triggered_count": len(
+                [t for t in self.triggers.values() if t.is_triggered]
+            ),
         }

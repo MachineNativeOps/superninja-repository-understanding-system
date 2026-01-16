@@ -1,17 +1,17 @@
 #!/usr/bin/env python3
 """Security tests for self_awareness_report.py command injection prevention."""
 
+import os
+import sys
+from pathlib import Path
+
+import pytest
 from self_awareness_report import (
     COMMAND_TIMEOUT,
     AutomationResult,
     _run_command_summary,
     _validate_command,
 )
-import os
-import sys
-from pathlib import Path
-
-import pytest
 
 # Add automation directory to path for imports
 sys.path.insert(0, str(Path(__file__).parent.parent.parent / "automation"))
@@ -101,7 +101,9 @@ class TestRunCommandSummary:
 
     def test_run_command_summary_none_command(self, tmp_path):
         """Test that None command returns None."""
-        result = _run_command_summary(label="Test", command=None, cwd=tmp_path, max_lines=5)
+        result = _run_command_summary(
+            label="Test", command=None, cwd=tmp_path, max_lines=5
+        )
 
         assert result is None
 
@@ -115,7 +117,10 @@ class TestRunCommandSummary:
     def test_run_command_summary_failing_command(self, tmp_path):
         """Test that failing commands are captured correctly."""
         result = _run_command_summary(
-            label="Fail Test", command="ls /nonexistent-directory-12345", cwd=tmp_path, max_lines=5
+            label="Fail Test",
+            command="ls /nonexistent-directory-12345",
+            cwd=tmp_path,
+            max_lines=5,
         )
 
         assert result is not None
@@ -168,7 +173,9 @@ class TestCommandInjectionPrevention:
     def test_injection_patterns_rejected(self, malicious_cmd, tmp_path):
         """Test that various injection patterns are rejected."""
         with pytest.raises(ValueError, match="dangerous pattern"):
-            _run_command_summary(label="Attack", command=malicious_cmd, cwd=tmp_path, max_lines=5)
+            _run_command_summary(
+                label="Attack", command=malicious_cmd, cwd=tmp_path, max_lines=5
+            )
 
 
 class TestTimeoutAndErrorHandling:
@@ -199,7 +206,10 @@ class TestTimeoutAndErrorHandling:
     def test_run_command_summary_path_object_cwd(self, tmp_path):
         """Test that Path objects are accepted for cwd parameter."""
         result = _run_command_summary(
-            label="Path Test", command="pwd", cwd=tmp_path, max_lines=5  # Pass Path object directly
+            label="Path Test",
+            command="pwd",
+            cwd=tmp_path,
+            max_lines=5,  # Pass Path object directly
         )
 
         assert result is not None
@@ -234,7 +244,10 @@ class TestShlexParsing:
     def test_command_with_unclosed_quote(self, tmp_path):
         """Test that commands with unclosed quotes are rejected."""
         result = _run_command_summary(
-            label="Invalid Quote", command="echo 'unclosed quote", cwd=tmp_path, max_lines=5
+            label="Invalid Quote",
+            command="echo 'unclosed quote",
+            cwd=tmp_path,
+            max_lines=5,
         )
 
         assert result is not None
@@ -246,14 +259,18 @@ class TestShlexParsing:
         """Test that empty command strings after parsing are handled."""
         # This should be caught by the initial if not command check
         # but test the empty cmd_args path as well
-        result = _run_command_summary(label="Empty", command="", cwd=tmp_path, max_lines=5)
+        result = _run_command_summary(
+            label="Empty", command="", cwd=tmp_path, max_lines=5
+        )
 
         # Empty command returns None (handled before shlex.split)
         assert result is None
 
     def test_whitespace_only_command(self, tmp_path):
         """Test that whitespace-only commands are handled correctly."""
-        result = _run_command_summary(label="Whitespace", command="   ", cwd=tmp_path, max_lines=5)
+        result = _run_command_summary(
+            label="Whitespace", command="   ", cwd=tmp_path, max_lines=5
+        )
 
         # Whitespace-only command should parse to empty list
         assert result is not None

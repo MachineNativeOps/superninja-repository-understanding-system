@@ -43,7 +43,9 @@ def scheduler(db_path):
 
 @pytest.fixture
 def mock_quantum_backend():
-    with patch("backend.python.workflow.scheduler.WorkflowScheduler._execute_quantum_task") as mock:
+    with patch(
+        "backend.python.workflow.scheduler.WorkflowScheduler._execute_quantum_task"
+    ) as mock:
         mock.return_value = {"0": 50, "1": 50}  # Mock quantum circuit result
         yield mock
 
@@ -53,7 +55,10 @@ def mock_quantum_backend():
 
 def test_define_workflow_success(engine):
     tasks = [
-        {"type": "classical", "config": {"operation": "preprocess", "data": [1.0, 2.0, 3.0]}},
+        {
+            "type": "classical",
+            "config": {"operation": "preprocess", "data": [1.0, 2.0, 3.0]},
+        },
         {"type": "quantum", "config": {"circuit": "simple_x", "shots": 100}},
     ]
     workflow_id = engine.define_workflow("Test Workflow", tasks)
@@ -62,7 +67,9 @@ def test_define_workflow_success(engine):
     # Verify database entry
     conn = sqlite3.connect(engine.db_path)
     cursor = conn.cursor()
-    cursor.execute("SELECT name, tasks, status FROM workflows WHERE id = ?", (workflow_id,))
+    cursor.execute(
+        "SELECT name, tasks, status FROM workflows WHERE id = ?", (workflow_id,)
+    )
     result = cursor.fetchone()
     conn.close()
     assert result is not None
@@ -79,7 +86,10 @@ def test_define_workflow_invalid_tasks(engine):
 
 def test_execute_workflow_success(engine, mock_quantum_backend):
     tasks = [
-        {"type": "classical", "config": {"operation": "preprocess", "data": [1.0, 2.0, 3.0]}},
+        {
+            "type": "classical",
+            "config": {"operation": "preprocess", "data": [1.0, 2.0, 3.0]},
+        },
         {"type": "quantum", "config": {"circuit": "simple_x", "shots": 100}},
     ]
     workflow_id = engine.define_workflow("Test Workflow", tasks)
@@ -100,7 +110,12 @@ def test_execute_workflow_not_found(engine):
 
 
 def test_get_workflow_status(engine):
-    tasks = [{"type": "classical", "config": {"operation": "preprocess", "data": [1.0, 2.0, 3.0]}}]
+    tasks = [
+        {
+            "type": "classical",
+            "config": {"operation": "preprocess", "data": [1.0, 2.0, 3.0]},
+        }
+    ]
     workflow_id = engine.define_workflow("Test Workflow", tasks)
     status = engine.get_workflow_status(workflow_id)
 
@@ -122,9 +137,16 @@ def test_schedule_workflow_success(scheduler, mock_quantum_backend):
     tasks = [
         {
             "type": "classical",
-            "config": {"operation": "preprocess", "data": [1.0, 2.0, 3.0], "backend": "local"},
+            "config": {
+                "operation": "preprocess",
+                "data": [1.0, 2.0, 3.0],
+                "backend": "local",
+            },
         },
-        {"type": "quantum", "config": {"circuit": "simple_x", "shots": 100, "backend": "cirq"}},
+        {
+            "type": "quantum",
+            "config": {"circuit": "simple_x", "shots": 100, "backend": "cirq"},
+        },
     ]
     workflow_id = 1
     schedule = scheduler.schedule_workflow(workflow_id, tasks)
@@ -155,9 +177,16 @@ def test_execute_scheduled_tasks_success(scheduler, mock_quantum_backend):
     tasks = [
         {
             "type": "classical",
-            "config": {"operation": "preprocess", "data": [1.0, 2.0, 3.0], "backend": "local"},
+            "config": {
+                "operation": "preprocess",
+                "data": [1.0, 2.0, 3.0],
+                "backend": "local",
+            },
         },
-        {"type": "quantum", "config": {"circuit": "simple_x", "shots": 100, "backend": "cirq"}},
+        {
+            "type": "quantum",
+            "config": {"circuit": "simple_x", "shots": 100, "backend": "cirq"},
+        },
     ]
     workflow_id = 1
     scheduler.schedule_workflow(workflow_id, tasks)
@@ -179,7 +208,11 @@ def test_get_schedule_status(scheduler):
     tasks = [
         {
             "type": "classical",
-            "config": {"operation": "preprocess", "data": [1.0, 2.0, 3.0], "backend": "local"},
+            "config": {
+                "operation": "preprocess",
+                "data": [1.0, 2.0, 3.0],
+                "backend": "local",
+            },
         }
     ]
     workflow_id = 1

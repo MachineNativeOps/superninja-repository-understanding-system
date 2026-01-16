@@ -588,7 +588,9 @@ class AuditLogger:
             key_lower = key.lower()
 
             # Check if field is sensitive
-            is_sensitive = any(pattern in key_lower for pattern in self.sensitive_fields)
+            is_sensitive = any(
+                pattern in key_lower for pattern in self.sensitive_fields
+            )
 
             if is_sensitive:
                 if isinstance(value, str):

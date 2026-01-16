@@ -377,7 +377,10 @@ class EcosystemOrchestrator:
                 logger.error(f"Error in message handler: {e}")
 
     def register_message_handler(
-        self, subsystem_id: str, message_type: MessageType, handler: Callable[..., Awaitable[Any]]
+        self,
+        subsystem_id: str,
+        message_type: MessageType,
+        handler: Callable[..., Awaitable[Any]],
     ) -> None:
         """
         Register a message handler for a subsystem
@@ -467,7 +470,8 @@ class EcosystemOrchestrator:
             sid
             for sid in subsystem_ids
             if sid in self.subsystems
-            and self.subsystems[sid].status in [SubsystemStatus.READY, SubsystemStatus.ACTIVE]
+            and self.subsystems[sid].status
+            in [SubsystemStatus.READY, SubsystemStatus.ACTIVE]
         ]
 
         if not available:
@@ -511,7 +515,9 @@ class EcosystemOrchestrator:
             logger.error(f"Coordination task failed: {e}")
             task.status = "failed"
 
-    def allocate_resource(self, subsystem_id: str, resource_type: str, amount: float) -> str:
+    def allocate_resource(
+        self, subsystem_id: str, resource_type: str, amount: float
+    ) -> str:
         """
         Allocate resources to a subsystem
 
@@ -541,7 +547,9 @@ class EcosystemOrchestrator:
 
         return allocation_id
 
-    def update_subsystem_status(self, subsystem_id: str, status: SubsystemStatus) -> bool:
+    def update_subsystem_status(
+        self, subsystem_id: str, status: SubsystemStatus
+    ) -> bool:
         """
         Update the status of a subsystem
 
@@ -574,7 +582,9 @@ class EcosystemOrchestrator:
                 )
             )
 
-        logger.info(f"Subsystem {subsystem_id} status: {old_status.value} -> {status.value}")
+        logger.info(
+            f"Subsystem {subsystem_id} status: {old_status.value} -> {status.value}"
+        )
         return True
 
     async def start(self) -> None:
@@ -663,15 +673,22 @@ class EcosystemOrchestrator:
                         and subsystem.status == SubsystemStatus.ACTIVE
                     ):
                         logger.warning(
-                            f"Subsystem {subsystem.name} heartbeat stale, " f"marking as degraded"
+                            f"Subsystem {subsystem.name} heartbeat stale, "
+                            f"marking as degraded"
                         )
-                        self.update_subsystem_status(subsystem_id, SubsystemStatus.DEGRADED)
+                        self.update_subsystem_status(
+                            subsystem_id, SubsystemStatus.DEGRADED
+                        )
 
                     # Check dependencies
                     if not self._check_dependencies(subsystem):
                         if subsystem.status == SubsystemStatus.ACTIVE:
-                            logger.warning(f"Subsystem {subsystem.name} dependencies not met")
-                            self.update_subsystem_status(subsystem_id, SubsystemStatus.DEGRADED)
+                            logger.warning(
+                                f"Subsystem {subsystem.name} dependencies not met"
+                            )
+                            self.update_subsystem_status(
+                                subsystem_id, SubsystemStatus.DEGRADED
+                            )
 
                 await asyncio.sleep(self.HEALTH_CHECK_INTERVAL_SECONDS)
 
@@ -693,7 +710,11 @@ class EcosystemOrchestrator:
             subsystem_counts[subsystem.status.value] += 1
 
         pending_tasks = len(
-            [t for t in self.coordination_tasks.values() if t.status in ["pending", "running"]]
+            [
+                t
+                for t in self.coordination_tasks.values()
+                if t.status in ["pending", "running"]
+            ]
         )
 
         return {
@@ -768,7 +789,9 @@ if __name__ == "__main__":
 
     async def example_handler(message: EcosystemMessage) -> None:
         """Example message handler"""
-        logger.info(f"Received message: {message.message_type.value} from {message.source_id}")
+        logger.info(
+            f"Received message: {message.message_type.value} from {message.source_id}"
+        )
 
     async def main():
         orchestrator = EcosystemOrchestrator()

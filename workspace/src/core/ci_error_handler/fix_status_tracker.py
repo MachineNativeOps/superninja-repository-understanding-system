@@ -259,7 +259,9 @@ class FixStatusTracker:
 
         return tracked
 
-    def link_pr(self, error_id: str, pr_number: int, pr_url: str) -> Optional[TrackedFix]:
+    def link_pr(
+        self, error_id: str, pr_number: int, pr_url: str
+    ) -> Optional[TrackedFix]:
         """
         Link a PR to a tracked fix
 
@@ -407,13 +409,19 @@ class FixStatusTracker:
 
     def get_pending_fixes(self) -> List[TrackedFix]:
         """Get all pending fixes"""
-        pending_statuses = {FixStatus.PENDING, FixStatus.IN_PROGRESS, FixStatus.PR_CREATED}
+        pending_statuses = {
+            FixStatus.PENDING,
+            FixStatus.IN_PROGRESS,
+            FixStatus.PR_CREATED,
+        }
         return [f for f in self._tracked_fixes.values() if f.status in pending_statuses]
 
     def get_resolved_fixes(self) -> List[TrackedFix]:
         """Get all resolved fixes"""
         resolved_statuses = {FixStatus.VERIFIED, FixStatus.PR_MERGED}
-        return [f for f in self._tracked_fixes.values() if f.status in resolved_statuses]
+        return [
+            f for f in self._tracked_fixes.values() if f.status in resolved_statuses
+        ]
 
     def calculate_metrics(self, since: Optional[datetime] = None) -> FixMetrics:
         """
@@ -478,7 +486,9 @@ class FixStatusTracker:
         tracked = self._tracked_fixes.get(error_id)
         return tracked.history if tracked else []
 
-    def generate_summary_report(self, since: Optional[datetime] = None) -> Dict[str, Any]:
+    def generate_summary_report(
+        self, since: Optional[datetime] = None
+    ) -> Dict[str, Any]:
         """
         Generate a summary report of fix tracking
 

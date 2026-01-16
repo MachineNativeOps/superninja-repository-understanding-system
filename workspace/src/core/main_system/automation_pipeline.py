@@ -200,7 +200,9 @@ class AutomationPipeline:
 
         # Check dependencies
         for i, task in enumerate(self._queue):
-            deps_satisfied = all(dep_id in self._completed for dep_id in task.dependencies)
+            deps_satisfied = all(
+                dep_id in self._completed for dep_id in task.dependencies
+            )
             if deps_satisfied:
                 return self._queue.pop(i)
 
@@ -250,7 +252,9 @@ class AutomationPipeline:
 
         return phases
 
-    def execute_task(self, task: PipelineTask, handler: Optional[Callable] = None) -> TaskResult:
+    def execute_task(
+        self, task: PipelineTask, handler: Optional[Callable] = None
+    ) -> TaskResult:
         """
         Execute a task
 
@@ -264,7 +268,9 @@ class AutomationPipeline:
         self.logger.info(f"Executing task: {task.id}")
 
         started_at = datetime.now()
-        result = TaskResult(task_id=task.id, status=TaskStatus.RUNNING, started_at=started_at)
+        result = TaskResult(
+            task_id=task.id, status=TaskStatus.RUNNING, started_at=started_at
+        )
 
         # Track running task
         self._running[task.id] = task
@@ -307,7 +313,10 @@ class AutomationPipeline:
             self.logger.error(f"Task failed: {task.id} - {e}")
 
             # Retry if enabled
-            if self.config.enable_retries and result.retry_count < self.config.max_retries:
+            if (
+                self.config.enable_retries
+                and result.retry_count < self.config.max_retries
+            ):
                 result.retry_count += 1
                 result.status = TaskStatus.RETRYING
                 self.submit_task(task)
@@ -335,7 +344,10 @@ class AutomationPipeline:
 
         for keyword in dangerous_keywords:
             if keyword in task_str:
-                return {"safe": False, "reason": f"Task contains dangerous keyword: {keyword}"}
+                return {
+                    "safe": False,
+                    "reason": f"Task contains dangerous keyword: {keyword}",
+                }
 
         return {"safe": True, "reason": None}
 
@@ -399,7 +411,9 @@ class AutomationPipeline:
             "completed": len(self._completed),
             "queue_capacity": self.config.queue_size,
             "utilization": (
-                len(self._queue) / self.config.queue_size if self.config.queue_size > 0 else 0
+                len(self._queue) / self.config.queue_size
+                if self.config.queue_size > 0
+                else 0
             ),
         }
 

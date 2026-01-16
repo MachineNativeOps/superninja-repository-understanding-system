@@ -34,12 +34,16 @@ def validate_project_path(input_path: str) -> str:
     except Exception as e:
         raise ValueError(f"Invalid project path: {input_path}") from e
     if not resolved_path.exists() or not resolved_path.is_dir():
-        raise ValueError(f"Project path does not exist or is not a directory: {resolved_path}")
+        raise ValueError(
+            f"Project path does not exist or is not a directory: {resolved_path}"
+        )
     try:
         # Ensure path is within base_dir
         resolved_path.relative_to(base_dir)
     except ValueError as e:
-        raise ValueError("Project path must be within the current working directory") from e
+        raise ValueError(
+            "Project path must be within the current working directory"
+        ) from e
     return str(resolved_path)
 
 
@@ -82,13 +86,25 @@ class SecurityScanner:
                 "timestamp": datetime.now().isoformat(),
                 "total_issues": len(report.get("results", [])),
                 "high_severity": len(
-                    [r for r in report.get("results", []) if r.get("issue_severity") == "HIGH"]
+                    [
+                        r
+                        for r in report.get("results", [])
+                        if r.get("issue_severity") == "HIGH"
+                    ]
                 ),
                 "medium_severity": len(
-                    [r for r in report.get("results", []) if r.get("issue_severity") == "MEDIUM"]
+                    [
+                        r
+                        for r in report.get("results", [])
+                        if r.get("issue_severity") == "MEDIUM"
+                    ]
                 ),
                 "low_severity": len(
-                    [r for r in report.get("results", []) if r.get("issue_severity") == "LOW"]
+                    [
+                        r
+                        for r in report.get("results", [])
+                        if r.get("issue_severity") == "LOW"
+                    ]
                 ),
                 "metrics": report.get("metrics", {}),
             }
@@ -104,7 +120,9 @@ class SecurityScanner:
         cmd = ["safety", "check", "--json"]
 
         try:
-            result = subprocess.run(cmd, capture_output=True, text=True, cwd=self.project_path)
+            result = subprocess.run(
+                cmd, capture_output=True, text=True, cwd=self.project_path
+            )
 
             # 解析輸出
             try:
@@ -123,7 +141,9 @@ class SecurityScanner:
                 "tool": "safety",
                 "timestamp": datetime.now().isoformat(),
                 "total_vulnerabilities": len(vulnerabilities),
-                "packages_affected": len({v.get("package", "") for v in vulnerabilities}),
+                "packages_affected": len(
+                    {v.get("package", "") for v in vulnerabilities}
+                ),
                 "vulnerabilities": vulnerabilities,
             }
 
@@ -141,7 +161,9 @@ class SecurityScanner:
         cmd = ["npm", "audit", "--json"]
 
         try:
-            result = subprocess.run(cmd, capture_output=True, text=True, cwd=self.project_path)
+            result = subprocess.run(
+                cmd, capture_output=True, text=True, cwd=self.project_path
+            )
 
             report = json.loads(result.stdout) if result.stdout else {}
 
@@ -158,11 +180,15 @@ class SecurityScanner:
                 "critical": report.get("metadata", {})
                 .get("vulnerabilities", {})
                 .get("critical", 0),
-                "high": report.get("metadata", {}).get("vulnerabilities", {}).get("high", 0),
+                "high": report.get("metadata", {})
+                .get("vulnerabilities", {})
+                .get("high", 0),
                 "moderate": report.get("metadata", {})
                 .get("vulnerabilities", {})
                 .get("moderate", 0),
-                "low": report.get("metadata", {}).get("vulnerabilities", {}).get("low", 0),
+                "low": report.get("metadata", {})
+                .get("vulnerabilities", {})
+                .get("low", 0),
             }
 
             return summary
@@ -179,7 +205,9 @@ class SecurityScanner:
         cmd = ["snyk", "test", "--json"]
 
         try:
-            result = subprocess.run(cmd, capture_output=True, text=True, cwd=self.project_path)
+            result = subprocess.run(
+                cmd, capture_output=True, text=True, cwd=self.project_path
+            )
 
             report = json.loads(result.stdout) if result.stdout else {}
 
@@ -200,13 +228,25 @@ class SecurityScanner:
                     ]
                 ),
                 "high": len(
-                    [v for v in report.get("vulnerabilities", []) if v.get("severity") == "high"]
+                    [
+                        v
+                        for v in report.get("vulnerabilities", [])
+                        if v.get("severity") == "high"
+                    ]
                 ),
                 "medium": len(
-                    [v for v in report.get("vulnerabilities", []) if v.get("severity") == "medium"]
+                    [
+                        v
+                        for v in report.get("vulnerabilities", [])
+                        if v.get("severity") == "medium"
+                    ]
                 ),
                 "low": len(
-                    [v for v in report.get("vulnerabilities", []) if v.get("severity") == "low"]
+                    [
+                        v
+                        for v in report.get("vulnerabilities", [])
+                        if v.get("severity") == "low"
+                    ]
                 ),
             }
 
@@ -264,7 +304,9 @@ class SecurityScanner:
         """檢查項目是否包含Python文件"""
         for _root, dirs, files in os.walk(self.project_path):
             # 排除常見的依賴目錄
-            dirs[:] = [d for d in dirs if d not in ["venv", ".venv", "node_modules", ".git"]]
+            dirs[:] = [
+                d for d in dirs if d not in ["venv", ".venv", "node_modules", ".git"]
+            ]
             if any(f.endswith(".py") for f in files):
                 return True
         return False
@@ -287,7 +329,9 @@ class SecurityScanner:
             if "critical" in scan_result:
                 critical_count += scan_result["critical"]
             if "high" in scan_result or "high_severity" in scan_result:
-                high_count += scan_result.get("high", scan_result.get("high_severity", 0))
+                high_count += scan_result.get(
+                    "high", scan_result.get("high_severity", 0)
+                )
 
         return {
             "total_issues": total_issues,

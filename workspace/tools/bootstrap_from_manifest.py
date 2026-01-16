@@ -23,7 +23,9 @@ def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
         description="Materialize the Island AI Stage 0 bootstrap manifest",
     )
-    parser.add_argument("manifest", type=Path, help="Path to island.bootstrap.stage0.yaml")
+    parser.add_argument(
+        "manifest", type=Path, help="Path to island.bootstrap.stage0.yaml"
+    )
     parser.add_argument(
         "--apply",
         action="store_true",
@@ -114,7 +116,9 @@ class BootstrapContext:
             try:
                 if tmp_path is not None:
                     os.chmod(tmp_path, 0o600)
-                    subprocess.run(["/bin/bash", tmp_path], check=True, cwd=self.repo_root)
+                    subprocess.run(
+                        ["/bin/bash", tmp_path], check=True, cwd=self.repo_root
+                    )
             finally:
                 if tmp_path is not None:
                     try:
@@ -146,7 +150,9 @@ def _iter_sequence(obj: Any) -> Sequence[Any]:
     return []
 
 
-def scaffold_entries(entries: Sequence[Mapping[str, Any]], ctx: BootstrapContext) -> None:
+def scaffold_entries(
+    entries: Sequence[Mapping[str, Any]], ctx: BootstrapContext
+) -> None:
     for entry in entries:
         base = ctx.repo_root / _as_str(entry.get("base", "."))
         ctx.ensure_directory(base)
@@ -164,7 +170,9 @@ def scaffold_entries(entries: Sequence[Mapping[str, Any]], ctx: BootstrapContext
             ctx.ensure_directory(target)
 
 
-def materialize_templates(templates: Sequence[Mapping[str, Any]], ctx: BootstrapContext) -> None:
+def materialize_templates(
+    templates: Sequence[Mapping[str, Any]], ctx: BootstrapContext
+) -> None:
     for template in templates:
         source = ctx.repo_root / _as_str(template.get("source"))
         target = ctx.repo_root / _as_str(template.get("target"))
@@ -215,7 +223,11 @@ def main() -> None:
 
     ctx = BootstrapContext(repo_root=manifest_path.parent, apply_changes=args.apply)
     automation = spec.get("automation")
-    sequence = automation.get("bootstrap_sequence", []) if isinstance(automation, Mapping) else []
+    sequence = (
+        automation.get("bootstrap_sequence", [])
+        if isinstance(automation, Mapping)
+        else []
+    )
     if not sequence:
         raise SystemExit("No automation.bootstrap_sequence defined in manifest")
 

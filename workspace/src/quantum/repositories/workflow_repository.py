@@ -10,7 +10,13 @@ from pathlib import Path
 from typing import List, Optional
 
 from backend.python.config import get_settings
-from backend.python.core.entities import Task, TaskStatus, TaskType, Workflow, WorkflowStatus
+from backend.python.core.entities import (
+    Task,
+    TaskStatus,
+    TaskType,
+    Workflow,
+    WorkflowStatus,
+)
 from backend.python.core.exceptions import DatabaseError
 from backend.python.core.logging_config import get_logger
 
@@ -36,7 +42,9 @@ class WorkflowRepository:
     def _init_db(self) -> None:
         """Initialize SQLite database schema."""
         try:
-            self.conn = sqlite3.connect(str(self.db_path), check_same_thread=False, timeout=30.0)
+            self.conn = sqlite3.connect(
+                str(self.db_path), check_same_thread=False, timeout=30.0
+            )
             self.conn.row_factory = sqlite3.Row
 
             cursor = self.conn.cursor()
@@ -125,8 +133,12 @@ class WorkflowRepository:
                         "status": task.status.value,
                         "result": task.result,
                         "error": task.error,
-                        "created_at": task.created_at.isoformat() if task.created_at else None,
-                        "started_at": task.started_at.isoformat() if task.started_at else None,
+                        "created_at": (
+                            task.created_at.isoformat() if task.created_at else None
+                        ),
+                        "started_at": (
+                            task.started_at.isoformat() if task.started_at else None
+                        ),
                         "completed_at": (
                             task.completed_at.isoformat() if task.completed_at else None
                         ),
@@ -152,8 +164,16 @@ class WorkflowRepository:
                             if workflow.created_at
                             else datetime.utcnow().isoformat()
                         ),
-                        workflow.started_at.isoformat() if workflow.started_at else None,
-                        workflow.completed_at.isoformat() if workflow.completed_at else None,
+                        (
+                            workflow.started_at.isoformat()
+                            if workflow.started_at
+                            else None
+                        ),
+                        (
+                            workflow.completed_at.isoformat()
+                            if workflow.completed_at
+                            else None
+                        ),
                         metadata_json,
                     ),
                 )
@@ -170,8 +190,16 @@ class WorkflowRepository:
                         workflow.name,
                         tasks_json,
                         workflow.status.value,
-                        workflow.started_at.isoformat() if workflow.started_at else None,
-                        workflow.completed_at.isoformat() if workflow.completed_at else None,
+                        (
+                            workflow.started_at.isoformat()
+                            if workflow.started_at
+                            else None
+                        ),
+                        (
+                            workflow.completed_at.isoformat()
+                            if workflow.completed_at
+                            else None
+                        ),
                         metadata_json,
                         workflow.id,
                     ),
@@ -234,14 +262,22 @@ class WorkflowRepository:
                 if task_data.get("started_at"):
                     task.started_at = datetime.fromisoformat(task_data["started_at"])
                 if task_data.get("completed_at"):
-                    task.completed_at = datetime.fromisoformat(task_data["completed_at"])
+                    task.completed_at = datetime.fromisoformat(
+                        task_data["completed_at"]
+                    )
                 tasks.append(task)
 
             # Parse timestamps
-            created_at = datetime.fromisoformat(row["created_at"]) if row["created_at"] else None
-            started_at = datetime.fromisoformat(row["started_at"]) if row["started_at"] else None
+            created_at = (
+                datetime.fromisoformat(row["created_at"]) if row["created_at"] else None
+            )
+            started_at = (
+                datetime.fromisoformat(row["started_at"]) if row["started_at"] else None
+            )
             completed_at = (
-                datetime.fromisoformat(row["completed_at"]) if row["completed_at"] else None
+                datetime.fromisoformat(row["completed_at"])
+                if row["completed_at"]
+                else None
             )
 
             metadata = json.loads(row["metadata"]) if row["metadata"] else {}
@@ -305,13 +341,19 @@ class WorkflowRepository:
                     tasks.append(task)
 
                 created_at = (
-                    datetime.fromisoformat(row["created_at"]) if row["created_at"] else None
+                    datetime.fromisoformat(row["created_at"])
+                    if row["created_at"]
+                    else None
                 )
                 started_at = (
-                    datetime.fromisoformat(row["started_at"]) if row["started_at"] else None
+                    datetime.fromisoformat(row["started_at"])
+                    if row["started_at"]
+                    else None
                 )
                 completed_at = (
-                    datetime.fromisoformat(row["completed_at"]) if row["completed_at"] else None
+                    datetime.fromisoformat(row["completed_at"])
+                    if row["completed_at"]
+                    else None
                 )
                 metadata = json.loads(row["metadata"]) if row["metadata"] else {}
 

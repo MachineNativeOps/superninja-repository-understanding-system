@@ -59,7 +59,10 @@ class GovernanceValidator:
                 module_role=ModuleRole.SENSOR_FUSION,
                 input_schema={
                     "type": "object",
-                    "properties": {"imu_data": {"type": "object"}, "gps_data": {"type": "object"}},
+                    "properties": {
+                        "imu_data": {"type": "object"},
+                        "gps_data": {"type": "object"},
+                    },
                 },
                 output_schema={
                     "type": "object",
@@ -79,13 +82,19 @@ class GovernanceValidator:
                     "type": "object",
                     "properties": {
                         "target_altitude": {"type": "number"},
-                        "target_velocity": {"type": "array", "items": {"type": "number"}},
+                        "target_velocity": {
+                            "type": "array",
+                            "items": {"type": "number"},
+                        },
                     },
                 },
                 output_schema={
                     "type": "object",
                     "properties": {
-                        "motor_commands": {"type": "array", "items": {"type": "number"}},
+                        "motor_commands": {
+                            "type": "array",
+                            "items": {"type": "number"},
+                        },
                         "status": {"type": "string"},
                     },
                 },
@@ -114,7 +123,9 @@ class GovernanceValidator:
                     },
                 },
                 max_latency_ms=5.0,
-                error_handling={ErrorCategory.SAFETY_VIOLATION: "trigger_emergency_protocol"},
+                error_handling={
+                    ErrorCategory.SAFETY_VIOLATION: "trigger_emergency_protocol"
+                },
                 dependencies=[],
             ),
         }
@@ -177,7 +188,8 @@ if __name__ == "__main__":
     # 驗證 API 調用
     try:
         validator.validate_api_call(
-            "flight_controller", {"target_altitude": 10.0, "target_velocity": [1.0, 2.0, 3.0]}
+            "flight_controller",
+            {"target_altitude": 10.0, "target_velocity": [1.0, 2.0, 3.0]},
         )
         print("✓ API call validated successfully")
     except ValueError as e:

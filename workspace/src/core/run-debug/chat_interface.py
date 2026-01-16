@@ -163,10 +163,15 @@ class NaturalLanguageProcessor:
                             entities["expression"] = match.group(1).strip()
 
                     return Intent(
-                        type=intent_type, confidence=0.9, entities=entities, original_text=text
+                        type=intent_type,
+                        confidence=0.9,
+                        entities=entities,
+                        original_text=text,
                     )
 
-        return Intent(type=IntentType.UNKNOWN, confidence=0.0, entities={}, original_text=text)
+        return Intent(
+            type=IntentType.UNKNOWN, confidence=0.0, entities={}, original_text=text
+        )
 
 
 class ErrorAnalyzer:
@@ -275,7 +280,11 @@ class ErrorAnalyzer:
             analysis["suggested_fixes"] = error_info["fixes"]
         else:
             analysis["explanation"] = f"發生了 {error_type} 錯誤。"
-            analysis["suggested_fixes"] = ["檢查錯誤訊息", "查看堆疊追蹤", "檢查相關程式碼"]
+            analysis["suggested_fixes"] = [
+                "檢查錯誤訊息",
+                "查看堆疊追蹤",
+                "檢查相關程式碼",
+            ]
 
         return analysis
 
@@ -411,14 +420,14 @@ class ChatDebugInterface:
             config_name = configs[0].name
         else:
             # 列出可用配置
-            config_list = "\n".join([f"  {i+1}. {c.name}" for i, c in enumerate(configs)])
+            config_list = "\n".join(
+                [f"  {i+1}. {c.name}" for i, c in enumerate(configs)]
+            )
             return f"請選擇要使用的配置：\n{config_list}\n\n請說「使用配置 1」或直接說配置名稱。"
 
         success = await self.cli.start_debug(config_name)
         if success:
-            return (
-                f"✅ 已啟動偵錯會話：{config_name}\n\n您可以：\n- 設定斷點\n- 開始執行\n- 檢視變數"
-            )
+            return f"✅ 已啟動偵錯會話：{config_name}\n\n您可以：\n- 設定斷點\n- 開始執行\n- 檢視變數"
         else:
             return "❌ 啟動偵錯會話失敗。請檢查配置是否正確。"
 
@@ -472,9 +481,7 @@ class ChatDebugInterface:
             frames = await self.cli.engine.get_stack_trace(self.cli.current_session_id)
             if frames:
                 frame = frames[0]
-                return (
-                    f"⏭️ 已執行到下一行\n\n📍 當前位置：{frame.file}:{frame.line}\n   {frame.name}"
-                )
+                return f"⏭️ 已執行到下一行\n\n📍 當前位置：{frame.file}:{frame.line}\n   {frame.name}"
             return "⏭️ 已執行到下一行"
         else:
             return "❌ 無法執行單步操作"
@@ -527,7 +534,9 @@ class ChatDebugInterface:
         if not expression:
             return "請指定要評估的表達式"
 
-        result = await self.cli.engine.evaluate_expression(self.cli.current_session_id, expression)
+        result = await self.cli.engine.evaluate_expression(
+            self.cli.current_session_id, expression
+        )
 
         if result:
             return f"💡 {result.name} = {result.value}\n   類型：{result.type}"

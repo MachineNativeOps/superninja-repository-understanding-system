@@ -161,7 +161,9 @@ class PlaybookRunner:
                     break
 
             condition = stage.get("condition")
-            if condition and not self._evaluate_condition(condition, stage_results, context):
+            if condition and not self._evaluate_condition(
+                condition, stage_results, context
+            ):
                 should_skip = True
 
             if should_skip:
@@ -188,9 +190,12 @@ class PlaybookRunner:
         result.duration_seconds = (end_time - start_time).total_seconds()
 
         all_success = all(
-            s.status in [StageStatus.SUCCESS, StageStatus.SKIPPED] for s in result.stages
+            s.status in [StageStatus.SUCCESS, StageStatus.SKIPPED]
+            for s in result.stages
         )
-        result.status = PlaybookStatus.SUCCESS if all_success else PlaybookStatus.FAILURE
+        result.status = (
+            PlaybookStatus.SUCCESS if all_success else PlaybookStatus.FAILURE
+        )
 
         result.quality_gates_passed = await self._check_quality_gates(
             playbook.get("quality_gates", []),
@@ -231,7 +236,9 @@ class PlaybookRunner:
                 action = step.get("action")
                 params = step.get("params", {})
 
-                params = self._interpolate_params(params, context, previous_results, step_outputs)
+                params = self._interpolate_params(
+                    params, context, previous_results, step_outputs
+                )
 
                 handler = self._action_handlers.get(action)
                 if handler:
@@ -319,9 +326,8 @@ class PlaybookRunner:
     async def _create_evidence_bundle(self, result: PlaybookResult) -> str:
         """Create evidence bundle for audit."""
         bundle_path = (
-            self._artifacts_dir
-            / f"evidence-{result.playbook_name}-{datetime.utcnow().strftime('%Y%m%d%H%M%S')}.json"
-        )
+            self._artifacts_dir /
+            f"evidence-{result.playbook_name}-{datetime.utcnow().strftime('%Y%m%d%H%M%S')}.json")
 
         bundle = {
             "playbook": result.playbook_name,

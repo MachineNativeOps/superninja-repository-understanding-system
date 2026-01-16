@@ -141,11 +141,15 @@ class BusinessAPI:
 
         @self.app.put("/api/v1/projects/{project_id}", response_model=Project)
         async def update_project(
-            project_id: str, updates: Dict[str, Any], user_id: str = Depends(get_current_user)
+            project_id: str,
+            updates: Dict[str, Any],
+            user_id: str = Depends(get_current_user),
         ):
             """更新項目"""
             try:
-                project = await self.business_service.update_project(project_id, updates)
+                project = await self.business_service.update_project(
+                    project_id, updates
+                )
                 if not project:
                     raise HTTPException(status_code=404, detail="Project not found")
                 return project
@@ -153,7 +157,9 @@ class BusinessAPI:
                 raise HTTPException(status_code=500, detail=str(e))
 
         @self.app.delete("/api/v1/projects/{project_id}")
-        async def delete_project(project_id: str, user_id: str = Depends(get_current_user)):
+        async def delete_project(
+            project_id: str, user_id: str = Depends(get_current_user)
+        ):
             """刪除項目"""
             try:
                 success = await self.business_service.delete_project(project_id)
@@ -199,7 +205,9 @@ class BusinessAPI:
 
         # 任務管理 API
         @self.app.post("/api/v1/tasks", response_model=Task)
-        async def create_task(request: CreateTaskRequest, user_id: str = Depends(get_current_user)):
+        async def create_task(
+            request: CreateTaskRequest, user_id: str = Depends(get_current_user)
+        ):
             """創建任務"""
             try:
                 return await self.business_service.create_task(request)
@@ -218,7 +226,9 @@ class BusinessAPI:
 
         @self.app.put("/api/v1/tasks/{task_id}", response_model=Task)
         async def update_task(
-            task_id: str, request: UpdateTaskRequest, user_id: str = Depends(get_current_user)
+            task_id: str,
+            request: UpdateTaskRequest,
+            user_id: str = Depends(get_current_user),
         ):
             """更新任務"""
             try:
@@ -268,7 +278,9 @@ class BusinessAPI:
                 all_tasks = await self.business_service.list_tasks(total_query)
                 total = len(all_tasks)
 
-                return TaskListResponse(tasks=tasks, total=total, page=page, page_size=page_size)
+                return TaskListResponse(
+                    tasks=tasks, total=total, page=page, page_size=page_size
+                )
             except Exception as e:
                 raise HTTPException(status_code=500, detail=str(e))
 
@@ -301,7 +313,9 @@ class BusinessAPI:
         ):
             """執行任務審批工作流"""
             try:
-                result = await self.workflow_engine.execute_task_approval_workflow(task_id)
+                result = await self.workflow_engine.execute_task_approval_workflow(
+                    task_id
+                )
                 return result
             except ValueError as e:
                 raise HTTPException(status_code=404, detail=str(e))
@@ -316,8 +330,10 @@ class BusinessAPI:
         ):
             """執行資源分配工作流"""
             try:
-                result = await self.workflow_engine.execute_resource_allocation_workflow(
-                    project_id, resource_requirements
+                result = (
+                    await self.workflow_engine.execute_resource_allocation_workflow(
+                        project_id, resource_requirements
+                    )
                 )
                 return result
             except ValueError as e:
@@ -331,7 +347,9 @@ class BusinessAPI:
         ):
             """執行質量檢查工作流"""
             try:
-                result = await self.workflow_engine.execute_quality_check_workflow(task_id)
+                result = await self.workflow_engine.execute_quality_check_workflow(
+                    task_id
+                )
                 return result
             except ValueError as e:
                 raise HTTPException(status_code=404, detail=str(e))
@@ -353,7 +371,9 @@ class BusinessAPI:
         async def list_workflow_executions(workflow_id: Optional[str] = Query(None)):
             """列出工作流執行"""
             try:
-                executions = await self.workflow_engine.list_workflow_executions(workflow_id)
+                executions = await self.workflow_engine.list_workflow_executions(
+                    workflow_id
+                )
                 return executions
             except Exception as e:
                 raise HTTPException(status_code=500, detail=str(e))
@@ -364,7 +384,9 @@ class BusinessAPI:
         ):
             """取消工作流執行"""
             try:
-                success = await self.workflow_engine.cancel_workflow_execution(execution_id)
+                success = await self.workflow_engine.cancel_workflow_execution(
+                    execution_id
+                )
                 if not success:
                     raise HTTPException(status_code=404, detail="Execution not found")
                 return {"message": "Execution cancelled successfully"}
@@ -377,7 +399,9 @@ class BusinessAPI:
         ):
             """重試工作流執行"""
             try:
-                result = await self.workflow_engine.retry_workflow_execution(execution_id)
+                result = await self.workflow_engine.retry_workflow_execution(
+                    execution_id
+                )
                 if not result:
                     raise HTTPException(status_code=404, detail="Execution not found")
                 return result

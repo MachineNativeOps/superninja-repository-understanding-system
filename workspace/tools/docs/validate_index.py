@@ -119,7 +119,9 @@ def validate_file_exists(doc: dict[str, Any], repo_root: Path) -> list[str]:
     errors = []
     file_path = repo_root / doc["path"]
     if not file_path.exists():
-        errors.append(f"Document '{doc['id']}' references non-existent file: {doc['path']}")
+        errors.append(
+            f"Document '{doc['id']}' references non-existent file: {doc['path']}"
+        )
     return errors
 
 
@@ -135,18 +137,24 @@ def validate_unique_ids(documents: list[dict[str, Any]]) -> list[str]:
     return errors
 
 
-def validate_relationships(relationships: list[dict[str, Any]], doc_ids: set[str]) -> list[str]:
+def validate_relationships(
+    relationships: list[dict[str, Any]], doc_ids: set[str]
+) -> list[str]:
     """Check that all relationships reference valid document IDs."""
     errors = []
     for rel in relationships:
         if rel.get("from") not in doc_ids:
-            errors.append(f"Relationship references unknown document: {rel.get('from')}")
+            errors.append(
+                f"Relationship references unknown document: {rel.get('from')}"
+            )
         if rel.get("to") not in doc_ids:
             errors.append(f"Relationship references unknown document: {rel.get('to')}")
     return errors
 
 
-def validate_domains(documents: list[dict[str, Any]], categories: dict[str, Any]) -> list[str]:
+def validate_domains(
+    documents: list[dict[str, Any]], categories: dict[str, Any]
+) -> list[str]:
     """Check that all documents use valid domain categories."""
     errors = []
     valid_domains = set(categories.keys())
@@ -170,8 +178,12 @@ def validate_layers(documents: list[dict[str, Any]], layers: list[str]) -> list[
 
 def main():
     parser = argparse.ArgumentParser(description="Validate knowledge index YAML file")
-    parser.add_argument("--verbose", "-v", action="store_true", help="Show detailed output")
-    parser.add_argument("--skip-schema", action="store_true", help="Skip JSON schema validation")
+    parser.add_argument(
+        "--verbose", "-v", action="store_true", help="Show detailed output"
+    )
+    parser.add_argument(
+        "--skip-schema", action="store_true", help="Skip JSON schema validation"
+    )
     args = parser.parse_args()
 
     # Determine paths

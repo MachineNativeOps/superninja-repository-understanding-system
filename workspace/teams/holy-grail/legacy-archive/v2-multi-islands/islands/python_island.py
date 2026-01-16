@@ -30,7 +30,9 @@ class PythonIsland(BaseIsland):
     """
 
     def __init__(self) -> None:
-        super().__init__(name="🐍 Python AI 數據島", island_id="python", language="python")
+        super().__init__(
+            name="🐍 Python AI 數據島", island_id="python", language="python"
+        )
         self.capabilities = [
             "ai_code_assistant",
             "data_analysis",
@@ -148,7 +150,9 @@ class PythonIsland(BaseIsland):
         self.log_info("執行 v1-python-drones 系統...")
 
         try:
-            result = subprocess.run(["python3", str(v1_main), "--mode=auto"], cwd=self.project_root)
+            result = subprocess.run(
+                ["python3", str(v1_main), "--mode=auto"], cwd=self.project_root
+            )
             return result.returncode
         except Exception as e:
             self.log_error(f"執行失敗: {e}")

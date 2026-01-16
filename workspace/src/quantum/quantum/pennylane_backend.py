@@ -40,10 +40,14 @@ class PennyLaneBackend:
             api_key: Xanadu Cloud API key
         """
         if not PENNYLANE_AVAILABLE:
-            raise ImportError("PennyLane is not installed. Install with: pip install pennylane")
+            raise ImportError(
+                "PennyLane is not installed. Install with: pip install pennylane"
+            )
 
         settings = get_settings()
-        self.api_key = api_key or settings.pennylane_api_key or os.getenv("PENNYLANE_API_KEY")
+        self.api_key = (
+            api_key or settings.pennylane_api_key or os.getenv("PENNYLANE_API_KEY")
+        )
         self.device = None
         logger.info("Initialized PennyLaneBackend")
 
@@ -88,9 +92,13 @@ class PennyLaneBackend:
                     )
                 except Exception as e:
                     logger.error(f"Failed to initialize Xanadu cloud device: {str(e)}")
-                    raise BackendError(f"Failed to initialize Xanadu cloud device: {str(e)}")
+                    raise BackendError(
+                        f"Failed to initialize Xanadu cloud device: {str(e)}"
+                    )
             else:
-                raise BackendError(f"Invalid backend type or missing API key: {backend_type}")
+                raise BackendError(
+                    f"Invalid backend type or missing API key: {backend_type}"
+                )
 
             # Define variational circuit
             if circuit_type == "simple_variational":
@@ -113,7 +121,9 @@ class PennyLaneBackend:
 
             # Execute circuit
             result = circuit(pnp.array(params))
-            logger.info(f"Executed circuit '{circuit_type}' with {shots} shots on {backend_type}")
+            logger.info(
+                f"Executed circuit '{circuit_type}' with {shots} shots on {backend_type}"
+            )
 
             return {
                 "result": result,

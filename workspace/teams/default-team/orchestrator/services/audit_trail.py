@@ -64,21 +64,32 @@ class AuditEntry(BaseModel):
         default_factory=lambda: str(uuid.uuid4()), description="Unique audit entry ID"
     )
     timestamp: str = Field(
-        default_factory=lambda: datetime.now().isoformat(), description="Entry timestamp"
+        default_factory=lambda: datetime.now().isoformat(),
+        description="Entry timestamp",
     )
     action: AuditAction = Field(..., description="Type of action")
     actor: str = Field(..., description="Agent or user performing action")
     target: Optional[str] = Field(default=None, description="Target of the action")
     trace_id: Optional[str] = Field(default=None, description="Related trace ID")
     incident_id: Optional[str] = Field(default=None, description="Related incident ID")
-    message_type: Optional[str] = Field(default=None, description="Related message type")
+    message_type: Optional[str] = Field(
+        default=None, description="Related message type"
+    )
     success: bool = Field(default=True, description="Whether action succeeded")
     details: Dict[str, Any] = Field(default_factory=dict, description="Action details")
-    previous_state: Optional[str] = Field(default=None, description="State before action")
+    previous_state: Optional[str] = Field(
+        default=None, description="State before action"
+    )
     new_state: Optional[str] = Field(default=None, description="State after action")
-    error_message: Optional[str] = Field(default=None, description="Error if action failed")
-    metadata: Dict[str, Any] = Field(default_factory=dict, description="Additional metadata")
-    checksum: Optional[str] = Field(default=None, description="Entry integrity checksum")
+    error_message: Optional[str] = Field(
+        default=None, description="Error if action failed"
+    )
+    metadata: Dict[str, Any] = Field(
+        default_factory=dict, description="Additional metadata"
+    )
+    checksum: Optional[str] = Field(
+        default=None, description="Entry integrity checksum"
+    )
 
     def compute_checksum(self) -> str:
         """Compute SHA256 checksum of entry content."""
@@ -135,7 +146,9 @@ class AuditTrail:
     - Export capabilities
     """
 
-    def __init__(self, max_entries: int = 100000, persistence_path: Optional[str] = None):
+    def __init__(
+        self, max_entries: int = 100000, persistence_path: Optional[str] = None
+    ):
         self._entries: deque[AuditEntry] = deque(maxlen=max_entries)
         self._lock = asyncio.Lock()
         self._persistence_path = persistence_path
@@ -289,7 +302,7 @@ class AuditTrail:
             filtered = [e for e in filtered if e.success == success_only]
 
         # Apply pagination
-        return filtered[offset : offset + limit]
+        return filtered[offset: offset + limit]
 
     async def get_incident_audit(self, incident_id: str) -> List[AuditEntry]:
         """Get all audit entries for an incident."""
@@ -320,7 +333,9 @@ class AuditTrail:
             "total_entries": len(entries),
             "valid_entries": valid_count,
             "invalid_entries": invalid_count,
-            "integrity_percentage": (valid_count / len(entries) * 100) if entries else 100,
+            "integrity_percentage": (
+                (valid_count / len(entries) * 100) if entries else 100
+            ),
             "invalid_entry_ids": invalid_entries[:10],  # Only return first 10
         }
 
@@ -337,7 +352,9 @@ class AuditTrail:
         failure_count = 0
 
         for entry in entries:
-            action_counts[entry.action.value] = action_counts.get(entry.action.value, 0) + 1
+            action_counts[entry.action.value] = (
+                action_counts.get(entry.action.value, 0) + 1
+            )
             if entry.success:
                 success_count += 1
             else:

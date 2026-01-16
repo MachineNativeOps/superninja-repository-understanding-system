@@ -3,12 +3,12 @@ Unit tests for StaticAnalyzer
 靜態分析器單元測試
 """
 
-from core.analysis.static_analyzer import AnalysisResult, StaticAnalyzer
 import sys
 import tempfile
 from pathlib import Path
 
 import pytest
+from core.analysis.static_analyzer import AnalysisResult, StaticAnalyzer
 
 # 添加父目錄到路徑
 sys.path.insert(0, str(Path(__file__).parent.parent.parent))

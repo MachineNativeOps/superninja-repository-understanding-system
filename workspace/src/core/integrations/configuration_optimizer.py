@@ -351,7 +351,9 @@ class ConfigurationOptimizer:
         return self._rules.pop(rule_id, None) is not None
 
     def validate(
-        self, config: Dict[str, Any], categories: Optional[List[OptimizationCategory]] = None
+        self,
+        config: Dict[str, Any],
+        categories: Optional[List[OptimizationCategory]] = None,
     ) -> ValidationResult:
         """
         Validate configuration against all applicable rules
@@ -403,7 +405,9 @@ class ConfigurationOptimizer:
                     }
                 )
 
-        return ValidationResult(is_valid=len(issues) == 0, issues=issues, warnings=warnings)
+        return ValidationResult(
+            is_valid=len(issues) == 0, issues=issues, warnings=warnings
+        )
 
     def analyze(
         self, config: Dict[str, Any], metrics: Optional[Dict[str, Any]] = None
@@ -506,7 +510,7 @@ class ConfigurationOptimizer:
 
         # Trim old snapshots
         if len(self._snapshots) > self.config.max_snapshots:
-            self._snapshots = self._snapshots[-self.config.max_snapshots :]
+            self._snapshots = self._snapshots[-self.config.max_snapshots:]
 
         return snapshot
 
@@ -523,7 +527,9 @@ class ConfigurationOptimizer:
             Baseline snapshot
         """
         self._baseline_snapshot = ConfigurationSnapshot(
-            snapshot_id=f"baseline-{uuid4().hex[:8]}", config=config.copy(), source="baseline"
+            snapshot_id=f"baseline-{uuid4().hex[:8]}",
+            config=config.copy(),
+            source="baseline",
         )
         return self._baseline_snapshot
 
@@ -610,7 +616,9 @@ class ConfigurationOptimizer:
 
         # Keep only last 100 entries per key
         if len(self._performance_metrics[config_key]) > 100:
-            self._performance_metrics[config_key] = self._performance_metrics[config_key][-100:]
+            self._performance_metrics[config_key] = self._performance_metrics[
+                config_key
+            ][-100:]
 
     def get_recommendations(
         self, category: Optional[OptimizationCategory] = None
@@ -642,7 +650,9 @@ class ConfigurationOptimizer:
 
     # ========== Helper Methods ==========
 
-    def _flatten_config(self, config: Dict[str, Any], prefix: str = "") -> Dict[str, Any]:
+    def _flatten_config(
+        self, config: Dict[str, Any], prefix: str = ""
+    ) -> Dict[str, Any]:
         """Flatten nested configuration to dot-notation keys"""
         result = {}
 
@@ -656,7 +666,9 @@ class ConfigurationOptimizer:
 
         return result
 
-    def _apply_config_change(self, config: Dict[str, Any], key: str, value: Any) -> Dict[str, Any]:
+    def _apply_config_change(
+        self, config: Dict[str, Any], key: str, value: Any
+    ) -> Dict[str, Any]:
         """Apply a configuration change using dot-notation key"""
         result = config.copy()
         parts = key.split(".")
@@ -697,8 +709,7 @@ class ConfigurationOptimizer:
                     "message": "max_concurrent_tasks is very high, may cause resource issues",
                     "key": "max_concurrent_tasks",
                     "value": max_tasks,
-                }
-            )
+                })
 
         return {"issues": issues, "warnings": warnings}
 
@@ -853,8 +864,7 @@ class ConfigurationOptimizer:
                     "message": "Health check interval is very long, issues may go undetected",
                     "key": "health_check_interval_seconds",
                     "value": interval,
-                }
-            )
+                })
 
         return {"issues": issues, "warnings": warnings}
 
@@ -875,7 +885,9 @@ class ConfigurationOptimizer:
             prod_thresholds = CONCURRENCY_THRESHOLDS["production"]
             if current_value < prod_thresholds["min_recommended"]:
                 recommended_value = prod_thresholds["default_recommended"]
-                reasoning.append("Production environments typically need higher concurrency")
+                reasoning.append(
+                    "Production environments typically need higher concurrency"
+                )
             elif current_value > prod_thresholds["upper_warning_threshold"]:
                 recommended_value = prod_thresholds["max_recommended"]
                 reasoning.append("Very high concurrency may cause resource contention")
@@ -883,7 +895,9 @@ class ConfigurationOptimizer:
             dev_thresholds = CONCURRENCY_THRESHOLDS["development"]
             if current_value > dev_thresholds["warning_threshold"]:
                 recommended_value = dev_thresholds["recommended"]
-                reasoning.append("Development environments work well with lower concurrency")
+                reasoning.append(
+                    "Development environments work well with lower concurrency"
+                )
 
         if recommended_value == current_value:
             return None

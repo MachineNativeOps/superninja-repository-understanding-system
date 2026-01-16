@@ -132,7 +132,9 @@ class AutomationLauncher:
         if show_banner:
             print(BANNER)
 
-        print(f"[{datetime.now().strftime('%H:%M:%S')}] 🚀 啟動 SynergyMesh 自動化系統...")
+        print(
+            f"[{datetime.now().strftime('%H:%M:%S')}] 🚀 啟動 SynergyMesh 自動化系統..."
+        )
         print(f"[{datetime.now().strftime('%H:%M:%S')}] 📋 模式: {self.config['mode']}")
         print()
 
@@ -166,7 +168,9 @@ class AutomationLauncher:
                 print("=" * 70)
                 print(f"✅ SynergyMesh 自動化系統啟動成功")
                 print(f"   運行模式: {self.config['mode']}")
-                print(f"   引擎數量: {len(self.orchestrator.registry.get_all_engines())}")
+                print(
+                    f"   引擎數量: {len(self.orchestrator.registry.get_all_engines())}"
+                )
                 print(f"   💓 Heartbeat: Active (Phoenix-ready)")
                 print("=" * 70)
                 print()
@@ -215,7 +219,11 @@ class AutomationLauncher:
                 heartbeat = {
                     "timestamp": datetime.now().isoformat(),
                     "status": "running",
-                    "uptime": str(datetime.now() - self._start_time) if self._start_time else "0",
+                    "uptime": (
+                        str(datetime.now() - self._start_time)
+                        if self._start_time
+                        else "0"
+                    ),
                     "pid": os.getpid(),
                 }
 
@@ -247,7 +255,9 @@ class AutomationLauncher:
         status = self.orchestrator.get_status()
         status["launcher"] = {
             "mode": self.config["mode"],
-            "uptime": str(datetime.now() - self._start_time) if self._start_time else "N/A",
+            "uptime": (
+                str(datetime.now() - self._start_time) if self._start_time else "N/A"
+            ),
         }
         return status
 

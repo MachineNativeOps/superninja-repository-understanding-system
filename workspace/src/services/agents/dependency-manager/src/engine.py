@@ -96,7 +96,9 @@ class DependencyManager:
                     enabled=yaml_config.get("enabled", True),
                     parallel=yaml_config.get("parallel", True),
                     max_workers=yaml_config.get("max_workers", 8),
-                    ecosystems=[Ecosystem(e) for e in yaml_config.get("ecosystems", ["npm"])],
+                    ecosystems=[
+                        Ecosystem(e) for e in yaml_config.get("ecosystems", ["npm"])
+                    ],
                 )
             except Exception as e:
                 logger.warning(f"載入配置失敗: {e}，使用默認配置")
@@ -148,7 +150,9 @@ class DependencyManager:
 
         return results
 
-    async def scan_vulnerabilities(self, analysis: DependencyAnalysis) -> VulnerabilityScanResult:
+    async def scan_vulnerabilities(
+        self, analysis: DependencyAnalysis
+    ) -> VulnerabilityScanResult:
         """
         掃描漏洞
 
@@ -215,7 +219,12 @@ class DependencyManager:
         """
         logger.info(f"開始完整掃描: {project_path}")
 
-        result = {"project": project_path, "analyses": {}, "vulnerabilities": {}, "licenses": {}}
+        result = {
+            "project": project_path,
+            "analyses": {},
+            "vulnerabilities": {},
+            "licenses": {},
+        }
 
         # 分析各生態系統
         analyses = await self.analyze_project(project_path)
@@ -259,9 +268,15 @@ class DependencyManager:
             summary["ecosystems"].append(eco_name)
 
             if "summary" in analysis:
-                summary["total_dependencies"] += analysis["summary"].get("total_dependencies", 0)
-                summary["outdated_dependencies"] += analysis["summary"].get("outdated", 0)
-                summary["vulnerable_dependencies"] += analysis["summary"].get("vulnerable", 0)
+                summary["total_dependencies"] += analysis["summary"].get(
+                    "total_dependencies", 0
+                )
+                summary["outdated_dependencies"] += analysis["summary"].get(
+                    "outdated", 0
+                )
+                summary["vulnerable_dependencies"] += analysis["summary"].get(
+                    "vulnerable", 0
+                )
 
         for eco_name, licenses in scan_result.get("licenses", {}).items():
             if "summary" in licenses:
@@ -278,7 +293,9 @@ async def main():
 
     parser = argparse.ArgumentParser(description="依賴管理代理 - SynergyMesh")
     parser.add_argument("--project", "-p", required=True, help="專案路徑")
-    parser.add_argument("--scan-type", choices=["full", "quick"], default="full", help="掃描類型")
+    parser.add_argument(
+        "--scan-type", choices=["full", "quick"], default="full", help="掃描類型"
+    )
     parser.add_argument("--output", "-o", help="輸出文件路徑")
     parser.add_argument("--config", "-c", help="配置文件路徑")
 

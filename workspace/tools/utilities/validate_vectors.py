@@ -91,16 +91,22 @@ def generate_slsa_evidence(
 
 def main():
     """Main function."""
-    parser = argparse.ArgumentParser(description="Validate test vectors against JSON schema")
+    parser = argparse.ArgumentParser(
+        description="Validate test vectors against JSON schema"
+    )
     parser.add_argument("file_path", type=Path, help="Path to the test vector file")
-    parser.add_argument("--schema", type=Path, required=True, help="Path to JSON schema file")
+    parser.add_argument(
+        "--schema", type=Path, required=True, help="Path to JSON schema file"
+    )
     parser.add_argument(
         "--output-format",
         choices=["slsa", "json", "text"],
         default="text",
         help="Output format (default: text)",
     )
-    parser.add_argument("--evidence-dir", type=Path, help="Directory to store validation evidence")
+    parser.add_argument(
+        "--evidence-dir", type=Path, help="Directory to store validation evidence"
+    )
 
     args = parser.parse_args()
 

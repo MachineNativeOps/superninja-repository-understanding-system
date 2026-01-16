@@ -11,7 +11,6 @@ from datetime import datetime
 from typing import Any
 
 import pytest
-
 from core.safety_mechanisms.partial_rollback import (
     PartialRollbackManager,
     RollbackAction,
@@ -191,7 +190,9 @@ class TestRollbackExecution:
 
     def test_execute_rollback_invalid_scope(self, rollback_manager):
         """Test rollback with invalid scope."""
-        result = rollback_manager.execute_rollback(scope="invalid-scope", target="phase-1")
+        result = rollback_manager.execute_rollback(
+            scope="invalid-scope", target="phase-1"
+        )
 
         assert result.success is False
         assert "Invalid rollback scope" in result.message
@@ -287,14 +288,18 @@ class TestCheckpointCleanup:
             )
 
         # Cleanup, keeping only 3
-        removed = rollback_manager.cleanup_old_checkpoints(execution_id=execution_id, keep_count=3)
+        removed = rollback_manager.cleanup_old_checkpoints(
+            execution_id=execution_id, keep_count=3
+        )
 
         assert removed == 7  # 10 - 3 = 7
         assert rollback_manager.get_checkpoint_count(execution_id) == 3
 
     def test_cleanup_nonexistent_execution(self, rollback_manager):
         """Test cleanup for nonexistent execution."""
-        removed = rollback_manager.cleanup_old_checkpoints(execution_id="nonexistent", keep_count=5)
+        removed = rollback_manager.cleanup_old_checkpoints(
+            execution_id="nonexistent", keep_count=5
+        )
 
         assert removed == 0
 
@@ -356,15 +361,21 @@ class TestIntegration:
 
         # 2. Create checkpoints at each step
         cp1 = rollback_manager.create_checkpoint(
-            execution_id=execution_id, phase_id="task-1", state={**sample_state, "task": "task-1"}
+            execution_id=execution_id,
+            phase_id="task-1",
+            state={**sample_state, "task": "task-1"},
         )
 
         cp2 = rollback_manager.create_checkpoint(
-            execution_id=execution_id, phase_id="task-2", state={**sample_state, "task": "task-2"}
+            execution_id=execution_id,
+            phase_id="task-2",
+            state={**sample_state, "task": "task-2"},
         )
 
         cp3 = rollback_manager.create_checkpoint(
-            execution_id=execution_id, phase_id="task-3", state={**sample_state, "task": "task-3"}
+            execution_id=execution_id,
+            phase_id="task-3",
+            state={**sample_state, "task": "task-3"},
         )
 
         # 3. Simulate failure in task-2

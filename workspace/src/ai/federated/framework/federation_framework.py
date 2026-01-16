@@ -141,7 +141,9 @@ class FederationFramework:
         # Select clients for this round
         selected = self._select_clients()
         if len(selected) < self.config.min_clients:
-            raise ValueError(f"Not enough clients: {len(selected)} < {self.config.min_clients}")
+            raise ValueError(
+                f"Not enough clients: {len(selected)} < {self.config.min_clients}"
+            )
 
         # Distribute model to clients
         for client_id in selected:
@@ -171,7 +173,9 @@ class FederationFramework:
     def _select_clients(self) -> List[str]:
         """Select clients for the current round."""
         available = [
-            cid for cid, c in self._clients.items() if c.status != ClientStatus.DISCONNECTED
+            cid
+            for cid, c in self._clients.items()
+            if c.status != ClientStatus.DISCONNECTED
         ]
 
         num_to_select = max(
@@ -214,7 +218,10 @@ class FederationFramework:
             client_id=client_id,
             round_id=round_id,
             weights=weights,
-            metrics={"loss": random.uniform(0.1, 0.5), "accuracy": random.uniform(0.7, 0.95)},
+            metrics={
+                "loss": random.uniform(0.1, 0.5),
+                "accuracy": random.uniform(0.7, 0.95),
+            },
             data_size=self._clients[client_id].data_size,
             timestamp=datetime.now(timezone.utc),
         )
@@ -237,7 +244,9 @@ class FederationFramework:
         num_updates = len(self._round_updates)
 
         for layer in self._global_weights.keys():
-            layer_weights = [update.weights.get(layer, []) for update in self._round_updates]
+            layer_weights = [
+                update.weights.get(layer, []) for update in self._round_updates
+            ]
             if layer_weights and layer_weights[0]:
                 avg_weights = []
                 for i in range(len(layer_weights[0])):

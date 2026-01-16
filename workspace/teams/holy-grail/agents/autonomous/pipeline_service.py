@@ -33,7 +33,9 @@ try:
     _upgrader = AutoUpgradeEnvironment(auto_install=True)
     _upgrade_results = _upgrader.check_and_upgrade(["dotenv", "loguru"])
     if _upgrader.installed_deps:
-        logger.info(f"已自動升級環境 Auto-upgraded: {', '.join(_upgrader.installed_deps)}")
+        logger.info(
+            f"已自動升級環境 Auto-upgraded: {', '.join(_upgrader.installed_deps)}"
+        )
 except Exception as e:
     logger.warning(f"環境升級檢查跳過 Auto-upgrade skipped: {e}")
 
@@ -102,7 +104,9 @@ class PipelineService:
             # Step 2: Intent recognition and routing
             if self.recognition_server:
                 intent_result = self.recognition_server.process_request(
-                    query=query, problem_content=problem_content, editor_code=editor_code
+                    query=query,
+                    problem_content=problem_content,
+                    editor_code=editor_code,
                 )
 
                 if intent_result["status"] == "blocked":
@@ -121,11 +125,17 @@ class PipelineService:
 
             # Step 3: Route to appropriate handler
             if action == "visualize":
-                result = await self._handle_visualization(query, problem_content, editor_code)
+                result = await self._handle_visualization(
+                    query, problem_content, editor_code
+                )
             elif action == "generate_diagram":
-                result = await self._handle_diagram_generation(query, problem_content, editor_code)
+                result = await self._handle_diagram_generation(
+                    query, problem_content, editor_code
+                )
             else:  # proceed
-                result = await self._handle_code_analysis(query, editor_code, analysis_type)
+                result = await self._handle_code_analysis(
+                    query, editor_code, analysis_type
+                )
 
             return {
                 "request_id": request_id,
@@ -164,12 +174,18 @@ class PipelineService:
         fixed_code = None
         if analysis_result["issues"]:
             critical_issues = [
-                issue for issue in analysis_result["issues"] if issue.get("severity") == "critical"
+                issue
+                for issue in analysis_result["issues"]
+                if issue.get("severity") == "critical"
             ]
 
             if critical_issues:
-                logger.info(f"Found {len(critical_issues)} critical issues, attempting auto-fix")
-                fixed_code = await self.task_executor.execute_auto_fix(code, critical_issues[0])
+                logger.info(
+                    f"Found {len(critical_issues)} critical issues, attempting auto-fix"
+                )
+                fixed_code = await self.task_executor.execute_auto_fix(
+                    code, critical_issues[0]
+                )
 
         return {
             "type": "code_analysis",
@@ -252,7 +268,10 @@ class PipelineService:
         logger.info(f"[{request_id}] Starting streaming process")
 
         # Yield initial status
-        yield {"type": "status", "data": {"status": "started", "request_id": request_id}}
+        yield {
+            "type": "status",
+            "data": {"status": "started", "request_id": request_id},
+        }
 
         # Intent recognition
         if self.recognition_server:
@@ -262,13 +281,18 @@ class PipelineService:
                 yield chunk
 
         # Main processing
-        result = await self.process_request(query, problem_content, editor_code, analysis_type)
+        result = await self.process_request(
+            query, problem_content, editor_code, analysis_type
+        )
 
         # Yield result
         yield {"type": "result", "data": result}
 
         # Complete
-        yield {"type": "complete", "data": {"status": "completed", "request_id": request_id}}
+        yield {
+            "type": "complete",
+            "data": {"status": "completed", "request_id": request_id},
+        }
 
         logger.info(f"[{request_id}] Streaming process completed")
 
@@ -304,9 +328,13 @@ class PipelineService:
         return {
             "status": "healthy",
             "agents": {
-                "recognition_server": "available" if self.recognition_server else "unavailable",
+                "recognition_server": (
+                    "available" if self.recognition_server else "unavailable"
+                ),
                 "task_executor": "available" if self.task_executor else "unavailable",
-                "visualization_agent": "available" if self.visualization_agent else "unavailable",
+                "visualization_agent": (
+                    "available" if self.visualization_agent else "unavailable"
+                ),
             },
             "total_requests_processed": self.request_count,
         }

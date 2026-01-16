@@ -2,7 +2,11 @@
 Tests for Phase 21: Cloud Agent Delegation System
 """
 
-from cloud_agent_delegation.delegation_manager import DelegationStatus, Task, TaskPriority
+import asyncio
+import os
+import sys
+
+import pytest
 from cloud_agent_delegation import (
     BalancingStrategy,
     CloudProviderAdapter,
@@ -17,11 +21,11 @@ from cloud_agent_delegation import (
     RoutingStrategy,
     TaskRouter,
 )
-import asyncio
-import os
-import sys
-
-import pytest
+from cloud_agent_delegation.delegation_manager import (
+    DelegationStatus,
+    Task,
+    TaskPriority,
+)
 
 # Add core to path
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "..", "core"))
@@ -112,7 +116,9 @@ class TestCloudProviderAdapter:
     @pytest.mark.asyncio
     async def test_execute_aws(self, aws_adapter):
         """Test AWS Lambda execution"""
-        task = Task(id="test-123", name="test-task", type="analyze", payload={"code": "test"})
+        task = Task(
+            id="test-123", name="test-task", type="analyze", payload={"code": "test"}
+        )
 
         result = await aws_adapter.execute(task)
 
@@ -122,7 +128,9 @@ class TestCloudProviderAdapter:
     @pytest.mark.asyncio
     async def test_execute_gcp(self, gcp_adapter):
         """Test GCP Cloud Functions execution"""
-        task = Task(id="test-456", name="test-task", type="analyze", payload={"code": "test"})
+        task = Task(
+            id="test-456", name="test-task", type="analyze", payload={"code": "test"}
+        )
 
         result = await gcp_adapter.execute(task)
 
@@ -148,11 +156,16 @@ class TestTaskRouter:
         # Add default routing rules
         router.add_rule(
             RoutingRule(
-                id="analyze-rule", name="analyze", pattern="analyze:*", preferred_provider="aws"
+                id="analyze-rule",
+                name="analyze",
+                pattern="analyze:*",
+                preferred_provider="aws",
             )
         )
         router.add_rule(
-            RoutingRule(id="fix-rule", name="fix", pattern="fix:*", preferred_provider="gcp")
+            RoutingRule(
+                id="fix-rule", name="fix", pattern="fix:*", preferred_provider="gcp"
+            )
         )
 
         return router
@@ -322,7 +335,9 @@ class TestIntegration:
         balancer.update_health("gcp", True)
 
         config = DelegationConfig(name="integration-test")
-        manager = DelegationManager(config=config, router=router, load_balancer=balancer)
+        manager = DelegationManager(
+            config=config, router=router, load_balancer=balancer
+        )
 
         await manager.start()
 

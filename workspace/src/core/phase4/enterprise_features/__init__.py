@@ -185,7 +185,9 @@ class EnterpriseManager:
             user_management_ui = await self.admin_interface.create_user_management_ui()
 
             # 創建公司管理界面
-            company_management_ui = await self.admin_interface.create_company_management_ui()
+            company_management_ui = (
+                await self.admin_interface.create_company_management_ui()
+            )
 
             # 創建系統設置界面
             system_settings_ui = await self.admin_interface.create_system_settings_ui()
@@ -234,7 +236,11 @@ class EnterpriseManager:
                 "storage_gb": 200,
                 "api_calls_per_month": 250000,
                 "support_level": "business_hours_priority",
-                "features": ["advanced_analytics", "priority_support", "custom_integration"],
+                "features": [
+                    "advanced_analytics",
+                    "priority_support",
+                    "custom_integration",
+                ],
             },
             CompanySize.LARGE: {
                 "max_users": 1000,
@@ -242,7 +248,11 @@ class EnterpriseManager:
                 "storage_gb": 1000,
                 "api_calls_per_month": 1000000,
                 "support_level": "24_7",
-                "features": ["enterprise_analytics", "24_7_support", "dedicated_account_manager"],
+                "features": [
+                    "enterprise_analytics",
+                    "24_7_support",
+                    "dedicated_account_manager",
+                ],
             },
             CompanySize.ENTERPRISE: {
                 "max_users": -1,  # unlimited
@@ -261,7 +271,9 @@ class EnterpriseManager:
 
         return {
             "size": company_size,
-            "configuration": size_configs.get(size_enum, size_configs[CompanySize.MEDIUM]),
+            "configuration": size_configs.get(
+                size_enum, size_configs[CompanySize.MEDIUM]
+            ),
         }
 
     def _analyze_enterprise_features(self, user_input: str) -> Dict[str, bool]:
@@ -270,35 +282,43 @@ class EnterpriseManager:
 
         features = {
             "multi_tenant": any(
-                word in user_input_lower for word in ["multi-tenant", "multiple companies", "saaS"]
+                word in user_input_lower
+                for word in ["multi-tenant", "multiple companies", "saaS"]
             ),
             "single_sign_on": any(
                 word in user_input_lower
                 for word in ["sso", "single sign on", "ldap", "active directory"]
             ),
             "audit_logs": any(
-                word in user_input_lower for word in ["audit", "logs", "compliance", "tracking"]
+                word in user_input_lower
+                for word in ["audit", "logs", "compliance", "tracking"]
             ),
             "role_management": any(
-                word in user_input_lower for word in ["roles", "permissions", "access control"]
+                word in user_input_lower
+                for word in ["roles", "permissions", "access control"]
             ),
             "api_management": any(
-                word in user_input_lower for word in ["api", "rate limiting", "api keys"]
+                word in user_input_lower
+                for word in ["api", "rate limiting", "api keys"]
             ),
             "data_export": any(
                 word in user_input_lower for word in ["export", "data export", "backup"]
             ),
             "custom_branding": any(
-                word in user_input_lower for word in ["branding", "white label", "custom"]
+                word in user_input_lower
+                for word in ["branding", "white label", "custom"]
             ),
             "advanced_analytics": any(
-                word in user_input_lower for word in ["analytics", "reporting", "metrics"]
+                word in user_input_lower
+                for word in ["analytics", "reporting", "metrics"]
             ),
             "workflow_automation": any(
-                word in user_input_lower for word in ["workflow", "automation", "process"]
+                word in user_input_lower
+                for word in ["workflow", "automation", "process"]
             ),
             "integration_platform": any(
-                word in user_input_lower for word in ["integration", "connectors", "apis"]
+                word in user_input_lower
+                for word in ["integration", "connectors", "apis"]
             ),
         }
 
@@ -310,7 +330,8 @@ class EnterpriseManager:
 
         security_needs = {
             "encryption": any(
-                word in user_input_lower for word in ["encryption", "encrypted", "security"]
+                word in user_input_lower
+                for word in ["encryption", "encrypted", "security"]
             ),
             "two_factor_auth": any(
                 word in user_input_lower for word in ["2fa", "two factor", "mfa"]
@@ -328,10 +349,12 @@ class EnterpriseManager:
                 word in user_input_lower for word in ["vulnerability", "security scan"]
             ),
             "compliance_reporting": any(
-                word in user_input_lower for word in ["compliance", "regulation", "audit"]
+                word in user_input_lower
+                for word in ["compliance", "regulation", "audit"]
             ),
             "data_retention": any(
-                word in user_input_lower for word in ["retention", "data retention", "privacy"]
+                word in user_input_lower
+                for word in ["retention", "data retention", "privacy"]
             ),
         }
 
@@ -403,7 +426,9 @@ class SaaSPlatformManager:
             tenant_isolation = await self.multi_tenant_manager.create_tenant_isolation()
 
             # 設置數據庫分離
-            database_separation = await self.multi_tenant_manager.setup_database_separation()
+            database_separation = (
+                await self.multi_tenant_manager.setup_database_separation()
+            )
 
             # 配置資源配額
             resource_quotas = await self.resource_manager.setup_resource_quotas()
@@ -412,7 +437,9 @@ class SaaSPlatformManager:
             tenant_routing = await self.multi_tenant_manager.create_tenant_routing()
 
             # 設置安全隔離
-            security_isolation = await self.multi_tenant_manager.setup_security_isolation()
+            security_isolation = (
+                await self.multi_tenant_manager.setup_security_isolation()
+            )
 
             return {
                 "success": True,
@@ -467,7 +494,9 @@ class BillingManager:
             self.logger.error(f"Failed to initialize Billing Manager: {e}")
             raise
 
-    async def setup_billing_system(self, company_size: str = "medium") -> Dict[str, Any]:
+    async def setup_billing_system(
+        self, company_size: str = "medium"
+    ) -> Dict[str, Any]:
         """設置計費系統"""
         try:
             self.logger.info(f"Setting up billing system for {company_size}")
@@ -512,7 +541,12 @@ class BillingManager:
                 "currency": "USD",
                 "billing_cycle": "monthly",
                 "features": ["5 users", "10 projects", "10GB storage", "10K API calls"],
-                "limits": {"users": 5, "projects": 10, "storage_gb": 10, "api_calls": 10000},
+                "limits": {
+                    "users": 5,
+                    "projects": 10,
+                    "storage_gb": 10,
+                    "api_calls": 10000,
+                },
             },
             {
                 "plan_id": "professional",
@@ -527,7 +561,12 @@ class BillingManager:
                     "50K API calls",
                     "priority support",
                 ],
-                "limits": {"users": 20, "projects": 50, "storage_gb": 50, "api_calls": 50000},
+                "limits": {
+                    "users": 20,
+                    "projects": 50,
+                    "storage_gb": 50,
+                    "api_calls": 50000,
+                },
             },
             {
                 "plan_id": "business",
@@ -542,7 +581,12 @@ class BillingManager:
                     "250K API calls",
                     "24/7 support",
                 ],
-                "limits": {"users": 100, "projects": 200, "storage_gb": 200, "api_calls": 250000},
+                "limits": {
+                    "users": 100,
+                    "projects": 200,
+                    "storage_gb": 200,
+                    "api_calls": 250000,
+                },
             },
             {
                 "plan_id": "enterprise",
@@ -557,7 +601,12 @@ class BillingManager:
                     "1M API calls",
                     "premium support",
                 ],
-                "limits": {"users": -1, "projects": -1, "storage_gb": 1000, "api_calls": 1000000},
+                "limits": {
+                    "users": -1,
+                    "projects": -1,
+                    "storage_gb": 1000,
+                    "api_calls": 1000000,
+                },
             },
         ]
 

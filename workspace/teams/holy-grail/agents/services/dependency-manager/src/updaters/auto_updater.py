@@ -197,7 +197,9 @@ class AutoUpdater:
         except (ValueError, IndexError):
             return VersionParts()
 
-    def _get_policy(self, update_type: UpdateType, is_security_fix: bool) -> UpdatePolicy:
+    def _get_policy(
+        self, update_type: UpdateType, is_security_fix: bool
+    ) -> UpdatePolicy:
         """
         獲取更新策略
 

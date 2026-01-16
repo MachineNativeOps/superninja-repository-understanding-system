@@ -14,7 +14,12 @@ except ImportError:
 
     logger = logging.getLogger(__name__)
 
-from ..analysis import ArchitectureAnalyzer, PerformanceAnalyzer, SecurityScanner, StaticAnalyzer
+from ..analysis import (
+    ArchitectureAnalyzer,
+    PerformanceAnalyzer,
+    SecurityScanner,
+    StaticAnalyzer,
+)
 from ..repair import ASTTransformer, RepairVerifier, RuleEngine
 
 
@@ -88,7 +93,9 @@ class AnalysisPipeline:
 
         start_time = time.time()
 
-        logger.info(f"Starting analysis pipeline for: {code_path} (scenario: {scenario})")
+        logger.info(
+            f"Starting analysis pipeline for: {code_path} (scenario: {scenario})"
+        )
 
         try:
             # 階段 1: 並行執行各種分析
@@ -99,20 +106,30 @@ class AnalysisPipeline:
                 self._run_architecture_analysis(code_path),
             ]
 
-            analysis_results = await asyncio.gather(*analysis_tasks, return_exceptions=True)
+            analysis_results = await asyncio.gather(
+                *analysis_tasks, return_exceptions=True
+            )
 
             results_dict = {
                 "static_analysis": (
-                    analysis_results[0] if not isinstance(analysis_results[0], Exception) else None
+                    analysis_results[0]
+                    if not isinstance(analysis_results[0], Exception)
+                    else None
                 ),
                 "security_scan": (
-                    analysis_results[1] if not isinstance(analysis_results[1], Exception) else None
+                    analysis_results[1]
+                    if not isinstance(analysis_results[1], Exception)
+                    else None
                 ),
                 "performance_analysis": (
-                    analysis_results[2] if not isinstance(analysis_results[2], Exception) else None
+                    analysis_results[2]
+                    if not isinstance(analysis_results[2], Exception)
+                    else None
                 ),
                 "architecture_analysis": (
-                    analysis_results[3] if not isinstance(analysis_results[3], Exception) else None
+                    analysis_results[3]
+                    if not isinstance(analysis_results[3], Exception)
+                    else None
                 ),
             }
 

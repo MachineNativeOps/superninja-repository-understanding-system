@@ -244,7 +244,9 @@ Examples:
         if args.verbose:
             print(f"✅ Generated: {output_path}")
             print(f"   - Entities: {superroot_data['summary']['total_entities']}")
-            print(f"   - Relationships: {superroot_data['summary']['total_relationships']}")
+            print(
+                f"   - Relationships: {superroot_data['summary']['total_relationships']}"
+            )
             print(
                 f"   - Entity types: {', '.join(superroot_data['summary']['entities_by_type'].keys())}"
             )

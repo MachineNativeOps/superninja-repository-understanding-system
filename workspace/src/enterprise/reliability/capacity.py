@@ -541,7 +541,9 @@ class CapacityManager:
         )
 
         # Calculate overages
-        analysis_usage = await self.get_current_usage(org_id, ResourceType.ANALYSIS_RUNS)
+        analysis_usage = await self.get_current_usage(
+            org_id, ResourceType.ANALYSIS_RUNS
+        )
         if analysis_usage > plan.monthly_analysis_limit:
             overage = analysis_usage - plan.monthly_analysis_limit
             estimate.overage_analysis_cost = overage * self.rates["analysis_overage"]

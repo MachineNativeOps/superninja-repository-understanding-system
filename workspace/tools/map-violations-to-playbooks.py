@@ -107,9 +107,12 @@ def generate_summary(hotspot_data: list, index: dict, repo_root: Path) -> str:
         for severity in ["CRITICAL", "HIGH", "MEDIUM", "LOW"]:
             count = severity_counts.get(severity, 0)
             if count > 0:
-                emoji = {"CRITICAL": "🔴", "HIGH": "🟠", "MEDIUM": "🟡", "LOW": "🟢"}.get(
-                    severity, "⚪"
-                )
+                emoji = {
+                    "CRITICAL": "🔴",
+                    "HIGH": "🟠",
+                    "MEDIUM": "🟡",
+                    "LOW": "🟢",
+                }.get(severity, "⚪")
                 summary.append(f"- {emoji} {severity}: {count}\n")
         summary.append("\n")
 
@@ -165,9 +168,14 @@ def main():
         help="Path to index.yaml file (relative to repo root)",
     )
     parser.add_argument(
-        "--output", type=str, default="governance-summary.md", help="Output markdown file path"
+        "--output",
+        type=str,
+        default="governance-summary.md",
+        help="Output markdown file path",
     )
-    parser.add_argument("--repo-root", type=str, default=".", help="Repository root directory")
+    parser.add_argument(
+        "--repo-root", type=str, default=".", help="Repository root directory"
+    )
 
     args = parser.parse_args()
 

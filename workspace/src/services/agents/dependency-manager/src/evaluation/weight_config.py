@@ -162,7 +162,9 @@ class WeightConfigManager:
             return dict.fromkeys(weights, 1.0 / n)
         return {k: v / total for k, v in weights.items()}
 
-    def suggest_weights(self, priorities: dict[str, int]) -> dict[str, float]:  # 1-5 的優先級
+    def suggest_weights(
+        self, priorities: dict[str, int]
+    ) -> dict[str, float]:  # 1-5 的優先級
         """根據優先級建議權重"""
         # 將優先級轉換為權重
         weights = {}

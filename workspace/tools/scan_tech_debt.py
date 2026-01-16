@@ -47,7 +47,17 @@ class TechDebtScanner:
         self.report = DebtReport()
 
         # 要掃描的文件擴展名
-        self.extensions = {".py", ".js", ".ts", ".tsx", ".jsx", ".yaml", ".yml", ".md", ".sh"}
+        self.extensions = {
+            ".py",
+            ".js",
+            ".ts",
+            ".tsx",
+            ".jsx",
+            ".yaml",
+            ".yml",
+            ".md",
+            ".sh",
+        }
 
         # 要跳過的目錄
         self.skip_dirs = {
@@ -136,7 +146,14 @@ class TechDebtScanner:
         message_lower = message.lower()
 
         # 高優先級關鍵詞
-        high_keywords = ["security", "critical", "urgent", "bug", "broken", "fix immediately"]
+        high_keywords = [
+            "security",
+            "critical",
+            "urgent",
+            "bug",
+            "broken",
+            "fix immediately",
+        ]
         # 中優先級關鍵詞
         medium_keywords = ["important", "should", "refactor", "improve"]
 
@@ -159,7 +176,8 @@ class TechDebtScanner:
         for func_name in functions:
             # 查找函數體
             func_pattern = re.compile(
-                rf"def\s+{re.escape(func_name)}\([^)]*\):(.+?)(?=\ndef\s|\nclass\s|\Z)", re.DOTALL
+                rf"def\s+{re.escape(func_name)}\([^)]*\):(.+?)(?=\ndef\s|\nclass\s|\Z)",
+                re.DOTALL,
             )
             match = func_pattern.search(content)
 
@@ -194,14 +212,18 @@ class TechDebtScanner:
             self.report.by_severity[item.severity] += 1
 
             # 按目錄分類
-            directory = str(Path(item.file_path).parts[0]) if "/" in item.file_path else "root"
+            directory = (
+                str(Path(item.file_path).parts[0]) if "/" in item.file_path else "root"
+            )
             self.report.by_directory[directory] += 1
 
     def generate_report(self) -> Dict:
         """生成詳細報告"""
         # 按嚴重程度排序
         high_priority = [item for item in self.report.items if item.severity == "HIGH"]
-        medium_priority = [item for item in self.report.items if item.severity == "MEDIUM"]
+        medium_priority = [
+            item for item in self.report.items if item.severity == "MEDIUM"
+        ]
         low_priority = [item for item in self.report.items if item.severity == "LOW"]
 
         return {
@@ -243,13 +265,23 @@ class TechDebtScanner:
         print(f"目標減少至: {self.report.total_items // 2} (-50%)")
 
         print("\n按類型分佈:")
-        for debt_type, count in sorted(self.report.by_type.items(), key=lambda x: -x[1]):
-            print(f"  {debt_type:15} {count:4} ({count/self.report.total_items*100:.1f}%)")
+        for debt_type, count in sorted(
+            self.report.by_type.items(), key=lambda x: -x[1]
+        ):
+            print(
+                f"  {debt_type:15} {count:4} ({count/self.report.total_items*100:.1f}%)"
+            )
 
         print("\n按嚴重程度分佈:")
-        for severity, count in sorted(self.report.by_severity.items(), key=lambda x: -x[1]):
-            emoji = "🔴" if severity == "HIGH" else "🟡" if severity == "MEDIUM" else "🟢"
-            print(f"  {emoji} {severity:8} {count:4} ({count/self.report.total_items*100:.1f}%)")
+        for severity, count in sorted(
+            self.report.by_severity.items(), key=lambda x: -x[1]
+        ):
+            emoji = (
+                "🔴" if severity == "HIGH" else "🟡" if severity == "MEDIUM" else "🟢"
+            )
+            print(
+                f"  {emoji} {severity:8} {count:4} ({count/self.report.total_items*100:.1f}%)"
+            )
 
         print("\n按目錄分佈 (Top 5):")
         top_dirs = sorted(self.report.by_directory.items(), key=lambda x: -x[1])[:5]

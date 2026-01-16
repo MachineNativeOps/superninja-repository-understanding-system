@@ -220,7 +220,11 @@ class RollbackManager:
         """獲取執行相關的所有檢查點"""
 
         checkpoint_ids = self._execution_checkpoints.get(execution_id, [])
-        return [self._checkpoints[cp_id] for cp_id in checkpoint_ids if cp_id in self._checkpoints]
+        return [
+            self._checkpoints[cp_id]
+            for cp_id in checkpoint_ids
+            if cp_id in self._checkpoints
+        ]
 
     def delete_checkpoint(self, checkpoint_id: str) -> bool:
         """刪除檢查點"""
@@ -232,13 +236,17 @@ class RollbackManager:
 
         # 更新執行索引
         if checkpoint.execution_id:
-            exec_checkpoints = self._execution_checkpoints.get(checkpoint.execution_id, [])
+            exec_checkpoints = self._execution_checkpoints.get(
+                checkpoint.execution_id, []
+            )
             if checkpoint_id in exec_checkpoints:
                 exec_checkpoints.remove(checkpoint_id)
 
         return True
 
-    def cleanup_old_checkpoints(self, max_age_hours: int = 24, max_count: int = 1000) -> int:
+    def cleanup_old_checkpoints(
+        self, max_age_hours: int = 24, max_count: int = 1000
+    ) -> int:
         """
         清理舊檢查點
 
@@ -254,7 +262,9 @@ class RollbackManager:
         deleted = 0
 
         # 按時間排序
-        sorted_checkpoints = sorted(self._checkpoints.values(), key=lambda c: c.created_at)
+        sorted_checkpoints = sorted(
+            self._checkpoints.values(), key=lambda c: c.created_at
+        )
 
         for checkpoint in sorted_checkpoints:
             # 檢查年齡
@@ -316,7 +326,9 @@ class RollbackManager:
         return plan
 
     async def rollback_execution(
-        self, execution_id: str, strategy: RollbackStrategy = RollbackStrategy.INCREMENTAL
+        self,
+        execution_id: str,
+        strategy: RollbackStrategy = RollbackStrategy.INCREMENTAL,
     ) -> RollbackPlan:
         """
         回滾整個執行
@@ -348,7 +360,9 @@ class RollbackManager:
         )
 
         # 按時間逆序處理檢查點
-        sorted_checkpoints = sorted(checkpoints, key=lambda c: c.created_at, reverse=True)
+        sorted_checkpoints = sorted(
+            checkpoints, key=lambda c: c.created_at, reverse=True
+        )
 
         # 構建回滾步驟
         for checkpoint in sorted_checkpoints:

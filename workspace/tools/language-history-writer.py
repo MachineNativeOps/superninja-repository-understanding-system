@@ -53,7 +53,9 @@ def save_language_history(data: dict[str, Any]):
     os.makedirs(os.path.dirname(history_path), exist_ok=True)
 
     with open(history_path, "w", encoding="utf-8") as f:
-        yaml.dump(data, f, default_flow_style=False, allow_unicode=True, sort_keys=False)
+        yaml.dump(
+            data, f, default_flow_style=False, allow_unicode=True, sort_keys=False
+        )
 
 
 def add_fix_record(
@@ -149,17 +151,23 @@ def generate_report() -> str:
     stats = history.get("statistics", {})
 
     report = "# Language Governance Fix History Report\n\n"
-    report += f"**Total Fixes**: {history.get('metadata', {}).get('total_fixes', 0)}\n\n"
+    report += (
+        f"**Total Fixes**: {history.get('metadata', {}).get('total_fixes', 0)}\n\n"
+    )
 
     if "by_type" in stats:
         report += "## By Violation Type\n\n"
-        for vtype, count in sorted(stats["by_type"].items(), key=lambda x: x[1], reverse=True):
+        for vtype, count in sorted(
+            stats["by_type"].items(), key=lambda x: x[1], reverse=True
+        ):
             report += f"- **{vtype}**: {count}\n"
         report += "\n"
 
     if "by_action" in stats:
         report += "## By Action\n\n"
-        for action, count in sorted(stats["by_action"].items(), key=lambda x: x[1], reverse=True):
+        for action, count in sorted(
+            stats["by_action"].items(), key=lambda x: x[1], reverse=True
+        ):
             report += f"- **{action}**: {count}\n"
         report += "\n"
 
@@ -184,13 +192,17 @@ def generate_report() -> str:
 
 
 def main():
-    parser = argparse.ArgumentParser(description="Record language governance fix history")
+    parser = argparse.ArgumentParser(
+        description="Record language governance fix history"
+    )
     parser.add_argument(
         "--violation-type",
         required=True,
         help="Type of violation (e.g., 'forbidden-language', 'wrong-layer', 'security-issue')",
     )
-    parser.add_argument("--file-path", required=True, help="Path to the file that was fixed")
+    parser.add_argument(
+        "--file-path", required=True, help="Path to the file that was fixed"
+    )
     parser.add_argument(
         "--action",
         required=True,
@@ -205,8 +217,12 @@ def main():
         choices=["CRITICAL", "ERROR", "WARNING"],
         help="Severity level",
     )
-    parser.add_argument("--fixed-by", default="ai-auto-fix-bot", help="Who/what applied the fix")
-    parser.add_argument("--report", action="store_true", help="Generate and print report")
+    parser.add_argument(
+        "--fixed-by", default="ai-auto-fix-bot", help="Who/what applied the fix"
+    )
+    parser.add_argument(
+        "--report", action="store_true", help="Generate and print report"
+    )
 
     args = parser.parse_args()
 

@@ -123,7 +123,11 @@ async def shutdown_event():
 @app.get("/", response_model=dict[str, str])
 async def root():
     """根端點"""
-    return {"service": "SLASolve Code Analysis API", "version": "2.0.0", "docs": "/api/docs"}
+    return {
+        "service": "SLASolve Code Analysis API",
+        "version": "2.0.0",
+        "docs": "/api/docs",
+    }
 
 
 @app.get("/healthz", response_model=HealthResponse)
@@ -177,7 +181,9 @@ async def analyze_code(request: AnalysisRequest, background_tasks: BackgroundTas
     )
 
     return AnalysisResponse(
-        analysis_id=analysis_id, status="pending", message="Analysis task submitted successfully"
+        analysis_id=analysis_id,
+        status="pending",
+        message="Analysis task submitted successfully",
     )
 
 
@@ -214,7 +220,7 @@ async def list_analyses(
     tasks = list(analysis_tasks.items())
     tasks.sort(key=lambda x: x[1].get("created_at", ""), reverse=True)
 
-    paginated = tasks[offset : offset + limit]
+    paginated = tasks[offset: offset + limit]
 
     return [
         {
@@ -254,10 +260,18 @@ async def get_metrics():
         "engine_metrics": metrics,
         "task_stats": {
             "total": len(analysis_tasks),
-            "pending": sum(1 for t in analysis_tasks.values() if t["status"] == "pending"),
-            "running": sum(1 for t in analysis_tasks.values() if t["status"] == "running"),
-            "completed": sum(1 for t in analysis_tasks.values() if t["status"] == "completed"),
-            "failed": sum(1 for t in analysis_tasks.values() if t["status"] == "failed"),
+            "pending": sum(
+                1 for t in analysis_tasks.values() if t["status"] == "pending"
+            ),
+            "running": sum(
+                1 for t in analysis_tasks.values() if t["status"] == "running"
+            ),
+            "completed": sum(
+                1 for t in analysis_tasks.values() if t["status"] == "completed"
+            ),
+            "failed": sum(
+                1 for t in analysis_tasks.values() if t["status"] == "failed"
+            ),
         },
     }
 
@@ -349,7 +363,9 @@ async def get_language_governance():
                 if history_data and "events" in history_data:
                     history = [
                         {
-                            "timestamp": event.get("timestamp", datetime.utcnow().isoformat()),
+                            "timestamp": event.get(
+                                "timestamp", datetime.utcnow().isoformat()
+                            ),
                             "event": event.get("event", "Event"),
                             "details": event.get("details", ""),
                             "type": event.get("type", "scan"),
@@ -457,7 +473,9 @@ async def get_language_governance():
         "generatedAt": datetime.utcnow().isoformat(),
         "metrics": {
             "totalViolations": len(violations) if violations else 2,
-            "securityFindings": len(semgrep_data["results"]) if semgrep_data["results"] else 1,
+            "securityFindings": (
+                len(semgrep_data["results"]) if semgrep_data["results"] else 1
+            ),
             "architectureCompliance": 92,
             "fixSuccessRate": 87,
         },

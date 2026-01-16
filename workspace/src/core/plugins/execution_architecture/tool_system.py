@@ -143,7 +143,9 @@ class Tool:
             if key in properties:
                 expected_type = properties[key].get("type")
                 if expected_type and not self._check_type(value, expected_type):
-                    raise ValueError(f"Invalid type for {key}: expected {expected_type}")
+                    raise ValueError(
+                        f"Invalid type for {key}: expected {expected_type}"
+                    )
 
     def _check_type(self, value: Any, expected_type: str) -> bool:
         """Check if value matches expected JSON Schema type"""
@@ -188,7 +190,9 @@ class ToolRegistry:
 
     def __init__(self):
         self._tools: dict[str, Tool] = {}
-        self._categories: dict[ToolCategory, list[str]] = {cat: [] for cat in ToolCategory}
+        self._categories: dict[ToolCategory, list[str]] = {
+            cat: [] for cat in ToolCategory
+        }
         self._tags: dict[str, list[str]] = {}
 
     def register(self, tool: Tool) -> None:
@@ -239,7 +243,10 @@ class ToolRegistry:
         query_lower = query.lower()
         results = []
         for tool in self._tools.values():
-            if query_lower in tool.name.lower() or query_lower in tool.description.lower():
+            if (
+                query_lower in tool.name.lower()
+                or query_lower in tool.description.lower()
+            ):
                 results.append(tool)
         return results
 
@@ -265,7 +272,9 @@ class ToolExecutor:
         tool = self.registry.get(tool_name)
         if not tool:
             return ToolResult(
-                tool_name=tool_name, status=ToolStatus.FAILURE, error=f"Tool not found: {tool_name}"
+                tool_name=tool_name,
+                status=ToolStatus.FAILURE,
+                error=f"Tool not found: {tool_name}",
             )
 
         attempts = tool.max_retries if retry_on_failure else 1
@@ -290,7 +299,10 @@ class ToolExecutor:
     ) -> list[ToolResult]:
         """Execute multiple tools"""
         if parallel:
-            tasks = [self.execute(call["tool_name"], call.get("params", {})) for call in tool_calls]
+            tasks = [
+                self.execute(call["tool_name"], call.get("params", {}))
+                for call in tool_calls
+            ]
             return await asyncio.gather(*tasks)
         else:
             results = []

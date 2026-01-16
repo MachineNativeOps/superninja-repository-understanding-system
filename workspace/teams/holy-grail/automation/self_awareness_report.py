@@ -44,7 +44,11 @@ def _parse_sections(manifest_text: str) -> dict[str, str]:
     for index, match in enumerate(matches):
         title = match.group("title").strip()
         start = match.end()
-        end = matches[index + 1].start() if index + 1 < len(matches) else len(manifest_text)
+        end = (
+            matches[index + 1].start()
+            if index + 1 < len(matches)
+            else len(manifest_text)
+        )
         sections[title.lower()] = manifest_text[start:end].strip()
 
     return sections
@@ -80,7 +84,9 @@ def _summarize_sections(sections: dict[str, str]) -> SectionSummary:
     guardrails = _split_bullets(sections.get("guardrails (what we avoid)", ""))
     signals = _split_bullets(sections.get("proof & self-check signals", ""))
 
-    return SectionSummary(identity=identity, needs=needs, guardrails=guardrails, signals=signals)
+    return SectionSummary(
+        identity=identity, needs=needs, guardrails=guardrails, signals=signals
+    )
 
 
 def _validate_command(command: str) -> bool:
@@ -180,7 +186,9 @@ def _run_command_summary(
             command=command,
             exit_code=-1,
             success=False,
-            output_tail=["Invalid command syntax. Check for unclosed quotes or escape characters."],
+            output_tail=[
+                "Invalid command syntax. Check for unclosed quotes or escape characters."
+            ],
         )
     except subprocess.TimeoutExpired as e:
         # Handle timeout: return a special AutomationResult
@@ -214,7 +222,8 @@ def _run_command_summary(
 
     joined_lines = [
         line
-        for line in (result.stdout or "").splitlines() + (result.stderr or "").splitlines()
+        for line in (result.stdout or "").splitlines()
+        + (result.stderr or "").splitlines()
         if line
     ]
     tail = joined_lines[-max_lines:] if joined_lines else []
@@ -252,9 +261,13 @@ def _render_report(
 
     needs_md = "\n".join(f"- {item}" for item in needs) if needs else "- (none listed)"
     guardrails_md = (
-        "\n".join(f"- {item}" for item in guardrails) if guardrails else "- (none listed)"
+        "\n".join(f"- {item}" for item in guardrails)
+        if guardrails
+        else "- (none listed)"
     )
-    signals_md = "\n".join(f"- {item}" for item in signals) if signals else "- (none listed)"
+    signals_md = (
+        "\n".join(f"- {item}" for item in signals) if signals else "- (none listed)"
+    )
 
     sections_md = [
         "## 📣 Repository Self-Awareness Report",
@@ -320,8 +333,7 @@ def main() -> None:
         help=(
             "Additional automation commands in the form Label=command (can be repeated). "
             "SECURITY WARNING: Commands are validated and executed with shell=False. "
-            "Only use with trusted input. Requires --allow-unsafe-shell flag."
-        ),
+            "Only use with trusted input. Requires --allow-unsafe-shell flag."),
     )
     parser.add_argument(
         "--allow-unsafe-shell",
@@ -330,8 +342,7 @@ def main() -> None:
             "Allow execution of user-provided automation commands. "
             "SECURITY WARNING: This is dangerous with untrusted input. "
             "Commands are validated for dangerous patterns and executed with shell=False. "
-            "Only enable if you trust all --automation-cmd input sources."
-        ),
+            "Only enable if you trust all --automation-cmd input sources."),
     )
     parser.add_argument(
         "--fail-on-errors",
@@ -371,7 +382,9 @@ def main() -> None:
     if args.automation_cmd:
         for entry in args.automation_cmd:
             if not entry or "=" not in entry:
-                raise ValueError("automation-cmd entries must be in the form Label=command")
+                raise ValueError(
+                    "automation-cmd entries must be in the form Label=command"
+                )
             label, command = entry.split("=", 1)
             command_pairs.append((label.strip() or "Custom", command.strip()))
 
@@ -389,7 +402,9 @@ def main() -> None:
 
     json_output = args.json_output
     if json_output:
-        generated_at = datetime.now(UTC).replace(microsecond=0).isoformat().replace("+00:00", "Z")
+        generated_at = (
+            datetime.now(UTC).replace(microsecond=0).isoformat().replace("+00:00", "Z")
+        )
         payload = {
             "generated_at": generated_at,
             "manifest_path": str(manifest_path),

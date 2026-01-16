@@ -225,9 +225,9 @@ class TaskRouter:
         for condition_type, condition_value in conditions.items():
             if condition_type == "min_priority":
                 task_priority = context.get("priority", "medium")
-                if self._priority_order.index(task_priority) > self._priority_order.index(
-                    condition_value
-                ):
+                if self._priority_order.index(
+                    task_priority
+                ) > self._priority_order.index(condition_value):
                     return False
 
             elif condition_type == "max_payload_size":
@@ -257,7 +257,9 @@ class TaskRouter:
         rule_counts = {}
 
         for result in self._routing_history:
-            provider_counts[result.provider] = provider_counts.get(result.provider, 0) + 1
+            provider_counts[result.provider] = (
+                provider_counts.get(result.provider, 0) + 1
+            )
             if result.rule_name:
                 rule_counts[result.rule_name] = rule_counts.get(result.rule_name, 0) + 1
 
@@ -300,16 +302,23 @@ class TaskRouter:
 
 # Factory functions
 def create_task_router(
-    default_provider: str = "default", strategy: RoutingStrategy = RoutingStrategy.PATTERN_MATCH
+    default_provider: str = "default",
+    strategy: RoutingStrategy = RoutingStrategy.PATTERN_MATCH,
 ) -> TaskRouter:
     """Create a new TaskRouter instance"""
     return TaskRouter(default_provider, strategy)
 
 
-def create_routing_rule(name: str, pattern: str, preferred_provider: str, **kwargs) -> RoutingRule:
+def create_routing_rule(
+    name: str, pattern: str, preferred_provider: str, **kwargs
+) -> RoutingRule:
     """Create a new RoutingRule"""
     return RoutingRule(
-        id=str(uuid4()), name=name, pattern=pattern, preferred_provider=preferred_provider, **kwargs
+        id=str(uuid4()),
+        name=name,
+        pattern=pattern,
+        preferred_provider=preferred_provider,
+        **kwargs,
     )
 
 

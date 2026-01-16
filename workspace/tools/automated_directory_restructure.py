@@ -30,7 +30,10 @@ import yaml
 logging.basicConfig(
     level=logging.INFO,
     format="%(asctime)s - %(levelname)s - %(message)s",
-    handlers=[logging.FileHandler("restructure.log"), logging.StreamHandler(sys.stdout)],
+    handlers=[
+        logging.FileHandler("restructure.log"),
+        logging.StreamHandler(sys.stdout),
+    ],
 )
 logger = logging.getLogger(__name__)
 
@@ -139,10 +142,21 @@ class DirectoryRestructureTool:
                             "search_engine",
                             "data_pipeline",
                         ],
-                        "monitoring": ["metrics", "logging", "tracing", "alerting", "dashboard"],
+                        "monitoring": [
+                            "metrics",
+                            "logging",
+                            "tracing",
+                            "alerting",
+                            "dashboard",
+                        ],
                     },
                     "shared": {
-                        "types": ["common_types", "api_types", "domain_types", "event_types"],
+                        "types": [
+                            "common_types",
+                            "api_types",
+                            "domain_types",
+                            "event_types",
+                        ],
                         "utils": [
                             "helpers",
                             "validators",
@@ -181,10 +195,19 @@ class DirectoryRestructureTool:
                         "ci-error-handler",
                         "drone-config",
                     ],
-                    "deployment": ["docker-compose", "dockerfile", "nginx", "deployment-pipelines"],
+                    "deployment": [
+                        "docker-compose",
+                        "dockerfile",
+                        "nginx",
+                        "deployment-pipelines",
+                    ],
                     "monitoring": ["prometheus", "grafana", "alerting", "dashboards"],
                     "environments": ["env-files", "environment-configs", "secrets"],
-                    "security": ["security-policies", "safety-mechanisms", "access-control"],
+                    "security": [
+                        "security-policies",
+                        "safety-mechanisms",
+                        "access-control",
+                    ],
                     "build-tools": [
                         "eslint",
                         "jest",
@@ -224,7 +247,9 @@ class DirectoryRestructureTool:
                 shutil.copytree(
                     self.project_root,
                     self.backup_dir,
-                    ignore=shutil.ignore_patterns(".git", "__pycache__", "*.pyc", "node_modules"),
+                    ignore=shutil.ignore_patterns(
+                        ".git", "__pycache__", "*.pyc", "node_modules"
+                    ),
                 )
 
             self.report["operations"].append(
@@ -444,12 +469,21 @@ class DirectoryRestructureTool:
             category_path = self.project_root / "config" / category
             actual[category] = category_path.exists()
 
-        return {"expected": list(expected.keys()), "actual": actual, "valid": all(actual.values())}
+        return {
+            "expected": list(expected.keys()),
+            "actual": actual,
+            "valid": all(actual.values()),
+        }
 
     def _validate_file_integrity(self) -> Dict:
         """驗證文件完整性"""
         # 簡化的文件完整性檢查
-        return {"total_files_checked": 0, "missing_files": [], "corrupted_files": [], "valid": True}
+        return {
+            "total_files_checked": 0,
+            "missing_files": [],
+            "corrupted_files": [],
+            "valid": True,
+        }
 
     def _validate_import_consistency(self) -> Dict:
         """驗證導入一致性"""
@@ -537,7 +571,9 @@ class DirectoryRestructureTool:
 def main():
     """主函數"""
     parser = argparse.ArgumentParser(description="MachineNativeOps 自動化目錄重構工具")
-    parser.add_argument("--dry-run", action="store_true", help="試運行模式，不實際修改文件")
+    parser.add_argument(
+        "--dry-run", action="store_true", help="試運行模式，不實際修改文件"
+    )
     parser.add_argument(
         "--phase", choices=["src", "config", "all"], default="all", help="指定重構階段"
     )

@@ -208,7 +208,9 @@ class MCPServerManager:
             return self._servers.get(server_id)
         return None
 
-    async def execute_tool(self, tool_name: str, arguments: dict[str, Any]) -> dict[str, Any]:
+    async def execute_tool(
+        self, tool_name: str, arguments: dict[str, Any]
+    ) -> dict[str, Any]:
         """
         Execute a tool on the appropriate server
 
@@ -250,7 +252,11 @@ class MCPServerManager:
             if server.status == ServerStatus.HEALTHY:
                 for tool in server.tools:
                     tools.append(
-                        {**tool, "server_id": server.id, "server_name": server.config.name}
+                        {
+                            **tool,
+                            "server_id": server.id,
+                            "server_name": server.config.name,
+                        }
                     )
         return tools
 
@@ -359,8 +365,14 @@ class MCPServerManager:
                     "inputSchema": {
                         "type": "object",
                         "properties": {
-                            "code": {"type": "string", "description": "Source code to analyze"},
-                            "language": {"type": "string", "description": "Programming language"},
+                            "code": {
+                                "type": "string",
+                                "description": "Source code to analyze",
+                            },
+                            "language": {
+                                "type": "string",
+                                "description": "Programming language",
+                            },
                             "metrics": {"type": "array", "items": {"type": "string"}},
                         },
                         "required": ["code"],
@@ -373,7 +385,10 @@ class MCPServerManager:
                         "type": "object",
                         "properties": {
                             "code": {"type": "string"},
-                            "pattern_types": {"type": "array", "items": {"type": "string"}},
+                            "pattern_types": {
+                                "type": "array",
+                                "items": {"type": "string"},
+                            },
                         },
                         "required": ["code"],
                     },
@@ -405,7 +420,10 @@ class MCPServerManager:
                                 "type": "string",
                                 "description": "Package manifest file content",
                             },
-                            "ecosystem": {"type": "string", "enum": ["npm", "pip", "maven", "go"]},
+                            "ecosystem": {
+                                "type": "string",
+                                "enum": ["npm", "pip", "maven", "go"],
+                            },
                         },
                         "required": ["manifest"],
                     },
@@ -431,7 +449,10 @@ class MCPServerManager:
                         "type": "object",
                         "properties": {
                             "provenance": {"type": "object"},
-                            "targetLevel": {"type": "string", "enum": ["1", "2", "3", "4"]},
+                            "targetLevel": {
+                                "type": "string",
+                                "enum": ["1", "2", "3", "4"],
+                            },
                         },
                         "required": ["provenance"],
                     },
@@ -449,7 +470,11 @@ class MCPServerManager:
                                 "type": "string",
                                 "enum": ["jest", "pytest", "mocha", "junit"],
                             },
-                            "coverage_target": {"type": "number", "minimum": 0, "maximum": 100},
+                            "coverage_target": {
+                                "type": "number",
+                                "minimum": 0,
+                                "maximum": 100,
+                            },
                         },
                         "required": ["code"],
                     },

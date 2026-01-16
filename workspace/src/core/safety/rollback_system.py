@@ -130,7 +130,10 @@ class RollbackSystem:
             compensate_handler: Optional function for compensating transactions
         """
         self._component_handlers[name] = ComponentHandler(
-            name=name, save=save_handler, restore=restore_handler, compensate=compensate_handler
+            name=name,
+            save=save_handler,
+            restore=restore_handler,
+            compensate=compensate_handler,
         )
 
     def add_listener(self, listener: Callable[[RollbackResult], None]) -> None:
@@ -300,7 +303,9 @@ class RollbackSystem:
         self._current_state = copy.deepcopy(snapshot.data)
         return restored, errors
 
-    async def _rollback_incremental(self, target_snapshot_id: str, components: set) -> tuple:
+    async def _rollback_incremental(
+        self, target_snapshot_id: str, components: set
+    ) -> tuple:
         """Incremental rollback - reverse changes one by one"""
         restored = []
         errors = []
@@ -321,7 +326,9 @@ class RollbackSystem:
                     try:
                         # Get previous state
                         if snapshot.parent_id and snapshot.parent_id in self._snapshots:
-                            prev_state = self._snapshots[snapshot.parent_id].data.get(name)
+                            prev_state = self._snapshots[snapshot.parent_id].data.get(
+                                name
+                            )
                         else:
                             prev_state = snapshot.data.get(name)
 
@@ -340,7 +347,9 @@ class RollbackSystem:
         """Selective rollback - restore specific components"""
         return await self._rollback_full(snapshot, components)
 
-    async def _rollback_compensating(self, snapshot: Snapshot, components: set) -> tuple:
+    async def _rollback_compensating(
+        self, snapshot: Snapshot, components: set
+    ) -> tuple:
         """Compensating rollback - execute compensating transactions"""
         restored = []
         errors = []

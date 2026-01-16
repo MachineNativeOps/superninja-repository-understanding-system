@@ -1022,12 +1022,18 @@ def generate_schema_json(dim_id, name, name_en, description, tags):
                 "type": "object",
                 "description": "Execution context",
                 "properties": {
-                    "trace_id": {"type": "string", "description": "Distributed trace ID"},
+                    "trace_id": {
+                        "type": "string",
+                        "description": "Distributed trace ID",
+                    },
                     "actor": {
                         "type": "object",
                         "description": "Actor information",
                         "properties": {
-                            "type": {"type": "string", "enum": ["human", "ai_agent", "system"]},
+                            "type": {
+                                "type": "string",
+                                "enum": ["human", "ai_agent", "system"],
+                            },
                             "id": {"type": "string"},
                         },
                     },
@@ -1038,7 +1044,10 @@ def generate_schema_json(dim_id, name, name_en, description, tags):
                 "type": "object",
                 "description": "Operation result",
                 "properties": {
-                    "success": {"type": "boolean", "description": "Whether operation succeeded"},
+                    "success": {
+                        "type": "boolean",
+                        "description": "Whether operation succeeded",
+                    },
                     "data": {"type": "object", "description": "Result data"},
                     "errors": {
                         "type": "array",
@@ -1058,13 +1067,22 @@ def generate_schema_json(dim_id, name, name_en, description, tags):
                 "type": "object",
                 "description": "Audit log entry",
                 "properties": {
-                    "log_id": {"type": "string", "description": "Unique log identifier"},
-                    "trace_id": {"type": "string", "description": "Distributed trace ID"},
+                    "log_id": {
+                        "type": "string",
+                        "description": "Unique log identifier",
+                    },
+                    "trace_id": {
+                        "type": "string",
+                        "description": "Distributed trace ID",
+                    },
                     "timestamp": {"type": "string", "format": "date-time"},
                     "dimension": {"type": "string", "const": f"{dim_id}-{name}"},
                     "action": {"type": "string", "description": "Action performed"},
                     "actor": {"$ref": "#/definitions/context/properties/actor"},
-                    "outcome": {"type": "string", "enum": ["success", "failure", "partial"]},
+                    "outcome": {
+                        "type": "string",
+                        "enum": ["success", "failure", "partial"],
+                    },
                     "details": {"type": "object"},
                 },
                 "required": ["log_id", "timestamp", "dimension", "action", "outcome"],
@@ -1382,7 +1400,14 @@ def main():
         with open(os.path.join(dir_path, "dimension.yaml"), "w", encoding="utf-8") as f:
             f.write(
                 generate_dimension_yaml(
-                    dim_id, name, name_zh, name_en, description, tags, category, dependencies
+                    dim_id,
+                    name,
+                    name_zh,
+                    name_en,
+                    description,
+                    tags,
+                    category,
+                    dependencies,
                 )
             )
 
@@ -1396,7 +1421,9 @@ def main():
 
         # Generate test file
         with open(
-            os.path.join(tests_path, f"{name.replace('-', '_')}_test.rego"), "w", encoding="utf-8"
+            os.path.join(tests_path, f"{name.replace('-', '_')}_test.rego"),
+            "w",
+            encoding="utf-8",
         ) as f:
             f.write(generate_test_rego(dim_id, name, name_en))
 

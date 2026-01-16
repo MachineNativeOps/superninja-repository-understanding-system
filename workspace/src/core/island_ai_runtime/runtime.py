@@ -111,7 +111,9 @@ class IslandAIRuntime:
                     },
                     "anthropic": {
                         "api_key": os.getenv("ANTHROPIC_API_KEY"),
-                        "model": os.getenv("ANTHROPIC_MODEL", "claude-sonnet-4-20250514"),
+                        "model": os.getenv(
+                            "ANTHROPIC_MODEL", "claude-sonnet-4-20250514"
+                        ),
                     },
                 },
             }
@@ -139,7 +141,9 @@ class IslandAIRuntime:
             self.status.errors.append(str(e))
             return False
 
-    async def complete(self, prompt: str, system_prompt: str | None = None, **kwargs: Any) -> str:
+    async def complete(
+        self, prompt: str, system_prompt: str | None = None, **kwargs: Any
+    ) -> str:
         """執行 LLM 完成"""
         # 安全檢查
         safety_result = self.safety_constitution.check_content(prompt)
@@ -153,7 +157,9 @@ class IslandAIRuntime:
         context = self.session_memory.get_context()
 
         # 創建請求
-        request = CompletionRequest(messages=context, system_prompt=system_prompt, **kwargs)
+        request = CompletionRequest(
+            messages=context, system_prompt=system_prompt, **kwargs
+        )
 
         # 調用 Model Gateway
         response = await self.model_gateway.complete(request)
@@ -181,15 +187,24 @@ class IslandAIRuntime:
         self.status.total_requests += 1
         return results
 
-    async def search_knowledge(self, query: str, top_k: int = 10) -> list[dict[str, Any]]:
+    async def search_knowledge(
+        self, query: str, top_k: int = 10
+    ) -> list[dict[str, Any]]:
         """搜索知識庫"""
         results = await self.knowledge_engine.search(query, top_k)
         return [
-            {"path": r.node.path, "name": r.node.name, "score": r.score, "context": r.context}
+            {
+                "path": r.node.path,
+                "name": r.node.name,
+                "score": r.score,
+                "context": r.context,
+            }
             for r in results
         ]
 
-    async def execute_code(self, code: str, language: str = "python") -> ExecutionResult:
+    async def execute_code(
+        self, code: str, language: str = "python"
+    ) -> ExecutionResult:
         """執行代碼"""
         # 安全檢查
         safety_result = self.safety_constitution.check_content(code)

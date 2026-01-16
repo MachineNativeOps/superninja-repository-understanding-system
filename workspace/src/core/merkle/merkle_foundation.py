@@ -84,7 +84,9 @@ class MerkleTree:
         # Full implementation would traverse tree
         return proof
 
-    def verify_proof(self, leaf_hash: str, proof: List[Dict[str, str]], root_hash: str) -> bool:
+    def verify_proof(
+        self, leaf_hash: str, proof: List[Dict[str, str]], root_hash: str
+    ) -> bool:
         """Verify a Merkle proof."""
         current = leaf_hash
         for step in proof:

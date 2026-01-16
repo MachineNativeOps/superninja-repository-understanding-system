@@ -216,7 +216,9 @@ class MAPEKLoop:
                 except Exception as e:
                     # Log executor failure and record in results
                     plan_id = getattr(plan, "id", "unknown")
-                    self.logger.warning(f"Executor failed for plan {plan_id}: {e}", exc_info=True)
+                    self.logger.warning(
+                        f"Executor failed for plan {plan_id}: {e}", exc_info=True
+                    )
                     results.append(
                         ExecutionResult(
                             plan_id=plan.id,
@@ -230,7 +232,10 @@ class MAPEKLoop:
         return results
 
     async def _learn(
-        self, anomalies: List[Anomaly], plans: List[RemediationPlan], results: List[ExecutionResult]
+        self,
+        anomalies: List[Anomaly],
+        plans: List[RemediationPlan],
+        results: List[ExecutionResult],
     ) -> None:
         """Knowledge phase: Learn from execution."""
         for anomaly, plan, result in zip(anomalies, plans, results):

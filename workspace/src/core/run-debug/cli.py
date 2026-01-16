@@ -249,7 +249,9 @@ class DebugCLI:
             click.echo("❌ No active debug session", err=True)
             return
 
-        result = await self.engine.evaluate_expression(self.current_session_id, expression)
+        result = await self.engine.evaluate_expression(
+            self.current_session_id, expression
+        )
         if result:
             click.echo(f"💡 {result.name} = {result.value} ({result.type})")
         else:

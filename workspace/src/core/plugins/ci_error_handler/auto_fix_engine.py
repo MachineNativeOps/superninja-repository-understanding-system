@@ -250,7 +250,9 @@ Provide:
     def _generate_attempt_id(self) -> str:
         """Generate unique attempt ID"""
         self._attempt_counter += 1
-        return f"FIX-{datetime.now().strftime('%Y%m%d%H%M%S')}-{self._attempt_counter:04d}"
+        return (
+            f"FIX-{datetime.now().strftime('%Y%m%d%H%M%S')}-{self._attempt_counter:04d}"
+        )
 
     def analyze_fix_options(self, error: CIError) -> dict[str, Any]:
         """
@@ -285,7 +287,9 @@ Provide:
 
         # Determine recommended strategy
         if options["matching_rules"]:
-            safe_rules = [r for r in options["matching_rules"] if r["safe_to_auto_apply"]]
+            safe_rules = [
+                r for r in options["matching_rules"] if r["safe_to_auto_apply"]
+            ]
             if safe_rules:
                 options["recommended_strategy"] = FixStrategy.AUTO_FIX
             else:

@@ -85,7 +85,9 @@ class BasicVerification:
                 if "kind" in doc:
                     kind = doc["kind"]
                     # 這裡可以添加更多驗證邏輯
-                    if kind not in standard_kinds and not kind.startswith("MachineNativeOps"):
+                    if kind not in standard_kinds and not kind.startswith(
+                        "MachineNativeOps"
+                    ):
                         self.warnings.append(f"{file_path}: 非標準資源類型 '{kind}'")
 
             return True
@@ -95,12 +97,24 @@ class BasicVerification:
 
     def verify_yaml_files(self) -> bool:
         """驗證所有 YAML 文件"""
-        yaml_files = list(self.root_dir.rglob("*.yaml")) + list(self.root_dir.rglob("*.yml"))
+        yaml_files = list(self.root_dir.rglob("*.yaml")) + list(
+            self.root_dir.rglob("*.yml")
+        )
 
         # 過濾排除目錄
-        exclude_dirs = {".git", "node_modules", "__pycache__", "dist", "build", ".venv", "archive"}
+        exclude_dirs = {
+            ".git",
+            "node_modules",
+            "__pycache__",
+            "dist",
+            "build",
+            ".venv",
+            "archive",
+        }
         yaml_files = [
-            f for f in yaml_files if not any(excluded in f.parts for excluded in exclude_dirs)
+            f
+            for f in yaml_files
+            if not any(excluded in f.parts for excluded in exclude_dirs)
         ]
 
         if not yaml_files:
@@ -140,9 +154,19 @@ class BasicVerification:
         python_files = list(self.root_dir.rglob("*.py"))
 
         # 過濾排除目錄
-        exclude_dirs = {".git", "node_modules", "__pycache__", "dist", "build", ".venv", "archive"}
+        exclude_dirs = {
+            ".git",
+            "node_modules",
+            "__pycache__",
+            "dist",
+            "build",
+            ".venv",
+            "archive",
+        }
         python_files = [
-            f for f in python_files if not any(excluded in f.parts for excluded in exclude_dirs)
+            f
+            for f in python_files
+            if not any(excluded in f.parts for excluded in exclude_dirs)
         ]
 
         if not python_files:
@@ -191,7 +215,9 @@ class BasicVerification:
         )
 
         # 資源類型標準化（已包含在 YAML 驗證中）
-        results.append(("資源類型標準化完成", not any("資源類型" in e for e in self.errors)))
+        results.append(
+            ("資源類型標準化完成", not any("資源類型" in e for e in self.errors))
+        )
 
         # 輸出結果
         print()

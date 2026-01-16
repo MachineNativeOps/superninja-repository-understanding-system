@@ -68,7 +68,9 @@ class EdgeComputing:
             "local_processing_percentage": self.local_processing_percentage,
             "data_privacy_requirement": self.data_privacy_requirement,
             "suitability_score": self.suitability_score,
-            "recommended_type": self.recommended_type.value if self.recommended_type else None,
+            "recommended_type": (
+                self.recommended_type.value if self.recommended_type else None
+            ),
             "hardware_recommendations": self.hardware_recommendations,
             "deployment_considerations": self.deployment_considerations,
         }
@@ -256,12 +258,20 @@ class IoTIntegration:
 
         if edge.computing_type == EdgeComputingType.MULTI_ACCESS_EDGE:
             recommendations.extend(
-                ["NVIDIA Jetson AGX Xavier 或同級", "Intel Xeon 處理器邊緣服務器", "高速 NVMe 存儲"]
+                [
+                    "NVIDIA Jetson AGX Xavier 或同級",
+                    "Intel Xeon 處理器邊緣服務器",
+                    "高速 NVMe 存儲",
+                ]
             )
         elif edge.computing_type == EdgeComputingType.FOG_COMPUTING:
-            recommendations.extend(["Raspberry Pi 4 集群", "Intel NUC 邊緣設備", "工業級邊緣網關"])
+            recommendations.extend(
+                ["Raspberry Pi 4 集群", "Intel NUC 邊緣設備", "工業級邊緣網關"]
+            )
         else:
-            recommendations.extend(["ARM 架構邊緣設備", "工業 IoT 網關", "低功耗邊緣處理器"])
+            recommendations.extend(
+                ["ARM 架構邊緣設備", "工業 IoT 網關", "低功耗邊緣處理器"]
+            )
 
         return recommendations
 
@@ -314,7 +324,9 @@ class IoTIntegration:
         if device.security_level == "standard":
             measures.extend(["訪問控制列表 (ACL)", "消息完整性驗證"])
         elif device.security_level == "advanced":
-            measures.extend(["設備證書管理 (PKI)", "端到端加密", "入侵檢測系統", "安全啟動驗證"])
+            measures.extend(
+                ["設備證書管理 (PKI)", "端到端加密", "入侵檢測系統", "安全啟動驗證"]
+            )
 
         return measures
 
@@ -415,7 +427,9 @@ class IoTIntegration:
         return {
             "generated_at": datetime.now().isoformat(),
             "edge_computing_assessments": [e.to_dict() for e in self.edge_assessments],
-            "device_interconnection_strategies": [d.to_dict() for d in self.device_strategies],
+            "device_interconnection_strategies": [
+                d.to_dict() for d in self.device_strategies
+            ],
             "industry40_plans": [p.to_dict() for p in self.industry40_plans],
             "summary": {
                 "total_edge_assessments": len(self.edge_assessments),
@@ -428,7 +442,8 @@ class IoTIntegration:
                     else 0
                 ),
                 "avg_estimated_roi": (
-                    sum(p.estimated_roi for p in self.industry40_plans) / len(self.industry40_plans)
+                    sum(p.estimated_roi for p in self.industry40_plans)
+                    / len(self.industry40_plans)
                     if self.industry40_plans
                     else 0
                 ),

@@ -147,7 +147,9 @@ class PathScanner:
                             size=0,
                             is_directory=True,
                             depth=depth,
-                            modified_time=datetime.fromtimestamp(entry.stat().st_mtime).isoformat(),
+                            modified_time=datetime.fromtimestamp(
+                                entry.stat().st_mtime
+                            ).isoformat(),
                         )
                     )
                     self._scan_directory(entry, depth + 1)
@@ -173,9 +175,13 @@ class PathScanner:
                             size=stat.st_size,
                             is_directory=False,
                             depth=depth,
-                            modified_time=datetime.fromtimestamp(stat.st_mtime).isoformat(),
+                            modified_time=datetime.fromtimestamp(
+                                stat.st_mtime
+                            ).isoformat(),
                             hash=(
-                                self._calculate_hash(entry) if stat.st_size < 1024 * 1024 else None
+                                self._calculate_hash(entry)
+                                if stat.st_size < 1024 * 1024
+                                else None
                             ),
                         )
                     )
@@ -245,7 +251,11 @@ class PathScanner:
                     try:
                         resolved.relative_to(self.target_path)
                         is_valid = resolved.exists()
-                        resolved = str(resolved.relative_to(self.target_path)) if is_valid else None
+                        resolved = (
+                            str(resolved.relative_to(self.target_path))
+                            if is_valid
+                            else None
+                        )
                     except ValueError:
                         is_valid = False
                         resolved = None
@@ -277,20 +287,26 @@ class PathScanner:
         except Exception:
             pass
 
-    def _scan_yaml_paths(self, data: Any, file_path: Path, rel_path: str, key_path: str = ""):
+    def _scan_yaml_paths(
+        self, data: Any, file_path: Path, rel_path: str, key_path: str = ""
+    ):
         """遞迴掃描 YAML 中的路徑"""
         if isinstance(data, dict):
             for key, value in data.items():
                 new_key = f"{key_path}.{key}" if key_path else key
 
-                if key.endswith(("_path", "_file", "path", "file")) and isinstance(value, str):
+                if key.endswith(("_path", "_file", "path", "file")) and isinstance(
+                    value, str
+                ):
                     if value and not value.startswith(("http://", "https://")):
                         resolved = (file_path.parent / value).resolve()
                         try:
                             resolved.relative_to(self.target_path)
                             is_valid = resolved.exists()
                             resolved_str = (
-                                str(resolved.relative_to(self.target_path)) if is_valid else None
+                                str(resolved.relative_to(self.target_path))
+                                if is_valid
+                                else None
                             )
                         except ValueError:
                             is_valid = False
@@ -333,8 +349,12 @@ class PathScanner:
             "total_size_mb": round(total_size / (1024 * 1024), 2),
             "max_depth": max((f.depth for f in self.files), default=0),
             "broken_links_count": len(broken_links),
-            "internal_links_count": len([l for l in self.links if l.link_type == "internal"]),
-            "external_links_count": len([l for l in self.links if l.link_type == "external"]),
+            "internal_links_count": len(
+                [l for l in self.links if l.link_type == "internal"]
+            ),
+            "external_links_count": len(
+                [l for l in self.links if l.link_type == "external"]
+            ),
         }
 
 

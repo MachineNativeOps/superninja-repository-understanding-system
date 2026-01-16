@@ -47,23 +47,35 @@ class Settings(BaseSettings):
     maintenance_agent_url: str = Field(
         default="http://maintenance-agent:8080", env="MAINTENANCE_AGENT_URL"
     )
-    learning_agent_url: str = Field(default="http://learning-agent:8080", env="LEARNING_AGENT_URL")
+    learning_agent_url: str = Field(
+        default="http://learning-agent:8080", env="LEARNING_AGENT_URL"
+    )
 
     # Circuit Breaker
-    circuit_breaker_failure_threshold: int = Field(default=5, env="CB_FAILURE_THRESHOLD")
-    circuit_breaker_recovery_timeout: float = Field(default=60.0, env="CB_RECOVERY_TIMEOUT")
-    circuit_breaker_half_open_requests: int = Field(default=3, env="CB_HALF_OPEN_REQUESTS")
+    circuit_breaker_failure_threshold: int = Field(
+        default=5, env="CB_FAILURE_THRESHOLD"
+    )
+    circuit_breaker_recovery_timeout: float = Field(
+        default=60.0, env="CB_RECOVERY_TIMEOUT"
+    )
+    circuit_breaker_half_open_requests: int = Field(
+        default=3, env="CB_HALF_OPEN_REQUESTS"
+    )
 
     # Consensus
     consensus_timeout: float = Field(default=30.0, env="CONSENSUS_TIMEOUT")
     consensus_quorum_percentage: float = Field(default=0.5, env="CONSENSUS_QUORUM_PCT")
-    consensus_approval_threshold: float = Field(default=0.6, env="CONSENSUS_APPROVAL_THRESHOLD")
+    consensus_approval_threshold: float = Field(
+        default=0.6, env="CONSENSUS_APPROVAL_THRESHOLD"
+    )
 
     # Event Store
     event_store_type: str = Field(
         default="memory", env="EVENT_STORE_TYPE"
     )  # memory, sqlite, postgres
-    event_store_path: str = Field(default="/var/lib/super-agent/events.db", env="EVENT_STORE_PATH")
+    event_store_path: str = Field(
+        default="/var/lib/super-agent/events.db", env="EVENT_STORE_PATH"
+    )
     event_store_max_events: int = Field(default=100000, env="EVENT_STORE_MAX_EVENTS")
 
     # Audit Trail
@@ -73,10 +85,14 @@ class Settings(BaseSettings):
     # Tracing
     trace_enabled: bool = Field(default=True, env="TRACE_ENABLED")
     trace_exporter: str = Field(default="jaeger", env="TRACE_EXPORTER")
-    jaeger_endpoint: str = Field(default="http://jaeger:14268/api/traces", env="JAEGER_ENDPOINT")
+    jaeger_endpoint: str = Field(
+        default="http://jaeger:14268/api/traces", env="JAEGER_ENDPOINT"
+    )
 
     # Security
-    enable_signature_verification: bool = Field(default=False, env="ENABLE_SIGNATURE_VERIFICATION")
+    enable_signature_verification: bool = Field(
+        default=False, env="ENABLE_SIGNATURE_VERIFICATION"
+    )
     allowed_agents: List[str] = Field(
         default=[
             "monitoring-agent",

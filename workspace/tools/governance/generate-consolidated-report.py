@@ -115,7 +115,9 @@ def generate_consolidated_report(results_dir: str, output_file: str):
                     f"- {icon} `{v.get('directory', 'unknown')}`: {v.get('message', 'Unknown violation')}\n"
                 )
     else:
-        lines.append("✅ No language governance data available or no violations found.\n")
+        lines.append(
+            "✅ No language governance data available or no violations found.\n"
+        )
 
     lines.append("\n---\n\n")
 
@@ -191,7 +193,9 @@ def generate_consolidated_report(results_dir: str, output_file: str):
 
 
 def main():
-    parser = argparse.ArgumentParser(description="Generate Consolidated Security Report")
+    parser = argparse.ArgumentParser(
+        description="Generate Consolidated Security Report"
+    )
     parser.add_argument(
         "--results-dir", required=True, help="Directory containing analysis results"
     )
@@ -199,7 +203,9 @@ def main():
     args = parser.parse_args()
 
     if not os.path.exists(args.results_dir):
-        print(f"Error: Results directory not found: {args.results_dir}", file=sys.stderr)
+        print(
+            f"Error: Results directory not found: {args.results_dir}", file=sys.stderr
+        )
         sys.exit(1)
 
     generate_consolidated_report(args.results_dir, args.output)

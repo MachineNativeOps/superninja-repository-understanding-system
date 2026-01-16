@@ -161,7 +161,9 @@ class SelfEvolutionEngine:
 
         # Evolution handlers
         self._evolution_handlers: Dict[str, Callable[..., Awaitable[bool]]] = {}
-        self._validation_handlers: Dict[str, Callable[..., Awaitable[Dict[str, Any]]]] = {}
+        self._validation_handlers: Dict[
+            str, Callable[..., Awaitable[Dict[str, Any]]]
+        ] = {}
 
         # Configuration
         self.config = {
@@ -275,7 +277,9 @@ class SelfEvolutionEngine:
         cycle_id = f"cycle-{uuid.uuid4().hex[:8]}"
         self.is_evolving = True
 
-        self.current_cycle = EvolutionCycle(cycle_id=cycle_id, phase=EvolutionPhase.LEARNING)
+        self.current_cycle = EvolutionCycle(
+            cycle_id=cycle_id, phase=EvolutionPhase.LEARNING
+        )
 
         logger.info(f"Starting evolution cycle: {cycle_id}")
 
@@ -343,7 +347,9 @@ class SelfEvolutionEngine:
                         confidence=0.8,
                     )
 
-        logger.info(f"Learning phase complete: {len(self.current_cycle.learning_records)} records")
+        logger.info(
+            f"Learning phase complete: {len(self.current_cycle.learning_records)} records"
+        )
 
     async def _analyze_patterns(
         self, pattern_type: str, patterns: List[Dict[str, Any]]
@@ -360,7 +366,9 @@ class SelfEvolutionEngine:
         if pattern_type == LearningType.ERROR_PATTERN.value:
             error_count = len(patterns)
             if error_count > 5:
-                insights.append(f"Recurring error pattern detected: {error_count} occurrences")
+                insights.append(
+                    f"Recurring error pattern detected: {error_count} occurrences"
+                )
 
         return insights
 
@@ -418,7 +426,9 @@ class SelfEvolutionEngine:
 
         # Filter by impact threshold
         self.current_cycle.opportunities = [
-            opp for opp in opportunities if opp.impact_score >= self.config["impact_threshold"]
+            opp
+            for opp in opportunities
+            if opp.impact_score >= self.config["impact_threshold"]
         ]
 
         self.opportunities.extend(self.current_cycle.opportunities)
@@ -499,11 +509,17 @@ class SelfEvolutionEngine:
                     try:
                         result = await handler()
                         action.validated = result.get("passed", True)
-                        validation_results["component_results"][action.target_component] = result
+                        validation_results["component_results"][
+                            action.target_component
+                        ] = result
                     except Exception as e:
-                        logger.error(f"Validation failed for {action.target_component}: {e}")
+                        logger.error(
+                            f"Validation failed for {action.target_component}: {e}"
+                        )
                         action.validated = False
-                        validation_results["component_results"][action.target_component] = {
+                        validation_results["component_results"][
+                            action.target_component
+                        ] = {
                             "passed": False,
                             "error": str(e),
                         }
@@ -517,7 +533,9 @@ class SelfEvolutionEngine:
 
         # Check if any validation failed
         failed_validations = [
-            a for a in self.current_cycle.actions if a.status == "applied" and not a.validated
+            a
+            for a in self.current_cycle.actions
+            if a.status == "applied" and not a.validated
         ]
 
         if failed_validations:
@@ -525,10 +543,15 @@ class SelfEvolutionEngine:
             logger.warning(f"Validation failed for {len(failed_validations)} actions")
 
         self.current_cycle.validation_results = validation_results
-        logger.info(f"Validation phase complete: {validation_results['overall_status']}")
+        logger.info(
+            f"Validation phase complete: {validation_results['overall_status']}"
+        )
 
         # If validation failed and auto-rollback is enabled, trigger rollback
-        if validation_results["overall_status"] == "failed" and self.config["auto_rollback"]:
+        if (
+            validation_results["overall_status"] == "failed"
+            and self.config["auto_rollback"]
+        ):
             await self._rollback_cycle()
 
     async def _execute_deployment_phase(self) -> None:
@@ -587,7 +610,9 @@ class SelfEvolutionEngine:
                 "cycle_id": self.current_cycle.cycle_id if self.current_cycle else None,
                 "phase": self.current_cycle.phase.value if self.current_cycle else None,
                 "started_at": (
-                    self.current_cycle.started_at.isoformat() if self.current_cycle else None
+                    self.current_cycle.started_at.isoformat()
+                    if self.current_cycle
+                    else None
                 ),
             },
             "learning_records_count": len(self.learning_records),
@@ -608,7 +633,9 @@ class SelfEvolutionEngine:
             "rollbacks": self.stats["rollbacks"],
             "optimizations_applied": self.stats["optimizations_applied"],
             "success_rate": round(
-                self.stats["successful_evolutions"] / max(self.stats["total_evolutions"], 1) * 100,
+                self.stats["successful_evolutions"]
+                / max(self.stats["total_evolutions"], 1)
+                * 100,
                 2,
             ),
             "pattern_types": list(self.pattern_memory.keys()),

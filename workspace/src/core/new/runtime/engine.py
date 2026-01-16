@@ -70,7 +70,12 @@ class MachineNativeOpsEngine:
         self, name: str, handler: Callable, parameters: Dict[str, Any] = None
     ) -> str:
         """提交任務"""
-        task = Task(id=str(uuid.uuid4()), name=name, handler=handler, parameters=parameters or {})
+        task = Task(
+            id=str(uuid.uuid4()),
+            name=name,
+            handler=handler,
+            parameters=parameters or {},
+        )
 
         self.tasks[task.id] = task
 

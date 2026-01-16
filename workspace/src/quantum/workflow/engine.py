@@ -9,7 +9,9 @@ import torch
 from cirq import Circuit, NamedQubit, Simulator, X
 
 # Set up logging
-logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
+logging.basicConfig(
+    level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
+)
 logger = logging.getLogger(__name__)
 
 
@@ -47,7 +49,9 @@ class WorkflowEngine:
         """Define a workflow with a list of tasks and save to database."""
         try:
             # Validate tasks
-            if not tasks or not all("type" in task and "config" in task for task in tasks):
+            if not tasks or not all(
+                "type" in task and "config" in task for task in tasks
+            ):
                 raise ValueError("Each task must have 'type' and 'config'")
 
             # Create DAG
@@ -77,7 +81,9 @@ class WorkflowEngine:
         try:
             # Load workflow from database
             cursor = self.conn.cursor()
-            cursor.execute("SELECT name, tasks FROM workflows WHERE id = ?", (workflow_id,))
+            cursor.execute(
+                "SELECT name, tasks FROM workflows WHERE id = ?", (workflow_id,)
+            )
             result = cursor.fetchone()
             if not result:
                 raise ValueError(f"Workflow ID {workflow_id} not found")
@@ -105,10 +111,14 @@ class WorkflowEngine:
                     raise ValueError(f"Unsupported task type: {task_type}")
 
                 results[node] = result
-                logger.info(f"Executed task {node} ({task_type}) in workflow {workflow_id}")
+                logger.info(
+                    f"Executed task {node} ({task_type}) in workflow {workflow_id}"
+                )
 
             # Update status
-            cursor.execute("UPDATE workflows SET status = 'completed' WHERE id = ?", (workflow_id,))
+            cursor.execute(
+                "UPDATE workflows SET status = 'completed' WHERE id = ?", (workflow_id,)
+            )
             self.conn.commit()
             logger.info(f"Workflow {workflow_id} completed")
 
@@ -129,7 +139,9 @@ class WorkflowEngine:
                 result = torch.mean(data).item()
                 return result
             else:
-                raise ValueError(f"Unsupported classical operation: {config['operation']}")
+                raise ValueError(
+                    f"Unsupported classical operation: {config['operation']}"
+                )
         except Exception as e:
             logger.error(f"Error in classical task: {str(e)}")
             raise
@@ -155,7 +167,9 @@ class WorkflowEngine:
         """Retrieve the status of a workflow by ID."""
         try:
             cursor = self.conn.cursor()
-            cursor.execute("SELECT name, status FROM workflows WHERE id = ?", (workflow_id,))
+            cursor.execute(
+                "SELECT name, status FROM workflows WHERE id = ?", (workflow_id,)
+            )
             result = cursor.fetchone()
             if not result:
                 raise ValueError(f"Workflow ID {workflow_id} not found")
@@ -180,7 +194,10 @@ if __name__ == "__main__":
     # Example usage
     engine = WorkflowEngine()
     tasks = [
-        {"type": "classical", "config": {"operation": "preprocess", "data": [1.0, 2.0, 3.0]}},
+        {
+            "type": "classical",
+            "config": {"operation": "preprocess", "data": [1.0, 2.0, 3.0]},
+        },
         {"type": "quantum", "config": {"circuit": "simple_x", "shots": 100}},
     ]
     workflow_id = engine.define_workflow("Test Workflow", tasks)

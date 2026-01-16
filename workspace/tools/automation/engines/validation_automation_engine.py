@@ -11,15 +11,6 @@ Validation Automation Engine - 驗證全自動化引擎
 Version: 1.0.0
 """
 
-from engine_base import (
-    BaseEngine,
-    EngineConfig,
-    EngineState,
-    EngineType,
-    ExecutionMode,
-    TaskResult,
-    ValidationEngineBase,
-)
 import asyncio
 import re
 import sys
@@ -29,6 +20,15 @@ from pathlib import Path
 from typing import Any, Dict, List, Optional
 
 import yaml
+from engine_base import (
+    BaseEngine,
+    EngineConfig,
+    EngineState,
+    EngineType,
+    ExecutionMode,
+    TaskResult,
+    ValidationEngineBase,
+)
 
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
@@ -72,7 +72,9 @@ class ValidationAutomationEngine(ValidationEngineBase):
             elif operation == "auto_fix":
                 result = await self._auto_fix_all()
             else:
-                return TaskResult(task_id=task_id, success=False, error=f"未知操作: {operation}")
+                return TaskResult(
+                    task_id=task_id, success=False, error=f"未知操作: {operation}"
+                )
 
             return TaskResult(task_id=task_id, success=True, result=result)
 

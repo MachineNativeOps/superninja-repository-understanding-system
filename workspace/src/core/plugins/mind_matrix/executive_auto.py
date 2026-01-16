@@ -92,7 +92,9 @@ class ExecutiveAutoController:
             # location
             possible_paths = [
                 Path("config/topology-mind-matrix.yaml"),
-                Path(__file__).parent.parent.parent / "config" / "topology-mind-matrix.yaml",
+                Path(__file__).parent.parent.parent
+                / "config"
+                / "topology-mind-matrix.yaml",
             ]
             for path in possible_paths:
                 if path.exists():
@@ -263,10 +265,14 @@ class ExecutiveAutoController:
             raise AssertionError(f"治理原則未覆蓋: {missing}")
 
         # Filter to only allowed actions
-        filtered_decisions = [d for d in plan["decisions"] if d["action"] in self.ALLOWED_ACTIONS]
+        filtered_decisions = [
+            d for d in plan["decisions"] if d["action"] in self.ALLOWED_ACTIONS
+        ]
 
         # Log any blocked actions
-        blocked = [d for d in plan["decisions"] if d["action"] not in self.ALLOWED_ACTIONS]
+        blocked = [
+            d for d in plan["decisions"] if d["action"] not in self.ALLOWED_ACTIONS
+        ]
         if blocked:
             self._evidence("policy_blocked", {"blocked_actions": blocked})
 
@@ -520,7 +526,9 @@ class ExecutiveAutoController:
                 "error_rate": s.get("error_rate", 0),
                 "cpu_utilization": s.get("cpu_utilization", 0),
                 "decisions_made": len(g["decisions"]),
-                "executions_success": sum(1 for r in e["results"] if r.get("status") == "success"),
+                "executions_success": sum(
+                    1 for r in e["results"] if r.get("status") == "success"
+                ),
             }
         )
 

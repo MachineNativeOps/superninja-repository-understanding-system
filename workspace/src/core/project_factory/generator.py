@@ -121,7 +121,9 @@ class ProjectGenerator:
 
         return files
 
-    def _generate_source_code(self, spec: ProjectSpec, context: Dict[str, Any]) -> Dict[str, str]:
+    def _generate_source_code(
+        self, spec: ProjectSpec, context: Dict[str, Any]
+    ) -> Dict[str, str]:
         """Generate source code based on architecture pattern."""
         files = {}
 
@@ -171,13 +173,17 @@ class ProjectGenerator:
 
             # Infrastructure layer
             if spec.features.database:
-                files[f"src/{pkg}/infrastructure/database.py"] = self.template_engine.render(
-                    f"{template_base}/infrastructure/database.j2", context
+                files[f"src/{pkg}/infrastructure/database.py"] = (
+                    self.template_engine.render(
+                        f"{template_base}/infrastructure/database.j2", context
+                    )
                 )
 
             if spec.features.cache:
-                files[f"src/{pkg}/infrastructure/cache.py"] = self.template_engine.render(
-                    f"{template_base}/infrastructure/cache.j2", context
+                files[f"src/{pkg}/infrastructure/cache.py"] = (
+                    self.template_engine.render(
+                        f"{template_base}/infrastructure/cache.j2", context
+                    )
                 )
 
             # Main entry point
@@ -220,14 +226,18 @@ class ProjectGenerator:
 
         return files
 
-    def _generate_tests(self, spec: ProjectSpec, context: Dict[str, Any]) -> Dict[str, str]:
+    def _generate_tests(
+        self, spec: ProjectSpec, context: Dict[str, Any]
+    ) -> Dict[str, str]:
         """Generate test suites."""
         files = {}
         pkg = context["package_name"]
 
         if spec.language == Language.PYTHON:
             # pytest configuration
-            files["pytest.ini"] = self.template_engine.render("python/pytest.ini.j2", context)
+            files["pytest.ini"] = self.template_engine.render(
+                "python/pytest.ini.j2", context
+            )
 
             # Unit tests
             if spec.deliverables.tests.unit:
@@ -251,7 +261,9 @@ class ProjectGenerator:
 
         return files
 
-    def _generate_docker(self, spec: ProjectSpec, context: Dict[str, Any]) -> Dict[str, str]:
+    def _generate_docker(
+        self, spec: ProjectSpec, context: Dict[str, Any]
+    ) -> Dict[str, str]:
         """Generate Docker configuration."""
         files = {}
 
@@ -259,7 +271,9 @@ class ProjectGenerator:
             f"docker/{spec.language.value}/Dockerfile.j2", context
         )
 
-        files[".dockerignore"] = self.template_engine.render("docker/.dockerignore.j2", context)
+        files[".dockerignore"] = self.template_engine.render(
+            "docker/.dockerignore.j2", context
+        )
 
         files["docker-compose.yml"] = self.template_engine.render(
             "docker/docker-compose.yml.j2", context
@@ -267,7 +281,9 @@ class ProjectGenerator:
 
         return files
 
-    def _generate_kubernetes(self, spec: ProjectSpec, context: Dict[str, Any]) -> Dict[str, str]:
+    def _generate_kubernetes(
+        self, spec: ProjectSpec, context: Dict[str, Any]
+    ) -> Dict[str, str]:
         """Generate Kubernetes manifests."""
         files = {}
 
@@ -277,13 +293,19 @@ class ProjectGenerator:
             )
 
         if spec.deliverables.kubernetes.service:
-            files["k8s/service.yaml"] = self.template_engine.render("k8s/service.yaml.j2", context)
+            files["k8s/service.yaml"] = self.template_engine.render(
+                "k8s/service.yaml.j2", context
+            )
 
         if spec.deliverables.kubernetes.ingress:
-            files["k8s/ingress.yaml"] = self.template_engine.render("k8s/ingress.yaml.j2", context)
+            files["k8s/ingress.yaml"] = self.template_engine.render(
+                "k8s/ingress.yaml.j2", context
+            )
 
         if spec.deliverables.kubernetes.hpa:
-            files["k8s/hpa.yaml"] = self.template_engine.render("k8s/hpa.yaml.j2", context)
+            files["k8s/hpa.yaml"] = self.template_engine.render(
+                "k8s/hpa.yaml.j2", context
+            )
 
         if spec.deliverables.kubernetes.network_policy:
             files["k8s/network-policy.yaml"] = self.template_engine.render(
@@ -292,7 +314,9 @@ class ProjectGenerator:
 
         return files
 
-    def _generate_cicd(self, spec: ProjectSpec, context: Dict[str, Any]) -> Dict[str, str]:
+    def _generate_cicd(
+        self, spec: ProjectSpec, context: Dict[str, Any]
+    ) -> Dict[str, str]:
         """Generate CI/CD pipeline configuration."""
         files = {}
 
@@ -312,11 +336,15 @@ class ProjectGenerator:
             )
 
         elif platform == "drone":
-            files[".drone.yml"] = self.template_engine.render("cicd/drone/drone.yml.j2", context)
+            files[".drone.yml"] = self.template_engine.render(
+                "cicd/drone/drone.yml.j2", context
+            )
 
         return files
 
-    def _generate_documentation(self, spec: ProjectSpec, context: Dict[str, Any]) -> Dict[str, str]:
+    def _generate_documentation(
+        self, spec: ProjectSpec, context: Dict[str, Any]
+    ) -> Dict[str, str]:
         """Generate project documentation."""
         files = {}
 
@@ -357,6 +385,8 @@ class ProjectGenerator:
         )
 
         # Security policy
-        files["SECURITY.md"] = self.template_engine.render("common/SECURITY.md.j2", context)
+        files["SECURITY.md"] = self.template_engine.render(
+            "common/SECURITY.md.j2", context
+        )
 
         return files

@@ -850,9 +850,9 @@ async def get_products_optimized(cursor: str, limit: int = 20):
 
         results["code_examples"] = [
             e
-            for e, _ in sorted(results["code_examples"], key=lambda x: x[1], reverse=True)[
-                :max_results
-            ]
+            for e, _ in sorted(
+                results["code_examples"], key=lambda x: x[1], reverse=True
+            )[:max_results]
         ]
 
         # Search scenario examples
@@ -868,9 +868,9 @@ async def get_products_optimized(cursor: str, limit: int = 20):
 
         results["scenario_examples"] = [
             e
-            for e, _ in sorted(results["scenario_examples"], key=lambda x: x[1], reverse=True)[
-                :max_results
-            ]
+            for e, _ in sorted(
+                results["scenario_examples"], key=lambda x: x[1], reverse=True
+            )[:max_results]
         ]
 
         # Search decision examples
@@ -886,9 +886,9 @@ async def get_products_optimized(cursor: str, limit: int = 20):
 
         results["decision_examples"] = [
             e
-            for e, _ in sorted(results["decision_examples"], key=lambda x: x[1], reverse=True)[
-                :max_results
-            ]
+            for e, _ in sorted(
+                results["decision_examples"], key=lambda x: x[1], reverse=True
+            )[:max_results]
         ]
 
         return results
@@ -910,10 +910,14 @@ async def get_products_optimized(cursor: str, limit: int = 20):
 
         return score
 
-    def get_examples_for_category(self, category: ExampleCategory) -> dict[str, list[Any]]:
+    def get_examples_for_category(
+        self, category: ExampleCategory
+    ) -> dict[str, list[Any]]:
         """Get all examples for a category."""
         return {
-            "code_examples": [e for e in self.code_examples.values() if e.category == category],
+            "code_examples": [
+                e for e in self.code_examples.values() if e.category == category
+            ],
             "scenario_examples": [
                 e for e in self.scenario_examples.values() if e.category == category
             ],

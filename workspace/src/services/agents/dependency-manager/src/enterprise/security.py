@@ -332,7 +332,11 @@ class NextGenSecurity:
             "metadata": {
                 "timestamp": sbom.created_at.isoformat(),
                 "tools": [sbom.metadata.get("tool", "unknown")],
-                "component": {"type": "application", "name": sbom.name, "version": sbom.version},
+                "component": {
+                    "type": "application",
+                    "name": sbom.name,
+                    "version": sbom.version,
+                },
             },
             "components": [
                 {
@@ -392,7 +396,12 @@ class NextGenSecurity:
                 "project_version": sbom.version,
                 "created": sbom.created_at.isoformat(),
                 "components": [
-                    {"name": c.name, "version": c.version, "purl": c.purl, "license": c.license}
+                    {
+                        "name": c.name,
+                        "version": c.version,
+                        "purl": c.purl,
+                        "license": c.license,
+                    }
                     for c in sbom.components
                 ],
             },
@@ -482,7 +491,9 @@ class NextGenSecurity:
 
         elif "變更" in req_name or "change" in req_name.lower():
             # 檢查是否有版本鎖定
-            pinned = len([d for d in dependencies if not d.get("version", "").startswith("^")])
+            pinned = len(
+                [d for d in dependencies if not d.get("version", "").startswith("^")]
+            )
             if pinned < len(dependencies) * 0.8:
                 status = "partial"
                 evidence.append(f"{pinned}/{len(dependencies)} 版本已鎖定")
@@ -492,7 +503,9 @@ class NextGenSecurity:
 
         elif "惡意" in req_name or "malicious" in req_name.lower():
             malicious = [
-                d for d in dependencies if d.get("name", "").lower() in self.KNOWN_MALICIOUS
+                d
+                for d in dependencies
+                if d.get("name", "").lower() in self.KNOWN_MALICIOUS
             ]
             if malicious:
                 status = "fail"
@@ -516,7 +529,9 @@ class NextGenSecurity:
 
     # ==================== 供應鏈安全 ====================
 
-    def analyze_supply_chain(self, dependencies: list[dict[str, Any]]) -> list[SupplyChainAlert]:
+    def analyze_supply_chain(
+        self, dependencies: list[dict[str, Any]]
+    ) -> list[SupplyChainAlert]:
         """
         分析供應鏈安全
 
@@ -736,8 +751,12 @@ class NextGenSecurity:
                 compliance_reports.append(report)
 
         # 統計
-        critical_alerts = len([a for a in supply_chain_alerts if a.severity == "critical"])
-        untrusted = len([t for t in trust_assessments if t.trust_level == TrustLevel.UNTRUSTED])
+        critical_alerts = len(
+            [a for a in supply_chain_alerts if a.severity == "critical"]
+        )
+        untrusted = len(
+            [t for t in trust_assessments if t.trust_level == TrustLevel.UNTRUSTED]
+        )
         avg_trust = (
             sum(t.score for t in trust_assessments) / len(trust_assessments)
             if trust_assessments
@@ -763,7 +782,11 @@ class NextGenSecurity:
                 for a in supply_chain_alerts
             ],
             "trust_assessments": [
-                {"package": t.package_name, "trust_level": t.trust_level.value, "score": t.score}
+                {
+                    "package": t.package_name,
+                    "trust_level": t.trust_level.value,
+                    "score": t.score,
+                }
                 for t in trust_assessments
             ],
             "compliance": [
@@ -840,7 +863,9 @@ class NextGenSecurity:
             report["trust_assessments"], key=lambda x: x["score"], reverse=True
         )[:10]:
             emoji = trust_emoji.get(assessment["trust_level"], "❓")
-            lines.append(f"  {emoji} {assessment['package']}: {assessment['score']:.0f}")
+            lines.append(
+                f"  {emoji} {assessment['package']}: {assessment['score']:.0f}"
+            )
 
         if report["compliance"]:
             lines.extend(
@@ -851,8 +876,14 @@ class NextGenSecurity:
                 ]
             )
             for comp in report["compliance"]:
-                status = "✅" if comp["score"] >= 80 else "⚠️" if comp["score"] >= 60 else "❌"
-                lines.append(f"  {status} {comp['framework'].upper()}: {comp['score']:.1f}%")
+                status = (
+                    "✅"
+                    if comp["score"] >= 80
+                    else "⚠️" if comp["score"] >= 60 else "❌"
+                )
+                lines.append(
+                    f"  {status} {comp['framework'].upper()}: {comp['score']:.1f}%"
+                )
                 lines.append(f"     通過：{comp['passed']} | 失敗：{comp['failed']}")
 
         lines.extend(["", "=" * 60])

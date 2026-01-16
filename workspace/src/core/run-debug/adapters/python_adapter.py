@@ -5,16 +5,23 @@ Python Debug Adapter
 實作 Python 語言的偵錯功能，支援 debugpy 協議。
 """
 
-import os
 import asyncio
 import json
+import os
 import socket
 import subprocess
 import sys
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
-from ..engine import BreakpointType, DebugAdapter, DebugSession, DebugState, StackFrame, Variable
+from ..engine import (
+    BreakpointType,
+    DebugAdapter,
+    DebugSession,
+    DebugState,
+    StackFrame,
+    Variable,
+)
 
 
 class PythonDebugAdapter(DebugAdapter):
@@ -31,7 +38,9 @@ class PythonDebugAdapter(DebugAdapter):
 
     async def initialize(self, session: DebugSession):
         """初始化 Python 偵錯器"""
-        self.logger.info(f"Initializing Python debug adapter for session {session.session_id}")
+        self.logger.info(
+            f"Initializing Python debug adapter for session {session.session_id}"
+        )
 
         # 檢查 debugpy 是否已安裝
         try:
@@ -41,7 +50,9 @@ class PythonDebugAdapter(DebugAdapter):
         except ImportError:
             self.logger.warning("debugpy not installed, installing...")
             subprocess.run(
-                [sys.executable, "-m", "pip", "install", "debugpy"], check=True, capture_output=True
+                [sys.executable, "-m", "pip", "install", "debugpy"],
+                check=True,
+                capture_output=True,
             )
 
         session.state = DebugState.INITIALIZING
@@ -125,7 +136,9 @@ class PythonDebugAdapter(DebugAdapter):
                 else:
                     raise
 
-    async def _send_request(self, command: str, arguments: Optional[Dict] = None) -> Dict:
+    async def _send_request(
+        self, command: str, arguments: Optional[Dict] = None
+    ) -> Dict:
         """發送 DAP 請求"""
         self.seq += 1
         request = {
@@ -212,7 +225,9 @@ class PythonDebugAdapter(DebugAdapter):
                 if message.get("success"):
                     future.set_result(message.get("body", {}))
                 else:
-                    future.set_exception(Exception(message.get("message", "Request failed")))
+                    future.set_exception(
+                        Exception(message.get("message", "Request failed"))
+                    )
 
         elif msg_type == "event":
             # 事件訊息
@@ -266,7 +281,11 @@ class PythonDebugAdapter(DebugAdapter):
             if bp.file not in breakpoints_by_file:
                 breakpoints_by_file[bp.file] = []
             breakpoints_by_file[bp.file].append(
-                {"line": bp.line, "condition": bp.condition, "logMessage": bp.log_message}
+                {
+                    "line": bp.line,
+                    "condition": bp.condition,
+                    "logMessage": bp.log_message,
+                }
             )
 
         # 為每個檔案設定斷點
@@ -286,7 +305,9 @@ class PythonDebugAdapter(DebugAdapter):
 
         async def read_stream(stream, prefix):
             while True:
-                line = await asyncio.get_event_loop().run_in_executor(None, stream.readline)
+                line = await asyncio.get_event_loop().run_in_executor(
+                    None, stream.readline
+                )
                 if not line:
                     break
                 self.logger.info(f"{prefix}: {line.decode('utf-8').strip()}")
@@ -324,14 +345,18 @@ class PythonDebugAdapter(DebugAdapter):
         """單步執行（跳出）"""
         await self._send_request("stepOut", {"threadId": 1})
 
-    async def evaluate(self, session: DebugSession, expression: str) -> Optional[Variable]:
+    async def evaluate(
+        self, session: DebugSession, expression: str
+    ) -> Optional[Variable]:
         """評估表達式"""
         try:
             response = await self._send_request(
                 "evaluate",
                 {
                     "expression": expression,
-                    "frameId": session.stack_frames[0].id if session.stack_frames else 0,
+                    "frameId": (
+                        session.stack_frames[0].id if session.stack_frames else 0
+                    ),
                     "context": "repl",
                 },
             )
@@ -370,7 +395,9 @@ class PythonDebugAdapter(DebugAdapter):
             self.logger.error(f"Failed to get stack trace: {e}")
             return []
 
-    async def get_variables(self, session: DebugSession, scope: str = "local") -> List[Variable]:
+    async def get_variables(
+        self, session: DebugSession, scope: str = "local"
+    ) -> List[Variable]:
         """取得變數"""
         try:
             if not session.stack_frames:
@@ -387,7 +414,8 @@ class PythonDebugAdapter(DebugAdapter):
                 if scope == "all" or scope in scope_name:
                     # 取得該作用域的變數
                     vars_response = await self._send_request(
-                        "variables", {"variablesReference": scope_data.get("variablesReference", 0)}
+                        "variables",
+                        {"variablesReference": scope_data.get("variablesReference", 0)},
                     )
 
                     for var_data in vars_response.get("variables", []):

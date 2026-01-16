@@ -2,13 +2,16 @@
 Tests for Phase 12: GitHub Issues CI Error Auto-Handler System
 """
 
-# Import Phase 12 components
-from core.ci_error_handler.issue_manager import CIIssue, IssueManager, IssueStatus, IssueTemplate
-from core.ci_error_handler.fix_status_tracker import (
-    FixHistory,
-    FixMetrics,
-    FixStatus,
-    FixStatusTracker,
+import sys
+from datetime import datetime, timedelta
+
+import pytest
+from core.ci_error_handler.auto_fix_engine import (
+    AutoFixEngine,
+    FixAttempt,
+    FixResult,
+    FixRule,
+    FixStrategy,
 )
 from core.ci_error_handler.ci_error_analyzer import (
     CIError,
@@ -17,17 +20,20 @@ from core.ci_error_handler.ci_error_analyzer import (
     ErrorPattern,
     ErrorSeverity,
 )
-from core.ci_error_handler.auto_fix_engine import (
-    AutoFixEngine,
-    FixAttempt,
-    FixResult,
-    FixRule,
-    FixStrategy,
+from core.ci_error_handler.fix_status_tracker import (
+    FixHistory,
+    FixMetrics,
+    FixStatus,
+    FixStatusTracker,
 )
-import sys
-from datetime import datetime, timedelta
 
-import pytest
+# Import Phase 12 components
+from core.ci_error_handler.issue_manager import (
+    CIIssue,
+    IssueManager,
+    IssueStatus,
+    IssueTemplate,
+)
 
 sys.path.insert(0, "/home/runner/work/SynergyMesh/SynergyMesh")
 
@@ -294,7 +300,10 @@ class TestAutoFixEngine:
         )
 
         attempt = engine.create_fix_attempt(
-            error, FixStrategy.AUTO_FIX, "Auto-fix ESLint errors", files_modified=["src/index.ts"]
+            error,
+            FixStrategy.AUTO_FIX,
+            "Auto-fix ESLint errors",
+            files_modified=["src/index.ts"],
         )
 
         assert attempt.error_id == "ERR-003"
@@ -311,7 +320,9 @@ class TestAutoFixEngine:
             message="ESLint error",
         )
 
-        attempt = engine.create_fix_attempt(error, FixStrategy.CREATE_PR, "Create fix PR")
+        attempt = engine.create_fix_attempt(
+            error, FixStrategy.CREATE_PR, "Create fix PR"
+        )
 
         updated = engine.record_attempt_result(
             attempt.attempt_id,
@@ -409,7 +420,9 @@ class TestFixStatusTracker:
         tracker = FixStatusTracker()
         tracker.start_tracking("ERR-002", "build_error")
 
-        updated = tracker.update_status("ERR-002", FixStatus.IN_PROGRESS, "Fix attempt started")
+        updated = tracker.update_status(
+            "ERR-002", FixStatus.IN_PROGRESS, "Fix attempt started"
+        )
 
         assert updated.status == FixStatus.IN_PROGRESS
         assert len(updated.history) == 2
@@ -432,7 +445,9 @@ class TestFixStatusTracker:
         tracker.start_tracking("ERR-004", "test_failure")
         tracker.link_pr("ERR-004", 789, "https://github.com/test/repo/pull/789")
 
-        updated = tracker.mark_pr_merged("ERR-004", commit_sha="abc123", merged_by="test_user")
+        updated = tracker.mark_pr_merged(
+            "ERR-004", commit_sha="abc123", merged_by="test_user"
+        )
 
         assert updated.status == FixStatus.PR_MERGED
         assert updated.resolved_by == "test_user"
@@ -527,10 +542,14 @@ class TestPhase12Integration:
 
         # 4. Track fix
         tracker = FixStatusTracker()
-        tracked = tracker.start_tracking(error.error_id, error.category.value, issue.issue_id)
+        tracked = tracker.start_tracking(
+            error.error_id, error.category.value, issue.issue_id
+        )
 
         # 5. Create and record fix attempt
-        attempt = engine.create_fix_attempt(error, FixStrategy.CREATE_PR, "Fix type error")
+        attempt = engine.create_fix_attempt(
+            error, FixStrategy.CREATE_PR, "Fix type error"
+        )
         tracker.add_attempt(error.error_id, attempt)
 
         # 6. Link PR

@@ -26,7 +26,9 @@ import yaml
 logger = logging.getLogger(__name__)
 
 
-MANIFEST_PATH = Path("00-namespaces/namespaces-mcp/pipelines/unified-pipeline-config.yaml")
+MANIFEST_PATH = Path(
+    "00-namespaces/namespaces-mcp/pipelines/unified-pipeline-config.yaml"
+)
 SCHEMA_PATH = Path("00-namespaces/namespaces-mcp/schemas/unified-pipeline.schema.json")
 
 
@@ -393,7 +395,9 @@ def _parse_auto_healing(spec: Dict[str, Any]) -> Optional[AutoHealing]:
     )
 
 
-def _parse_governance_validation(spec: Dict[str, Any]) -> Optional[List[GovernanceValidationRule]]:
+def _parse_governance_validation(
+    spec: Dict[str, Any],
+) -> Optional[List[GovernanceValidationRule]]:
     """Parse governance validation rules from spec data."""
     if "governanceValidation" not in spec:
         return None
@@ -403,7 +407,8 @@ def _parse_governance_validation(spec: Dict[str, Any]) -> Optional[List[Governan
         return None
 
     return [
-        _safe_construct(GovernanceValidationRule, g, "governanceValidation[*]") for g in gv_data
+        _safe_construct(GovernanceValidationRule, g, "governanceValidation[*]")
+        for g in gv_data
     ]
 
 
@@ -472,7 +477,8 @@ def _parse_mcp_integration(spec: Dict[str, Any]) -> McpIntegration:
     if not isinstance(adapters_data, list):
         raise ValueError("spec.mcpIntegration.toolAdapters must be a list")
     adapters = [
-        _safe_construct(ToolAdapter, t, "mcpIntegration.toolAdapters[*]") for t in adapters_data
+        _safe_construct(ToolAdapter, t, "mcpIntegration.toolAdapters[*]")
+        for t in adapters_data
     ]
 
     return McpIntegration(
@@ -516,7 +522,9 @@ def load_manifest(path: Path = MANIFEST_PATH) -> UnifiedPipelineManifest:
     # Parse optional configurations
     auto_scaling = _parse_auto_scaling(spec)
     latency_thresholds = (
-        _safe_construct(LatencyThresholds, spec["latencyThresholds"], "latencyThresholds")
+        _safe_construct(
+            LatencyThresholds, spec["latencyThresholds"], "latencyThresholds"
+        )
         if "latencyThresholds" in spec
         else None
     )
@@ -578,7 +586,9 @@ def _safe_construct(cls, data: dict, label: str):
     try:
         return cls(**filtered_data)
     except (TypeError, KeyError, ValueError) as exc:
-        raise ValueError(f"Failed constructing {label} for {cls.__name__}: {exc}") from exc
+        raise ValueError(
+            f"Failed constructing {label} for {cls.__name__}: {exc}"
+        ) from exc
 
 
 # ========================================

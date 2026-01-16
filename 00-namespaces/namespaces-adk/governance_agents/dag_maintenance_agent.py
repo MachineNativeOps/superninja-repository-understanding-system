@@ -245,11 +245,11 @@ class DAGMaintenanceAgent:
                     Conflict(
                         type="duplicate_name",
                         severity="error",
-                        nodes=[node.id for node in nodes if node.name == name],
+                        nodes=[
+                            node.id for node in nodes if node.name == name],
                         description=f"Duplicate name '{name}' found {count} times",
                         suggested_fix="Rename nodes to be unique using taxonomy conventions",
-                    )
-                )
+                    ))
                 self.conflict_counter.labels(severity="error").inc()
 
         # Check for circular dependencies (simplified)
@@ -263,11 +263,11 @@ class DAGMaintenanceAgent:
                     Conflict(
                         type="taxonomy_drift",
                         severity="warning",
-                        nodes=[node.id],
+                        nodes=[
+                            node.id],
                         description=f"Name '{node.name}' does not follow taxonomy conventions",
                         suggested_fix=f"Rename to '{result.get('fixed')}'",
-                    )
-                )
+                    ))
                 self.conflict_counter.labels(severity="warning").inc()
 
         self.logger.info(f"Detected {len(conflicts)} conflicts")

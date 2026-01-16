@@ -48,10 +48,16 @@ class TenantRepository(Protocol):
 
     async def save_repository(self, repo: Repository) -> Repository: ...
 
-    async def get_repository(self, org_id: UUID, repo_id: UUID) -> Repository | None: ...
+    async def get_repository(
+        self, org_id: UUID, repo_id: UUID
+    ) -> Repository | None: ...
 
     async def list_repositories(
-        self, org_id: UUID, project_id: UUID | None = None, offset: int = 0, limit: int = 100
+        self,
+        org_id: UUID,
+        project_id: UUID | None = None,
+        offset: int = 0,
+        limit: int = 100,
     ) -> list[Repository]: ...
 
 
@@ -268,7 +274,9 @@ class TenantManager:
         # Check quota
         projects = await self.repository.list_projects(org_id)
         if len(projects) >= org.max_projects:
-            raise ValueError(f"Project limit reached ({org.max_projects}). Upgrade plan for more.")
+            raise ValueError(
+                f"Project limit reached ({org.max_projects}). Upgrade plan for more."
+            )
 
         # Validate slug
         slug = slug.lower().strip()
@@ -344,7 +352,9 @@ class TenantManager:
         org = await self.repository.get_organization(org_id)
         repos = await self.repository.list_repositories(org_id, project_id)
         if len(repos) >= org.max_repos_per_project:
-            raise ValueError(f"Repository limit reached for project ({org.max_repos_per_project}).")
+            raise ValueError(
+                f"Repository limit reached for project ({org.max_repos_per_project})."
+            )
 
         repo = Repository(
             org_id=org_id,  # CRITICAL: Tenant isolation
@@ -385,7 +395,9 @@ class TenantManager:
         limit: int = 100,
     ) -> list[Repository]:
         """List repositories for org/project"""
-        return await self.repository.list_repositories(org_id, project_id, offset, limit)
+        return await self.repository.list_repositories(
+            org_id, project_id, offset, limit
+        )
 
     # ------------------------------------------------------------------
     # Tenant Isolation Utilities

@@ -208,7 +208,8 @@ class HttpWellKnownVerifier:
                 verification_token=verification_token,
                 endpoint_url=response_data["url"],
                 http_status=response_data["status_code"],
-                response_content=str(response_data["content"]),
+                response_content=str(
+                    response_data["content"]),
                 error_message=f"Verification token not found in response from {response_data['url']}",
             )
 

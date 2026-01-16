@@ -142,7 +142,9 @@ class BusinessServiceManager:
         """獲取項目"""
         return self.projects.get(project_id)
 
-    async def update_project(self, project_id: str, updates: Dict[str, Any]) -> Optional[Project]:
+    async def update_project(
+        self, project_id: str, updates: Dict[str, Any]
+    ) -> Optional[Project]:
         """更新項目"""
         if project_id not in self.projects:
             return None
@@ -248,7 +250,9 @@ class BusinessServiceManager:
         """獲取任務"""
         return self.tasks.get(task_id)
 
-    async def update_task(self, task_id: str, request: UpdateTaskRequest) -> Optional[Task]:
+    async def update_task(
+        self, task_id: str, request: UpdateTaskRequest
+    ) -> Optional[Task]:
         """更新任務"""
         if task_id not in self.tasks:
             return None
@@ -332,7 +336,9 @@ class BusinessServiceManager:
             Priority.MEDIUM: 2,
             Priority.LOW: 3,
         }
-        tasks.sort(key=lambda x: (priority_order[x.priority], x.created_at), reverse=True)
+        tasks.sort(
+            key=lambda x: (priority_order[x.priority], x.created_at), reverse=True
+        )
 
         # 分頁
         start = (query.page - 1) * query.page_size
@@ -350,7 +356,11 @@ class BusinessServiceManager:
 
     # 工作流管理
     async def execute_workflow(
-        self, workflow_id: str, name: str, triggered_by: str, parameters: Dict[str, Any] = None
+        self,
+        workflow_id: str,
+        name: str,
+        triggered_by: str,
+        parameters: Dict[str, Any] = None,
     ) -> WorkflowExecution:
         """執行工作流"""
         execution = WorkflowExecution(
@@ -375,7 +385,9 @@ class BusinessServiceManager:
 
         return execution
 
-    async def get_workflow_execution(self, execution_id: str) -> Optional[WorkflowExecution]:
+    async def get_workflow_execution(
+        self, execution_id: str
+    ) -> Optional[WorkflowExecution]:
         """獲取工作流執行"""
         return self.workflows.get(execution_id)
 
@@ -387,12 +399,18 @@ class BusinessServiceManager:
 
         # 計算項目指標
         total_projects = len(projects)
-        active_projects = len([p for p in projects if p.status == BusinessStatus.ACTIVE])
-        completed_projects = len([p for p in projects if p.status == BusinessStatus.COMPLETED])
+        active_projects = len(
+            [p for p in projects if p.status == BusinessStatus.ACTIVE]
+        )
+        completed_projects = len(
+            [p for p in projects if p.status == BusinessStatus.COMPLETED]
+        )
 
         # 計算任務指標
         total_tasks = len(tasks)
-        completed_tasks = len([t for t in tasks if t.status == BusinessStatus.COMPLETED])
+        completed_tasks = len(
+            [t for t in tasks if t.status == BusinessStatus.COMPLETED]
+        )
 
         # 計算平均完成時間
         completed_tasks_with_time = [
@@ -413,7 +431,9 @@ class BusinessServiceManager:
 
         # 計算資源利用率（簡化計算）
         active_tasks = [t for t in tasks if t.status == BusinessStatus.ACTIVE]
-        resource_utilization = min(len(active_tasks) / 10.0, 1.0)  # 假設最大容量10個任務
+        resource_utilization = min(
+            len(active_tasks) / 10.0, 1.0
+        )  # 假設最大容量10個任務
 
         # 計算質量分數（基於完成率）
         quality_score = (completed_tasks / total_tasks * 100) if total_tasks > 0 else 0

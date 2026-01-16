@@ -76,7 +76,10 @@ class SubtreeHelper:
         return repos
 
     def print_repositories(
-        self, core_only: bool = False, repo_name: Optional[str] = None, format: str = "pipe"
+        self,
+        core_only: bool = False,
+        repo_name: Optional[str] = None,
+        format: str = "pipe",
     ):
         """
         Print repositories in specified format
@@ -131,7 +134,10 @@ class SubtreeHelper:
         target_dir = self.repo_root / prefix
         if not target_dir.exists():
             print(f"❌ Directory not found: {target_dir}", file=sys.stderr)
-            print(f"   Run: ./tools/integrate_repositories.sh --repo {name}", file=sys.stderr)
+            print(
+                f"   Run: ./tools/integrate_repositories.sh --repo {name}",
+                file=sys.stderr,
+            )
             sys.exit(1)
 
         # Build command
@@ -237,7 +243,9 @@ class SubtreeHelper:
                 not_integrated += 1
 
         print("=" * 80)
-        print(f"Total: {len(all_repos)} | Integrated: {integrated} | Pending: {not_integrated}")
+        print(
+            f"Total: {len(all_repos)} | Integrated: {integrated} | Pending: {not_integrated}"
+        )
 
 
 def main():
@@ -252,18 +260,28 @@ def main():
 
     parser.add_argument("--list", action="store_true", help="List repositories")
 
-    parser.add_argument("--core-only", action="store_true", help="Only core repositories")
+    parser.add_argument(
+        "--core-only", action="store_true", help="Only core repositories"
+    )
 
     parser.add_argument("--repo", type=str, help="Specific repository name")
 
     parser.add_argument(
-        "--format", choices=["pipe", "table", "json"], default="pipe", help="Output format"
+        "--format",
+        choices=["pipe", "table", "json"],
+        default="pipe",
+        help="Output format",
     )
 
-    parser.add_argument("--update", type=str, metavar="REPO_NAME", help="Update existing subtree")
+    parser.add_argument(
+        "--update", type=str, metavar="REPO_NAME", help="Update existing subtree"
+    )
 
     parser.add_argument(
-        "--push", type=str, metavar="REPO_NAME", help="Push changes back to source repository"
+        "--push",
+        type=str,
+        metavar="REPO_NAME",
+        help="Push changes back to source repository",
     )
 
     parser.add_argument(
@@ -279,7 +297,9 @@ def main():
 
     # Execute command
     if args.list:
-        helper.print_repositories(core_only=args.core_only, repo_name=args.repo, format=args.format)
+        helper.print_repositories(
+            core_only=args.core_only, repo_name=args.repo, format=args.format
+        )
     elif args.update:
         squash = not args.no_squash
         success = helper.update_subtree(args.update, squash=squash)

@@ -204,7 +204,9 @@ class ResourceQuotaManager:
     config_provider: QuotaConfigProvider
 
     # Cache for quota configs
-    _config_cache: dict[str, tuple[OrgQuotaConfig, datetime]] = field(default_factory=dict)
+    _config_cache: dict[str, tuple[OrgQuotaConfig, datetime]] = field(
+        default_factory=dict
+    )
     _cache_ttl_seconds: int = 300
 
     # ------------------------------------------------------------------
@@ -376,7 +378,9 @@ class ResourceQuotaManager:
             )
 
         period_start = self._get_period_start(quota.period)
-        current = await self.storage.get_usage(org_id, resource_type, quota.period, period_start)
+        current = await self.storage.get_usage(
+            org_id, resource_type, quota.period, period_start
+        )
 
         return QuotaUsage(
             resource_type=resource_type,
