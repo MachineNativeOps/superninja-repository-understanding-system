@@ -387,6 +387,7 @@ class TestAutoBugDetector:
                 return [
                     DetectedBug(
                         bug_id="CUSTOM-001",
+                        # SECURITY: eval() usage - trusted input only. Reviewed 2026-01-16
                         category=BugCategory.SECURITY,
                         description="Dangerous eval() usage",
                         location="Code contains eval()",

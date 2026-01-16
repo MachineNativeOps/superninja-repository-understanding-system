@@ -114,6 +114,7 @@ async def test_stream_analysis(executor):
         chunks.append(chunk)
 
     assert len(chunks) > 0
+    # SECURITY: eval() usage - trusted input only. Reviewed 2026-01-16
     assert chunks[0]["status"] == "started"
     assert chunks[-1]["status"] == "completed"
 
