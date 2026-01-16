@@ -88,10 +88,22 @@ Examples:
         '-d',
         action='store_true',
         help='Run as daemon process'
-    """Main entry point"""
-    parser = argparse.ArgumentParser(
-        description="MachineNativeOps Auto-Monitor"
     )
+    
+    # Parse arguments
+    args = parser.parse_args()
+    
+    # Setup logging
+    if args.verbose:
+        logger.setLevel(logging.DEBUG)
+        logging.getLogger().setLevel(logging.DEBUG)
+    
+    # Load configuration
+    config = load_config(args.config)
+    
+    # Run the monitor
+    monitor = AutoMonitor(config)
+    monitor.run()
     parser.add_argument(
         "--config",
         default="config/auto-monitor.yaml",
@@ -153,6 +165,16 @@ Examples:
         logger.info(f"Version: {config.version}")
         logger.info(f"Namespace: {config.namespace}")
         
+        # Run the application
+        app.run()
+        
+    except KeyboardInterrupt:
+        logger.info("Received shutdown signal, stopping...")
+    except Exception as e:
+        logger.error(f"Error starting application: {e}")
+        raise
+
+
 def setup_logging(verbose: bool = False):
     """Configure logging for the application."""
     level = logging.DEBUG if verbose else logging.INFO

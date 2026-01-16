@@ -168,7 +168,6 @@ class SuperAgentTester:
                     # Missing required fields
                 },
                 "context": {
-                    "namespace": "machinenativeops"
                     "namespace": "machinenativenops-system"
                 },
                 "payload": {}

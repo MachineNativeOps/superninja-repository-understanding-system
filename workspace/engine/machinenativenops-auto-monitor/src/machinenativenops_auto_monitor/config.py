@@ -8,13 +8,6 @@ Configuration Module
 Manages configuration for the auto-monitor system.
 """
 
-import logging
-from pathlib import Path
-from typing import Any, Dict
-import yaml
-Handles configuration loading and management for the auto-monitor system.
-"""
-
 import yaml
 import logging
 from pathlib import Path
@@ -417,10 +410,6 @@ def create_default_config_file(output_path: Path):
     Args:
         output_path: Path to create configuration file
     """
-    config = AutoMonitorConfig.default()
-    config.save(output_path)
-    print(f"Default configuration created at: {output_path}")
-    """Create a default configuration file."""
     config = MonitorConfig.default()
     config.to_yaml(output_path)
     print(f"✅ Created default configuration file: {output_path}")
