@@ -1,0 +1,1187 @@
+{
+  "generated": "2026-01-16T15:39:01.577089",
+  "statistics": {
+    "total_files": 1370,
+    "files_with_eval": 28,
+    "total_eval_usage": 130,
+    "tool_files": 7,
+    "demo_files": 4,
+    "test_files": 5,
+    "core_files": 12,
+    "safe_usage": 73,
+    "needs_warning": 57,
+    "needs_replacement": 0
+  },
+  "findings": [
+    {
+      "file": "/home/runner/work/machine-native-ops/machine-native-ops/fix_eval_comprehensive.py",
+      "line": 3,
+      "file_type": "tool",
+      "category": "comment",
+      "action": "safe",
+      "code": "Comprehensive eval() Usage Security Remediation Script",
+      "context": "#!/usr/bin/env python3\n\"\"\"\nComprehensive eval() Usage Security Remediation Script\n\nThis script:\n1. Scans all Python files for eval() usage"
+    },
+    {
+      "file": "/home/runner/work/machine-native-ops/machine-native-ops/fix_eval_comprehensive.py",
+      "line": 6,
+      "file_type": "tool",
+      "category": "needs_review",
+      "action": "add_warning",
+      "code": "1. Scans all Python files for eval() usage",
+      "context": "Comprehensive eval() Usage Security Remediation Script\n\nThis script:\n1. Scans all Python files for eval() usage\n2. Categorizes usage by safety level\n3. Adds appropriate security warnings\n4. Documents each usage for compliance"
+    },
+    {
+      "file": "/home/runner/work/machine-native-ops/machine-native-ops/fix_eval_comprehensive.py",
+      "line": 12,
+      "file_type": "tool",
+      "category": "documented",
+      "action": "safe",
+      "code": "SECURITY NOTE: This script itself uses eval() for analysis purposes only.",
+      "context": "4. Documents each usage for compliance\n5. Generates a detailed report\n\nSECURITY NOTE: This script itself uses eval() for analysis purposes only.\nAll eval() usage in this file is for security analysis and is not exposed to user input.\n\"\"\"\n"
+    },
+    {
+      "file": "/home/runner/work/machine-native-ops/machine-native-ops/fix_eval_comprehensive.py",
+      "line": 13,
+      "file_type": "tool",
+      "category": "documented",
+      "action": "safe",
+      "code": "All eval() usage in this file is for security analysis and is not exposed to user input.",
+      "context": "5. Generates a detailed report\n\nSECURITY NOTE: This script itself uses eval() for analysis purposes only.\nAll eval() usage in this file is for security analysis and is not exposed to user input.\n\"\"\"\n\nimport ast"
+    },
+    {
+      "file": "/home/runner/work/machine-native-ops/machine-native-ops/fix_eval_comprehensive.py",
+      "line": 25,
+      "file_type": "tool",
+      "category": "needs_review",
+      "action": "add_warning",
+      "code": "\"\"\"Analyzes and categorizes eval() usage in Python files.\"\"\"",
+      "context": "\n\nclass EvalUsageAnalyzer:\n    \"\"\"Analyzes and categorizes eval() usage in Python files.\"\"\"\n    \n    # Files that are security/analysis tools themselves\n    TOOL_FILES = {"
+    },
+    {
+      "file": "/home/runner/work/machine-native-ops/machine-native-ops/fix_eval_comprehensive.py",
+      "line": 89,
+      "file_type": "tool",
+      "category": "needs_review",
+      "action": "add_warning",
+      "code": "Categorize eval() usage and suggest action.",
+      "context": "    \n    def categorize_eval_context(self, context: str, code: str) -> Tuple[str, str]:\n        \"\"\"\n        Categorize eval() usage and suggest action.\n        \n        Returns: (category, action)\n        \"\"\""
+    },
+    {
+      "file": "/home/runner/work/machine-native-ops/machine-native-ops/fix_eval_comprehensive.py",
+      "line": 97,
+      "file_type": "tool",
+      "category": "string_check",
+      "action": "safe",
+      "code": "# Check if it's string detection (checking for \"eval(\" in string)",
+      "context": "        if context.strip().startswith('#') or context.strip().startswith('\"\"\"'):\n            return 'comment', 'safe'\n        \n        # Check if it's string detection (checking for \"eval(\" in string)\n        if '\"eval(\"' in code or \"'eval('\" in code or 'in code' in context:\n            return 'string_check', 'safe'\n        "
+    },
+    {
+      "file": "/home/runner/work/machine-native-ops/machine-native-ops/fix_eval_comprehensive.py",
+      "line": 98,
+      "file_type": "tool",
+      "category": "string_check",
+      "action": "safe",
+      "code": "if '\"eval(\"' in code or \"'eval('\" in code or 'in code' in context:",
+      "context": "            return 'comment', 'safe'\n        \n        # Check if it's string detection (checking for \"eval(\" in string)\n        if '\"eval(\"' in code or \"'eval('\" in code or 'in code' in context:\n            return 'string_check', 'safe'\n        \n        # Check if already has security warning"
+    },
+    {
+      "file": "/home/runner/work/machine-native-ops/machine-native-ops/fix_eval_comprehensive.py",
+      "line": 98,
+      "file_type": "tool",
+      "category": "string_check",
+      "action": "safe",
+      "code": "if '\"eval(\"' in code or \"'eval('\" in code or 'in code' in context:",
+      "context": "            return 'comment', 'safe'\n        \n        # Check if it's string detection (checking for \"eval(\" in string)\n        if '\"eval(\"' in code or \"'eval('\" in code or 'in code' in context:\n            return 'string_check', 'safe'\n        \n        # Check if already has security warning"
+    },
+    {
+      "file": "/home/runner/work/machine-native-ops/machine-native-ops/fix_eval_comprehensive.py",
+      "line": 117,
+      "file_type": "tool",
+      "category": "needs_review",
+      "action": "add_warning",
+      "code": "\"\"\"Analyze a single file for eval() usage.\"\"\"",
+      "context": "        return 'needs_review', 'add_warning'\n    \n    def analyze_file(self, filepath: Path) -> List[Dict]:\n        \"\"\"Analyze a single file for eval() usage.\"\"\"\n        findings = []\n        \n        try:"
+    },
+    {
+      "file": "/home/runner/work/machine-native-ops/machine-native-ops/fix_eval_comprehensive.py",
+      "line": 124,
+      "file_type": "tool",
+      "category": "needs_review",
+      "action": "add_warning",
+      "code": "# Find all eval() occurrences",
+      "context": "            content = filepath.read_text(encoding='utf-8', errors='ignore')\n            self.stats['total_files'] += 1\n            \n            # Find all eval() occurrences\n            pattern = r'\\beval\\s*\\('\n            matches = list(re.finditer(pattern, content))\n            "
+    },
+    {
+      "file": "/home/runner/work/machine-native-ops/machine-native-ops/fix_eval_comprehensive.py",
+      "line": 188,
+      "file_type": "tool",
+      "category": "needs_review",
+      "action": "add_warning",
+      "code": "\"\"\"Scan entire repository for eval() usage.\"\"\"",
+      "context": "        return findings\n    \n    def scan_repository(self, root_path: Path) -> None:\n        \"\"\"Scan entire repository for eval() usage.\"\"\"\n        print(\"Scanning repository for eval() usage...\")\n        \n        for py_file in root_path.rglob('*.py'):"
+    },
+    {
+      "file": "/home/runner/work/machine-native-ops/machine-native-ops/fix_eval_comprehensive.py",
+      "line": 189,
+      "file_type": "tool",
+      "category": "needs_review",
+      "action": "add_warning",
+      "code": "print(\"Scanning repository for eval() usage...\")",
+      "context": "    \n    def scan_repository(self, root_path: Path) -> None:\n        \"\"\"Scan entire repository for eval() usage.\"\"\"\n        print(\"Scanning repository for eval() usage...\")\n        \n        for py_file in root_path.rglob('*.py'):\n            # Skip hidden directories and __pycache__"
+    },
+    {
+      "file": "/home/runner/work/machine-native-ops/machine-native-ops/fix_eval_comprehensive.py",
+      "line": 201,
+      "file_type": "tool",
+      "category": "needs_review",
+      "action": "add_warning",
+      "code": "print(f\"Scan complete. Found {self.stats['total_eval_usage']} eval() usages in {self.stats['files_with_eval']} files.\")",
+      "context": "            file_findings = self.analyze_file(py_file)\n            self.findings.extend(file_findings)\n        \n        print(f\"Scan complete. Found {self.stats['total_eval_usage']} eval() usages in {self.stats['files_with_eval']} files.\")\n    \n    def generate_report(self) -> str:\n        \"\"\"Generate comprehensive analysis report.\"\"\""
+    },
+    {
+      "file": "/home/runner/work/machine-native-ops/machine-native-ops/fix_eval_comprehensive.py",
+      "line": 207,
+      "file_type": "tool",
+      "category": "comment",
+      "action": "safe",
+      "code": "report.append(\"COMPREHENSIVE eval() USAGE ANALYSIS REPORT\")",
+      "context": "        \"\"\"Generate comprehensive analysis report.\"\"\"\n        report = []\n        report.append(\"=\" * 80)\n        report.append(\"COMPREHENSIVE eval() USAGE ANALYSIS REPORT\")\n        report.append(\"=\" * 80)\n        report.append(f\"Generated: {datetime.now().isoformat()}\")\n        report.append(\"\")"
+    },
+    {
+      "file": "/home/runner/work/machine-native-ops/machine-native-ops/fix_eval_comprehensive.py",
+      "line": 216,
+      "file_type": "tool",
+      "category": "needs_review",
+      "action": "add_warning",
+      "code": "report.append(f\"Files with eval() usage:       {self.stats['files_with_eval']}\")",
+      "context": "        report.append(\"SUMMARY STATISTICS\")\n        report.append(\"-\" * 80)\n        report.append(f\"Total Python files scanned:    {self.stats['total_files']}\")\n        report.append(f\"Files with eval() usage:       {self.stats['files_with_eval']}\")\n        report.append(f\"Total eval() occurrences:      {self.stats['total_eval_usage']}\")\n        report.append(\"\")\n        report.append(\"BY FILE TYPE:\")"
+    },
+    {
+      "file": "/home/runner/work/machine-native-ops/machine-native-ops/fix_eval_comprehensive.py",
+      "line": 217,
+      "file_type": "tool",
+      "category": "needs_review",
+      "action": "add_warning",
+      "code": "report.append(f\"Total eval() occurrences:      {self.stats['total_eval_usage']}\")",
+      "context": "        report.append(\"-\" * 80)\n        report.append(f\"Total Python files scanned:    {self.stats['total_files']}\")\n        report.append(f\"Files with eval() usage:       {self.stats['files_with_eval']}\")\n        report.append(f\"Total eval() occurrences:      {self.stats['total_eval_usage']}\")\n        report.append(\"\")\n        report.append(\"BY FILE TYPE:\")\n        report.append(f\"  Tool/analysis files:         {self.stats['tool_files']}\")"
+    },
+    {
+      "file": "/home/runner/work/machine-native-ops/machine-native-ops/fix_eval_comprehensive.py",
+      "line": 310,
+      "file_type": "tool",
+      "category": "needs_review",
+      "action": "add_warning",
+      "code": "print(f\"Total eval() usage: {analyzer.stats['total_eval_usage']}\")",
+      "context": "    print(\"\\n\" + \"=\" * 80)\n    print(\"ANALYSIS COMPLETE\")\n    print(\"=\" * 80)\n    print(f\"Total eval() usage: {analyzer.stats['total_eval_usage']}\")\n    print(f\"Safe usage: {analyzer.stats['safe_usage']}\")\n    print(f\"Needs warning: {analyzer.stats['needs_warning']}\")\n    print(f\"Files analyzed: {analyzer.stats['total_files']}\")"
+    },
+    {
+      "file": "/home/runner/work/machine-native-ops/machine-native-ops/fix_eval_usage.py",
+      "line": 4,
+      "file_type": "tool",
+      "category": "comment",
+      "action": "safe",
+      "code": "# It uses eval() and other security-sensitive functions for analysis purposes only.",
+      "context": "#!/usr/bin/env python3\n# SECURITY TOOL:\n# This file contains security analysis and remediation tools.\n# It uses eval() and other security-sensitive functions for analysis purposes only.\n# All inputs are validated and trusted within the tool's context.\n\n"
+    },
+    {
+      "file": "/home/runner/work/machine-native-ops/machine-native-ops/fix_eval_usage.py",
+      "line": 9,
+      "file_type": "tool",
+      "category": "comment",
+      "action": "safe",
+      "code": "Fix HIGH severity eval() usage issues.",
+      "context": "\n\n\"\"\"\nFix HIGH severity eval() usage issues.\n\nThis script analyzes and fixes eval() usage by:\n1. Replacing eval() with ast.literal_eval() for literal evaluation"
+    },
+    {
+      "file": "/home/runner/work/machine-native-ops/machine-native-ops/fix_eval_usage.py",
+      "line": 11,
+      "file_type": "tool",
+      "category": "comment",
+      "action": "safe",
+      "code": "This script analyzes and fixes eval() usage by:",
+      "context": "\"\"\"\nFix HIGH severity eval() usage issues.\n\nThis script analyzes and fixes eval() usage by:\n1. Replacing eval() with ast.literal_eval() for literal evaluation\n2. Replacing eval() with json.loads() for JSON parsing\n3. Adding security warnings for eval() that cannot be replaced"
+    },
+    {
+      "file": "/home/runner/work/machine-native-ops/machine-native-ops/fix_eval_usage.py",
+      "line": 12,
+      "file_type": "tool",
+      "category": "safe_alternative",
+      "action": "safe",
+      "code": "1. Replacing eval() with ast.literal_eval() for literal evaluation",
+      "context": "Fix HIGH severity eval() usage issues.\n\nThis script analyzes and fixes eval() usage by:\n1. Replacing eval() with ast.literal_eval() for literal evaluation\n2. Replacing eval() with json.loads() for JSON parsing\n3. Adding security warnings for eval() that cannot be replaced\n\"\"\""
+    },
+    {
+      "file": "/home/runner/work/machine-native-ops/machine-native-ops/fix_eval_usage.py",
+      "line": 13,
+      "file_type": "tool",
+      "category": "safe_alternative",
+      "action": "safe",
+      "code": "2. Replacing eval() with json.loads() for JSON parsing",
+      "context": "\nThis script analyzes and fixes eval() usage by:\n1. Replacing eval() with ast.literal_eval() for literal evaluation\n2. Replacing eval() with json.loads() for JSON parsing\n3. Adding security warnings for eval() that cannot be replaced\n\"\"\"\n"
+    },
+    {
+      "file": "/home/runner/work/machine-native-ops/machine-native-ops/fix_eval_usage.py",
+      "line": 14,
+      "file_type": "tool",
+      "category": "safe_alternative",
+      "action": "safe",
+      "code": "3. Adding security warnings for eval() that cannot be replaced",
+      "context": "This script analyzes and fixes eval() usage by:\n1. Replacing eval() with ast.literal_eval() for literal evaluation\n2. Replacing eval() with json.loads() for JSON parsing\n3. Adding security warnings for eval() that cannot be replaced\n\"\"\"\n\nimport ast"
+    },
+    {
+      "file": "/home/runner/work/machine-native-ops/machine-native-ops/fix_eval_usage.py",
+      "line": 24,
+      "file_type": "tool",
+      "category": "needs_review",
+      "action": "add_warning",
+      "code": "\"\"\"Analyze eval() usage in a file.\"\"\"",
+      "context": "from typing import List, Tuple\n\ndef analyze_eval_usage(file_path: str) -> List[dict]:\n    \"\"\"Analyze eval() usage in a file.\"\"\"\n    findings = []\n    \n    try:"
+    },
+    {
+      "file": "/home/runner/work/machine-native-ops/machine-native-ops/fix_eval_usage.py",
+      "line": 31,
+      "file_type": "tool",
+      "category": "needs_review",
+      "action": "add_warning",
+      "code": "# Find all eval() calls",
+      "context": "        with open(file_path, 'r', encoding='utf-8') as f:\n            content = f.read()\n        \n        # Find all eval() calls\n        pattern = r'eval\\s*\\([^)]+\\)'\n        matches = re.finditer(pattern, content, re.MULTILINE | re.DOTALL)\n        "
+    },
+    {
+      "file": "/home/runner/work/machine-native-ops/machine-native-ops/fix_eval_usage.py",
+      "line": 56,
+      "file_type": "tool",
+      "category": "safe_alternative",
+      "action": "safe",
+      "code": "\"\"\"Check if eval() can be replaced with ast.literal_eval().\"\"\"",
+      "context": "    return findings\n\ndef can_replace_with_literal_eval(code: str) -> bool:\n    \"\"\"Check if eval() can be replaced with ast.literal_eval().\"\"\"\n    # Remove 'eval(' and ')'\n    inner = code[5:-1].strip()\n    "
+    },
+    {
+      "file": "/home/runner/work/machine-native-ops/machine-native-ops/fix_eval_usage.py",
+      "line": 57,
+      "file_type": "tool",
+      "category": "string_check",
+      "action": "safe",
+      "code": "# Remove 'eval(' and ')'",
+      "context": "\ndef can_replace_with_literal_eval(code: str) -> bool:\n    \"\"\"Check if eval() can be replaced with ast.literal_eval().\"\"\"\n    # Remove 'eval(' and ')'\n    inner = code[5:-1].strip()\n    \n    try:"
+    },
+    {
+      "file": "/home/runner/work/machine-native-ops/machine-native-ops/fix_eval_usage.py",
+      "line": 84,
+      "file_type": "tool",
+      "category": "needs_review",
+      "action": "add_warning",
+      "code": "\"\"\"Check if eval() can be replaced with json.loads().\"\"\"",
+      "context": "        return False\n\ndef can_replace_with_json(code: str) -> bool:\n    \"\"\"Check if eval() can be replaced with json.loads().\"\"\"\n    inner = code[5:-1].strip()\n    \n    # Check if it looks like a JSON string"
+    },
+    {
+      "file": "/home/runner/work/machine-native-ops/machine-native-ops/fix_eval_usage.py",
+      "line": 99,
+      "file_type": "tool",
+      "category": "needs_review",
+      "action": "add_warning",
+      "code": "\"\"\"Fix eval() usage in a file.",
+      "context": "    return False\n\ndef fix_file(file_path: str) -> Tuple[int, int]:\n    \"\"\"Fix eval() usage in a file.\n    \n    Returns:\n        Tuple of (fixed_count, warning_added_count)"
+    },
+    {
+      "file": "/home/runner/work/machine-native-ops/machine-native-ops/fix_eval_usage.py",
+      "line": 114,
+      "file_type": "tool",
+      "category": "needs_review",
+      "action": "add_warning",
+      "code": "# Analyze eval() usage",
+      "context": "        original_content = content\n        lines = content.split('\\n')\n        \n        # Analyze eval() usage\n        findings = analyze_eval_usage(file_path)\n        \n        if not findings:"
+    },
+    {
+      "file": "/home/runner/work/machine-native-ops/machine-native-ops/fix_eval_usage.py",
+      "line": 129,
+      "file_type": "tool",
+      "category": "comment",
+      "action": "safe",
+      "code": "new_code = code.replace('eval(', 'ast.literal_eval(')",
+      "context": "            # Determine if we can replace it\n            if can_replace_with_literal_eval(code):\n                # Replace with ast.literal_eval()\n                new_code = code.replace('eval(', 'ast.literal_eval(')\n                \n                # Add import if needed\n                if 'import ast' not in content and 'from ast import' not in content:"
+    },
+    {
+      "file": "/home/runner/work/machine-native-ops/machine-native-ops/fix_eval_usage.py",
+      "line": 171,
+      "file_type": "tool",
+      "category": "documented",
+      "action": "safe",
+      "code": "warning = \"# SECURITY: eval() used with trusted input only. Do not use with untrusted user input.\"",
+      "context": "                line_idx = line_num - 1\n                if line_idx < len(lines):\n                    # Add warning before the line\n                    warning = \"# SECURITY: eval() used with trusted input only. Do not use with untrusted user input.\"\n                    lines.insert(line_idx, warning)\n                    content = '\\n'.join(lines)\n                    warning_count += 1"
+    },
+    {
+      "file": "/home/runner/work/machine-native-ops/machine-native-ops/fix_eval_usage.py",
+      "line": 190,
+      "file_type": "tool",
+      "category": "needs_review",
+      "action": "add_warning",
+      "code": "print(\"Phase 2 Week 2: Fix HIGH Severity eval() Usage\")",
+      "context": "def main():\n    \"\"\"Main function.\"\"\"\n    print(\"=\"*70)\n    print(\"Phase 2 Week 2: Fix HIGH Severity eval() Usage\")\n    print(\"=\"*70)\n    \n    # Files with eval() usage (from security audit)"
+    },
+    {
+      "file": "/home/runner/work/machine-native-ops/machine-native-ops/fix_eval_usage.py",
+      "line": 193,
+      "file_type": "tool",
+      "category": "needs_review",
+      "action": "add_warning",
+      "code": "# Files with eval() usage (from security audit)",
+      "context": "    print(\"Phase 2 Week 2: Fix HIGH Severity eval() Usage\")\n    print(\"=\"*70)\n    \n    # Files with eval() usage (from security audit)\n    files_with_eval = [\n        'code_quality_analyzer.py',\n        'fix_remaining_issues.py',"
+    },
+    {
+      "file": "/home/runner/work/machine-native-ops/machine-native-ops/fix_eval_usage.py",
+      "line": 227,
+      "file_type": "tool",
+      "category": "needs_review",
+      "action": "add_warning",
+      "code": "print(f\"eval() calls fixed: {total_fixed}\")",
+      "context": "    print(\"Summary\")\n    print(\"=\"*70)\n    print(f\"Files processed: {files_processed}\")\n    print(f\"eval() calls fixed: {total_fixed}\")\n    print(f\"Security warnings added: {total_warnings}\")\n    print(\"\\nNext steps:\")\n    print(\"1. Review the changes with: git diff\")"
+    },
+    {
+      "file": "/home/runner/work/machine-native-ops/machine-native-ops/fix_md5_usage.py",
+      "line": 4,
+      "file_type": "core",
+      "category": "comment",
+      "action": "safe",
+      "code": "# It uses eval() and other security-sensitive functions for analysis purposes only.",
+      "context": "#!/usr/bin/env python3\n# SECURITY TOOL:\n# This file contains security analysis and remediation tools.\n# It uses eval() and other security-sensitive functions for analysis purposes only.\n# All inputs are validated and trusted within the tool's context.\n\n"
+    },
+    {
+      "file": "/home/runner/work/machine-native-ops/machine-native-ops/code_quality_analyzer.py",
+      "line": 4,
+      "file_type": "tool",
+      "category": "comment",
+      "action": "safe",
+      "code": "# It uses eval() and other security-sensitive functions for analysis purposes only.",
+      "context": "#!/usr/bin/env python3\n# SECURITY TOOL:\n# This file contains security analysis and remediation tools.\n# It uses eval() and other security-sensitive functions for analysis purposes only.\n# All inputs are validated and trusted within the tool's context.\n\n"
+    },
+    {
+      "file": "/home/runner/work/machine-native-ops/machine-native-ops/code_quality_analyzer.py",
+      "line": 165,
+      "file_type": "tool",
+      "category": "needs_review",
+      "action": "add_warning",
+      "code": "(r\"eval\\s*\\(\", \"\u9ad8\u5371\uff1a\u4f7f\u7528 eval() \u53ef\u80fd\u5c0e\u81f4\u4ee3\u78bc\u6ce8\u5165\u6f0f\u6d1e\"),",
+      "context": "    def check_security(self, file_path, content, lines):\n        \"\"\"Check for security issues\"\"\"\n        security_patterns = [\n            (r\"eval\\s*\\(\", \"\u9ad8\u5371\uff1a\u4f7f\u7528 eval() \u53ef\u80fd\u5c0e\u81f4\u4ee3\u78bc\u6ce8\u5165\u6f0f\u6d1e\"),\n            (r\"exec\\s*\\(\", \"\u9ad8\u5371\uff1a\u4f7f\u7528 exec() \u53ef\u80fd\u5c0e\u81f4\u4ee3\u78bc\u6ce8\u5165\u6f0f\u6d1e\"),\n            (r\"pickle\\.(loads|load)\\s*\\(\", \"\u9ad8\u5371\uff1a\u4f7f\u7528 pickle \u53ef\u80fd\u5c0e\u81f4\u53cd\u5e8f\u5217\u5316\u6f0f\u6d1e\"),\n            (r\"md5\\s*\\(\", \"\u4e2d\u5371\uff1aMD5 \u4e0d\u662f\u5b89\u5168\u7684\u54c8\u5e0c\u7b97\u6cd5\"),"
+    },
+    {
+      "file": "/home/runner/work/machine-native-ops/machine-native-ops/fix_final_issues.py",
+      "line": 22,
+      "file_type": "core",
+      "category": "comment",
+      "action": "safe",
+      "code": "# It uses eval() and other security-sensitive functions for analysis purposes only.",
+      "context": "    # Add doc at the top\n    doc = \"\"\"# SECURITY TOOL:\n# This file contains security analysis and remediation tools.\n# It uses eval() and other security-sensitive functions for analysis purposes only.\n# All inputs are validated and trusted within the tool's context.\n\n\"\"\""
+    },
+    {
+      "file": "/home/runner/work/machine-native-ops/machine-native-ops/fix_remaining_high_issues.py",
+      "line": 3,
+      "file_type": "tool",
+      "category": "comment",
+      "action": "safe",
+      "code": "Fix remaining HIGH severity eval() issues.",
+      "context": "#!/usr/bin/env python3\n\"\"\"\nFix remaining HIGH severity eval() issues.\n\nThis script intelligently handles eval() usage by:\n1. Identifying actual eval() calls vs mentions in comments/strings"
+    },
+    {
+      "file": "/home/runner/work/machine-native-ops/machine-native-ops/fix_remaining_high_issues.py",
+      "line": 5,
+      "file_type": "tool",
+      "category": "comment",
+      "action": "safe",
+      "code": "This script intelligently handles eval() usage by:",
+      "context": "\"\"\"\nFix remaining HIGH severity eval() issues.\n\nThis script intelligently handles eval() usage by:\n1. Identifying actual eval() calls vs mentions in comments/strings\n2. Adding appropriate security warnings\n3. Documenting context and rationale"
+    },
+    {
+      "file": "/home/runner/work/machine-native-ops/machine-native-ops/fix_remaining_high_issues.py",
+      "line": 6,
+      "file_type": "tool",
+      "category": "needs_review",
+      "action": "add_warning",
+      "code": "1. Identifying actual eval() calls vs mentions in comments/strings",
+      "context": "Fix remaining HIGH severity eval() issues.\n\nThis script intelligently handles eval() usage by:\n1. Identifying actual eval() calls vs mentions in comments/strings\n2. Adding appropriate security warnings\n3. Documenting context and rationale\n\"\"\""
+    },
+    {
+      "file": "/home/runner/work/machine-native-ops/machine-native-ops/fix_remaining_high_issues.py",
+      "line": 16,
+      "file_type": "tool",
+      "category": "needs_review",
+      "action": "add_warning",
+      "code": "\"\"\"Find actual eval() function calls (not in comments or strings).\"\"\"",
+      "context": "from typing import List, Tuple\n\ndef find_actual_eval_calls(file_path: str) -> List[Tuple[int, str]]:\n    \"\"\"Find actual eval() function calls (not in comments or strings).\"\"\"\n    \n    with open(file_path, 'r', encoding='utf-8') as f:\n        lines = f.readlines()"
+    },
+    {
+      "file": "/home/runner/work/machine-native-ops/machine-native-ops/fix_remaining_high_issues.py",
+      "line": 65,
+      "file_type": "tool",
+      "category": "needs_review",
+      "action": "add_warning",
+      "code": "# Check for eval() call",
+      "context": "                j += 1\n                continue\n            \n            # Check for eval() call\n            if line[j:j+4] == 'eval':\n                # Check if it's followed by (\n                if j+4 < len(line) and line[j+4] == '(':"
+    },
+    {
+      "file": "/home/runner/work/machine-native-ops/machine-native-ops/fix_remaining_high_issues.py",
+      "line": 69,
+      "file_type": "tool",
+      "category": "needs_review",
+      "action": "add_warning",
+      "code": "# Check for whitespace before eval (to avoid catching \"evaluate\", etc.)",
+      "context": "            if line[j:j+4] == 'eval':\n                # Check if it's followed by (\n                if j+4 < len(line) and line[j+4] == '(':\n                    # Check for whitespace before eval (to avoid catching \"evaluate\", etc.)\n                    if j == 0 or line[j-1] in ' \\t\\n\\r\\f\\v()=,;[]{}':\n                        line_eval_calls.append((j, line[j:j+20]))  # Capture context\n                        j += 4"
+    },
+    {
+      "file": "/home/runner/work/machine-native-ops/machine-native-ops/fix_remaining_high_issues.py",
+      "line": 83,
+      "file_type": "tool",
+      "category": "needs_review",
+      "action": "add_warning",
+      "code": "\"\"\"Add security warning before eval() usage.\"\"\"",
+      "context": "    return eval_calls\n\ndef add_security_warning(file_path: str, line_number: int, context: str) -> bool:\n    \"\"\"Add security warning before eval() usage.\"\"\"\n    \n    with open(file_path, 'r', encoding='utf-8') as f:\n        lines = f.readlines()"
+    },
+    {
+      "file": "/home/runner/work/machine-native-ops/machine-native-ops/fix_remaining_high_issues.py",
+      "line": 95,
+      "file_type": "tool",
+      "category": "documented",
+      "action": "safe",
+      "code": "if idx > 0 and '# SECURITY: eval()' in lines[idx-1]:",
+      "context": "        return False\n    \n    # Check if warning already exists\n    if idx > 0 and '# SECURITY: eval()' in lines[idx-1]:\n        return False\n    \n    # Add warning before the line"
+    },
+    {
+      "file": "/home/runner/work/machine-native-ops/machine-native-ops/fix_remaining_high_issues.py",
+      "line": 99,
+      "file_type": "tool",
+      "category": "documented",
+      "action": "safe",
+      "code": "warning = \"# SECURITY: eval() used with trusted input only. Do not use with untrusted user input.\\n\"",
+      "context": "        return False\n    \n    # Add warning before the line\n    warning = \"# SECURITY: eval() used with trusted input only. Do not use with untrusted user input.\\n\"\n    lines.insert(idx, warning)\n    \n    with open(file_path, 'w', encoding='utf-8') as f:"
+    },
+    {
+      "file": "/home/runner/work/machine-native-ops/machine-native-ops/fix_remaining_high_issues.py",
+      "line": 108,
+      "file_type": "tool",
+      "category": "needs_review",
+      "action": "add_warning",
+      "code": "\"\"\"Fix eval() usage in a file.",
+      "context": "    return True\n\ndef fix_file(file_path: str) -> Tuple[int, int]:\n    \"\"\"Fix eval() usage in a file.\n    \n    Returns:\n        Tuple of (warnings_added, errors)"
+    },
+    {
+      "file": "/home/runner/work/machine-native-ops/machine-native-ops/fix_remaining_high_issues.py",
+      "line": 123,
+      "file_type": "tool",
+      "category": "needs_review",
+      "action": "add_warning",
+      "code": "print(f\"  Found {len(eval_calls)} potential eval() calls\")",
+      "context": "            return 0, 0\n        \n        print(f\"\\n{file_path}:\")\n        print(f\"  Found {len(eval_calls)} potential eval() calls\")\n        \n        for line_num, line_content, calls in eval_calls:\n            # Determine if this is a real eval() call or just a mention"
+    },
+    {
+      "file": "/home/runner/work/machine-native-ops/machine-native-ops/fix_remaining_high_issues.py",
+      "line": 126,
+      "file_type": "tool",
+      "category": "needs_review",
+      "action": "add_warning",
+      "code": "# Determine if this is a real eval() call or just a mention",
+      "context": "        print(f\"  Found {len(eval_calls)} potential eval() calls\")\n        \n        for line_num, line_content, calls in eval_calls:\n            # Determine if this is a real eval() call or just a mention\n            is_real_eval = False\n            \n            for call_start, call_context in calls:"
+    },
+    {
+      "file": "/home/runner/work/machine-native-ops/machine-native-ops/fix_remaining_high_issues.py",
+      "line": 131,
+      "file_type": "tool",
+      "category": "needs_review",
+      "action": "add_warning",
+      "code": "# eval(...)",
+      "context": "            \n            for call_start, call_context in calls:\n                # Check if it's an actual function call pattern\n                # eval(...)\n                if re.search(r'eval\\s*\\(', line_content):\n                    # Check if it's in a string or comment\n                    if not ('\"' in line_content[:call_start] and '\"' in line_content[call_start:]):"
+    },
+    {
+      "file": "/home/runner/work/machine-native-ops/machine-native-ops/fix_remaining_high_issues.py",
+      "line": 155,
+      "file_type": "tool",
+      "category": "needs_review",
+      "action": "add_warning",
+      "code": "print(\"Fix Remaining HIGH Severity eval() Issues\")",
+      "context": "def main():\n    \"\"\"Main function.\"\"\"\n    print(\"=\"*70)\n    print(\"Fix Remaining HIGH Severity eval() Issues\")\n    print(\"=\"*70)\n    \n    # Files to process"
+    },
+    {
+      "file": "/home/runner/work/machine-native-ops/machine-native-ops/fix_remaining_issues.py",
+      "line": 4,
+      "file_type": "tool",
+      "category": "comment",
+      "action": "safe",
+      "code": "# It uses eval() and other security-sensitive functions for analysis purposes only.",
+      "context": "#!/usr/bin/env python3\n# SECURITY TOOL:\n# This file contains security analysis and remediation tools.\n# It uses eval() and other security-sensitive functions for analysis purposes only.\n# All inputs are validated and trusted within the tool's context.\n\n"
+    },
+    {
+      "file": "/home/runner/work/machine-native-ops/machine-native-ops/fix_remaining_issues.py",
+      "line": 13,
+      "file_type": "tool",
+      "category": "needs_review",
+      "action": "add_warning",
+      "code": "- 77 security vulnerabilities (MD5, eval())",
+      "context": "\nThis script addresses the remaining 866 low-severity issues:\n- 772 import order violations\n- 77 security vulnerabilities (MD5, eval())\n- 72 code smells (hardcoded URLs)\n- 22 missing docstrings\n\"\"\""
+    },
+    {
+      "file": "/home/runner/work/machine-native-ops/machine-native-ops/fix_remaining_issues.py",
+      "line": 178,
+      "file_type": "tool",
+      "category": "needs_review",
+      "action": "add_warning",
+      "code": "\"\"\"Replace unsafe eval() with safer alternatives.\"\"\"",
+      "context": "            return False\n\n    def fix_eval_usage(self, file_path: Path) -> bool:\n        \"\"\"Replace unsafe eval() with safer alternatives.\"\"\"\n        try:\n            with open(file_path, \"r\", encoding=\"utf-8\") as f:\n                content = f.read()"
+    },
+    {
+      "file": "/home/runner/work/machine-native-ops/machine-native-ops/fix_remaining_issues.py",
+      "line": 183,
+      "file_type": "tool",
+      "category": "documented",
+      "action": "safe",
+      "code": "# SECURITY: eval() used with trusted input only. Do not use with untrusted user input.",
+      "context": "            with open(file_path, \"r\", encoding=\"utf-8\") as f:\n                content = f.read()\n\n# SECURITY: eval() used with trusted input only. Do not use with untrusted user input.\n            if \"eval(\" not in content:\n                return False\n"
+    },
+    {
+      "file": "/home/runner/work/machine-native-ops/machine-native-ops/fix_remaining_issues.py",
+      "line": 184,
+      "file_type": "tool",
+      "category": "string_check",
+      "action": "safe",
+      "code": "if \"eval(\" not in content:",
+      "context": "                content = f.read()\n\n# SECURITY: eval() used with trusted input only. Do not use with untrusted user input.\n            if \"eval(\" not in content:\n                return False\n\n            # Note: eval() replacement is complex and context-dependent"
+    },
+    {
+      "file": "/home/runner/work/machine-native-ops/machine-native-ops/fix_remaining_issues.py",
+      "line": 187,
+      "file_type": "tool",
+      "category": "documented",
+      "action": "safe",
+      "code": "# Note: eval() replacement is complex and context-dependent",
+      "context": "            if \"eval(\" not in content:\n                return False\n\n            # Note: eval() replacement is complex and context-dependent\n            # This is a basic implementation - manual review recommended\n            # We'll add a warning comment instead of automatic replacement\n# SECURITY: eval() used with trusted input only. Do not use with untrusted user input."
+    },
+    {
+      "file": "/home/runner/work/machine-native-ops/machine-native-ops/fix_remaining_issues.py",
+      "line": 190,
+      "file_type": "tool",
+      "category": "comment",
+      "action": "safe",
+      "code": "# SECURITY: eval() used with trusted input only. Do not use with untrusted user input.",
+      "context": "            # Note: eval() replacement is complex and context-dependent\n            # This is a basic implementation - manual review recommended\n            # We'll add a warning comment instead of automatic replacement\n# SECURITY: eval() used with trusted input only. Do not use with untrusted user input.\n\n            if \"eval(\" in content:\n                # Add security warning comment"
+    },
+    {
+      "file": "/home/runner/work/machine-native-ops/machine-native-ops/fix_remaining_issues.py",
+      "line": 192,
+      "file_type": "tool",
+      "category": "comment",
+      "action": "safe",
+      "code": "if \"eval(\" in content:",
+      "context": "            # We'll add a warning comment instead of automatic replacement\n# SECURITY: eval() used with trusted input only. Do not use with untrusted user input.\n\n            if \"eval(\" in content:\n                # Add security warning comment\n                warning = \"# TODO: Security - Consider replacing eval() with safer alternatives like ast.literal_eval()\\n\"\n                lines = content.split(\"\\n\")"
+    },
+    {
+      "file": "/home/runner/work/machine-native-ops/machine-native-ops/fix_remaining_issues.py",
+      "line": 194,
+      "file_type": "tool",
+      "category": "safe_alternative",
+      "action": "safe",
+      "code": "warning = \"# TODO: Security - Consider replacing eval() with safer alternatives like ast.literal_eval()\\n\"",
+      "context": "\n            if \"eval(\" in content:\n                # Add security warning comment\n                warning = \"# TODO: Security - Consider replacing eval() with safer alternatives like ast.literal_eval()\\n\"\n                lines = content.split(\"\\n\")\n\n                # Find eval() lines and add warning"
+    },
+    {
+      "file": "/home/runner/work/machine-native-ops/machine-native-ops/fix_remaining_issues.py",
+      "line": 197,
+      "file_type": "tool",
+      "category": "documented",
+      "action": "safe",
+      "code": "# Find eval() lines and add warning",
+      "context": "                warning = \"# TODO: Security - Consider replacing eval() with safer alternatives like ast.literal_eval()\\n\"\n                lines = content.split(\"\\n\")\n\n                # Find eval() lines and add warning\n# SECURITY: eval() used with trusted input only. Do not use with untrusted user input.\n                modified_lines = []\n                for line in lines:"
+    },
+    {
+      "file": "/home/runner/work/machine-native-ops/machine-native-ops/fix_remaining_issues.py",
+      "line": 198,
+      "file_type": "tool",
+      "category": "documented",
+      "action": "safe",
+      "code": "# SECURITY: eval() used with trusted input only. Do not use with untrusted user input.",
+      "context": "                lines = content.split(\"\\n\")\n\n                # Find eval() lines and add warning\n# SECURITY: eval() used with trusted input only. Do not use with untrusted user input.\n                modified_lines = []\n                for line in lines:\n                    if \"eval(\" in line and \"# TODO: Security\" not in line:"
+    },
+    {
+      "file": "/home/runner/work/machine-native-ops/machine-native-ops/fix_remaining_issues.py",
+      "line": 201,
+      "file_type": "tool",
+      "category": "comment",
+      "action": "safe",
+      "code": "if \"eval(\" in line and \"# TODO: Security\" not in line:",
+      "context": "# SECURITY: eval() used with trusted input only. Do not use with untrusted user input.\n                modified_lines = []\n                for line in lines:\n                    if \"eval(\" in line and \"# TODO: Security\" not in line:\n                        # Insert warning before the line\n                        indent = len(line) - len(line.lstrip())\n                        modified_lines.append(\" \" * indent + warning.rstrip())"
+    },
+    {
+      "file": "/home/runner/work/machine-native-ops/machine-native-ops/fix_remaining_issues.py",
+      "line": 250,
+      "file_type": "tool",
+      "category": "needs_review",
+      "action": "add_warning",
+      "code": "# Fix eval() usage",
+      "context": "                results[\"md5_fixed\"] = True\n                results[\"total_fixes\"] += 1\n\n            # Fix eval() usage\n            if self.fix_eval_usage(file_path):\n                results[\"eval_fixed\"] = True\n                results[\"total_fixes\"] += 1"
+    },
+    {
+      "file": "/home/runner/work/machine-native-ops/machine-native-ops/fix_remaining_issues.py",
+      "line": 334,
+      "file_type": "tool",
+      "category": "needs_review",
+      "action": "add_warning",
+      "code": "print(\"  \u26a0\ufe0f  eval() usage marked for review\")",
+      "context": "                    print(\"  \u2705 MD5 replaced with SHA256\")\n                if results[\"eval_fixed\"]:\n                    summary[\"eval_fixed\"] += 1\n                    print(\"  \u26a0\ufe0f  eval() usage marked for review\")\n\n                summary[\"total_fixes\"] += results[\"total_fixes\"]\n"
+    },
+    {
+      "file": "/home/runner/work/machine-native-ops/machine-native-ops/fix_remaining_issues.py",
+      "line": 370,
+      "file_type": "tool",
+      "category": "needs_review",
+      "action": "add_warning",
+      "code": "print(f\"eval() reviews: {summary['eval_fixed']}\")",
+      "context": "    print(f\"Hardcoded URL fixes: {summary['hardcoded_urls_fixed']}\")\n    print(f\"Docstrings added: {summary['docstrings_added']}\")\n    print(f\"MD5 replacements: {summary['md5_fixed']}\")\n    print(f\"eval() reviews: {summary['eval_fixed']}\")\n    print(f\"Total fixes applied: {summary['total_fixes']}\")\n    print(f\"Errors encountered: {summary['errors']}\")\n    print(\"=\" * 60)"
+    },
+    {
+      "file": "/home/runner/work/machine-native-ops/machine-native-ops/scripts/auto-quality-check.py",
+      "line": 200,
+      "file_type": "tool",
+      "category": "needs_review",
+      "action": "add_warning",
+      "code": "\"\"\"P1: eval() \u4f7f\u7528\u6aa2\u67e5\"\"\"",
+      "context": "        }\n    \n    def check_eval_usage(self):\n        \"\"\"P1: eval() \u4f7f\u7528\u6aa2\u67e5\"\"\"\n        print(\"\\n\u26a0\ufe0f  \u6aa2\u67e5 eval() \u4f7f\u7528...\")\n        \n        files_with_eval = []"
+    },
+    {
+      "file": "/home/runner/work/machine-native-ops/machine-native-ops/scripts/auto-quality-check.py",
+      "line": 201,
+      "file_type": "tool",
+      "category": "needs_review",
+      "action": "add_warning",
+      "code": "print(\"\\n\u26a0\ufe0f  \u6aa2\u67e5 eval() \u4f7f\u7528...\")",
+      "context": "    \n    def check_eval_usage(self):\n        \"\"\"P1: eval() \u4f7f\u7528\u6aa2\u67e5\"\"\"\n        print(\"\\n\u26a0\ufe0f  \u6aa2\u67e5 eval() \u4f7f\u7528...\")\n        \n        files_with_eval = []\n        for ext in [\".py\", \".ts\", \".js\"]:"
+    },
+    {
+      "file": "/home/runner/work/machine-native-ops/machine-native-ops/scripts/auto-quality-check.py",
+      "line": 208,
+      "file_type": "tool",
+      "category": "string_check",
+      "action": "safe",
+      "code": "if \"eval(\" in content:",
+      "context": "            for file_path in self.repo_root.glob(f\"**/*{ext}\"):\n                try:\n                    content = file_path.read_text()\n                    if \"eval(\" in content:\n                        files_with_eval.append(str(file_path.relative_to(self.repo_root)))\n                except (UnicodeDecodeError, OSError, PermissionError):\n                    continue"
+    },
+    {
+      "file": "/home/runner/work/machine-native-ops/machine-native-ops/00-namespaces/namespaces-adk/adk/core/workflow_orchestrator.py",
+      "line": 367,
+      "file_type": "core",
+      "category": "documented",
+      "action": "safe",
+      "code": "# SECURITY: eval() used with trusted input only. Do not use with untrusted user input.",
+      "context": "        try:\n            # For now, support simple comparisons\n            # In production, use a safe expression evaluator\n# SECURITY: eval() used with trusted input only. Do not use with untrusted user input.\n            return eval(condition, {\"__builtins__\": {}}, context)\n        except Exception as e:\n            self.logger.warning(f\"Condition evaluation failed: {e}\")"
+    },
+    {
+      "file": "/home/runner/work/machine-native-ops/machine-native-ops/00-namespaces/namespaces-adk/adk/core/workflow_orchestrator.py",
+      "line": 368,
+      "file_type": "core",
+      "category": "comment",
+      "action": "safe",
+      "code": "return eval(condition, {\"__builtins__\": {}}, context)",
+      "context": "            # For now, support simple comparisons\n            # In production, use a safe expression evaluator\n# SECURITY: eval() used with trusted input only. Do not use with untrusted user input.\n            return eval(condition, {\"__builtins__\": {}}, context)\n        except Exception as e:\n            self.logger.warning(f\"Condition evaluation failed: {e}\")\n            return False"
+    },
+    {
+      "file": "/home/runner/work/machine-native-ops/machine-native-ops/workspace/tools/security_audit.py",
+      "line": 6,
+      "file_type": "tool",
+      "category": "needs_review",
+      "action": "add_warning",
+      "code": "analyzing MD5 usage, eval() usage, and other security concerns.",
+      "context": "Security Audit Tool\n\nThis script performs a comprehensive security audit of the codebase,\nanalyzing MD5 usage, eval() usage, and other security concerns.\n\"\"\"\n\nimport ast"
+    },
+    {
+      "file": "/home/runner/work/machine-native-ops/machine-native-ops/workspace/tools/security_audit.py",
+      "line": 150,
+      "file_type": "tool",
+      "category": "needs_review",
+      "action": "add_warning",
+      "code": "\"\"\"Check for eval() usage.\"\"\"",
+      "context": "        return findings\n\n    def check_eval_usage(self, file_path: Path) -> List[SecurityFinding]:\n        \"\"\"Check for eval() usage.\"\"\"\n        findings = []\n\n        try:"
+    },
+    {
+      "file": "/home/runner/work/machine-native-ops/machine-native-ops/workspace/tools/security_audit.py",
+      "line": 158,
+      "file_type": "tool",
+      "category": "needs_review",
+      "action": "add_warning",
+      "code": "# Check for eval() calls",
+      "context": "                content = f.read()\n                lines = content.split(\"\\n\")\n\n            # Check for eval() calls\n            eval_pattern = r\"\\beval\\s*\\(\"\n            for match in re.finditer(eval_pattern, content):\n                line_num = content[: match.start()].count(\"\\n\") + 1"
+    },
+    {
+      "file": "/home/runner/work/machine-native-ops/machine-native-ops/workspace/tools/security_audit.py",
+      "line": 190,
+      "file_type": "tool",
+      "category": "safe_alternative",
+      "action": "safe",
+      "code": "issue=\"eval() function usage detected\",",
+      "context": "                        line_number=line_num,\n                        severity=severity,\n                        category=\"Code Injection\",\n                        issue=\"eval() function usage detected\",\n                        code_snippet=code_snippet,\n                        recommendation=\"Avoid eval() as it can execute arbitrary code. \"\n                        \"Consider using ast.literal_eval() for parsing literals, \""
+    },
+    {
+      "file": "/home/runner/work/machine-native-ops/machine-native-ops/workspace/tools/security_audit.py",
+      "line": 192,
+      "file_type": "tool",
+      "category": "safe_alternative",
+      "action": "safe",
+      "code": "recommendation=\"Avoid eval() as it can execute arbitrary code. \"",
+      "context": "                        category=\"Code Injection\",\n                        issue=\"eval() function usage detected\",\n                        code_snippet=code_snippet,\n                        recommendation=\"Avoid eval() as it can execute arbitrary code. \"\n                        \"Consider using ast.literal_eval() for parsing literals, \"\n                        \"or implement a proper parser for your use case.\",\n                        context=context,"
+    },
+    {
+      "file": "/home/runner/work/machine-native-ops/machine-native-ops/workspace/tests/test_tool_executor_validation.py",
+      "line": 59,
+      "file_type": "test",
+      "category": "test_or_demo",
+      "action": "add_warning",
+      "code": "\"\"\"Actual eval() calls should be blocked\"\"\"",
+      "context": "        assert valid, f\"Should allow comments with metacharacters: {reason}\"\n\n    def test_dangerous_eval(self):\n        \"\"\"Actual eval() calls should be blocked\"\"\"\n        code = 'eval(\"print(1)\")'\n        request = create_request(code, \"python\")\n        valid, reason = self.runner.validate(request)"
+    },
+    {
+      "file": "/home/runner/work/machine-native-ops/machine-native-ops/workspace/tests/test_tool_executor_validation.py",
+      "line": 60,
+      "file_type": "test",
+      "category": "test_or_demo",
+      "action": "add_warning",
+      "code": "code = 'eval(\"print(1)\")'",
+      "context": "\n    def test_dangerous_eval(self):\n        \"\"\"Actual eval() calls should be blocked\"\"\"\n        code = 'eval(\"print(1)\")'\n        request = create_request(code, \"python\")\n        valid, reason = self.runner.validate(request)\n        assert not valid, \"Should block eval()\""
+    },
+    {
+      "file": "/home/runner/work/machine-native-ops/machine-native-ops/workspace/tests/test_tool_executor_validation.py",
+      "line": 63,
+      "file_type": "test",
+      "category": "test_or_demo",
+      "action": "add_warning",
+      "code": "assert not valid, \"Should block eval()\"",
+      "context": "        code = 'eval(\"print(1)\")'\n        request = create_request(code, \"python\")\n        valid, reason = self.runner.validate(request)\n        assert not valid, \"Should block eval()\"\n        assert \"eval\" in reason.lower()\n\n    def test_dangerous_exec(self):"
+    },
+    {
+      "file": "/home/runner/work/machine-native-ops/machine-native-ops/workspace/tests/test_tool_executor_validation.py",
+      "line": 176,
+      "file_type": "test",
+      "category": "test_or_demo",
+      "action": "add_warning",
+      "code": "\"\"\"eval() calls should be blocked\"\"\"",
+      "context": "        assert \"exec\" in reason.lower() or \"child_process\" in reason.lower()\n\n    def test_dangerous_eval(self):\n        \"\"\"eval() calls should be blocked\"\"\"\n        code = 'eval(\"console.log(1)\");'\n        request = create_request(code, \"node\")\n        valid, reason = self.runner.validate(request)"
+    },
+    {
+      "file": "/home/runner/work/machine-native-ops/machine-native-ops/workspace/tests/test_tool_executor_validation.py",
+      "line": 177,
+      "file_type": "test",
+      "category": "test_or_demo",
+      "action": "add_warning",
+      "code": "code = 'eval(\"console.log(1)\");'",
+      "context": "\n    def test_dangerous_eval(self):\n        \"\"\"eval() calls should be blocked\"\"\"\n        code = 'eval(\"console.log(1)\");'\n        request = create_request(code, \"node\")\n        valid, reason = self.runner.validate(request)\n        assert not valid, \"Should block eval()\""
+    },
+    {
+      "file": "/home/runner/work/machine-native-ops/machine-native-ops/workspace/tests/test_tool_executor_validation.py",
+      "line": 180,
+      "file_type": "test",
+      "category": "test_or_demo",
+      "action": "add_warning",
+      "code": "assert not valid, \"Should block eval()\"",
+      "context": "        code = 'eval(\"console.log(1)\");'\n        request = create_request(code, \"node\")\n        valid, reason = self.runner.validate(request)\n        assert not valid, \"Should block eval()\"\n        assert \"eval\" in reason.lower()\n\n    def test_safe_normal_code(self):"
+    },
+    {
+      "file": "/home/runner/work/machine-native-ops/machine-native-ops/workspace/teams/holy-grail/automation/architect/core/analysis/security_scanner.py",
+      "line": 114,
+      "file_type": "core",
+      "category": "needs_review",
+      "action": "add_warning",
+      "code": "(r\"eval\\s*\\(\", \"eval-usage\", \"Use of eval() can lead to code injection\"),",
+      "context": "                \"xss\",\n                \"Potential XSS vulnerability via document.write\",\n            ),\n            (r\"eval\\s*\\(\", \"eval-usage\", \"Use of eval() can lead to code injection\"),\n        ]\n\n        # \u4e0d\u5b89\u5168\u7684\u52a0\u5bc6"
+    },
+    {
+      "file": "/home/runner/work/machine-native-ops/machine-native-ops/workspace/teams/holy-grail/agents/autonomous/pipeline_service.py",
+      "line": 361,
+      "file_type": "core",
+      "category": "test_or_demo",
+      "action": "add_warning",
+      "code": "result = eval(user_input)",
+      "context": "    test_code = \"\"\"\ndef unsafe_function(user_input):\n    # Security issue: eval\n    result = eval(user_input)\n\n    # Performance issue: nested loops\n    for i in range(100):"
+    },
+    {
+      "file": "/home/runner/work/machine-native-ops/machine-native-ops/workspace/teams/holy-grail/agents/autonomous/examples/demo.py",
+      "line": 42,
+      "file_type": "demo",
+      "category": "needs_review",
+      "action": "add_warning",
+      "code": "result = eval(user_input)",
+      "context": "    problematic_code = \"\"\"\ndef process_user_data(user_input, password):\n    # Security issue: using eval\n    result = eval(user_input)\n\n    # Security issue: hardcoded password\n    db_password = os.getenv(\"DATABASE_PASSWORD\", \"admin123\")"
+    },
+    {
+      "file": "/home/runner/work/machine-native-ops/machine-native-ops/workspace/teams/holy-grail/agents/autonomous/agents/task_executor.py",
+      "line": 135,
+      "file_type": "core",
+      "category": "string_check",
+      "action": "safe",
+      "code": "if \"eval(\" in code or \"exec(\" in code:",
+      "context": "        issues = []\n\n        # Basic security pattern detection\n        if \"eval(\" in code or \"exec(\" in code:\n            issues.append(\n                {\n                    \"type\": \"security\","
+    },
+    {
+      "file": "/home/runner/work/machine-native-ops/machine-native-ops/workspace/teams/holy-grail/agents/autonomous/agents/task_executor.py",
+      "line": 234,
+      "file_type": "core",
+      "category": "string_check",
+      "action": "safe",
+      "code": "if \"eval(\" in code or \"exec(\" in code:",
+      "context": "        fixed_code = code\n\n        if issue[\"type\"] == \"security\":\n            if \"eval(\" in code or \"exec(\" in code:\n                # Remove dangerous code execution\n                fixed_code = code.replace(\"eval(\", \"# REMOVED_eval(\")\n                fixed_code = fixed_code.replace(\"exec(\", \"# REMOVED_exec(\")"
+    },
+    {
+      "file": "/home/runner/work/machine-native-ops/machine-native-ops/workspace/teams/holy-grail/agents/autonomous/agents/task_executor.py",
+      "line": 236,
+      "file_type": "core",
+      "category": "string_check",
+      "action": "safe",
+      "code": "fixed_code = code.replace(\"eval(\", \"# REMOVED_eval(\")",
+      "context": "        if issue[\"type\"] == \"security\":\n            if \"eval(\" in code or \"exec(\" in code:\n                # Remove dangerous code execution\n                fixed_code = code.replace(\"eval(\", \"# REMOVED_eval(\")\n                fixed_code = fixed_code.replace(\"exec(\", \"# REMOVED_exec(\")\n                logger.info(\"Applied security fix: removed eval/exec\")\n"
+    },
+    {
+      "file": "/home/runner/work/machine-native-ops/machine-native-ops/workspace/teams/holy-grail/agents/autonomous/agents/task_executor.py",
+      "line": 293,
+      "file_type": "core",
+      "category": "comment",
+      "action": "safe",
+      "code": "result = eval(user_input)  # Security issue!",
+      "context": "    # Example: Analyze potentially unsafe code\n    test_code = \"\"\"\ndef process_data(user_input):\n    result = eval(user_input)  # Security issue!\n    password = \"hardcoded123\"   # Security issue!\n\n    for i in range(len(data)):"
+    },
+    {
+      "file": "/home/runner/work/machine-native-ops/machine-native-ops/workspace/teams/holy-grail/agents/autonomous/test-vectors/generator.py",
+      "line": 221,
+      "file_type": "demo",
+      "category": "test_or_demo",
+      "action": "add_warning",
+      "code": "\"    result = eval(user_input)\",",
+      "context": "            \"    # Multiple security issues for comprehensive testing\",\n            \"    \",\n            \"    # Issue 1: Eval injection\",\n            \"    result = eval(user_input)\",\n            \"    \",\n            \"    # Issue 2: Hardcoded credential\",\n            '    db_password = \"PLACEHOLDER_TEST_ONLY\"',"
+    },
+    {
+      "file": "/home/runner/work/machine-native-ops/machine-native-ops/workspace/teams/holy-grail/agents/autonomous/tests/test_phase5_components.py",
+      "line": 376,
+      "file_type": "test",
+      "category": "string_check",
+      "action": "safe",
+      "code": "if \"eval(\" in code:",
+      "context": "        detector = AutoBugDetector()\n\n        def custom_detector(code: str):\n            if \"eval(\" in code:\n                return [\n                    DetectedBug(\n                        bug_id=\"CUSTOM-001\","
+    },
+    {
+      "file": "/home/runner/work/machine-native-ops/machine-native-ops/workspace/teams/holy-grail/agents/autonomous/tests/test_phase5_components.py",
+      "line": 381,
+      "file_type": "test",
+      "category": "documented",
+      "action": "safe",
+      "code": "description=\"Dangerous eval() usage\",",
+      "context": "                    DetectedBug(\n                        bug_id=\"CUSTOM-001\",\n                        category=BugCategory.SECURITY,\n                        description=\"Dangerous eval() usage\",\n                        location=\"Code contains eval()\",\n                        severity=\"critical\",\n                    )"
+    },
+    {
+      "file": "/home/runner/work/machine-native-ops/machine-native-ops/workspace/teams/holy-grail/agents/autonomous/tests/test_phase5_components.py",
+      "line": 382,
+      "file_type": "test",
+      "category": "documented",
+      "action": "safe",
+      "code": "location=\"Code contains eval()\",",
+      "context": "                        bug_id=\"CUSTOM-001\",\n                        category=BugCategory.SECURITY,\n                        description=\"Dangerous eval() usage\",\n                        location=\"Code contains eval()\",\n                        severity=\"critical\",\n                    )\n                ]"
+    },
+    {
+      "file": "/home/runner/work/machine-native-ops/machine-native-ops/workspace/teams/holy-grail/agents/autonomous/tests/test_phase5_components.py",
+      "line": 390,
+      "file_type": "test",
+      "category": "needs_review",
+      "action": "add_warning",
+      "code": "code = \"result = eval(user_input)\"",
+      "context": "\n        detector.register_custom_detector(custom_detector)\n\n        code = \"result = eval(user_input)\"\n        bugs = detector.detect_bugs(code, \"python\")\n\n        custom_bugs = [b for b in bugs if b.bug_id == \"CUSTOM-001\"]"
+    },
+    {
+      "file": "/home/runner/work/machine-native-ops/machine-native-ops/workspace/teams/holy-grail/agents/autonomous/tests/test_task_executor.py",
+      "line": 50,
+      "file_type": "test",
+      "category": "comment",
+      "action": "safe",
+      "code": "result = eval(user_input)",
+      "context": "    \"\"\"Test security analysis\"\"\"\n    unsafe_code = \"\"\"\ndef unsafe_function(user_input):\n    result = eval(user_input)\n    password = \"hardcoded123\"\n    return result\n\"\"\""
+    },
+    {
+      "file": "/home/runner/work/machine-native-ops/machine-native-ops/workspace/teams/holy-grail/agents/autonomous/tests/test_task_executor.py",
+      "line": 86,
+      "file_type": "test",
+      "category": "test_or_demo",
+      "action": "add_warning",
+      "code": "code_with_eval = \"result = eval(user_input)\"",
+      "context": "@pytest.mark.asyncio\nasync def test_execute_auto_fix(executor):\n    \"\"\"Test automated fixing\"\"\"\n    code_with_eval = \"result = eval(user_input)\"\n\n    issue = {\"type\": \"security\", \"severity\": \"critical\", \"automated\": True}\n"
+    },
+    {
+      "file": "/home/runner/work/machine-native-ops/machine-native-ops/workspace/teams/holy-grail/agents/autonomous/tests/test_task_executor.py",
+      "line": 117,
+      "file_type": "test",
+      "category": "needs_review",
+      "action": "add_warning",
+      "code": "result = eval(user_input)",
+      "context": "    complex_code = \"\"\"\ndef complex_function(user_input):\n    # Security issue\n    result = eval(user_input)\n    password = \"secret123\"\n\n    # Performance issue"
+    },
+    {
+      "file": "/home/runner/work/machine-native-ops/machine-native-ops/workspace/src/automation/architect/core/analysis/security_scanner.py",
+      "line": 114,
+      "file_type": "core",
+      "category": "needs_review",
+      "action": "add_warning",
+      "code": "(r\"eval\\s*\\(\", \"eval-usage\", \"Use of eval() can lead to code injection\"),",
+      "context": "                \"xss\",\n                \"Potential XSS vulnerability via document.write\",\n            ),\n            (r\"eval\\s*\\(\", \"eval-usage\", \"Use of eval() can lead to code injection\"),\n        ]\n\n        # \u4e0d\u5b89\u5168\u7684\u52a0\u5bc6"
+    },
+    {
+      "file": "/home/runner/work/machine-native-ops/machine-native-ops/workspace/src/autonomous/agents/pipeline_service.py",
+      "line": 361,
+      "file_type": "core",
+      "category": "documented",
+      "action": "safe",
+      "code": "# SECURITY: eval() used with trusted input only. Do not use with untrusted user input.",
+      "context": "    test_code = \"\"\"\ndef unsafe_function(user_input):\n    # Security issue: eval\n# SECURITY: eval() used with trusted input only. Do not use with untrusted user input.\n    result = eval(user_input)\n\n    # Performance issue: nested loops"
+    },
+    {
+      "file": "/home/runner/work/machine-native-ops/machine-native-ops/workspace/src/autonomous/agents/pipeline_service.py",
+      "line": 362,
+      "file_type": "core",
+      "category": "documented",
+      "action": "safe",
+      "code": "result = eval(user_input)",
+      "context": "def unsafe_function(user_input):\n    # Security issue: eval\n# SECURITY: eval() used with trusted input only. Do not use with untrusted user input.\n    result = eval(user_input)\n\n    # Performance issue: nested loops\n    for i in range(100):"
+    },
+    {
+      "file": "/home/runner/work/machine-native-ops/machine-native-ops/workspace/src/autonomous/agents/examples/demo.py",
+      "line": 42,
+      "file_type": "demo",
+      "category": "documented",
+      "action": "safe",
+      "code": "# SECURITY: eval() used with trusted input only. Do not use with untrusted user input.",
+      "context": "    problematic_code = \"\"\"\ndef process_user_data(user_input, password):\n    # Security issue: using eval\n# SECURITY: eval() used with trusted input only. Do not use with untrusted user input.\n    result = eval(user_input)\n\n    # Security issue: hardcoded password"
+    },
+    {
+      "file": "/home/runner/work/machine-native-ops/machine-native-ops/workspace/src/autonomous/agents/examples/demo.py",
+      "line": 43,
+      "file_type": "demo",
+      "category": "documented",
+      "action": "safe",
+      "code": "result = eval(user_input)",
+      "context": "def process_user_data(user_input, password):\n    # Security issue: using eval\n# SECURITY: eval() used with trusted input only. Do not use with untrusted user input.\n    result = eval(user_input)\n\n    # Security issue: hardcoded password\n    db_password = os.getenv(\"DATABASE_PASSWORD\", \"admin123\")"
+    },
+    {
+      "file": "/home/runner/work/machine-native-ops/machine-native-ops/workspace/src/autonomous/agents/agents/task_executor.py",
+      "line": 135,
+      "file_type": "core",
+      "category": "string_check",
+      "action": "safe",
+      "code": "# SECURITY: eval() used with trusted input only. Do not use with untrusted user input.",
+      "context": "        issues = []\n\n        # Basic security pattern detection\n# SECURITY: eval() used with trusted input only. Do not use with untrusted user input.\n# SECURITY: eval() used with trusted input only. Do not use with untrusted user input.\n        if \"eval(\" in code or \"exec(\" in code:\n            issues.append("
+    },
+    {
+      "file": "/home/runner/work/machine-native-ops/machine-native-ops/workspace/src/autonomous/agents/agents/task_executor.py",
+      "line": 136,
+      "file_type": "core",
+      "category": "comment",
+      "action": "safe",
+      "code": "# SECURITY: eval() used with trusted input only. Do not use with untrusted user input.",
+      "context": "\n        # Basic security pattern detection\n# SECURITY: eval() used with trusted input only. Do not use with untrusted user input.\n# SECURITY: eval() used with trusted input only. Do not use with untrusted user input.\n        if \"eval(\" in code or \"exec(\" in code:\n            issues.append(\n                {"
+    },
+    {
+      "file": "/home/runner/work/machine-native-ops/machine-native-ops/workspace/src/autonomous/agents/agents/task_executor.py",
+      "line": 137,
+      "file_type": "core",
+      "category": "comment",
+      "action": "safe",
+      "code": "if \"eval(\" in code or \"exec(\" in code:",
+      "context": "        # Basic security pattern detection\n# SECURITY: eval() used with trusted input only. Do not use with untrusted user input.\n# SECURITY: eval() used with trusted input only. Do not use with untrusted user input.\n        if \"eval(\" in code or \"exec(\" in code:\n            issues.append(\n                {\n                    \"type\": \"security\","
+    },
+    {
+      "file": "/home/runner/work/machine-native-ops/machine-native-ops/workspace/src/autonomous/agents/agents/task_executor.py",
+      "line": 235,
+      "file_type": "core",
+      "category": "comment",
+      "action": "safe",
+      "code": "# SECURITY: eval() used with trusted input only. Do not use with untrusted user input.",
+      "context": "        # Implement specific fix strategies\n        fixed_code = code\n\n# SECURITY: eval() used with trusted input only. Do not use with untrusted user input.\n# SECURITY: eval() used with trusted input only. Do not use with untrusted user input.\n        if issue[\"type\"] == \"security\":\n            if \"eval(\" in code or \"exec(\" in code:"
+    },
+    {
+      "file": "/home/runner/work/machine-native-ops/machine-native-ops/workspace/src/autonomous/agents/agents/task_executor.py",
+      "line": 236,
+      "file_type": "core",
+      "category": "string_check",
+      "action": "safe",
+      "code": "# SECURITY: eval() used with trusted input only. Do not use with untrusted user input.",
+      "context": "        fixed_code = code\n\n# SECURITY: eval() used with trusted input only. Do not use with untrusted user input.\n# SECURITY: eval() used with trusted input only. Do not use with untrusted user input.\n        if issue[\"type\"] == \"security\":\n            if \"eval(\" in code or \"exec(\" in code:\n                # Remove dangerous code execution"
+    },
+    {
+      "file": "/home/runner/work/machine-native-ops/machine-native-ops/workspace/src/autonomous/agents/agents/task_executor.py",
+      "line": 238,
+      "file_type": "core",
+      "category": "comment",
+      "action": "safe",
+      "code": "if \"eval(\" in code or \"exec(\" in code:",
+      "context": "# SECURITY: eval() used with trusted input only. Do not use with untrusted user input.\n# SECURITY: eval() used with trusted input only. Do not use with untrusted user input.\n        if issue[\"type\"] == \"security\":\n            if \"eval(\" in code or \"exec(\" in code:\n                # Remove dangerous code execution\n                fixed_code = code.replace(\"eval(\", \"# REMOVED_eval(\")\n                fixed_code = fixed_code.replace(\"exec(\", \"# REMOVED_exec(\")"
+    },
+    {
+      "file": "/home/runner/work/machine-native-ops/machine-native-ops/workspace/src/autonomous/agents/agents/task_executor.py",
+      "line": 240,
+      "file_type": "core",
+      "category": "string_check",
+      "action": "safe",
+      "code": "fixed_code = code.replace(\"eval(\", \"# REMOVED_eval(\")",
+      "context": "        if issue[\"type\"] == \"security\":\n            if \"eval(\" in code or \"exec(\" in code:\n                # Remove dangerous code execution\n                fixed_code = code.replace(\"eval(\", \"# REMOVED_eval(\")\n                fixed_code = fixed_code.replace(\"exec(\", \"# REMOVED_exec(\")\n                logger.info(\"Applied security fix: removed eval/exec\")\n"
+    },
+    {
+      "file": "/home/runner/work/machine-native-ops/machine-native-ops/workspace/src/autonomous/agents/agents/task_executor.py",
+      "line": 295,
+      "file_type": "core",
+      "category": "documented",
+      "action": "safe",
+      "code": "# SECURITY: eval() used with trusted input only. Do not use with untrusted user input.",
+      "context": "    executor = TaskExecutor()\n\n    # Example: Analyze potentially unsafe code\n# SECURITY: eval() used with trusted input only. Do not use with untrusted user input.\n# SECURITY: eval() used with trusted input only. Do not use with untrusted user input.\n    test_code = \"\"\"\ndef process_data(user_input):"
+    },
+    {
+      "file": "/home/runner/work/machine-native-ops/machine-native-ops/workspace/src/autonomous/agents/agents/task_executor.py",
+      "line": 296,
+      "file_type": "core",
+      "category": "comment",
+      "action": "safe",
+      "code": "# SECURITY: eval() used with trusted input only. Do not use with untrusted user input.",
+      "context": "\n    # Example: Analyze potentially unsafe code\n# SECURITY: eval() used with trusted input only. Do not use with untrusted user input.\n# SECURITY: eval() used with trusted input only. Do not use with untrusted user input.\n    test_code = \"\"\"\ndef process_data(user_input):\n    result = eval(user_input)  # Security issue!"
+    },
+    {
+      "file": "/home/runner/work/machine-native-ops/machine-native-ops/workspace/src/autonomous/agents/agents/task_executor.py",
+      "line": 299,
+      "file_type": "core",
+      "category": "comment",
+      "action": "safe",
+      "code": "result = eval(user_input)  # Security issue!",
+      "context": "# SECURITY: eval() used with trusted input only. Do not use with untrusted user input.\n    test_code = \"\"\"\ndef process_data(user_input):\n    result = eval(user_input)  # Security issue!\n    password = \"hardcoded123\"   # Security issue!\n\n    for i in range(len(data)):"
+    },
+    {
+      "file": "/home/runner/work/machine-native-ops/machine-native-ops/workspace/src/autonomous/agents/test-vectors/generator.py",
+      "line": 221,
+      "file_type": "demo",
+      "category": "documented",
+      "action": "safe",
+      "code": "# SECURITY: eval() used with trusted input only. Do not use with untrusted user input.",
+      "context": "            \"    # Multiple security issues for comprehensive testing\",\n            \"    \",\n            \"    # Issue 1: Eval injection\",\n# SECURITY: eval() used with trusted input only. Do not use with untrusted user input.\n            \"    result = eval(user_input)\",\n            \"    \",\n            \"    # Issue 2: Hardcoded credential\","
+    },
+    {
+      "file": "/home/runner/work/machine-native-ops/machine-native-ops/workspace/src/autonomous/agents/test-vectors/generator.py",
+      "line": 222,
+      "file_type": "demo",
+      "category": "documented",
+      "action": "safe",
+      "code": "\"    result = eval(user_input)\",",
+      "context": "            \"    \",\n            \"    # Issue 1: Eval injection\",\n# SECURITY: eval() used with trusted input only. Do not use with untrusted user input.\n            \"    result = eval(user_input)\",\n            \"    \",\n            \"    # Issue 2: Hardcoded credential\",\n            '    db_password = \"PLACEHOLDER_TEST_ONLY\"',"
+    },
+    {
+      "file": "/home/runner/work/machine-native-ops/machine-native-ops/workspace/src/autonomous/agents/tests/test_phase5_components.py",
+      "line": 376,
+      "file_type": "test",
+      "category": "string_check",
+      "action": "safe",
+      "code": "if \"eval(\" in code:",
+      "context": "        detector = AutoBugDetector()\n\n        def custom_detector(code: str):\n            if \"eval(\" in code:\n                return [\n                    DetectedBug(\n                        bug_id=\"CUSTOM-001\","
+    },
+    {
+      "file": "/home/runner/work/machine-native-ops/machine-native-ops/workspace/src/autonomous/agents/tests/test_phase5_components.py",
+      "line": 381,
+      "file_type": "test",
+      "category": "documented",
+      "action": "safe",
+      "code": "description=\"Dangerous eval() usage\",",
+      "context": "                    DetectedBug(\n                        bug_id=\"CUSTOM-001\",\n                        category=BugCategory.SECURITY,\n                        description=\"Dangerous eval() usage\",\n                        location=\"Code contains eval()\",\n                        severity=\"critical\",\n                    )"
+    },
+    {
+      "file": "/home/runner/work/machine-native-ops/machine-native-ops/workspace/src/autonomous/agents/tests/test_phase5_components.py",
+      "line": 382,
+      "file_type": "test",
+      "category": "documented",
+      "action": "safe",
+      "code": "location=\"Code contains eval()\",",
+      "context": "                        bug_id=\"CUSTOM-001\",\n                        category=BugCategory.SECURITY,\n                        description=\"Dangerous eval() usage\",\n                        location=\"Code contains eval()\",\n                        severity=\"critical\",\n                    )\n                ]"
+    },
+    {
+      "file": "/home/runner/work/machine-native-ops/machine-native-ops/workspace/src/autonomous/agents/tests/test_phase5_components.py",
+      "line": 390,
+      "file_type": "test",
+      "category": "needs_review",
+      "action": "add_warning",
+      "code": "code = \"result = eval(user_input)\"",
+      "context": "\n        detector.register_custom_detector(custom_detector)\n\n        code = \"result = eval(user_input)\"\n        bugs = detector.detect_bugs(code, \"python\")\n\n        custom_bugs = [b for b in bugs if b.bug_id == \"CUSTOM-001\"]"
+    },
+    {
+      "file": "/home/runner/work/machine-native-ops/machine-native-ops/workspace/src/autonomous/agents/tests/test_task_executor.py",
+      "line": 50,
+      "file_type": "test",
+      "category": "comment",
+      "action": "safe",
+      "code": "result = eval(user_input)",
+      "context": "    \"\"\"Test security analysis\"\"\"\n    unsafe_code = \"\"\"\ndef unsafe_function(user_input):\n    result = eval(user_input)\n    password = \"hardcoded123\"\n    return result\n\"\"\""
+    },
+    {
+      "file": "/home/runner/work/machine-native-ops/machine-native-ops/workspace/src/autonomous/agents/tests/test_task_executor.py",
+      "line": 86,
+      "file_type": "test",
+      "category": "test_or_demo",
+      "action": "add_warning",
+      "code": "code_with_eval = \"result = eval(user_input)\"",
+      "context": "@pytest.mark.asyncio\nasync def test_execute_auto_fix(executor):\n    \"\"\"Test automated fixing\"\"\"\n    code_with_eval = \"result = eval(user_input)\"\n\n    issue = {\"type\": \"security\", \"severity\": \"critical\", \"automated\": True}\n"
+    },
+    {
+      "file": "/home/runner/work/machine-native-ops/machine-native-ops/workspace/src/autonomous/agents/tests/test_task_executor.py",
+      "line": 117,
+      "file_type": "test",
+      "category": "needs_review",
+      "action": "add_warning",
+      "code": "result = eval(user_input)",
+      "context": "    complex_code = \"\"\"\ndef complex_function(user_input):\n    # Security issue\n    result = eval(user_input)\n    password = \"secret123\"\n\n    # Performance issue"
+    },
+    {
+      "file": "/home/runner/work/machine-native-ops/machine-native-ops/workspace/src/core/run-debug/cli.py",
+      "line": 387,
+      "file_type": "core",
+      "category": "documented",
+      "action": "safe",
+      "code": "# SECURITY: eval() used with trusted input only. Do not use with untrusted user input.",
+      "context": "\n@debug.command()\n@click.argument(\"expression\")\n# SECURITY: eval() used with trusted input only. Do not use with untrusted user input.\ndef eval(expression):\n    \"\"\"\u8a55\u4f30\u8868\u9054\u5f0f\"\"\"\n    cli = DebugCLI()"
+    },
+    {
+      "file": "/home/runner/work/machine-native-ops/machine-native-ops/workspace/src/core/run-debug/cli.py",
+      "line": 388,
+      "file_type": "core",
+      "category": "documented",
+      "action": "safe",
+      "code": "def eval(expression):",
+      "context": "@debug.command()\n@click.argument(\"expression\")\n# SECURITY: eval() used with trusted input only. Do not use with untrusted user input.\ndef eval(expression):\n    \"\"\"\u8a55\u4f30\u8868\u9054\u5f0f\"\"\"\n    cli = DebugCLI()\n    asyncio.run(cli.evaluate_expression(expression))"
+    },
+    {
+      "file": "/home/runner/work/machine-native-ops/machine-native-ops/workspace/src/core/virtual_experts/domain_experts.py",
+      "line": 505,
+      "file_type": "core",
+      "category": "string_check",
+      "action": "safe",
+      "code": "# SECURITY: eval() used with trusted input only. Do not use with untrusted user input.",
+      "context": "                    }\n                )\n\n# SECURITY: eval() used with trusted input only. Do not use with untrusted user input.\n        if \"eval(\" in code_lower or \"exec(\" in code_lower:\n            issues.append(\n                {"
+    },
+    {
+      "file": "/home/runner/work/machine-native-ops/machine-native-ops/workspace/src/core/virtual_experts/domain_experts.py",
+      "line": 506,
+      "file_type": "core",
+      "category": "string_check",
+      "action": "safe",
+      "code": "if \"eval(\" in code_lower or \"exec(\" in code_lower:",
+      "context": "                )\n\n# SECURITY: eval() used with trusted input only. Do not use with untrusted user input.\n        if \"eval(\" in code_lower or \"exec(\" in code_lower:\n            issues.append(\n                {\n                    \"severity\": \"critical\","
+    },
+    {
+      "file": "/home/runner/work/machine-native-ops/machine-native-ops/workspace/src/core/plugins/virtual_experts/domain_experts.py",
+      "line": 500,
+      "file_type": "core",
+      "category": "string_check",
+      "action": "safe",
+      "code": "# SECURITY: eval() used with trusted input only. Do not use with untrusted user input.",
+      "context": "                    }\n                )\n\n# SECURITY: eval() used with trusted input only. Do not use with untrusted user input.\n        if \"eval(\" in code_lower or \"exec(\" in code_lower:\n            issues.append(\n                {"
+    },
+    {
+      "file": "/home/runner/work/machine-native-ops/machine-native-ops/workspace/src/core/plugins/virtual_experts/domain_experts.py",
+      "line": 501,
+      "file_type": "core",
+      "category": "string_check",
+      "action": "safe",
+      "code": "if \"eval(\" in code_lower or \"exec(\" in code_lower:",
+      "context": "                )\n\n# SECURITY: eval() used with trusted input only. Do not use with untrusted user input.\n        if \"eval(\" in code_lower or \"exec(\" in code_lower:\n            issues.append(\n                {\n                    \"severity\": \"critical\","
+    }
+  ]
+}

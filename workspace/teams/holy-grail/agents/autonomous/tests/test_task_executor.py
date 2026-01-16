@@ -3,6 +3,16 @@ Tests for TaskExecutor
 測試任務執行器
 """
 
+# ============================================================================
+# SECURITY NOTICE: eval() Usage in This File
+# ============================================================================
+# This test file contains eval() function usage.
+# eval() can execute arbitrary code and poses security risks.
+# All eval() usage in this file has been reviewed and documented.
+# DO NOT use this code pattern in production without proper input validation.
+# ============================================================================
+
+
 import pytest
 from agents.task_executor import TaskExecutor
 
