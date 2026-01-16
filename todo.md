@@ -158,6 +158,38 @@ Please specify which area to focus on or provide new objectives.
 
 ---
 
+## Current Work Plan - Sequential Execution
+
+### Priority 1: Code Quality Improvements (Phase 4B-4D)
+- [x] Phase 4B: Fix code smells (hardcoded URLs, configuration values) ✅ COMPLETE
+- [ ] Phase 4C: Medium-risk issue review
+- [ ] Phase 4D: Security audit
+
+### Priority 2: Testing Infrastructure (Sprint 1.3)
+- [ ] Create test directory structure
+- [ ] Implement testing framework (pytest, coverage)
+- [ ] Write unit tests
+- [ ] Write integration tests
+- [ ] Write end-to-end tests
+
+### Priority 3: MCP Endpoint Implementation (Sprint 1.4)
+- [ ] API architecture design
+- [ ] API service framework
+- [ ] Core endpoint implementation
+- [ ] Governance endpoint implementation
+
+### Priority 4: Event-Driven System Maintenance
+- [ ] Monitor system status
+- [ ] Check logs and performance
+- [ ] Maintain and optimize existing system
+
+### Priority 5: Repository Cleanup
+- [ ] Organize duplicate directories
+- [ ] Clean up temporary files
+- [ ] Optimize repository structure
+
+---
+
 ## Current Task: Integrate understanding-system.zip into Main Branch
 
 ### Task Overview

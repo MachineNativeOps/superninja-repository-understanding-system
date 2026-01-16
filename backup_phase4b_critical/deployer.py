@@ -5,7 +5,6 @@ INSTANT Deployer - 即時部署引擎
 
 import subprocess
 import time
-import os
 from typing import Any, Dict
 
 
@@ -59,10 +58,10 @@ class InstantDeployer:
         """執行部署"""
         # 模擬即時部署
         endpoints = {
-            "auth": os.getenv('INSTANT_AUTH_URL', 'https://api.instant.com/auth'),
-            "validation": os.getenv('INSTANT_VALIDATION_URL', 'https://api.instant.com/validation'),
-            "api": os.getenv('INSTANT_API_V1_URL', 'https://api.instant.com/v1'),
-            "tools": os.getenv('INSTANT_TOOLS_URL', 'https://api.instant.com/tools'),
+            "auth": "https://api.instant.com/auth",
+            "validation": "https://api.instant.com/validation",
+            "api": "https://api.instant.com/v1",
+            "tools": "https://api.instant.com/tools",
             "health": "https://api.instant.com/health",
         }
 

@@ -1,0 +1,289 @@
+{
+  "summary": {
+    "total_files_with_urls": 170,
+    "total_files_with_configs": 26,
+    "localhost_urls_count": 152,
+    "external_urls_count": 322
+  },
+  "localhost_urls": [
+    [
+      "code_quality_analyzer.py",
+      {
+        "line": 225,
+        "url": "https://localhost:\\d+",
+        "context": "(r\"https://localhost:\\d+\", \"\u786c\u7de8\u78bc\u7684 localhost URL\"),"
+      }
+    ],
+    [
+      "fix_remaining_issues.py",
+      {
+        "line": 65,
+        "url": "http://localhost:8080",
+        "context": "r\"http://localhost:8080\","
+      }
+    ],
+    [
+      "fix_remaining_issues.py",
+      {
+        "line": 65,
+        "url": "localhost:8080",
+        "context": "r\"http://localhost:8080\","
+      }
+    ],
+    [
+      "fix_remaining_issues.py",
+      {
+        "line": 66,
+        "url": "http://localhost:8080",
+        "context": "'os.getenv(\"LOCAL_API_URL\", \"http://localhost:8080\")',"
+      }
+    ],
+    [
+      "fix_remaining_issues.py",
+      {
+        "line": 66,
+        "url": "localhost:8080",
+        "context": "'os.getenv(\"LOCAL_API_URL\", \"http://localhost:8080\")',"
+      }
+    ],
+    [
+      "fix_remaining_issues.py",
+      {
+        "line": 69,
+        "url": "http://localhost:\\d+",
+        "context": "r\"http://localhost:\\d+\","
+      }
+    ],
+    [
+      "fix_remaining_issues.py",
+      {
+        "line": 70,
+        "url": "http://localhost:8080",
+        "context": "'os.getenv(\"LOCAL_SERVICE_URL\", \"http://localhost:8080\")',"
+      }
+    ],
+    [
+      "fix_remaining_issues.py",
+      {
+        "line": 70,
+        "url": "localhost:8080",
+        "context": "'os.getenv(\"LOCAL_SERVICE_URL\", \"http://localhost:8080\")',"
+      }
+    ],
+    [
+      "00-namespaces/namespaces-mcp/level1/INSTANT-DEPLOY.py",
+      {
+        "line": 43,
+        "url": "http://localhost:8000/instant/health",
+        "context": "[\"curl\", \"-s\", \"http://localhost:8000/instant/health\"],"
+      }
+    ],
+    [
+      "00-namespaces/namespaces-mcp/level1/INSTANT-DEPLOY.py",
+      {
+        "line": 43,
+        "url": "localhost:8000",
+        "context": "[\"curl\", \"-s\", \"http://localhost:8000/instant/health\"],"
+      }
+    ]
+  ],
+  "external_urls": [
+    [
+      "fix_remaining_issues.py",
+      {
+        "line": 56,
+        "url": "https://github\\.com/MachineNativeOps/machine-native-ops\\.git",
+        "context": "r\"https://github\\.com/MachineNativeOps/machine-native-ops\\.git\","
+      }
+    ],
+    [
+      "fix_remaining_issues.py",
+      {
+        "line": 57,
+        "url": "https://github.com/MachineNativeOps/machine-native-ops.git",
+        "context": "'os.getenv(\"GITHUB_REPO_URL\", \"https://github.com/MachineNativeOps/machine-native-ops.git\")',"
+      }
+    ],
+    [
+      "fix_remaining_issues.py",
+      {
+        "line": 60,
+        "url": "https://api\\.github\\.com",
+        "context": "r\"https://api\\.github\\.com\","
+      }
+    ],
+    [
+      "fix_remaining_issues.py",
+      {
+        "line": 61,
+        "url": "https://api.github.com",
+        "context": "'os.getenv(\"GITHUB_API_URL\", \"https://api.github.com\")',"
+      }
+    ],
+    [
+      "fix_remaining_issues.py",
+      {
+        "line": 74,
+        "url": "https://api\\.openai\\.com/v1",
+        "context": "r\"https://api\\.openai\\.com/v1\","
+      }
+    ],
+    [
+      "fix_remaining_issues.py",
+      {
+        "line": 75,
+        "url": "https://api.openai.com/v1",
+        "context": "'os.getenv(\"OPENAI_API_ENDPOINT\", \"https://api.openai.com/v1\")',"
+      }
+    ],
+    [
+      "00-namespaces/namespaces-mcp/level1/verification/github-oauth-verifier.py",
+      {
+        "line": 38,
+        "url": "https://api.github.com",
+        "context": "self.github_api_base = \"https://api.github.com\""
+      }
+    ],
+    [
+      "00-namespaces/namespaces-mcp/level1/instant-system/deployer.py",
+      {
+        "line": 61,
+        "url": "https://api.instant.com/auth",
+        "context": "\"auth\": \"https://api.instant.com/auth\","
+      }
+    ],
+    [
+      "00-namespaces/namespaces-mcp/level1/instant-system/deployer.py",
+      {
+        "line": 62,
+        "url": "https://api.instant.com/validation",
+        "context": "\"validation\": \"https://api.instant.com/validation\","
+      }
+    ],
+    [
+      "00-namespaces/namespaces-mcp/level1/instant-system/deployer.py",
+      {
+        "line": 63,
+        "url": "https://api.instant.com/v1",
+        "context": "\"api\": \"https://api.instant.com/v1\","
+      }
+    ]
+  ],
+  "config_values": [
+    [
+      "00-namespaces/namespaces-adk/adk/security/auth.py",
+      [
+        {
+          "line": 25,
+          "value": "TOKEN = \"token\"",
+          "context": "TOKEN = \"token\""
+        },
+        {
+          "line": 27,
+          "value": "API_KEY = \"api_key\"",
+          "context": "API_KEY = \"api_key\""
+        }
+      ]
+    ],
+    [
+      "00-namespaces/namespaces-adk/adk/mcp/mcp_security.py",
+      [
+        {
+          "line": 27,
+          "value": "API_KEY = \"api_key\"",
+          "context": "API_KEY = \"api_key\""
+        }
+      ]
+    ],
+    [
+      "workspace/teams/holy-grail/agents/autonomous/agents/task_executor.py",
+      [
+        {
+          "line": 294,
+          "value": "password = \"hardcoded123\"",
+          "context": "password = \"hardcoded123\"   # Security issue!"
+        }
+      ]
+    ],
+    [
+      "workspace/teams/holy-grail/agents/services/dependency-manager/src/enterprise/integration.py",
+      [
+        {
+          "line": 43,
+          "value": "API_KEY = \"api_key\"",
+          "context": "API_KEY = \"api_key\""
+        }
+      ]
+    ],
+    [
+      "workspace/teams/holy-grail/agents/ai-experts/dependency-manager/src/enterprise/integration.py",
+      [
+        {
+          "line": 42,
+          "value": "API_KEY = \"api_key\"",
+          "context": "API_KEY = \"api_key\""
+        }
+      ]
+    ],
+    [
+      "workspace/src/ai/agents/dependency-manager/src/enterprise/integration.py",
+      [
+        {
+          "line": 42,
+          "value": "API_KEY = \"api_key\"",
+          "context": "API_KEY = \"api_key\""
+        }
+      ]
+    ],
+    [
+      "workspace/src/core/training_system/example_library.py",
+      [
+        {
+          "line": 298,
+          "value": "password = '{password}'",
+          "context": "AND password = '{password}'"
+        },
+        {
+          "line": 306,
+          "value": "password = 'anything'",
+          "context": "# \u7d50\u679c: SELECT * FROM users WHERE username = 'admin' --' AND password = 'anything'"
+        }
+      ]
+    ],
+    [
+      "workspace/src/core/training_system/skills_training.py",
+      [
+        {
+          "line": 581,
+          "value": "password = '{password}'",
+          "context": "query = f\"SELECT * FROM users WHERE email = '{email}' AND password = '{password}'\""
+        }
+      ]
+    ],
+    [
+      "workspace/src/core/plugins/training_system/example_library.py",
+      [
+        {
+          "line": 296,
+          "value": "password = '{password}'",
+          "context": "AND password = '{password}'"
+        },
+        {
+          "line": 304,
+          "value": "password = 'anything'",
+          "context": "# \u7d50\u679c: SELECT * FROM users WHERE username = 'admin' --' AND password = 'anything'"
+        }
+      ]
+    ],
+    [
+      "workspace/src/core/plugins/training_system/skills_training.py",
+      [
+        {
+          "line": 581,
+          "value": "password = '{password}'",
+          "context": "query = f\"SELECT * FROM users WHERE email = '{email}' AND password = '{password}'\""
+        }
+      ]
+    ]
+  ]
+}

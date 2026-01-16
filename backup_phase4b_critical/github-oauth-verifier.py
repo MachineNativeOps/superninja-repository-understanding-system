@@ -9,7 +9,6 @@ as specified in the team identity registry.
 import hashlib
 import json
 import os
-import os
 import secrets
 import time
 from dataclasses import dataclass
@@ -36,7 +35,7 @@ class GitHubOAuthVerifier:
     """GitHub OAuth verification system for MCP namespaces"""
 
     def __init__(self):
-        self.github_api_base = os.getenv('GITHUB_API_URL', 'https://api.github.com')
+        self.github_api_base = "https://api.github.com"
         self.verification_timeout = 3600  # 1 hour
         self.validity_period = timedelta(days=365)  # 1 year
 
