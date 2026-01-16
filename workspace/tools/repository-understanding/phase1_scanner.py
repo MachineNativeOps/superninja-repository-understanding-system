@@ -11,7 +11,11 @@ from collections import defaultdict
 from datetime import datetime
 
 class RepositoryScanner:
-    def __init__(self, root_path='/workspace'):
+    def __init__(self, root_path=None):
+        # Default to repository root (3 levels up from this script's location)
+        if root_path is None:
+            script_dir = Path(__file__).parent.absolute()
+            root_path = script_dir.parent.parent.parent  # workspace/tools/repository-understanding -> workspace -> root
         self.root_path = Path(root_path)
         self.knowledge_base = {
             'metadata': {
