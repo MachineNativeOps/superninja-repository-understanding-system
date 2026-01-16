@@ -14,7 +14,7 @@
 #
 # ═══════════════════════════════════════════════════════════════════════════════
 
-.PHONY: all-kg kg mndoc superroot check-drift clean-generated analyze-reports help install
+.PHONY: all-kg kg mndoc superroot check-drift clean-generated analyze-reports help install automation-init automation-check automation-fix automation-verify automation-help
 
 # Default target
 .DEFAULT_GOAL := help
@@ -38,6 +38,13 @@ help:
 	@echo "  make analyze-reports - Analyze root-level reports"
 	@echo "  make install         - Install dependencies (npm + workspace)"
 	@echo "  make help            - Show this help message"
+	@echo ""
+	@echo "Automation targets:"
+	@echo "  make automation-init     - Initialize automation tools"
+	@echo "  make automation-check    - Run quality checks"
+	@echo "  make automation-fix      - Auto-fix issues"
+	@echo "  make automation-verify   - Verify automation setup"
+	@echo "  make automation-help     - Show automation help"
 	@echo ""
 	@echo "For workspace-specific operations, use: make -C $(WORKSPACE) <target>"
 
@@ -72,3 +79,48 @@ install:
 	@echo "📦 Installing dependencies (npm workspaces handles all subdirectories)..."
 	npm install
 	@echo "✅ Installation complete"
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Automation Targets
+# ─────────────────────────────────────────────────────────────────────────────
+.PHONY: automation-init automation-check automation-fix automation-verify automation-help
+
+automation-init:
+	@echo "🚀 Initializing automation tools..."
+	@bash scripts/init-automation.sh
+
+automation-check:
+	@echo "📊 Running quality checks..."
+	@python3 scripts/auto-quality-check.py
+
+automation-fix:
+	@echo "🔧 Running auto-fix..."
+	@python3 scripts/auto-fix-issues.py
+
+automation-fix-preview:
+	@echo "🔍 Previewing auto-fix (dry run)..."
+	@python3 scripts/auto-fix-issues.py --dry-run
+
+automation-verify:
+	@echo "✅ Verifying automation setup..."
+	@bash scripts/verify-automation.sh
+
+automation-report:
+	@echo "📄 Viewing quality report..."
+	@cat AUTO-QUALITY-REPORT.md
+
+automation-help:
+	@echo "Automation Tools - Available Commands"
+	@echo ""
+	@echo "  make automation-init         - Initialize automation tools"
+	@echo "  make automation-check        - Run quality checks"
+	@echo "  make automation-fix          - Auto-fix issues"
+	@echo "  make automation-fix-preview  - Preview auto-fix (dry run)"
+	@echo "  make automation-verify       - Verify automation setup"
+	@echo "  make automation-report       - View quality report"
+	@echo "  make automation-help         - Show this help"
+	@echo ""
+	@echo "Quick start:"
+	@echo "  1. make automation-init      # First time setup"
+	@echo "  2. make automation-check     # Run checks"
+	@echo "  3. make automation-report    # View results"
