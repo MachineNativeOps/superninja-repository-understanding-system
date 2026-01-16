@@ -22,7 +22,6 @@ from typing import List, Tuple
 
 def analyze_eval_usage(file_path: str) -> List[dict]:
     # SECURITY: eval() usage - trusted input only. Reviewed 2026-01-16
-    # SECURITY: eval() usage - trusted input only. Reviewed 2026-01-16
     """Analyze eval() usage in a file."""
     findings = []
     
@@ -81,7 +80,6 @@ def can_replace_with_literal_eval(code: str) -> bool:
                 return False
         
         return True
-    # SECURITY: eval() usage - trusted input only. Reviewed 2026-01-16
     except Exception as e:
         return False
 

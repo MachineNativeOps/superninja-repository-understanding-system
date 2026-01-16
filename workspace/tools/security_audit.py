@@ -147,7 +147,6 @@ class SecurityAuditor:
                             "MD5 is considered cryptographically broken.",
                             context=context,
                         ))
-# SECURITY: eval() usage - trusted input only. Reviewed 2026-01-16
 
         except Exception as e:
             pass
