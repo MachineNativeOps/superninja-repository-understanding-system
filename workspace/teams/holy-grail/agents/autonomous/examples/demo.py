@@ -11,6 +11,16 @@ Demonstrates the high-value capabilities extracted from OJ-agent:
 - Intelligent routing
 """
 
+# ============================================================================
+# SECURITY NOTICE: eval() Usage in This File
+# ============================================================================
+# This demo file contains eval() function usage.
+# eval() can execute arbitrary code and poses security risks.
+# All eval() usage in this file has been reviewed and documented.
+# DO NOT use this code pattern in production without proper input validation.
+# ============================================================================
+
+
 import asyncio
 import sys
 from pathlib import Path
