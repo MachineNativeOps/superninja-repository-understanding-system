@@ -24,14 +24,16 @@ logger = logging.getLogger(__name__)
 
 class StorageClass(Enum):
     """Storage class for cost optimization"""
-    STANDARD = "standard"              # Frequently accessed
-    INFREQUENT = "infrequent"         # Less frequently accessed
-    ARCHIVE = "archive"               # Rarely accessed, archival
-    GLACIER = "glacier"               # Long-term archival
+
+    STANDARD = "standard"  # Frequently accessed
+    INFREQUENT = "infrequent"  # Less frequently accessed
+    ARCHIVE = "archive"  # Rarely accessed, archival
+    GLACIER = "glacier"  # Long-term archival
 
 
 class ContentType(Enum):
     """Common content types"""
+
     JSON = "application/json"
     HTML = "text/html"
     PDF = "application/pdf"
@@ -49,6 +51,7 @@ class StorageLocation:
 
     Defines where an object is stored.
     """
+
     bucket: str = ""
     key: str = ""
     region: str | None = None
@@ -71,6 +74,7 @@ class StorageObject:
 
     Represents an object in storage without the actual content.
     """
+
     id: UUID = field(default_factory=uuid4)
 
     # Location
@@ -199,33 +203,25 @@ class StorageBackend(Protocol):
 class ObjectMetadataStore(Protocol):
     """Interface for storing object metadata"""
 
-    async def save(self, obj: StorageObject) -> StorageObject:
-        ...
+    async def save(self, obj: StorageObject) -> StorageObject: ...
 
-    async def get(self, obj_id: UUID) -> StorageObject | None:
-        ...
+    async def get(self, obj_id: UUID) -> StorageObject | None: ...
 
-    async def get_by_location(
-        self, bucket: str, key: str
-    ) -> StorageObject | None:
-        ...
+    async def get_by_location(self, bucket: str, key: str) -> StorageObject | None: ...
 
     async def list_by_org(
         self,
         org_id: UUID,
         object_type: str | None = None,
         limit: int = 100,
-    ) -> list[StorageObject]:
-        ...
+    ) -> list[StorageObject]: ...
 
     async def list_by_run(
         self,
         run_id: UUID,
-    ) -> list[StorageObject]:
-        ...
+    ) -> list[StorageObject]: ...
 
-    async def delete(self, obj_id: UUID) -> bool:
-        ...
+    async def delete(self, obj_id: UUID) -> bool: ...
 
 
 @dataclass
@@ -285,7 +281,9 @@ class ObjectStorage:
         """
         # Auto-detect content type
         if not content_type:
-            content_type = mimetypes.guess_type(filename)[0] or "application/octet-stream"
+            content_type = (
+                mimetypes.guess_type(filename)[0] or "application/octet-stream"
+            )
 
         # Build key
         key = self.artifact_path_template.format(

@@ -51,13 +51,13 @@ def unsafe_function(user_input):
     password = "hardcoded123"
     return result
 """
-    
+
     result = await executor.analyze_code(unsafe_code, "security")
-    
+
     assert result is not None
     assert "issues" in result
     assert len(result["issues"]) > 0
-    
+
     # Check for security issues detected
     security_issues = [i for i in result["issues"] if i["type"] == "security"]
     assert len(security_issues) > 0
@@ -73,9 +73,9 @@ def slow_function(data):
             for k in range(len(data)):
                 process(i, j, k)
 """
-    
+
     result = await executor.analyze_code(slow_code, "performance")
-    
+
     assert result is not None
     assert "issues" in result
 
@@ -84,15 +84,11 @@ def slow_function(data):
 async def test_execute_auto_fix(executor):
     """Test automated fixing"""
     code_with_eval = "result = eval(user_input)"
-    
-    issue = {
-        "type": "security",
-        "severity": "critical",
-        "automated": True
-    }
-    
+
+    issue = {"type": "security", "severity": "critical", "automated": True}
+
     fixed_code = await executor.execute_auto_fix(code_with_eval, issue)
-    
+
     # Should remove or comment out eval
     assert fixed_code is not None
     assert "REMOVED_eval" in fixed_code or "eval" not in fixed_code
@@ -102,11 +98,11 @@ async def test_execute_auto_fix(executor):
 async def test_stream_analysis(executor):
     """Test streaming analysis"""
     test_code = "def test(): pass"
-    
+
     chunks = []
     async for chunk in executor.stream_analysis(test_code):
         chunks.append(chunk)
-    
+
     assert len(chunks) > 0
     assert chunks[0]["status"] == "started"
     assert chunks[-1]["status"] == "completed"
@@ -120,22 +116,22 @@ def complex_function(user_input):
     # Security issue
     result = eval(user_input)
     password = "secret123"
-    
+
     # Performance issue
     for i in range(100):
         for j in range(100):
             for k in range(100):
                 process(i, j, k)
-    
+
     return result
 """
-    
+
     result = await executor.analyze_code(complex_code, "comprehensive")
-    
+
     assert result is not None
     assert "issues" in result
     assert "recommendations" in result
-    
+
     # Should detect both security and performance issues
     issue_types = set(issue["type"] for issue in result["issues"])
     assert len(issue_types) > 0

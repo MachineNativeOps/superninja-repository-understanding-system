@@ -18,16 +18,17 @@ Version: 1.0.0
 """
 
 import argparse
-import yaml
 import json
 import os
 import re
 import shutil
-from pathlib import Path
+from dataclasses import asdict, dataclass, field
 from datetime import datetime
-from typing import Dict, List, Optional, Tuple, Any, Set
-from dataclasses import dataclass, field, asdict
 from enum import Enum
+from pathlib import Path
+from typing import Any, Dict, List, Optional, Set, Tuple
+
+import yaml
 
 # ============================================================================
 # 常數與配置
@@ -42,8 +43,10 @@ BACKUP_PATH = PLAYBOOKS_PATH / ".integration_backup"
 # 枚舉定義
 # ============================================================================
 
+
 class OperationType(Enum):
     """操作類型"""
+
     CREATE_DIR = "create_directory"
     MOVE_FILE = "move_file"
     COPY_FILE = "copy_file"
@@ -53,19 +56,24 @@ class OperationType(Enum):
     EMBED_CONTENT = "embed_content"
     UPDATE_INDEX = "update_index"
 
+
 class ExecutionMode(Enum):
     """執行模式"""
+
     DRY_RUN = "dry_run"
     CONFIRM = "confirm"
     FORCE = "force"
+
 
 # ============================================================================
 # 資料結構
 # ============================================================================
 
+
 @dataclass
 class Operation:
     """操作定義"""
+
     op_id: str
     op_type: OperationType
     source: Optional[str]
@@ -73,27 +81,33 @@ class Operation:
     options: Dict = field(default_factory=dict)
     depends_on: List[str] = field(default_factory=list)
 
+
 @dataclass
 class OperationResult:
     """操作結果"""
+
     op_id: str
     success: bool
     message: str
     changes: List[str] = field(default_factory=list)
     rollback_info: Optional[Dict] = None
 
+
 @dataclass
 class DirectoryOptimization:
     """目錄優化方案"""
+
     target_dir: str
     current_structure: Dict
     optimized_structure: Dict
     operations: List[Operation]
     improvement_score: float
 
+
 @dataclass
 class IntegrationPlan:
     """整合計畫"""
+
     plan_id: str
     created_at: str
     target_directory: str
@@ -101,9 +115,11 @@ class IntegrationPlan:
     estimated_changes: int
     risk_level: str
 
+
 # ============================================================================
 # 目錄優化器
 # ============================================================================
+
 
 class DirectoryOptimizer:
     """
@@ -163,7 +179,7 @@ class DirectoryOptimizer:
                 if not self._check_naming(item.name):
                     structure["naming_issues"].append(item.name)
 
-            elif item.is_dir() and not item.name.startswith('.'):
+            elif item.is_dir() and not item.name.startswith("."):
                 subdir_files = list(item.rglob("*"))
                 structure["subdirs"][item.name] = {
                     "files": [f.name for f in subdir_files if f.is_file()],
@@ -202,8 +218,9 @@ class DirectoryOptimizer:
 
         return optimized
 
-    def _generate_operations(self, current: Dict, optimized: Dict,
-                            target_dir: Path) -> List[Operation]:
+    def _generate_operations(
+        self, current: Dict, optimized: Dict, target_dir: Path
+    ) -> List[Operation]:
         """生成操作列表"""
         operations = []
         op_counter = 0
@@ -211,36 +228,42 @@ class DirectoryOptimizer:
         # 建立新子目錄
         for subdir, files in optimized.get("new_subdirs", {}).items():
             op_counter += 1
-            operations.append(Operation(
-                op_id=f"op_{op_counter:03d}",
-                op_type=OperationType.CREATE_DIR,
-                source=None,
-                target=str(target_dir / subdir),
-            ))
+            operations.append(
+                Operation(
+                    op_id=f"op_{op_counter:03d}",
+                    op_type=OperationType.CREATE_DIR,
+                    source=None,
+                    target=str(target_dir / subdir),
+                )
+            )
 
             # 移動檔案到新子目錄
             for filename in files:
                 op_counter += 1
-                operations.append(Operation(
-                    op_id=f"op_{op_counter:03d}",
-                    op_type=OperationType.MOVE_FILE,
-                    source=str(target_dir / filename),
-                    target=str(target_dir / subdir / filename),
-                    depends_on=[f"op_{op_counter-len(files):03d}"],
-                ))
+                operations.append(
+                    Operation(
+                        op_id=f"op_{op_counter:03d}",
+                        op_type=OperationType.MOVE_FILE,
+                        source=str(target_dir / filename),
+                        target=str(target_dir / subdir / filename),
+                        depends_on=[f"op_{op_counter-len(files):03d}"],
+                    )
+                )
 
         # 修復命名問題
         for filename in current.get("naming_issues", []):
             new_name = self._fix_naming(filename)
             if new_name != filename:
                 op_counter += 1
-                operations.append(Operation(
-                    op_id=f"op_{op_counter:03d}",
-                    op_type=OperationType.MOVE_FILE,
-                    source=str(target_dir / filename),
-                    target=str(target_dir / new_name),
-                    options={"rename": True},
-                ))
+                operations.append(
+                    Operation(
+                        op_id=f"op_{op_counter:03d}",
+                        op_type=OperationType.MOVE_FILE,
+                        source=str(target_dir / filename),
+                        target=str(target_dir / new_name),
+                        options={"rename": True},
+                    )
+                )
 
         return operations
 
@@ -272,7 +295,7 @@ class DirectoryOptimizer:
 
         if self.naming_convention == "snake_case":
             # 不應包含大寫或連字符
-            return not bool(re.search(r'[A-Z]|-', name))
+            return not bool(re.search(r"[A-Z]|-", name))
 
         return True
 
@@ -284,12 +307,12 @@ class DirectoryOptimizer:
 
         # 轉換為 snake_case
         # 處理 camelCase
-        name = re.sub(r'([A-Z]+)([A-Z][a-z])', r'\1_\2', name)
-        name = re.sub(r'([a-z\d])([A-Z])', r'\1_\2', name)
+        name = re.sub(r"([A-Z]+)([A-Z][a-z])", r"\1_\2", name)
+        name = re.sub(r"([a-z\d])([A-Z])", r"\1_\2", name)
         # 處理連字符
-        name = name.replace('-', '_')
+        name = name.replace("-", "_")
         # 處理多個下劃線
-        name = re.sub(r'_+', '_', name)
+        name = re.sub(r"_+", "_", name)
         name = name.lower()
 
         return name + ext
@@ -297,11 +320,14 @@ class DirectoryOptimizer:
     def _match_pattern(self, filename: str, pattern: str) -> bool:
         """匹配檔案模式"""
         import fnmatch
+
         return fnmatch.fnmatch(filename, pattern)
+
 
 # ============================================================================
 # 目錄圖譜生成器
 # ============================================================================
+
 
 class DirectoryMapper:
     """
@@ -314,8 +340,14 @@ class DirectoryMapper:
         self._build_tree(target_dir, lines, "", max_depth, 0)
         return "\n".join(lines)
 
-    def _build_tree(self, path: Path, lines: List[str], prefix: str,
-                    max_depth: int, current_depth: int):
+    def _build_tree(
+        self,
+        path: Path,
+        lines: List[str],
+        prefix: str,
+        max_depth: int,
+        current_depth: int,
+    ):
         """遞迴建立樹結構"""
         if current_depth >= max_depth:
             return
@@ -326,7 +358,7 @@ class DirectoryMapper:
             return
 
         # 過濾隱藏檔案
-        items = [i for i in items if not i.name.startswith('.')]
+        items = [i for i in items if not i.name.startswith(".")]
 
         for i, item in enumerate(items):
             is_last = i == len(items) - 1
@@ -344,7 +376,7 @@ class DirectoryMapper:
         lines = ["```mermaid", "graph TD"]
 
         def add_node(path: Path, parent_id: Optional[str] = None):
-            node_id = path.name.replace('.', '_').replace('-', '_')
+            node_id = path.name.replace(".", "_").replace("-", "_")
             if parent_id:
                 lines.append(f"    {parent_id} --> {node_id}[{path.name}]")
             else:
@@ -352,16 +384,18 @@ class DirectoryMapper:
 
             if path.is_dir():
                 for child in sorted(path.iterdir()):
-                    if not child.name.startswith('.'):
+                    if not child.name.startswith("."):
                         add_node(child, node_id)
 
         add_node(target_dir)
         lines.append("```")
         return "\n".join(lines)
 
+
 # ============================================================================
 # 整合執行器
 # ============================================================================
+
 
 class IntegrationExecutor:
     """
@@ -376,7 +410,9 @@ class IntegrationExecutor:
 
     def execute_plan(self, plan: IntegrationPlan) -> List[OperationResult]:
         """執行整合計畫"""
-        print(f"\n{'🔍 模擬執行' if self.mode == ExecutionMode.DRY_RUN else '🚀 執行'} 計畫: {plan.plan_id}")
+        print(
+            f"\n{'🔍 模擬執行' if self.mode == ExecutionMode.DRY_RUN else '🚀 執行'} 計畫: {plan.plan_id}"
+        )
         print(f"   目標: {plan.target_directory}")
         print(f"   操作數: {len(plan.operations)}")
 
@@ -387,11 +423,13 @@ class IntegrationExecutor:
         for op in plan.operations:
             # 檢查依賴
             if not self._check_dependencies(op, results):
-                results.append(OperationResult(
-                    op_id=op.op_id,
-                    success=False,
-                    message="依賴操作失敗",
-                ))
+                results.append(
+                    OperationResult(
+                        op_id=op.op_id,
+                        success=False,
+                        message="依賴操作失敗",
+                    )
+                )
                 continue
 
             result = self._execute_operation(op)
@@ -410,7 +448,7 @@ class IntegrationExecutor:
 
     def execute_single(self, decision_file: Path) -> OperationResult:
         """執行單一決策"""
-        with open(decision_file, 'r', encoding='utf-8') as f:
+        with open(decision_file, "r", encoding="utf-8") as f:
             decision = yaml.safe_load(f)
 
         # 從決策生成操作
@@ -540,18 +578,18 @@ class IntegrationExecutor:
             )
 
         # 讀取來源內容
-        source_content = source.read_text(encoding='utf-8')
+        source_content = source.read_text(encoding="utf-8")
 
         # 讀取或建立目標
         if target.exists():
-            target_content = target.read_text(encoding='utf-8')
+            target_content = target.read_text(encoding="utf-8")
             merged_content = target_content + "\n\n---\n\n" + source_content
         else:
             merged_content = source_content
 
         # 寫入合併內容
         target.parent.mkdir(parents=True, exist_ok=True)
-        target.write_text(merged_content, encoding='utf-8')
+        target.write_text(merged_content, encoding="utf-8")
 
         return OperationResult(
             op_id=op.op_id,
@@ -599,20 +637,22 @@ class IntegrationExecutor:
                 message="來源或目標不存在",
             )
 
-        source_content = source.read_text(encoding='utf-8')
-        target_content = target.read_text(encoding='utf-8')
+        source_content = source.read_text(encoding="utf-8")
+        target_content = target.read_text(encoding="utf-8")
 
         # 嵌入到指定段落
         embed_marker = f"\n\n{section}\n\n"
         if embed_marker in target_content:
             # 在現有段落後添加
             parts = target_content.split(embed_marker)
-            new_content = parts[0] + embed_marker + source_content + "\n\n" + "".join(parts[1:])
+            new_content = (
+                parts[0] + embed_marker + source_content + "\n\n" + "".join(parts[1:])
+            )
         else:
             # 添加新段落
             new_content = target_content + embed_marker + source_content
 
-        target.write_text(new_content, encoding='utf-8')
+        target.write_text(new_content, encoding="utf-8")
 
         return OperationResult(
             op_id=op.op_id,
@@ -641,7 +681,9 @@ class IntegrationExecutor:
             changes=[f"Updated index: {op.target}"],
         )
 
-    def _check_dependencies(self, op: Operation, results: List[OperationResult]) -> bool:
+    def _check_dependencies(
+        self, op: Operation, results: List[OperationResult]
+    ) -> bool:
         """檢查依賴是否滿足"""
         for dep_id in op.depends_on:
             dep_result = next((r for r in results if r.op_id == dep_id), None)
@@ -660,7 +702,7 @@ class IntegrationExecutor:
         }
 
         manifest_path = self.backup_dir / "manifest.yaml"
-        with open(manifest_path, 'w', encoding='utf-8') as f:
+        with open(manifest_path, "w", encoding="utf-8") as f:
             yaml.dump(manifest, f, allow_unicode=True)
 
     def _update_all_references(self):
@@ -672,9 +714,9 @@ class IntegrationExecutor:
 
         # 掃描所有 .md 和 .yaml 檔案
         for file in PLAYBOOKS_PATH.rglob("*"):
-            if file.suffix in ['.md', '.yaml', '.yml'] and file.is_file():
+            if file.suffix in [".md", ".yaml", ".yml"] and file.is_file():
                 try:
-                    content = file.read_text(encoding='utf-8')
+                    content = file.read_text(encoding="utf-8")
                     modified = False
 
                     for _, old_path, new_path in self.reference_updates:
@@ -683,7 +725,7 @@ class IntegrationExecutor:
                             modified = True
 
                     if modified:
-                        file.write_text(content, encoding='utf-8')
+                        file.write_text(content, encoding="utf-8")
                         print(f"   更新引用: {file.name}")
 
                 except Exception as e:
@@ -698,7 +740,9 @@ class IntegrationExecutor:
                 op_id=decision.get("asset_id", "op_001"),
                 op_type=OperationType.MOVE_FILE,
                 source=decision.get("source_path"),
-                target=decision.get("target_directory") + "/" + decision.get("target_filename", ""),
+                target=decision.get("target_directory")
+                + "/"
+                + decision.get("target_filename", ""),
             )
         elif integration_type == "embedded_integration":
             return Operation(
@@ -739,9 +783,11 @@ class IntegrationExecutor:
                     shutil.copy2(info["restore_from"], info["restore_to"])
                     print(f"   已回滾: {op_result.op_id}")
 
+
 # ============================================================================
 # 批量處理器
 # ============================================================================
+
 
 class BatchProcessor:
     """
@@ -767,19 +813,21 @@ class BatchProcessor:
 
     def process_plan(self, plan_file: Path) -> List[OperationResult]:
         """處理計畫檔案"""
-        with open(plan_file, 'r', encoding='utf-8') as f:
+        with open(plan_file, "r", encoding="utf-8") as f:
             plan_data = yaml.safe_load(f)
 
         operations = []
         for i, op_data in enumerate(plan_data.get("operations", [])):
-            operations.append(Operation(
-                op_id=op_data.get("op_id", f"op_{i:03d}"),
-                op_type=OperationType(op_data.get("op_type")),
-                source=op_data.get("source"),
-                target=op_data.get("target"),
-                options=op_data.get("options", {}),
-                depends_on=op_data.get("depends_on", []),
-            ))
+            operations.append(
+                Operation(
+                    op_id=op_data.get("op_id", f"op_{i:03d}"),
+                    op_type=OperationType(op_data.get("op_type")),
+                    source=op_data.get("source"),
+                    target=op_data.get("target"),
+                    options=op_data.get("options", {}),
+                    depends_on=op_data.get("depends_on", []),
+                )
+            )
 
         plan = IntegrationPlan(
             plan_id=plan_data.get("plan_id", datetime.now().strftime("%Y%m%d_%H%M%S")),
@@ -792,9 +840,11 @@ class BatchProcessor:
 
         return self.executor.execute_plan(plan)
 
+
 # ============================================================================
 # CLI 入口
 # ============================================================================
+
 
 def main():
     parser = argparse.ArgumentParser(
@@ -831,7 +881,9 @@ def main():
     # map 命令
     map_parser = subparsers.add_parser("map", help="生成目錄圖譜")
     map_parser.add_argument("--target", "-t", required=True, help="目標目錄")
-    map_parser.add_argument("--format", "-f", choices=["ascii", "mermaid"], default="ascii")
+    map_parser.add_argument(
+        "--format", "-f", choices=["ascii", "mermaid"], default="ascii"
+    )
     map_parser.add_argument("--output", "-o", help="輸出檔案")
 
     args = parser.parse_args()
@@ -842,9 +894,9 @@ def main():
 
     # 確定執行模式
     mode = ExecutionMode.DRY_RUN
-    if hasattr(args, 'confirm') and args.confirm:
+    if hasattr(args, "confirm") and args.confirm:
         mode = ExecutionMode.CONFIRM
-    elif hasattr(args, 'dry_run') and not args.dry_run:
+    elif hasattr(args, "dry_run") and not args.dry_run:
         mode = ExecutionMode.CONFIRM
 
     executor = IntegrationExecutor(mode=mode)
@@ -885,7 +937,7 @@ def main():
                 "optimized_structure": optimization.optimized_structure,
                 "operations": [asdict(op) for op in optimization.operations],
             }
-            with open(args.output, 'w', encoding='utf-8') as f:
+            with open(args.output, "w", encoding="utf-8") as f:
                 yaml.dump(output, f, allow_unicode=True, default_flow_style=False)
             print(f"\n報告已儲存: {args.output}")
 
@@ -913,11 +965,12 @@ def main():
             output = mapper.generate_mermaid_diagram(target)
 
         if args.output:
-            with open(args.output, 'w', encoding='utf-8') as f:
+            with open(args.output, "w", encoding="utf-8") as f:
                 f.write(output)
             print(f"圖譜已儲存: {args.output}")
         else:
             print(output)
+
 
 if __name__ == "__main__":
     main()

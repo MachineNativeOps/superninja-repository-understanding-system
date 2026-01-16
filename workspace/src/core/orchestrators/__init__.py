@@ -12,8 +12,11 @@ import importlib.util
 import sys
 from pathlib import Path
 
+
 # ===== 工具函數：動態導入 kebab-case 模塊 =====
-def _import_kebab_module(module_alias: str, file_name: str, legacy_alias: str | None = None):
+def _import_kebab_module(
+    module_alias: str, file_name: str, legacy_alias: str | None = None
+):
     """
     動態導入 kebab-case 的 Python 模塊並註冊命名空間別名。
 
@@ -68,8 +71,13 @@ def _import_kebab_module(module_alias: str, file_name: str, legacy_alias: str | 
         return module
     return None
 
+
 # ===== 基礎協調器 =====
-synergy_mesh = _import_kebab_module("synergy_mesh_orchestrator", "synergy-mesh-orchestrator.py", legacy_alias="synergy_mesh_orchestrator")
+synergy_mesh = _import_kebab_module(
+    "synergy_mesh_orchestrator",
+    "synergy-mesh-orchestrator.py",
+    legacy_alias="synergy_mesh_orchestrator",
+)
 if synergy_mesh:
     SynergyMeshOrchestrator = synergy_mesh.SynergyMeshOrchestrator
     ExecutionResult = synergy_mesh.ExecutionResult
@@ -80,9 +88,15 @@ else:
     raise ImportError("Failed to import synergy-mesh-orchestrator.py")
 
 # ===== 企業級協調器 =====
-enterprise_mesh = _import_kebab_module("enterprise_synergy_mesh_orchestrator", "enterprise-synergy-mesh-orchestrator.py", legacy_alias="enterprise_synergy_mesh_orchestrator")
+enterprise_mesh = _import_kebab_module(
+    "enterprise_synergy_mesh_orchestrator",
+    "enterprise-synergy-mesh-orchestrator.py",
+    legacy_alias="enterprise_synergy_mesh_orchestrator",
+)
 if enterprise_mesh:
-    EnterpriseSynergyMeshOrchestrator = enterprise_mesh.EnterpriseSynergyMeshOrchestrator
+    EnterpriseSynergyMeshOrchestrator = (
+        enterprise_mesh.EnterpriseSynergyMeshOrchestrator
+    )
     TenantConfig = enterprise_mesh.TenantConfig
     TenantTier = enterprise_mesh.TenantTier
     ResourceQuota = enterprise_mesh.ResourceQuota
@@ -92,7 +106,9 @@ else:
     raise ImportError("Failed to import enterprise-synergy-mesh-orchestrator.py")
 
 # ===== 依賴解析 =====
-dependency_resolver = _import_kebab_module("dependency_resolver", "dependency-resolver.py", legacy_alias="dependency_resolver")
+dependency_resolver = _import_kebab_module(
+    "dependency_resolver", "dependency-resolver.py", legacy_alias="dependency_resolver"
+)
 if dependency_resolver:
     DependencyResolver = dependency_resolver.DependencyResolver
     DependencyNode = dependency_resolver.DependencyNode
@@ -104,7 +120,7 @@ else:
 language_island_orchestrator = _import_kebab_module(
     "language_island_orchestrator",
     "language-island-orchestrator.py",
-    legacy_alias="language_island_orchestrator"
+    legacy_alias="language_island_orchestrator",
 )
 if language_island_orchestrator:
     LanguageIslandOrchestrator = language_island_orchestrator.LanguageIslandOrchestrator
@@ -120,7 +136,6 @@ __all__ = [
     "SystemStatus",
     "ExecutionStatus",
     "ComponentType",
-
     # 企業級
     "EnterpriseSynergyMeshOrchestrator",
     "TenantConfig",
@@ -128,9 +143,8 @@ __all__ = [
     "ResourceQuota",
     "RetryPolicy",
     "AuditLog",
-
     # 依賴管理
     "DependencyResolver",
     "DependencyNode",
-    "ExecutionPhase"
+    "ExecutionPhase",
 ]

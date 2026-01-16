@@ -11,16 +11,17 @@ Responsibilities:
 - Knowledge: Learn from past incidents
 """
 
-from typing import Dict, List, Optional, Any, Callable
-from dataclasses import dataclass, field
-from enum import Enum
-from datetime import datetime, timezone
 import asyncio
 import logging
+from dataclasses import dataclass, field
+from datetime import datetime, timezone
+from enum import Enum
+from typing import Any, Callable, Dict, List, Optional
 
 
 class LoopState(Enum):
     """MAPE-K loop state."""
+
     IDLE = "idle"
     MONITORING = "monitoring"
     ANALYZING = "analyzing"
@@ -31,6 +32,7 @@ class LoopState(Enum):
 
 class SeverityLevel(Enum):
     """Issue severity levels."""
+
     INFO = "info"
     WARNING = "warning"
     ERROR = "error"
@@ -40,6 +42,7 @@ class SeverityLevel(Enum):
 @dataclass
 class SystemMetric:
     """System metric data."""
+
     name: str
     value: float
     unit: str
@@ -50,6 +53,7 @@ class SystemMetric:
 @dataclass
 class Anomaly:
     """Detected anomaly."""
+
     id: str
     type: str
     severity: SeverityLevel
@@ -61,6 +65,7 @@ class Anomaly:
 @dataclass
 class RemediationPlan:
     """Remediation plan."""
+
     id: str
     anomaly_id: str
     actions: List[Dict[str, Any]]
@@ -72,6 +77,7 @@ class RemediationPlan:
 @dataclass
 class ExecutionResult:
     """Execution result."""
+
     plan_id: str
     success: bool
     actions_completed: int
@@ -168,7 +174,8 @@ class MAPEKLoop:
                 # Log analyzer failure but continue with other analyzers
                 self.logger.warning(f"Analyzer failed: {e}", exc_info=True)
             except Exception:
-                # Silently ignore analyzer failures to allow other analyzers to run
+                # Silently ignore analyzer failures to allow other analyzers to
+                # run
                 pass
         return anomalies
 
@@ -184,8 +191,10 @@ class MAPEKLoop:
                         break  # One plan per anomaly
                 except Exception as e:
                     # Log planner failure but try next planner for this anomaly
-                    anomaly_id = getattr(anomaly, 'id', 'unknown')
-                    self.logger.warning(f"Planner failed for anomaly {anomaly_id}: {e}", exc_info=True)
+                    anomaly_id = getattr(anomaly, "id", "unknown")
+                    self.logger.warning(
+                        f"Planner failed for anomaly {anomaly_id}: {e}", exc_info=True
+                    )
                 except Exception:
                     # Silently ignore planner failures and try next planner
                     pass
@@ -206,21 +215,28 @@ class MAPEKLoop:
                     break
                 except Exception as e:
                     # Log executor failure and record in results
-                    plan_id = getattr(plan, 'id', 'unknown')
-                    self.logger.warning(f"Executor failed for plan {plan_id}: {e}", exc_info=True)
-                    results.append(ExecutionResult(
-                        plan_id=plan.id,
-                        success=False,
-                        actions_completed=0,
-                        actions_total=len(plan.actions),
-                        duration=0,
-                        error=str(e),
-                    ))
+                    plan_id = getattr(plan, "id", "unknown")
+                    self.logger.warning(
+                        f"Executor failed for plan {plan_id}: {e}", exc_info=True
+                    )
+                    results.append(
+                        ExecutionResult(
+                            plan_id=plan.id,
+                            success=False,
+                            actions_completed=0,
+                            actions_total=len(plan.actions),
+                            duration=0,
+                            error=str(e),
+                        )
+                    )
         return results
 
-    async def _learn(self, anomalies: List[Anomaly],
-                     plans: List[RemediationPlan],
-                     results: List[ExecutionResult]) -> None:
+    async def _learn(
+        self,
+        anomalies: List[Anomaly],
+        plans: List[RemediationPlan],
+        results: List[ExecutionResult],
+    ) -> None:
         """Knowledge phase: Learn from execution."""
         for anomaly, plan, result in zip(anomalies, plans, results):
             knowledge_entry = {

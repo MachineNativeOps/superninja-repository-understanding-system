@@ -12,20 +12,26 @@ Version: 1.0.0
 """
 
 import asyncio
-import yaml
 import shutil
-from pathlib import Path
-from datetime import datetime
-from typing import Dict, List, Optional, Any
-from dataclasses import dataclass, field
-
 import sys
+from dataclasses import dataclass, field
+from datetime import datetime
+from pathlib import Path
+from typing import Any, Dict, List, Optional
+
+import yaml
+from engine_base import (
+    BaseEngine,
+    EngineConfig,
+    EngineState,
+    EngineType,
+    ExecutionEngineBase,
+    ExecutionMode,
+    TaskResult,
+)
+
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
-from engine_base import (
-    BaseEngine, ExecutionEngineBase, EngineConfig, EngineState,
-    EngineType, ExecutionMode, TaskResult
-)
 
 BASE_PATH = Path(__file__).parent.parent.parent.parent
 PLAYBOOKS_PATH = BASE_PATH / "docs" / "refactor_playbooks"
@@ -66,7 +72,9 @@ class IntegrationAutomationEngine(ExecutionEngineBase):
             elif operation == "full_integration":
                 result = await self._full_integration_cycle()
             else:
-                return TaskResult(task_id=task_id, success=False, error=f"未知操作: {operation}")
+                return TaskResult(
+                    task_id=task_id, success=False, error=f"未知操作: {operation}"
+                )
 
             return TaskResult(task_id=task_id, success=True, result=result)
 
@@ -78,7 +86,13 @@ class IntegrationAutomationEngine(ExecutionEngineBase):
 
     def _get_capabilities(self) -> Dict[str, Any]:
         return {
-            "operations": ["integrate", "sync_references", "merge_duplicates", "update_indexes", "full_integration"],
+            "operations": [
+                "integrate",
+                "sync_references",
+                "merge_duplicates",
+                "update_indexes",
+                "full_integration",
+            ],
         }
 
     async def execute_operation(self, operation: Dict[str, Any]) -> Dict[str, Any]:
@@ -109,18 +123,19 @@ class IntegrationAutomationEngine(ExecutionEngineBase):
         updated = 0
         for md_file in self._target_path.rglob("*.md"):
             try:
-                content = md_file.read_text(encoding='utf-8')
+                content = md_file.read_text(encoding="utf-8")
                 # 自動修復斷開的引用
                 import re
-                links = re.findall(r'\[([^\]]+)\]\(([^)]+)\)', content)
+
+                links = re.findall(r"\[([^\]]+)\]\(([^)]+)\)", content)
                 for text, href in links:
-                    if href.startswith('./') or href.startswith('../'):
+                    if href.startswith("./") or href.startswith("../"):
                         resolved = (md_file.parent / href).resolve()
                         if not resolved.exists():
                             # 嘗試找到正確的路徑
                             pass
                 updated += 1
-            except:
+            except BaseException:
                 pass
         return {"files_checked": updated}
 
@@ -128,13 +143,14 @@ class IntegrationAutomationEngine(ExecutionEngineBase):
         """合併重複檔案"""
         # 基於內容哈希檢測重複
         import hashlib
+
         hashes = {}
         duplicates = []
 
         for file in self._target_path.rglob("*"):
             if file.is_file():
                 content = file.read_bytes()
-                file_hash = hashlib.md5(content).hexdigest()
+                file_hash = hashlib.sha256(content).hexdigest()
                 if file_hash in hashes:
                     duplicates.append((str(file), hashes[file_hash]))
                 else:
@@ -151,7 +167,7 @@ class IntegrationAutomationEngine(ExecutionEngineBase):
             try:
                 # 重新掃描目錄並更新索引
                 indexes_updated += 1
-            except:
+            except BaseException:
                 pass
 
         return {"indexes_updated": indexes_updated}
@@ -172,10 +188,10 @@ class IntegrationAutomationEngine(ExecutionEngineBase):
         for src in sources:
             src_path = Path(src)
             if src_path.exists():
-                merged_content.append(src_path.read_text(encoding='utf-8'))
+                merged_content.append(src_path.read_text(encoding="utf-8"))
         if merged_content:
             target.parent.mkdir(parents=True, exist_ok=True)
-            target.write_text("\n\n---\n\n".join(merged_content), encoding='utf-8')
+            target.write_text("\n\n---\n\n".join(merged_content), encoding="utf-8")
         return {"success": True, "merged": len(sources)}
 
     async def _create_link(self, op: Dict) -> Dict:

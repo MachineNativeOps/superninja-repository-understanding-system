@@ -8,7 +8,7 @@ MachineNativeOps 高級命名空間 MCP 轉換器
 import copy
 import logging
 from pathlib import Path
-from typing import Optional, Dict, Any
+from typing import Any, Dict, Optional
 
 from converter import MachineNativeConverter
 
@@ -21,8 +21,13 @@ class AdvancedMachineNativeConverter(MachineNativeConverter):
     def __init__(self, config_path: Optional[str] = None, enable_semantic: bool = True):
         super().__init__(config_path=config_path)
         self.enable_semantic = enable_semantic
-        self._semantic_rules_backup = copy.deepcopy(self.conversion_rules.get("semantic", []))
-        logger.info("AdvancedMachineNativeConverter 初始化完成 (enable_semantic=%s)", enable_semantic)
+        self._semantic_rules_backup = copy.deepcopy(
+            self.conversion_rules.get("semantic", [])
+        )
+        logger.info(
+            "AdvancedMachineNativeConverter 初始化完成 (enable_semantic=%s)",
+            enable_semantic,
+        )
 
     def convert_project(self, source_path: str, target_path: str) -> Dict[str, Any]:
         """
@@ -49,7 +54,9 @@ def main():
     parser.add_argument("source", help="源專案路徑")
     parser.add_argument("target", help="目標專案路徑")
     parser.add_argument("--config", "-c", help="配置文件路徑")
-    parser.add_argument("--disable-semantic", action="store_true", help="禁用語意層轉換")
+    parser.add_argument(
+        "--disable-semantic", action="store_true", help="禁用語意層轉換"
+    )
     parser.add_argument("--verbose", "-v", action="store_true", help="詳細輸出")
 
     args = parser.parse_args()

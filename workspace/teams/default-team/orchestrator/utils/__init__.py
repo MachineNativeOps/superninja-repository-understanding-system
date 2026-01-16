@@ -1,8 +1,8 @@
 """SuperAgent Utilities Package."""
 
-from .metrics import MetricsCollector, Counter, Gauge, Histogram
 from .circuit_breaker import CircuitBreaker, CircuitState
-from .retry import retry_async, RetryConfig
+from .metrics import Counter, Gauge, Histogram, MetricsCollector
+from .retry import RetryConfig, retry_async
 from .structured_logging import StructuredLogger, get_logger
 
 __all__ = [

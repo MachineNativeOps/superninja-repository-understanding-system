@@ -11,44 +11,52 @@ Cognitive Engine - 認知推理引擎
 Version: 1.0.0
 """
 
+import json
 import os
 import re
-import json
-import yaml
-from pathlib import Path
-from datetime import datetime
-from typing import Dict, List, Optional, Any, Tuple
-from dataclasses import dataclass, field, asdict
-from enum import Enum
 from abc import ABC, abstractmethod
+from dataclasses import asdict, dataclass, field
+from datetime import datetime
+from enum import Enum
+from pathlib import Path
+from typing import Any, Dict, List, Optional, Tuple
+
+import yaml
 
 # ============================================================================
 # 認知層級定義
 # ============================================================================
 
+
 class CognitiveLevel(Enum):
     """認知層級"""
-    PERCEPTION = "perception"        # 感知層：接收原始輸入
+
+    PERCEPTION = "perception"  # 感知層：接收原始輸入
     UNDERSTANDING = "understanding"  # 理解層：語義解析
-    REASONING = "reasoning"          # 推理層：邏輯分析
-    SEARCH = "search"               # 搜尋層：外部資源
-    INTEGRATION = "integration"     # 整合層：綜合決策
-    DECISION = "decision"           # 決策層：最終輸出
+    REASONING = "reasoning"  # 推理層：邏輯分析
+    SEARCH = "search"  # 搜尋層：外部資源
+    INTEGRATION = "integration"  # 整合層：綜合決策
+    DECISION = "decision"  # 決策層：最終輸出
+
 
 class ConfidenceLevel(Enum):
     """信心水平"""
-    HIGH = "high"           # >= 0.8
-    MEDIUM = "medium"       # 0.5 - 0.8
-    LOW = "low"             # 0.3 - 0.5
+
+    HIGH = "high"  # >= 0.8
+    MEDIUM = "medium"  # 0.5 - 0.8
+    LOW = "low"  # 0.3 - 0.5
     INSUFFICIENT = "insufficient"  # < 0.3
+
 
 # ============================================================================
 # 資料結構
 # ============================================================================
 
+
 @dataclass
 class CognitiveContext:
     """認知上下文"""
+
     session_id: str
     timestamp: str
     raw_input: Dict
@@ -60,47 +68,57 @@ class CognitiveContext:
     confidence: float = 0.0
     metadata: Dict = field(default_factory=dict)
 
+
 @dataclass
 class UnderstandingResult:
     """理解層結果"""
-    intent: str                          # 用戶意圖
-    entities: List[Dict]                 # 識別的實體
-    constraints: List[str]               # 約束條件
-    implicit_requirements: List[str]     # 隱含需求
-    ambiguities: List[str]               # 歧義點
-    completeness_score: float            # 完整度評分 0-1
-    dimensions: Dict[str, Any]           # 多維度分析
+
+    intent: str  # 用戶意圖
+    entities: List[Dict]  # 識別的實體
+    constraints: List[str]  # 約束條件
+    implicit_requirements: List[str]  # 隱含需求
+    ambiguities: List[str]  # 歧義點
+    completeness_score: float  # 完整度評分 0-1
+    dimensions: Dict[str, Any]  # 多維度分析
+
 
 @dataclass
 class ReasoningStep:
     """推理步驟"""
+
     step_id: int
-    hypothesis: str           # 假設
-    evidence: List[str]       # 證據
-    conclusion: str           # 結論
-    confidence: float         # 信心度
-    alternatives: List[str]   # 備選方案
+    hypothesis: str  # 假設
+    evidence: List[str]  # 證據
+    conclusion: str  # 結論
+    confidence: float  # 信心度
+    alternatives: List[str]  # 備選方案
+
 
 @dataclass
 class SearchQuery:
     """搜尋查詢"""
-    query_type: str           # local, web, api, knowledge_base
+
+    query_type: str  # local, web, api, knowledge_base
     query_text: str
     filters: Dict
     max_results: int = 10
 
+
 @dataclass
 class IntegrationResult:
     """整合結果"""
+
     synthesized_understanding: Dict
     weighted_recommendations: List[Dict]
     risk_assessment: Dict
     confidence_breakdown: Dict
     final_score: float
 
+
 # ============================================================================
 # 理解層 - Understanding Layer
 # ============================================================================
+
 
 class UnderstandingLayer:
     """
@@ -192,16 +210,20 @@ class UnderstandingLayer:
         for entity_type, pattern in self.entity_types.items():
             matches = re.findall(pattern, text, re.IGNORECASE)
             for match in matches:
-                entities.append({
-                    "type": entity_type,
-                    "value": match,
-                    "confidence": 0.8,
-                })
+                entities.append(
+                    {
+                        "type": entity_type,
+                        "value": match,
+                        "confidence": 0.8,
+                    }
+                )
 
         # 從結構化輸入提取
         if isinstance(raw_input, dict):
             if "target" in raw_input:
-                entities.append({"type": "path", "value": raw_input["target"], "confidence": 1.0})
+                entities.append(
+                    {"type": "path", "value": raw_input["target"], "confidence": 1.0}
+                )
             if "files" in raw_input:
                 for f in raw_input["files"]:
                     entities.append({"type": "path", "value": f, "confidence": 1.0})
@@ -234,8 +256,9 @@ class UnderstandingLayer:
 
         return constraints
 
-    def _infer_implicit_requirements(self, intent: str, entities: List[Dict],
-                                     constraints: List[str]) -> List[str]:
+    def _infer_implicit_requirements(
+        self, intent: str, entities: List[Dict], constraints: List[str]
+    ) -> List[str]:
         """推斷隱含需求"""
         implicit = []
 
@@ -285,8 +308,9 @@ class UnderstandingLayer:
 
         return ambiguities
 
-    def _assess_completeness(self, intent: str, entities: List[Dict],
-                             constraints: List[str]) -> float:
+    def _assess_completeness(
+        self, intent: str, entities: List[Dict], constraints: List[str]
+    ) -> float:
         """評估信息完整度"""
         score = 0.0
         max_score = 5.0
@@ -333,7 +357,7 @@ class UnderstandingLayer:
         """分析範圍維度"""
         return {
             "breadth": "narrow",  # narrow, moderate, wide
-            "depth": "surface",   # surface, moderate, deep
+            "depth": "surface",  # surface, moderate, deep
             "coverage": 0.5,
         }
 
@@ -368,9 +392,11 @@ class UnderstandingLayer:
             "blocking_tasks": [],
         }
 
+
 # ============================================================================
 # 推理層 - Reasoning Layer
 # ============================================================================
+
 
 class ReasoningLayer:
     """
@@ -388,8 +414,9 @@ class ReasoningLayer:
         self.config = config or {}
         self.reasoning_trace: List[ReasoningStep] = []
 
-    def reason(self, understanding: UnderstandingResult,
-               context: Optional[Dict] = None) -> List[ReasoningStep]:
+    def reason(
+        self, understanding: UnderstandingResult, context: Optional[Dict] = None
+    ) -> List[ReasoningStep]:
         """執行推理"""
         self.reasoning_trace = []
 
@@ -449,7 +476,9 @@ class ReasoningLayer:
             alternatives=[],
         )
 
-    def _infer_missing_information(self, understanding: UnderstandingResult) -> ReasoningStep:
+    def _infer_missing_information(
+        self, understanding: UnderstandingResult
+    ) -> ReasoningStep:
         """推斷缺失信息"""
         hypothesis = "嘗試推斷缺失的關鍵信息"
 
@@ -473,12 +502,16 @@ class ReasoningLayer:
             step_id=len(self.reasoning_trace) + 1,
             hypothesis=hypothesis,
             evidence=evidence,
-            conclusion="; ".join(inferences) if inferences else "無法有效推斷，需要更多信息",
+            conclusion=(
+                "; ".join(inferences) if inferences else "無法有效推斷，需要更多信息"
+            ),
             confidence=0.6 if inferences else 0.3,
             alternatives=["請求用戶提供更多細節"],
         )
 
-    def _reason_intent_clarification(self, understanding: UnderstandingResult) -> ReasoningStep:
+    def _reason_intent_clarification(
+        self, understanding: UnderstandingResult
+    ) -> ReasoningStep:
         """推理意圖澄清"""
         hypothesis = f"用戶意圖 '{understanding.intent}' 的具體含義"
 
@@ -515,7 +548,10 @@ class ReasoningLayer:
 
         # 識別衝突
         conflicts = []
-        if "scope_limited" in understanding.constraints and len(understanding.entities) == 0:
+        if (
+            "scope_limited" in understanding.constraints
+            and len(understanding.entities) == 0
+        ):
             conflicts.append("範圍限制但未指定具體目標")
 
         if conflicts:
@@ -532,8 +568,9 @@ class ReasoningLayer:
             alternatives=[f"衝突: {c}" for c in conflicts],
         )
 
-    def _reason_feasibility(self, understanding: UnderstandingResult,
-                           context: Optional[Dict]) -> ReasoningStep:
+    def _reason_feasibility(
+        self, understanding: UnderstandingResult, context: Optional[Dict]
+    ) -> ReasoningStep:
         """推理可行性"""
         hypothesis = "評估操作的技術可行性"
 
@@ -568,8 +605,9 @@ class ReasoningLayer:
             alternatives=["分階段執行", "簡化範圍", "尋求替代方案"],
         )
 
-    def _reason_optimal_path(self, understanding: UnderstandingResult,
-                            context: Optional[Dict]) -> ReasoningStep:
+    def _reason_optimal_path(
+        self, understanding: UnderstandingResult, context: Optional[Dict]
+    ) -> ReasoningStep:
         """推理最佳執行路徑"""
         hypothesis = "確定最優執行策略"
 
@@ -595,9 +633,13 @@ class ReasoningLayer:
 
         # 選擇最優路徑
         if paths:
-            optimal = min(paths, key=lambda p: (
-                {"low": 0, "medium": 1, "high": 2}[p["risk"]], p["phases"]
-            ))
+            optimal = min(
+                paths,
+                key=lambda p: (
+                    {"low": 0, "medium": 1, "high": 2}[p["risk"]],
+                    p["phases"],
+                ),
+            )
             conclusion = f"推薦策略: {optimal['name']} ({optimal['phases']} 階段, {optimal['risk']} 風險)"
         else:
             conclusion = "使用默認執行策略"
@@ -617,7 +659,9 @@ class ReasoningLayer:
         if not self.reasoning_trace:
             return ConfidenceLevel.INSUFFICIENT
 
-        avg_confidence = sum(s.confidence for s in self.reasoning_trace) / len(self.reasoning_trace)
+        avg_confidence = sum(s.confidence for s in self.reasoning_trace) / len(
+            self.reasoning_trace
+        )
 
         if avg_confidence >= 0.8:
             return ConfidenceLevel.HIGH
@@ -630,7 +674,10 @@ class ReasoningLayer:
 
     def needs_external_search(self) -> bool:
         """判斷是否需要外部搜尋"""
-        if self.get_confidence_level() in [ConfidenceLevel.LOW, ConfidenceLevel.INSUFFICIENT]:
+        if self.get_confidence_level() in [
+            ConfidenceLevel.LOW,
+            ConfidenceLevel.INSUFFICIENT,
+        ]:
             return True
 
         # 檢查是否有未解決的歧義
@@ -640,9 +687,11 @@ class ReasoningLayer:
 
         return False
 
+
 # ============================================================================
 # 搜尋層 - Search Layer
 # ============================================================================
+
 
 class SearchLayer:
     """
@@ -659,7 +708,9 @@ class SearchLayer:
         self.config = config or {}
         self.search_results: List[Dict] = []
 
-    def search(self, queries: List[SearchQuery], context: Optional[Dict] = None) -> List[Dict]:
+    def search(
+        self, queries: List[SearchQuery], context: Optional[Dict] = None
+    ) -> List[Dict]:
         """執行搜尋"""
         self.search_results = []
 
@@ -695,28 +746,35 @@ class SearchLayer:
         for file in target_path.rglob("*"):
             if file.is_file():
                 if search_term in file.name.lower():
-                    results.append({
-                        "source": "local",
-                        "type": "file_match",
-                        "path": str(file),
-                        "relevance": 0.9,
-                    })
+                    results.append(
+                        {
+                            "source": "local",
+                            "type": "file_match",
+                            "path": str(file),
+                            "relevance": 0.9,
+                        }
+                    )
 
                 # 內容搜尋 (限制於小檔案)
-                if file.suffix in [".md", ".yaml", ".yml", ".py"] and file.stat().st_size < 100000:
+                if (
+                    file.suffix in [".md", ".yaml", ".yml", ".py"]
+                    and file.stat().st_size < 100000
+                ):
                     try:
-                        content = file.read_text(encoding='utf-8')
+                        content = file.read_text(encoding="utf-8")
                         if search_term in content.lower():
-                            results.append({
-                                "source": "local",
-                                "type": "content_match",
-                                "path": str(file),
-                                "relevance": 0.7,
-                            })
-                    except:
+                            results.append(
+                                {
+                                    "source": "local",
+                                    "type": "content_match",
+                                    "path": str(file),
+                                    "relevance": 0.7,
+                                }
+                            )
+                    except BaseException:
                         pass
 
-        return results[:query.max_results]
+        return results[: query.max_results]
 
     def _search_knowledge_base(self, query: SearchQuery) -> List[Dict]:
         """知識庫查詢"""
@@ -744,15 +802,17 @@ class SearchLayer:
 
         for entry in kb_entries:
             if any(term in entry["content"].lower() for term in search_term.split()):
-                results.append({
-                    "source": "knowledge_base",
-                    "type": "kb_entry",
-                    "topic": entry["topic"],
-                    "content": entry["content"],
-                    "relevance": entry["relevance"],
-                })
+                results.append(
+                    {
+                        "source": "knowledge_base",
+                        "type": "kb_entry",
+                        "topic": entry["topic"],
+                        "content": entry["content"],
+                        "relevance": entry["relevance"],
+                    }
+                )
 
-        return results[:query.max_results]
+        return results[: query.max_results]
 
     def _search_web(self, query: SearchQuery) -> List[Dict]:
         """網路搜尋 (模擬)"""
@@ -781,42 +841,51 @@ class SearchLayer:
             }
         ]
 
-    def generate_queries(self, understanding: UnderstandingResult,
-                        reasoning: List[ReasoningStep]) -> List[SearchQuery]:
+    def generate_queries(
+        self, understanding: UnderstandingResult, reasoning: List[ReasoningStep]
+    ) -> List[SearchQuery]:
         """根據理解和推理結果生成搜尋查詢"""
         queries = []
 
         # 根據意圖生成查詢
         if understanding.intent == "refactor":
-            queries.append(SearchQuery(
-                query_type="knowledge_base",
-                query_text="refactor best practices",
-                filters={},
-            ))
+            queries.append(
+                SearchQuery(
+                    query_type="knowledge_base",
+                    query_text="refactor best practices",
+                    filters={},
+                )
+            )
 
         # 根據實體生成本地搜尋
         for entity in understanding.entities:
             if entity["type"] == "path":
-                queries.append(SearchQuery(
-                    query_type="local",
-                    query_text=entity["value"],
-                    filters={"type": "file"},
-                ))
+                queries.append(
+                    SearchQuery(
+                        query_type="local",
+                        query_text=entity["value"],
+                        filters={"type": "file"},
+                    )
+                )
 
         # 根據歧義生成澄清查詢
         for ambiguity in understanding.ambiguities:
-            queries.append(SearchQuery(
-                query_type="knowledge_base",
-                query_text=ambiguity,
-                filters={},
-                max_results=3,
-            ))
+            queries.append(
+                SearchQuery(
+                    query_type="knowledge_base",
+                    query_text=ambiguity,
+                    filters={},
+                    max_results=3,
+                )
+            )
 
         return queries
+
 
 # ============================================================================
 # 整合層 - Integration Layer
 # ============================================================================
+
 
 class IntegrationLayer:
     """
@@ -832,9 +901,12 @@ class IntegrationLayer:
     def __init__(self, config: Optional[Dict] = None):
         self.config = config or {}
 
-    def integrate(self, understanding: UnderstandingResult,
-                  reasoning: List[ReasoningStep],
-                  search_results: List[Dict]) -> IntegrationResult:
+    def integrate(
+        self,
+        understanding: UnderstandingResult,
+        reasoning: List[ReasoningStep],
+        search_results: List[Dict],
+    ) -> IntegrationResult:
         """整合所有層的結果"""
 
         # 綜合理解
@@ -864,43 +936,57 @@ class IntegrationLayer:
             final_score=final_score,
         )
 
-    def _synthesize_understanding(self, understanding: UnderstandingResult,
-                                  search_results: List[Dict]) -> Dict:
+    def _synthesize_understanding(
+        self, understanding: UnderstandingResult, search_results: List[Dict]
+    ) -> Dict:
         """綜合理解"""
         return {
             "confirmed_intent": understanding.intent,
-            "validated_entities": [e for e in understanding.entities if e["confidence"] > 0.7],
-            "resolved_ambiguities": self._resolve_ambiguities(understanding, search_results),
+            "validated_entities": [
+                e for e in understanding.entities if e["confidence"] > 0.7
+            ],
+            "resolved_ambiguities": self._resolve_ambiguities(
+                understanding, search_results
+            ),
             "enriched_context": self._enrich_context(understanding, search_results),
         }
 
-    def _resolve_ambiguities(self, understanding: UnderstandingResult,
-                            search_results: List[Dict]) -> List[Dict]:
+    def _resolve_ambiguities(
+        self, understanding: UnderstandingResult, search_results: List[Dict]
+    ) -> List[Dict]:
         """解決歧義"""
         resolutions = []
 
         for ambiguity in understanding.ambiguities:
             # 嘗試從搜尋結果中找到解答
-            relevant_results = [r for r in search_results
-                               if ambiguity.lower() in str(r).lower()]
+            relevant_results = [
+                r for r in search_results if ambiguity.lower() in str(r).lower()
+            ]
 
             if relevant_results:
-                resolutions.append({
-                    "ambiguity": ambiguity,
-                    "resolution": relevant_results[0].get("content", "已找到相關信息"),
-                    "confidence": 0.7,
-                })
+                resolutions.append(
+                    {
+                        "ambiguity": ambiguity,
+                        "resolution": relevant_results[0].get(
+                            "content", "已找到相關信息"
+                        ),
+                        "confidence": 0.7,
+                    }
+                )
             else:
-                resolutions.append({
-                    "ambiguity": ambiguity,
-                    "resolution": "未能自動解決，需要用戶確認",
-                    "confidence": 0.3,
-                })
+                resolutions.append(
+                    {
+                        "ambiguity": ambiguity,
+                        "resolution": "未能自動解決，需要用戶確認",
+                        "confidence": 0.3,
+                    }
+                )
 
         return resolutions
 
-    def _enrich_context(self, understanding: UnderstandingResult,
-                       search_results: List[Dict]) -> Dict:
+    def _enrich_context(
+        self, understanding: UnderstandingResult, search_results: List[Dict]
+    ) -> Dict:
         """豐富上下文"""
         enriched = {}
 
@@ -916,39 +1002,47 @@ class IntegrationLayer:
 
         return enriched
 
-    def _generate_weighted_recommendations(self, understanding: UnderstandingResult,
-                                          reasoning: List[ReasoningStep],
-                                          search_results: List[Dict]) -> List[Dict]:
+    def _generate_weighted_recommendations(
+        self,
+        understanding: UnderstandingResult,
+        reasoning: List[ReasoningStep],
+        search_results: List[Dict],
+    ) -> List[Dict]:
         """生成加權建議"""
         recommendations = []
 
         # 從推理步驟中提取建議
         for step in reasoning:
             if step.conclusion and "推薦" in step.conclusion:
-                recommendations.append({
-                    "source": "reasoning",
-                    "recommendation": step.conclusion,
-                    "weight": step.confidence,
-                    "alternatives": step.alternatives,
-                })
+                recommendations.append(
+                    {
+                        "source": "reasoning",
+                        "recommendation": step.conclusion,
+                        "weight": step.confidence,
+                        "alternatives": step.alternatives,
+                    }
+                )
 
         # 從搜尋結果中提取建議
         for result in search_results:
             if result.get("source") == "knowledge_base":
-                recommendations.append({
-                    "source": "knowledge_base",
-                    "recommendation": result.get("content", ""),
-                    "weight": result.get("relevance", 0.5),
-                    "alternatives": [],
-                })
+                recommendations.append(
+                    {
+                        "source": "knowledge_base",
+                        "recommendation": result.get("content", ""),
+                        "weight": result.get("relevance", 0.5),
+                        "alternatives": [],
+                    }
+                )
 
         # 按權重排序
         recommendations.sort(key=lambda r: -r["weight"])
 
         return recommendations
 
-    def _assess_risks(self, understanding: UnderstandingResult,
-                     reasoning: List[ReasoningStep]) -> Dict:
+    def _assess_risks(
+        self, understanding: UnderstandingResult, reasoning: List[ReasoningStep]
+    ) -> Dict:
         """評估風險"""
         risks = {
             "overall_level": "low",
@@ -966,7 +1060,9 @@ class IntegrationLayer:
         if risk_dim.get("data_loss") in ["medium", "high"]:
             risks["factors"].append("潛在數據丟失")
             risks["mitigations"].append("執行前創建完整備份")
-            risks["overall_level"] = "medium" if risks["overall_level"] == "low" else "high"
+            risks["overall_level"] = (
+                "medium" if risks["overall_level"] == "low" else "high"
+            )
 
         # 從推理中識別風險
         for step in reasoning:
@@ -976,19 +1072,24 @@ class IntegrationLayer:
 
         return risks
 
-    def _calculate_confidence_breakdown(self, understanding: UnderstandingResult,
-                                       reasoning: List[ReasoningStep],
-                                       search_results: List[Dict]) -> Dict:
+    def _calculate_confidence_breakdown(
+        self,
+        understanding: UnderstandingResult,
+        reasoning: List[ReasoningStep],
+        search_results: List[Dict],
+    ) -> Dict:
         """計算信心度分解"""
         return {
             "understanding_confidence": understanding.completeness_score,
             "reasoning_confidence": (
                 sum(s.confidence for s in reasoning) / len(reasoning)
-                if reasoning else 0.0
+                if reasoning
+                else 0.0
             ),
             "search_confidence": (
                 sum(r.get("relevance", 0) for r in search_results) / len(search_results)
-                if search_results else 0.0
+                if search_results
+                else 0.0
             ),
             "overall_weights": {
                 "understanding": 0.3,
@@ -1001,15 +1102,17 @@ class IntegrationLayer:
         """計算最終評分"""
         weights = confidence_breakdown["overall_weights"]
         score = (
-            confidence_breakdown["understanding_confidence"] * weights["understanding"] +
-            confidence_breakdown["reasoning_confidence"] * weights["reasoning"] +
-            confidence_breakdown["search_confidence"] * weights["search"]
+            confidence_breakdown["understanding_confidence"] * weights["understanding"]
+            + confidence_breakdown["reasoning_confidence"] * weights["reasoning"]
+            + confidence_breakdown["search_confidence"] * weights["search"]
         )
         return round(score, 3)
+
 
 # ============================================================================
 # 認知引擎 - Cognitive Engine (主控制器)
 # ============================================================================
+
 
 class CognitiveEngine:
     """
@@ -1032,7 +1135,9 @@ class CognitiveEngine:
         self.search_layer = SearchLayer(config)
         self.integration_layer = IntegrationLayer(config)
 
-    def process(self, raw_input: Dict, context: Optional[Dict] = None) -> CognitiveContext:
+    def process(
+        self, raw_input: Dict, context: Optional[Dict] = None
+    ) -> CognitiveContext:
         """執行完整認知處理"""
         # 初始化上下文
         ctx = CognitiveContext(
@@ -1072,12 +1177,17 @@ class CognitiveEngine:
             print("🔄 階段4: 再推理...")
             # 更新理解
             for result in search_results:
-                if result.get("source") == "local" and result.get("type") == "file_match":
-                    understanding.entities.append({
-                        "type": "discovered_file",
-                        "value": result.get("path"),
-                        "confidence": result.get("relevance", 0.5),
-                    })
+                if (
+                    result.get("source") == "local"
+                    and result.get("type") == "file_match"
+                ):
+                    understanding.entities.append(
+                        {
+                            "type": "discovered_file",
+                            "value": result.get("path"),
+                            "confidence": result.get("relevance", 0.5),
+                        }
+                    )
 
             # 重新推理
             reasoning = self.reasoning_layer.reason(understanding, context)
@@ -1105,15 +1215,18 @@ class CognitiveEngine:
         print(f"\n✅ 認知處理完成 (信心度: {ctx.confidence:.3f})")
         return ctx
 
-    def _generate_final_decision(self, understanding: UnderstandingResult,
-                                reasoning: List[ReasoningStep],
-                                integration: IntegrationResult) -> Dict:
+    def _generate_final_decision(
+        self,
+        understanding: UnderstandingResult,
+        reasoning: List[ReasoningStep],
+        integration: IntegrationResult,
+    ) -> Dict:
         """生成最終決策"""
         # 確定是否可以自動執行
         can_auto_execute = (
-            integration.final_score >= 0.7 and
-            integration.risk_assessment["overall_level"] != "high" and
-            understanding.completeness_score >= 0.6
+            integration.final_score >= 0.7
+            and integration.risk_assessment["overall_level"] != "high"
+            and understanding.completeness_score >= 0.6
         )
 
         # 提取關鍵建議
@@ -1122,46 +1235,58 @@ class CognitiveEngine:
         # 生成行動計畫
         action_plan = []
         for i, rec in enumerate(top_recommendations, 1):
-            action_plan.append({
-                "priority": f"P{i}",
-                "action": rec["recommendation"],
-                "confidence": rec["weight"],
-            })
+            action_plan.append(
+                {
+                    "priority": f"P{i}",
+                    "action": rec["recommendation"],
+                    "confidence": rec["weight"],
+                }
+            )
 
         return {
             "decision_type": "auto" if can_auto_execute else "manual_confirm",
             "primary_intent": understanding.intent,
             "action_plan": action_plan,
             "requires_confirmation": not can_auto_execute,
-            "confirmation_points": [
-                amb for amb in understanding.ambiguities
-            ] if not can_auto_execute else [],
+            "confirmation_points": (
+                [amb for amb in understanding.ambiguities]
+                if not can_auto_execute
+                else []
+            ),
             "risk_summary": integration.risk_assessment["overall_level"],
             "mitigations": integration.risk_assessment["mitigations"],
         }
 
+
 # ============================================================================
 # 便捷函數
 # ============================================================================
+
 
 def quick_understand(text: str) -> UnderstandingResult:
     """快速理解文本"""
     layer = UnderstandingLayer()
     return layer.understand({"text": text})
 
+
 def quick_reason(understanding: UnderstandingResult) -> List[ReasoningStep]:
     """快速推理"""
     layer = ReasoningLayer()
     return layer.reason(understanding)
 
-def full_cognitive_process(raw_input: Dict, context: Optional[Dict] = None) -> CognitiveContext:
+
+def full_cognitive_process(
+    raw_input: Dict, context: Optional[Dict] = None
+) -> CognitiveContext:
     """完整認知處理"""
     engine = CognitiveEngine()
     return engine.process(raw_input, context)
 
+
 # ============================================================================
 # 主程序入口
 # ============================================================================
+
 
 def main():
     """測試認知引擎"""
@@ -1176,10 +1301,10 @@ def main():
 
     # 解析輸入
     if args.input.endswith(".json"):
-        with open(args.input, 'r', encoding='utf-8') as f:
+        with open(args.input, "r", encoding="utf-8") as f:
             raw_input = json.load(f)
     elif args.input.endswith(".yaml") or args.input.endswith(".yml"):
-        with open(args.input, 'r', encoding='utf-8') as f:
+        with open(args.input, "r", encoding="utf-8") as f:
             raw_input = yaml.safe_load(f)
     else:
         raw_input = {"text": args.input}
@@ -1203,10 +1328,12 @@ def main():
         output["full_reasoning_trace"] = result.reasoning_trace
         output["integration_result"] = result.integration_result
 
-    output_str = yaml.dump(output, allow_unicode=True, default_flow_style=False, sort_keys=False)
+    output_str = yaml.dump(
+        output, allow_unicode=True, default_flow_style=False, sort_keys=False
+    )
 
     if args.output:
-        with open(args.output, 'w', encoding='utf-8') as f:
+        with open(args.output, "w", encoding="utf-8") as f:
             f.write(output_str)
         print(f"\n結果已儲存: {args.output}")
     else:
@@ -1214,6 +1341,7 @@ def main():
         print("認知處理結果:")
         print("=" * 50)
         print(output_str)
+
 
 if __name__ == "__main__":
     main()

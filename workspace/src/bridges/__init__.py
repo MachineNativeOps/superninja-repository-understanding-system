@@ -17,7 +17,7 @@ if (_hyphen_pkg / "__init__.py").exists():
     spec = importlib.util.spec_from_file_location(
         f"{__name__}.language_islands",
         _hyphen_pkg / "__init__.py",
-        submodule_search_locations=[str(_hyphen_pkg)]
+        submodule_search_locations=[str(_hyphen_pkg)],
     )
     if spec is not None and spec.loader is not None:
         module = importlib.util.module_from_spec(spec)

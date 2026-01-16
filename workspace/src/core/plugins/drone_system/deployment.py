@@ -97,7 +97,9 @@ class DeploymentDrone(BaseDrone):
             current = current.parent
         return Path.cwd()
 
-    def _deploy(self, environment: str = "development", **_kwargs: Any) -> dict[str, Any]:
+    def _deploy(
+        self, environment: str = "development", **_kwargs: Any
+    ) -> dict[str, Any]:
         """
         執行部署
 
@@ -125,7 +127,9 @@ class DeploymentDrone(BaseDrone):
         try:
             # 執行部署腳本
             deploy_script = (
-                self._project_root / "deploy.sh" if self._project_root else Path("deploy.sh")
+                self._project_root / "deploy.sh"
+                if self._project_root
+                else Path("deploy.sh")
             )
             if deploy_script.exists():
                 result = subprocess.run(
@@ -187,7 +191,8 @@ class DeploymentDrone(BaseDrone):
         print_info("執行部署健康檢查...")
 
         checks: dict[str, bool] = {
-            "project_root_exists": self._project_root is not None and self._project_root.exists(),
+            "project_root_exists": self._project_root is not None
+            and self._project_root.exists(),
             "deploy_script_exists": self._project_root is not None
             and (self._project_root / "deploy.sh").exists(),
         }
@@ -200,7 +205,9 @@ class DeploymentDrone(BaseDrone):
 
         return {"passed": all_passed, "checks": checks}
 
-    def _pre_deploy_check(self, environment: str = "development", **_kwargs: Any) -> dict[str, Any]:
+    def _pre_deploy_check(
+        self, environment: str = "development", **_kwargs: Any
+    ) -> dict[str, Any]:
         """
         預部署檢查
 
@@ -213,7 +220,8 @@ class DeploymentDrone(BaseDrone):
         print_info(f"執行 {environment} 環境預部署檢查...")
 
         checks: dict[str, bool] = {
-            "environment_valid": environment in ["development", "staging", "production"],
+            "environment_valid": environment
+            in ["development", "staging", "production"],
             "drone_running": self.status == DroneStatus.RUNNING,
         }
 

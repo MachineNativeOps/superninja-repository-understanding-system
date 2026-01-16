@@ -7,16 +7,18 @@ Billing System Module
 
 import asyncio
 import logging
-from typing import Dict, Any, List, Optional
-from datetime import datetime
 from dataclasses import dataclass
+from datetime import datetime
+from typing import Any, Dict, List, Optional
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
+
 @dataclass
 class BillingPlan:
     """計費計劃"""
+
     plan_id: str
     name: str
     price: float
@@ -24,45 +26,49 @@ class BillingPlan:
     billing_cycle: str
     features: List[str]
 
+
 class BillingManager:
     """計費管理器"""
-    
+
     def __init__(self, config: Dict[str, Any] = None):
         self.config = config or {}
         self.logger = logging.getLogger(__name__)
-        
+
     async def initialize(self) -> None:
         """初始化計費管理器"""
         self.logger.info("Billing Manager initialized")
-        
-    async def setup_billing_system(self, company_size: str = "medium") -> Dict[str, Any]:
+
+    async def setup_billing_system(
+        self, company_size: str = "medium"
+    ) -> Dict[str, Any]:
         """設置計費系統"""
         plans = [
             {
                 "plan_id": "starter",
                 "name": "Starter",
                 "price": 29,
-                "features": ["5 users", "10 projects"]
+                "features": ["5 users", "10 projects"],
             },
             {
-                "plan_id": "professional", 
+                "plan_id": "professional",
                 "name": "Professional",
                 "price": 99,
-                "features": ["20 users", "50 projects", "priority support"]
+                "features": ["20 users", "50 projects", "priority support"],
             },
             {
                 "plan_id": "enterprise",
-                "name": "Enterprise", 
+                "name": "Enterprise",
                 "price": 299,
-                "features": ["Unlimited users", "24/7 support"]
-            }
+                "features": ["Unlimited users", "24/7 support"],
+            },
         ]
-        
+
         return {
             "success": True,
             "billing_plans": plans,
             "supported_currencies": ["USD", "EUR", "GBP"],
-            "payment_methods": ["credit_card", "bank_transfer"]
+            "payment_methods": ["credit_card", "bank_transfer"],
         }
+
 
 __all__ = ["BillingManager", "BillingPlan"]

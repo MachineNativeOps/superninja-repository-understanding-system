@@ -6,14 +6,19 @@ import shutil
 import subprocess
 import sys
 from pathlib import Path
+
 import yaml
 
+
 def run(cmd, cwd=None):
-    p = subprocess.run(cmd, cwd=cwd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True)
+    p = subprocess.run(
+        cmd, cwd=cwd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True
+    )
     print(p.stdout)
     if p.returncode != 0:
         raise RuntimeError(f"Command failed: {' '.join(cmd)}")
     return p.stdout
+
 
 def main():
     if len(sys.argv) != 2:
@@ -22,7 +27,9 @@ def main():
 
     module_id = sys.argv[1]
     repo = Path(".")
-    reg = yaml.safe_load((repo / "root/registry/root.registry.modules.yaml").read_text(encoding="utf-8"))
+    reg = yaml.safe_load(
+        (repo / "root/registry/root.registry.modules.yaml").read_text(encoding="utf-8")
+    )
     spec = reg["modules"][module_id]
     version = spec["version"]
     context = repo / spec["build"]["context"]
@@ -44,6 +51,7 @@ def main():
 
     print(f"Built wheels -> {out_dir}")
     return 0
+
 
 if __name__ == "__main__":
     sys.exit(main())

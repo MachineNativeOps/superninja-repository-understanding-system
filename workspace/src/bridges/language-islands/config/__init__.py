@@ -8,8 +8,8 @@ import importlib.util
 import sys
 from pathlib import Path
 
-_module_path = Path(__file__).parent / 'island-config.py'
-_qualified_name = 'bridges.language_islands.config.island_config'
+_module_path = Path(__file__).parent / "island-config.py"
+_qualified_name = "bridges.language_islands.config.island_config"
 
 if not _module_path.exists():
     raise ImportError(f"Module file not found: {_module_path}")

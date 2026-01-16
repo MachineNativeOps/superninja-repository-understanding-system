@@ -14,12 +14,12 @@ from .base_island import BaseIsland, IslandStatus
 class RustIsland(BaseIsland):
     """
     🦀 Rust 性能核心島
-    
+
     優勢：
     - 極致性能與內存安全
     - 並發處理能力強
     - 系統級操作優勢
-    
+
     能力：
     - performance_monitor: 性能監控
     - security_guardian: 安全守護
@@ -28,16 +28,12 @@ class RustIsland(BaseIsland):
     """
 
     def __init__(self) -> None:
-        super().__init__(
-            name="🦀 Rust 性能核心島",
-            island_id="rust",
-            language="rust"
-        )
+        super().__init__(name="🦀 Rust 性能核心島", island_id="rust", language="rust")
         self.capabilities = [
             "performance_monitor",
             "security_guardian",
             "data_pipeline",
-            "system_orchestrator"
+            "system_orchestrator",
         ]
 
     def _get_language_check_command(self) -> tuple[str, str]:
@@ -77,13 +73,13 @@ class RustIsland(BaseIsland):
         self.log_info("🔍 執行性能分析...")
 
         result = {
-            'island': self.island_id,
-            'task': 'performance_analysis',
-            'timestamp': datetime.now().isoformat(),
-            'metrics': self._collect_metrics(),
+            "island": self.island_id,
+            "task": "performance_analysis",
+            "timestamp": datetime.now().isoformat(),
+            "metrics": self._collect_metrics(),
         }
 
-        self._display_metrics(result['metrics'])
+        self._display_metrics(result["metrics"])
         return result
 
     def _init_performance_monitor(self) -> None:
@@ -100,12 +96,12 @@ class RustIsland(BaseIsland):
             load_avg = (0.0, 0.0, 0.0)
 
         return {
-            'cpu_load': {
-                '1min': load_avg[0],
-                '5min': load_avg[1],
-                '15min': load_avg[2],
+            "cpu_load": {
+                "1min": load_avg[0],
+                "5min": load_avg[1],
+                "15min": load_avg[2],
             },
-            'rust_available': self.check_language_tool()[0],
+            "rust_available": self.check_language_tool()[0],
         }
 
     def _display_metrics(self, metrics: dict[str, Any]) -> None:

@@ -18,9 +18,6 @@ import sys
 import unittest
 from datetime import datetime
 
-# 添加 src 目錄到路徑
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', 'src'))
-
 from strategy.case_study_engine import (
     CaseStudy,
     CaseStudyEngine,
@@ -54,6 +51,9 @@ from strategy.strategy_advisor import (
     TechCapabilityAssessment,
 )
 
+# 添加 src 目錄到路徑
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "src"))
+
 
 class TestCaseStudyEngine(unittest.TestCase):
     """案例學習引擎測試"""
@@ -65,14 +65,14 @@ class TestCaseStudyEngine(unittest.TestCase):
     def test_builtin_cases_loaded(self):
         """測試內建案例載入"""
         cases = self.engine.list_cases()
-        self.assertIn('netflix', cases)
-        self.assertIn('shopify', cases)
-        self.assertIn('stripe', cases)
+        self.assertIn("netflix", cases)
+        self.assertIn("shopify", cases)
+        self.assertIn("stripe", cases)
         self.assertGreaterEqual(len(cases), 3)
 
     def test_get_case_netflix(self):
         """測試獲取 Netflix 案例"""
-        case = self.engine.get_case('netflix')
+        case = self.engine.get_case("netflix")
         self.assertIsNotNone(case)
         self.assertEqual(case.company_name, "Netflix")
         self.assertEqual(case.founding_year, 1997)
@@ -81,26 +81,26 @@ class TestCaseStudyEngine(unittest.TestCase):
 
     def test_get_case_shopify(self):
         """測試獲取 Shopify 案例"""
-        case = self.engine.get_case('shopify')
+        case = self.engine.get_case("shopify")
         self.assertIsNotNone(case)
         self.assertEqual(case.company_name, "Shopify")
-        self.assertIn('電子商務', case.industry)
+        self.assertIn("電子商務", case.industry)
 
     def test_get_case_stripe(self):
         """測試獲取 Stripe 案例"""
-        case = self.engine.get_case('stripe')
+        case = self.engine.get_case("stripe")
         self.assertIsNotNone(case)
         self.assertEqual(case.company_name, "Stripe")
-        self.assertIn('支付', case.industry)
+        self.assertIn("支付", case.industry)
 
     def test_get_nonexistent_case(self):
         """測試獲取不存在的案例"""
-        case = self.engine.get_case('nonexistent')
+        case = self.engine.get_case("nonexistent")
         self.assertIsNone(case)
 
     def test_find_cases_by_industry(self):
         """測試根據產業查找案例"""
-        cases = self.engine.find_cases_by_industry('電商')
+        cases = self.engine.find_cases_by_industry("電商")
         # Shopify 應該匹配
         self.assertGreater(len(cases), 0)
 
@@ -118,7 +118,7 @@ class TestCaseStudyEngine(unittest.TestCase):
 
     def test_evolution_phase_structure(self):
         """測試演進階段結構"""
-        case = self.engine.get_case('netflix')
+        case = self.engine.get_case("netflix")
         phase = case.evolution_phases[0]
 
         self.assertIsInstance(phase.phase_type, PhaseType)
@@ -129,7 +129,7 @@ class TestCaseStudyEngine(unittest.TestCase):
 
     def test_lesson_learned_structure(self):
         """測試學習要點結構"""
-        case = self.engine.get_case('netflix')
+        case = self.engine.get_case("netflix")
         lesson = case.lessons_learned[0]
 
         self.assertIsNotNone(lesson.category)
@@ -140,7 +140,7 @@ class TestCaseStudyEngine(unittest.TestCase):
 
     def test_get_strategy_sequence(self):
         """測試獲取策略序列"""
-        case = self.engine.get_case('netflix')
+        case = self.engine.get_case("netflix")
         sequence = case.get_strategy_sequence()
 
         self.assertGreater(len(sequence), 0)
@@ -151,35 +151,33 @@ class TestCaseStudyEngine(unittest.TestCase):
         """測試分析策略模式"""
         patterns = self.engine.analyze_strategy_patterns()
 
-        self.assertIn('common_sequences', patterns)
-        self.assertIn('strategy_frequency', patterns)
-        self.assertIn('phase_duration_avg', patterns)
-        self.assertIn('success_factors_frequency', patterns)
+        self.assertIn("common_sequences", patterns)
+        self.assertIn("strategy_frequency", patterns)
+        self.assertIn("phase_duration_avg", patterns)
+        self.assertIn("success_factors_frequency", patterns)
 
         # 應該有策略頻率數據
-        self.assertGreater(len(patterns['strategy_frequency']), 0)
+        self.assertGreater(len(patterns["strategy_frequency"]), 0)
 
     def test_recommend_strategy_sequence(self):
         """測試推薦策略序列"""
         recommendations = self.engine.recommend_strategy_sequence(
-            industry='SaaS',
-            current_stage=PhaseType.INITIAL,
-            resources='moderate'
+            industry="SaaS", current_stage=PhaseType.INITIAL, resources="moderate"
         )
 
         self.assertGreater(len(recommendations), 0)
         for rec in recommendations:
-            self.assertIn('stage', rec)
-            self.assertIn('recommended_strategies', rec)
+            self.assertIn("stage", rec)
+            self.assertIn("recommended_strategies", rec)
 
     def test_generate_report(self):
         """測試生成報告"""
-        report = self.engine.generate_report('netflix')
+        report = self.engine.generate_report("netflix")
 
-        self.assertIn('Netflix', report)
-        self.assertIn('案例分析報告', report)
-        self.assertIn('發展演進', report)
-        self.assertIn('學習要點', report)
+        self.assertIn("Netflix", report)
+        self.assertIn("案例分析報告", report)
+        self.assertIn("發展演進", report)
+        self.assertIn("學習要點", report)
 
     def test_add_custom_case(self):
         """測試添加自定義案例"""
@@ -193,12 +191,12 @@ class TestCaseStudyEngine(unittest.TestCase):
             key_success_factors=["測試因素"],
             technology_stack=["Python"],
             business_model="測試模式",
-            market_position="測試定位"
+            market_position="測試定位",
         )
 
-        self.engine.add_case('testco', custom_case)
+        self.engine.add_case("testco", custom_case)
 
-        retrieved = self.engine.get_case('testco')
+        retrieved = self.engine.get_case("testco")
         self.assertIsNotNone(retrieved)
         self.assertEqual(retrieved.company_name, "TestCo")
 
@@ -213,50 +211,47 @@ class TestStrategyAdvisor(unittest.TestCase):
     def test_assess_capabilities(self):
         """測試能力評估"""
         team_profile = {
-            'skills': {
-                'backend': {
-                    'level': 'advanced',
-                    'team_members': 5,
-                    'experience_years': 3.0,
-                    'certifications': ['AWS'],
-                    'tools': {'Python': 'expert'}
+            "skills": {
+                "backend": {
+                    "level": "advanced",
+                    "team_members": 5,
+                    "experience_years": 3.0,
+                    "certifications": ["AWS"],
+                    "tools": {"Python": "expert"},
                 },
-                'frontend': {
-                    'level': 'intermediate',
-                    'team_members': 3,
-                    'experience_years': 2.0
-                }
+                "frontend": {
+                    "level": "intermediate",
+                    "team_members": 3,
+                    "experience_years": 2.0,
+                },
             },
-            'infrastructure': {
-                'has_cloud': True,
-                'has_ci_cd': True,
-                'has_monitoring': True
+            "infrastructure": {
+                "has_cloud": True,
+                "has_ci_cd": True,
+                "has_monitoring": True,
             },
-            'process': {
-                'has_agile': True,
-                'has_code_review': True,
-                'has_testing': True
+            "process": {
+                "has_agile": True,
+                "has_code_review": True,
+                "has_testing": True,
             },
-            'culture': {
-                'innovation_mindset': 0.7,
-                'customer_focus': 0.8
-            }
+            "culture": {"innovation_mindset": 0.7, "customer_focus": 0.8},
         }
 
         assessment = self.advisor.assess_capabilities(team_profile)
 
         self.assertIsInstance(assessment, TechCapabilityAssessment)
         self.assertGreater(assessment.get_overall_score(), 0)
-        self.assertIn('backend', assessment.capabilities)
+        self.assertIn("backend", assessment.capabilities)
 
     def test_capability_scoring(self):
         """測試能力分數計算"""
         cap = TechCapability(
-            name='test',
+            name="test",
             level=CapabilityLevel.ADVANCED,
             team_members=5,
             experience_years=3.0,
-            certifications=['Cert1', 'Cert2']
+            certifications=["Cert1", "Cert2"],
         )
 
         score = cap.get_score()
@@ -265,16 +260,16 @@ class TestStrategyAdvisor(unittest.TestCase):
 
     def test_analyze_market_timing(self):
         """測試市場時機分析"""
-        analysis = self.advisor.analyze_market_timing('saas')
+        analysis = self.advisor.analyze_market_timing("saas")
 
         self.assertIsInstance(analysis, MarketTimingAnalysis)
-        self.assertEqual(analysis.market_name, 'saas')
+        self.assertEqual(analysis.market_name, "saas")
         self.assertGreater(analysis.timing_score, 0)
         self.assertIsInstance(analysis.maturity, MarketMaturity)
 
     def test_market_timing_recommendation(self):
         """測試市場進入建議"""
-        analysis = self.advisor.analyze_market_timing('ai_ml')
+        analysis = self.advisor.analyze_market_timing("ai_ml")
         recommendation = analysis.get_recommendation()
 
         self.assertIsInstance(recommendation, str)
@@ -284,11 +279,11 @@ class TestStrategyAdvisor(unittest.TestCase):
         """測試生成策略推薦"""
         # 創建評估數據
         capabilities = {
-            'engineering': TechCapability(
-                name='engineering',
+            "engineering": TechCapability(
+                name="engineering",
                 level=CapabilityLevel.ADVANCED,
                 team_members=10,
-                experience_years=5.0
+                experience_years=5.0,
             )
         }
 
@@ -297,16 +292,16 @@ class TestStrategyAdvisor(unittest.TestCase):
             capabilities=capabilities,
             infrastructure_readiness=0.8,
             process_maturity=0.7,
-            culture_alignment=0.75
+            culture_alignment=0.75,
         )
 
-        market_analysis = self.advisor.analyze_market_timing('saas')
+        market_analysis = self.advisor.analyze_market_timing("saas")
 
         recommendations = self.advisor.generate_recommendations(
             cap_assessment,
             market_analysis,
-            business_goals=['growth', 'innovation'],
-            constraints={'budget': 1000000}
+            business_goals=["growth", "innovation"],
+            constraints={"budget": 1000000},
         )
 
         self.assertGreater(len(recommendations), 0)
@@ -317,11 +312,11 @@ class TestStrategyAdvisor(unittest.TestCase):
     def test_strategy_report_generation(self):
         """測試策略報告生成"""
         capabilities = {
-            'engineering': TechCapability(
-                name='engineering',
+            "engineering": TechCapability(
+                name="engineering",
                 level=CapabilityLevel.INTERMEDIATE,
                 team_members=5,
-                experience_years=2.0
+                experience_years=2.0,
             )
         }
 
@@ -330,19 +325,17 @@ class TestStrategyAdvisor(unittest.TestCase):
             capabilities=capabilities,
             infrastructure_readiness=0.6,
             process_maturity=0.5,
-            culture_alignment=0.6
+            culture_alignment=0.6,
         )
 
-        market = self.advisor.analyze_market_timing('fintech')
-        recs = self.advisor.generate_recommendations(
-            cap, market, ['growth']
-        )
+        market = self.advisor.analyze_market_timing("fintech")
+        recs = self.advisor.generate_recommendations(cap, market, ["growth"])
 
         report = self.advisor.generate_report(cap, market, recs)
 
-        self.assertIn('策略顧問報告', report)
-        self.assertIn('技術能力評估', report)
-        self.assertIn('市場時機分析', report)
+        self.assertIn("策略顧問報告", report)
+        self.assertIn("技術能力評估", report)
+        self.assertIn("市場時機分析", report)
 
 
 class TestResourceOptimizer(unittest.TestCase):
@@ -355,8 +348,7 @@ class TestResourceOptimizer(unittest.TestCase):
     def test_optimize_budget_balanced(self):
         """測試平衡策略預算優化"""
         allocation = self.optimizer.optimize_budget(
-            total_budget=1000000,
-            strategy=AllocationStrategy.BALANCED
+            total_budget=1000000, strategy=AllocationStrategy.BALANCED
         )
 
         self.assertIsInstance(allocation, BudgetAllocation)
@@ -370,15 +362,16 @@ class TestResourceOptimizer(unittest.TestCase):
     def test_optimize_budget_growth_focused(self):
         """測試增長導向策略"""
         allocation = self.optimizer.optimize_budget(
-            total_budget=500000,
-            strategy=AllocationStrategy.GROWTH_FOCUSED
+            total_budget=500000, strategy=AllocationStrategy.GROWTH_FOCUSED
         )
 
         self.assertEqual(allocation.strategy, AllocationStrategy.GROWTH_FOCUSED)
 
         # 增長導向應該有較多行銷預算
-        if 'marketing' in allocation.allocations:
-            marketing_ratio = allocation.allocations['marketing'].amount / allocation.total_budget
+        if "marketing" in allocation.allocations:
+            marketing_ratio = (
+                allocation.allocations["marketing"].amount / allocation.total_budget
+            )
             self.assertGreater(marketing_ratio, 0.2)
 
     def test_optimize_budget_with_constraints(self):
@@ -386,22 +379,18 @@ class TestResourceOptimizer(unittest.TestCase):
         allocation = self.optimizer.optimize_budget(
             total_budget=1000000,
             strategy=AllocationStrategy.BALANCED,
-            constraints={
-                'marketing': (200000, 300000)  # 行銷限制在 200K-300K
-            }
+            constraints={"marketing": (200000, 300000)},  # 行銷限制在 200K-300K
         )
 
-        if 'marketing' in allocation.allocations:
-            marketing = allocation.allocations['marketing'].amount
+        if "marketing" in allocation.allocations:
+            marketing = allocation.allocations["marketing"].amount
             self.assertGreaterEqual(marketing, 200000)
             self.assertLessEqual(marketing, 350000)  # 允許一些調整
 
     def test_optimize_team_startup(self):
         """測試創業階段團隊優化"""
         team = self.optimizer.optimize_team(
-            target_headcount=10,
-            budget_constraint=1200000,
-            stage='startup'
+            target_headcount=10, budget_constraint=1200000, stage="startup"
         )
 
         self.assertIsInstance(team, TeamAllocation)
@@ -409,15 +398,13 @@ class TestResourceOptimizer(unittest.TestCase):
         self.assertLessEqual(team.total_cost, 1200000)
 
         # 創業階段應有關鍵角色
-        critical = team.get_by_criticality('critical')
+        critical = team.get_by_criticality("critical")
         self.assertGreater(len(critical), 0)
 
     def test_optimize_team_enterprise(self):
         """測試企業階段團隊優化"""
         team = self.optimizer.optimize_team(
-            target_headcount=50,
-            budget_constraint=8000000,
-            stage='enterprise'
+            target_headcount=50, budget_constraint=8000000, stage="enterprise"
         )
 
         self.assertIsInstance(team, TeamAllocation)
@@ -429,15 +416,13 @@ class TestResourceOptimizer(unittest.TestCase):
     def test_team_hiring_plan(self):
         """測試招聘計畫生成"""
         team = self.optimizer.optimize_team(
-            target_headcount=15,
-            budget_constraint=2000000,
-            stage='growth'
+            target_headcount=15, budget_constraint=2000000, stage="growth"
         )
 
         self.assertGreater(len(team.hiring_plan), 0)
 
         # 招聘計畫應按優先級排序
-        priorities = [h['priority'] for h in team.hiring_plan]
+        priorities = [h["priority"] for h in team.hiring_plan]
         self.assertEqual(priorities, sorted(priorities))
 
     def test_generate_optimization(self):
@@ -446,8 +431,8 @@ class TestResourceOptimizer(unittest.TestCase):
             total_budget=2000000,
             target_headcount=20,
             strategy=AllocationStrategy.BALANCED,
-            stage='growth',
-            business_goals=['growth', 'efficiency']
+            stage="growth",
+            business_goals=["growth", "efficiency"],
         )
 
         self.assertIsInstance(result, OptimizationResult)
@@ -463,27 +448,26 @@ class TestResourceOptimizer(unittest.TestCase):
         result = self.optimizer.generate_optimization(
             total_budget=1000000,
             target_headcount=10,
-            strategy=AllocationStrategy.BALANCED
+            strategy=AllocationStrategy.BALANCED,
         )
 
         sensitivity = result.sensitivity_analysis
-        self.assertIn('budget_sensitivity', sensitivity)
-        self.assertIn('headcount_sensitivity', sensitivity)
-        self.assertIn('market_scenarios', sensitivity)
+        self.assertIn("budget_sensitivity", sensitivity)
+        self.assertIn("headcount_sensitivity", sensitivity)
+        self.assertIn("market_scenarios", sensitivity)
 
     def test_resource_report_generation(self):
         """測試資源優化報告生成"""
         result = self.optimizer.generate_optimization(
-            total_budget=1500000,
-            target_headcount=15
+            total_budget=1500000, target_headcount=15
         )
 
         report = self.optimizer.generate_report(result)
 
-        self.assertIn('資源優化報告', report)
-        self.assertIn('預算分配', report)
-        self.assertIn('團隊配置', report)
-        self.assertIn('投資回報預測', report)
+        self.assertIn("資源優化報告", report)
+        self.assertIn("預算分配", report)
+        self.assertIn("團隊配置", report)
+        self.assertIn("投資回報預測", report)
 
 
 class TestEvolutionTracker(unittest.TestCase):
@@ -496,18 +480,18 @@ class TestEvolutionTracker(unittest.TestCase):
     def test_assess_maturity(self):
         """測試成熟度評估"""
         project_data = {
-            'technology': {'score': 70, 'evidence': ['CI/CD 已建立']},
-            'process': {'score': 60, 'evidence': ['Agile 導入']},
-            'team': {'score': 65, 'evidence': ['核心團隊到位']},
-            'product': {'score': 55, 'evidence': ['MVP 已發布']},
-            'market': {'score': 50, 'evidence': ['初步驗證']},
-            'governance': {'score': 45, 'evidence': []},
-            'finance': {'score': 40, 'evidence': []},
-            'culture': {'score': 60, 'evidence': ['文化建設中']},
-            'revenue': 50000,
-            'customers': 20,
-            'team_size': 8,
-            'has_mvp': True
+            "technology": {"score": 70, "evidence": ["CI/CD 已建立"]},
+            "process": {"score": 60, "evidence": ["Agile 導入"]},
+            "team": {"score": 65, "evidence": ["核心團隊到位"]},
+            "product": {"score": 55, "evidence": ["MVP 已發布"]},
+            "market": {"score": 50, "evidence": ["初步驗證"]},
+            "governance": {"score": 45, "evidence": []},
+            "finance": {"score": 40, "evidence": []},
+            "culture": {"score": 60, "evidence": ["文化建設中"]},
+            "revenue": 50000,
+            "customers": 20,
+            "team_size": 8,
+            "has_mvp": True,
         }
 
         maturity = self.tracker.assess_maturity(project_data)
@@ -520,10 +504,7 @@ class TestEvolutionTracker(unittest.TestCase):
 
     def test_maturity_dimensions(self):
         """測試成熟度維度評估"""
-        project_data = {
-            'technology': {'score': 80},
-            'process': {'score': 70}
-        }
+        project_data = {"technology": {"score": 80}, "process": {"score": 70}}
 
         maturity = self.tracker.assess_maturity(project_data)
 
@@ -539,23 +520,25 @@ class TestEvolutionTracker(unittest.TestCase):
     def test_phase_detection(self):
         """測試階段檢測"""
         # 初期階段
-        early_data = {'has_mvp': False, 'customers': 0}
+        early_data = {"has_mvp": False, "customers": 0}
         early_maturity = self.tracker.assess_maturity(early_data)
         self.assertEqual(early_maturity.current_phase, DevelopmentPhase.IDEATION)
 
         # 驗證階段
-        validation_data = {'has_mvp': True, 'customers': 5, 'revenue': 1000}
+        validation_data = {"has_mvp": True, "customers": 5, "revenue": 1000}
         validation_maturity = self.tracker.assess_maturity(validation_data)
-        self.assertIn(validation_maturity.current_phase,
-                     [DevelopmentPhase.VALIDATION, DevelopmentPhase.EFFICIENCY])
+        self.assertIn(
+            validation_maturity.current_phase,
+            [DevelopmentPhase.VALIDATION, DevelopmentPhase.EFFICIENCY],
+        )
 
     def test_identify_blockers_accelerators(self):
         """測試識別阻礙和加速因素"""
         project_data = {
-            'technology': {'score': 85},  # 高分 - 加速
-            'process': {'score': 30},      # 低分 - 阻礙
-            'runway_months': 3,            # 資金不足 - 阻礙
-            'customer_nps': 60             # 高 NPS - 加速
+            "technology": {"score": 85},  # 高分 - 加速
+            "process": {"score": 30},  # 低分 - 阻礙
+            "runway_months": 3,  # 資金不足 - 阻礙
+            "customer_nps": 60,  # 高 NPS - 加速
         }
 
         maturity = self.tracker.assess_maturity(project_data)
@@ -566,12 +549,12 @@ class TestEvolutionTracker(unittest.TestCase):
     def test_evaluate_transition(self):
         """測試階段轉換評估"""
         project_data = {
-            'technology': {'score': 65},
-            'process': {'score': 60},
-            'team': {'score': 60},
-            'has_mvp': True,
-            'customers': 15,
-            'revenue': 10000
+            "technology": {"score": 65},
+            "process": {"score": 60},
+            "team": {"score": 60},
+            "has_mvp": True,
+            "customers": 15,
+            "revenue": 10000,
         }
 
         maturity = self.tracker.assess_maturity(project_data)
@@ -585,14 +568,10 @@ class TestEvolutionTracker(unittest.TestCase):
 
     def test_transition_to_specific_phase(self):
         """測試轉換到指定階段"""
-        maturity = self.tracker.assess_maturity({
-            'has_mvp': True,
-            'customers': 5
-        })
+        maturity = self.tracker.assess_maturity({"has_mvp": True, "customers": 5})
 
         transition = self.tracker.evaluate_transition(
-            maturity,
-            target_phase=DevelopmentPhase.SCALE
+            maturity, target_phase=DevelopmentPhase.SCALE
         )
 
         self.assertEqual(transition.to_phase, DevelopmentPhase.SCALE)
@@ -600,16 +579,15 @@ class TestEvolutionTracker(unittest.TestCase):
     def test_create_roadmap(self):
         """測試創建演進路線圖"""
         project_data = {
-            'technology': {'score': 60},
-            'process': {'score': 55},
-            'has_mvp': True,
-            'customers': 10
+            "technology": {"score": 60},
+            "process": {"score": 55},
+            "has_mvp": True,
+            "customers": 10,
         }
 
         maturity = self.tracker.assess_maturity(project_data)
         roadmap = self.tracker.create_roadmap(
-            maturity,
-            target_phase=DevelopmentPhase.SCALE
+            maturity, target_phase=DevelopmentPhase.SCALE
         )
 
         self.assertIsInstance(roadmap, EvolutionRoadmap)
@@ -621,43 +599,39 @@ class TestEvolutionTracker(unittest.TestCase):
 
     def test_roadmap_milestones(self):
         """測試路線圖里程碑"""
-        maturity = self.tracker.assess_maturity({
-            'has_mvp': False
-        })
+        maturity = self.tracker.assess_maturity({"has_mvp": False})
 
         roadmap = self.tracker.create_roadmap(
-            maturity,
-            target_phase=DevelopmentPhase.EFFICIENCY
+            maturity, target_phase=DevelopmentPhase.EFFICIENCY
         )
 
         for milestone in roadmap.milestones:
-            self.assertIn('phase', milestone)
-            self.assertIn('target_date', milestone)
-            self.assertIn('key_metrics', milestone)
+            self.assertIn("phase", milestone)
+            self.assertIn("target_date", milestone)
+            self.assertIn("key_metrics", milestone)
 
     def test_evolution_report_generation(self):
         """測試演進報告生成"""
         project_data = {
-            'technology': {'score': 70},
-            'process': {'score': 60},
-            'team': {'score': 65},
-            'has_mvp': True,
-            'customers': 20
+            "technology": {"score": 70},
+            "process": {"score": 60},
+            "team": {"score": 65},
+            "has_mvp": True,
+            "customers": 20,
         }
 
         maturity = self.tracker.assess_maturity(project_data)
         transition = self.tracker.evaluate_transition(maturity)
         roadmap = self.tracker.create_roadmap(
-            maturity,
-            target_phase=DevelopmentPhase.EXPANSION
+            maturity, target_phase=DevelopmentPhase.EXPANSION
         )
 
         report = self.tracker.generate_report(maturity, transition, roadmap)
 
-        self.assertIn('專案演進追蹤報告', report)
-        self.assertIn('成熟度評估', report)
-        self.assertIn('階段轉換評估', report)
-        self.assertIn('演進路線圖', report)
+        self.assertIn("專案演進追蹤報告", report)
+        self.assertIn("成熟度評估", report)
+        self.assertIn("階段轉換評估", report)
+        self.assertIn("演進路線圖", report)
 
 
 class TestIntegration(unittest.TestCase):
@@ -667,20 +641,20 @@ class TestIntegration(unittest.TestCase):
         """測試完整策略工作流程"""
         # 1. 案例學習
         case_engine = CaseStudyEngine()
-        netflix_case = case_engine.get_case('netflix')
+        netflix_case = case_engine.get_case("netflix")
         patterns = case_engine.analyze_strategy_patterns()
 
         self.assertIsNotNone(netflix_case)
-        self.assertGreater(len(patterns['strategy_frequency']), 0)
+        self.assertGreater(len(patterns["strategy_frequency"]), 0)
 
         # 2. 能力與市場分析
         advisor = StrategyAdvisor()
         capabilities = {
-            'engineering': TechCapability(
-                name='engineering',
+            "engineering": TechCapability(
+                name="engineering",
                 level=CapabilityLevel.INTERMEDIATE,
                 team_members=8,
-                experience_years=2.5
+                experience_years=2.5,
             )
         }
         cap_assessment = TechCapabilityAssessment(
@@ -688,13 +662,11 @@ class TestIntegration(unittest.TestCase):
             capabilities=capabilities,
             infrastructure_readiness=0.7,
             process_maturity=0.6,
-            culture_alignment=0.65
+            culture_alignment=0.65,
         )
-        market_analysis = advisor.analyze_market_timing('saas')
+        market_analysis = advisor.analyze_market_timing("saas")
         recommendations = advisor.generate_recommendations(
-            cap_assessment,
-            market_analysis,
-            ['growth']
+            cap_assessment, market_analysis, ["growth"]
         )
 
         self.assertGreater(len(recommendations), 0)
@@ -704,22 +676,17 @@ class TestIntegration(unittest.TestCase):
         optimization = optimizer.generate_optimization(
             total_budget=1500000,
             target_headcount=15,
-            strategy=AllocationStrategy.GROWTH_FOCUSED
+            strategy=AllocationStrategy.GROWTH_FOCUSED,
         )
 
         self.assertIsInstance(optimization, OptimizationResult)
 
         # 4. 演進追蹤
         tracker = EvolutionTracker()
-        maturity = tracker.assess_maturity({
-            'technology': {'score': 60},
-            'has_mvp': True,
-            'customers': 15
-        })
-        roadmap = tracker.create_roadmap(
-            maturity,
-            DevelopmentPhase.SCALE
+        maturity = tracker.assess_maturity(
+            {"technology": {"score": 60}, "has_mvp": True, "customers": 15}
         )
+        roadmap = tracker.create_roadmap(maturity, DevelopmentPhase.SCALE)
 
         self.assertIsInstance(roadmap, EvolutionRoadmap)
 
@@ -727,8 +694,7 @@ class TestIntegration(unittest.TestCase):
         """測試數據一致性"""
         optimizer = ResourceOptimizer()
         result = optimizer.generate_optimization(
-            total_budget=1000000,
-            target_headcount=10
+            total_budget=1000000, target_headcount=10
         )
 
         # 預算分配總和應等於營運預算部分
@@ -736,17 +702,14 @@ class TestIntegration(unittest.TestCase):
             cat.amount for cat in result.budget_allocation.allocations.values()
         )
         self.assertAlmostEqual(
-            budget_sum,
-            result.budget_allocation.total_budget,
-            places=0
+            budget_sum, result.budget_allocation.total_budget, places=0
         )
 
         # 團隊成本不應超過人力預算
         self.assertLessEqual(
-            result.team_allocation.total_cost,
-            1000000 * 0.7  # 70% 用於人力
-        )
+            result.team_allocation.total_cost, 1000000 * 0.7
+        )  # 70% 用於人力
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()

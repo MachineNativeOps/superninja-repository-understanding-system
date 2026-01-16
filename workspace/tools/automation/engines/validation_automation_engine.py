@@ -12,20 +12,26 @@ Version: 1.0.0
 """
 
 import asyncio
-import yaml
 import re
-from pathlib import Path
-from datetime import datetime
-from typing import Dict, List, Optional, Any
-from dataclasses import dataclass
-
 import sys
+from dataclasses import dataclass
+from datetime import datetime
+from pathlib import Path
+from typing import Any, Dict, List, Optional
+
+import yaml
+from engine_base import (
+    BaseEngine,
+    EngineConfig,
+    EngineState,
+    EngineType,
+    ExecutionMode,
+    TaskResult,
+    ValidationEngineBase,
+)
+
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
-from engine_base import (
-    BaseEngine, ValidationEngineBase, EngineConfig, EngineState,
-    EngineType, ExecutionMode, TaskResult
-)
 
 BASE_PATH = Path(__file__).parent.parent.parent.parent
 PLAYBOOKS_PATH = BASE_PATH / "docs" / "refactor_playbooks"
@@ -66,7 +72,9 @@ class ValidationAutomationEngine(ValidationEngineBase):
             elif operation == "auto_fix":
                 result = await self._auto_fix_all()
             else:
-                return TaskResult(task_id=task_id, success=False, error=f"未知操作: {operation}")
+                return TaskResult(
+                    task_id=task_id, success=False, error=f"未知操作: {operation}"
+                )
 
             return TaskResult(task_id=task_id, success=True, result=result)
 
@@ -78,7 +86,13 @@ class ValidationAutomationEngine(ValidationEngineBase):
 
     def _get_capabilities(self) -> Dict[str, Any]:
         return {
-            "operations": ["validate_all", "validate_structure", "validate_references", "validate_content", "auto_fix"],
+            "operations": [
+                "validate_all",
+                "validate_structure",
+                "validate_references",
+                "validate_content",
+                "auto_fix",
+            ],
             "auto_fix": self._auto_fix,
         }
 
@@ -111,7 +125,7 @@ class ValidationAutomationEngine(ValidationEngineBase):
                     fixed += 1
                 else:
                     failed += 1
-            except:
+            except BaseException:
                 failed += 1
 
         return {"fixed": fixed, "failed": failed}
@@ -143,14 +157,14 @@ class ValidationAutomationEngine(ValidationEngineBase):
 
         for md_file in self._target_path.rglob("*.md"):
             try:
-                content = md_file.read_text(encoding='utf-8')
-                links = re.findall(r'\[([^\]]+)\]\(([^)]+)\)', content)
+                content = md_file.read_text(encoding="utf-8")
+                links = re.findall(r"\[([^\]]+)\]\(([^)]+)\)", content)
 
                 for text, href in links:
-                    if href.startswith(('http://', 'https://', '#', 'mailto:')):
+                    if href.startswith(("http://", "https://", "#", "mailto:")):
                         continue
 
-                    resolved = (md_file.parent / href.split('#')[0]).resolve()
+                    resolved = (md_file.parent / href.split("#")[0]).resolve()
                     if not resolved.exists():
                         errors.append(f"{md_file.name}: 斷開的連結 -> {href}")
 
@@ -167,7 +181,7 @@ class ValidationAutomationEngine(ValidationEngineBase):
         # 驗證 YAML 檔案
         for yaml_file in self._target_path.rglob("*.yaml"):
             try:
-                with open(yaml_file, 'r', encoding='utf-8') as f:
+                with open(yaml_file, "r", encoding="utf-8") as f:
                     yaml.safe_load(f)
             except yaml.YAMLError as e:
                 errors.append(f"YAML 錯誤 {yaml_file.name}: {str(e)[:50]}")
@@ -175,10 +189,10 @@ class ValidationAutomationEngine(ValidationEngineBase):
         # 驗證 Markdown 標題
         for md_file in self._target_path.rglob("*.md"):
             try:
-                content = md_file.read_text(encoding='utf-8')
-                if not re.search(r'^#\s+', content, re.MULTILINE):
+                content = md_file.read_text(encoding="utf-8")
+                if not re.search(r"^#\s+", content, re.MULTILINE):
                     warnings.append(f"{md_file.name}: 缺少標題")
-            except:
+            except BaseException:
                 pass
 
         return {"errors": errors, "warnings": warnings}

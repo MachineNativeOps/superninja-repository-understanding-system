@@ -25,15 +25,17 @@ _current_span: ContextVar[Optional["Span"]] = ContextVar("current_span", default
 
 class SpanKind(Enum):
     """Types of spans"""
-    INTERNAL = "internal"       # Internal operation
-    SERVER = "server"          # Server handling request
-    CLIENT = "client"          # Client making request
-    PRODUCER = "producer"      # Message producer
-    CONSUMER = "consumer"      # Message consumer
+
+    INTERNAL = "internal"  # Internal operation
+    SERVER = "server"  # Server handling request
+    CLIENT = "client"  # Client making request
+    PRODUCER = "producer"  # Message producer
+    CONSUMER = "consumer"  # Message consumer
 
 
 class SpanStatus(Enum):
     """Span status codes"""
+
     UNSET = "unset"
     OK = "ok"
     ERROR = "error"
@@ -47,10 +49,11 @@ class SpanContext:
     Contains trace/span IDs for propagating context across services.
     W3C Trace Context compatible.
     """
-    trace_id: str = ""         # 32-char hex
-    span_id: str = ""          # 16-char hex
-    trace_flags: int = 0       # Sampling flag
-    trace_state: str = ""      # Vendor-specific state
+
+    trace_id: str = ""  # 32-char hex
+    span_id: str = ""  # 16-char hex
+    trace_flags: int = 0  # Sampling flag
+    trace_state: str = ""  # Vendor-specific state
 
     @property
     def is_valid(self) -> bool:
@@ -86,6 +89,7 @@ class SpanContext:
     def generate(cls) -> "SpanContext":
         """Generate a new span context"""
         import secrets
+
         return cls(
             trace_id=secrets.token_hex(16),
             span_id=secrets.token_hex(8),
@@ -96,6 +100,7 @@ class SpanContext:
 @dataclass
 class SpanEvent:
     """Event within a span"""
+
     name: str
     timestamp: float  # Unix timestamp
     attributes: dict[str, Any] = field(default_factory=dict)
@@ -108,12 +113,13 @@ class Span:
 
     Represents a single operation within a trace.
     """
+
     name: str = ""
     context: SpanContext = field(default_factory=SpanContext)
     parent_context: SpanContext | None = None
 
     # Timing
-    start_time: float = 0.0      # Unix timestamp
+    start_time: float = 0.0  # Unix timestamp
     end_time: float | None = None
     duration_ms: float | None = None
 
@@ -212,7 +218,9 @@ class Span:
             "name": self.name,
             "trace_id": self.context.trace_id,
             "span_id": self.context.span_id,
-            "parent_span_id": self.parent_context.span_id if self.parent_context else None,
+            "parent_span_id": (
+                self.parent_context.span_id if self.parent_context else None
+            ),
             "start_time": self.start_time,
             "end_time": self.end_time,
             "duration_ms": self.duration_ms,
@@ -459,6 +467,7 @@ class Tracer:
 @dataclass
 class SpanContextManager:
     """Async context manager for spans"""
+
     tracer: Tracer
     name: str
     kind: SpanKind = SpanKind.INTERNAL
@@ -486,8 +495,10 @@ class SpanContextManager:
 # Common Span Attributes
 # ------------------------------------------------------------------
 
+
 class SpanAttributes:
     """Standard attribute names"""
+
     # HTTP
     HTTP_METHOD = "http.method"
     HTTP_URL = "http.url"

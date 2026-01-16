@@ -18,17 +18,19 @@ Evolution Stages:
     Phase 4: Pure vector autonomy with AI interpretation
 """
 
-import json
 import argparse
+import json
 import sys
-from pathlib import Path
-from typing import List, Dict, Tuple, Optional
 from dataclasses import dataclass
+from pathlib import Path
+from typing import Dict, List, Optional, Tuple
 
-# Try to import sentence-transformers, fall back to keyword search if not available
+# Try to import sentence-transformers, fall back to keyword search if not
+# available
 try:
-    from sentence_transformers import SentenceTransformer, util
     import torch
+    from sentence_transformers import SentenceTransformer, util
+
     VECTOR_SEARCH_AVAILABLE = True
 except ImportError:
     VECTOR_SEARCH_AVAILABLE = False
@@ -39,6 +41,7 @@ except ImportError:
 @dataclass
 class SearchResult:
     """Represents a search result from the governance index."""
+
     id: str
     name: str
     score: float
@@ -73,7 +76,9 @@ class GovernanceRAG:
         self.embeddings_cache = {}
 
         if VECTOR_SEARCH_AVAILABLE:
-            model_name = self.vectors_data.get("embedding_config", {}).get("model", "all-MiniLM-L6-v2")
+            model_name = self.vectors_data.get("embedding_config", {}).get(
+                "model", "all-MiniLM-L6-v2"
+            )
             try:
                 self.model = SentenceTransformer(model_name)
                 self._build_embeddings_cache()
@@ -84,7 +89,7 @@ class GovernanceRAG:
     def _load_json(self, path: Path) -> Dict:
         """Load JSON file from path."""
         try:
-            with open(path, 'r', encoding='utf-8') as f:
+            with open(path, "r", encoding="utf-8") as f:
                 return json.load(f)
         except FileNotFoundError:
             print(f"Warning: Index file not found: {path}")
@@ -108,7 +113,7 @@ class GovernanceRAG:
                 self.embeddings_cache[dim["id"]] = {
                     "embedding": self.model.encode(text, convert_to_tensor=True),
                     "data": dim,
-                    "type": "dimension"
+                    "type": "dimension",
                 }
 
         # Build embeddings for shared resources
@@ -119,14 +124,18 @@ class GovernanceRAG:
                 self.embeddings_cache[f"shared_{res['id']}"] = {
                     "embedding": self.model.encode(text, convert_to_tensor=True),
                     "data": res,
-                    "type": "shared"
+                    "type": "shared",
                 }
 
         print(f"Cached {len(self.embeddings_cache)} embeddings.")
 
-    def search(self, query: str, top_k: int = 5,
-               include_compliance: bool = True,
-               security_filter: Optional[str] = None) -> List[SearchResult]:
+    def search(
+        self,
+        query: str,
+        top_k: int = 5,
+        include_compliance: bool = True,
+        security_filter: Optional[str] = None,
+    ) -> List[SearchResult]:
         """
         Search the governance index using the query.
 
@@ -140,13 +149,21 @@ class GovernanceRAG:
             List of SearchResult objects
         """
         if VECTOR_SEARCH_AVAILABLE and self.model and self.embeddings_cache:
-            return self._vector_search(query, top_k, include_compliance, security_filter)
+            return self._vector_search(
+                query, top_k, include_compliance, security_filter
+            )
         else:
-            return self._keyword_search(query, top_k, include_compliance, security_filter)
+            return self._keyword_search(
+                query, top_k, include_compliance, security_filter
+            )
 
-    def _vector_search(self, query: str, top_k: int,
-                       include_compliance: bool,
-                       security_filter: Optional[str]) -> List[SearchResult]:
+    def _vector_search(
+        self,
+        query: str,
+        top_k: int,
+        include_compliance: bool,
+        security_filter: Optional[str],
+    ) -> List[SearchResult]:
         """Perform vector similarity search."""
         query_embedding = self.model.encode(query, convert_to_tensor=True)
 
@@ -167,10 +184,12 @@ class GovernanceRAG:
                 score=similarity,
                 semantic_text=data.get("semantic_text", ""),
                 keywords=data.get("keywords", []),
-                compliance_tags=data.get("compliance_tags", []) if include_compliance else [],
+                compliance_tags=(
+                    data.get("compliance_tags", []) if include_compliance else []
+                ),
                 security_level=data.get("security_level", "unknown"),
                 path=self._get_dimension_path(data.get("id", key)),
-                type=cached["type"]
+                type=cached["type"],
             )
             results.append(result)
 
@@ -178,9 +197,13 @@ class GovernanceRAG:
         results.sort(key=lambda x: x.score, reverse=True)
         return results[:top_k]
 
-    def _keyword_search(self, query: str, top_k: int,
-                        include_compliance: bool,
-                        security_filter: Optional[str]) -> List[SearchResult]:
+    def _keyword_search(
+        self,
+        query: str,
+        top_k: int,
+        include_compliance: bool,
+        security_filter: Optional[str],
+    ) -> List[SearchResult]:
         """Perform keyword-based search as fallback."""
         query_terms = set(query.lower().split())
         results = []
@@ -209,10 +232,12 @@ class GovernanceRAG:
                     score=score,
                     semantic_text=dim.get("semantic_text", ""),
                     keywords=dim.get("keywords", []),
-                    compliance_tags=dim.get("compliance_tags", []) if include_compliance else [],
+                    compliance_tags=(
+                        dim.get("compliance_tags", []) if include_compliance else []
+                    ),
                     security_level=dim.get("security_level", "unknown"),
                     path=self._get_dimension_path(dim.get("id", "")),
-                    type="dimension"
+                    type="dimension",
                 )
                 results.append(result)
 
@@ -236,7 +261,7 @@ class GovernanceRAG:
                     compliance_tags=[],
                     security_level="medium",
                     path=res.get("id", ""),
-                    type="shared"
+                    type="shared",
                 )
                 results.append(result)
 
@@ -254,25 +279,25 @@ class GovernanceRAG:
 
     def get_compliance_info(self, dimension_id: str) -> Dict:
         """Get compliance framework information for a dimension."""
-        matrix = self.compliance_data.get("compliance_matrix", {}).get("by_dimension", {})
+        matrix = self.compliance_data.get("compliance_matrix", {}).get(
+            "by_dimension", {}
+        )
         frameworks = matrix.get(dimension_id, [])
 
-        result = {
-            "dimension": dimension_id,
-            "frameworks": frameworks,
-            "details": []
-        }
+        result = {"dimension": dimension_id, "frameworks": frameworks, "details": []}
 
         # Get detailed framework info
         all_frameworks = self.compliance_data.get("frameworks", [])
         for fw in all_frameworks:
             if fw["id"] in frameworks:
-                result["details"].append({
-                    "id": fw["id"],
-                    "name": fw["name"],
-                    "status": fw.get("status", "unknown"),
-                    "audit_frequency": fw.get("audit_frequency", "unknown")
-                })
+                result["details"].append(
+                    {
+                        "id": fw["id"],
+                        "name": fw["name"],
+                        "status": fw.get("status", "unknown"),
+                        "audit_frequency": fw.get("audit_frequency", "unknown"),
+                    }
+                )
 
         return result
 
@@ -288,7 +313,7 @@ class GovernanceRAG:
                     "depends_on": dim.get("depends_on", []),
                     "layer": dim.get("layer"),
                     "execution": dim.get("execution"),
-                    "priority": dim.get("priority")
+                    "priority": dim.get("priority"),
                 }
 
         return {"id": dimension_id, "error": "Dimension not found"}
@@ -315,7 +340,9 @@ class GovernanceRAG:
                 if result.keywords:
                     output.append(f"   Keywords: {', '.join(result.keywords[:5])}")
                 if result.compliance_tags:
-                    output.append(f"   Compliance: {', '.join(result.compliance_tags[:3])}")
+                    output.append(
+                        f"   Compliance: {', '.join(result.compliance_tags[:3])}"
+                    )
 
             output.append("")
 
@@ -333,21 +360,40 @@ Examples:
     %(prog)s --query "agent governance" --verbose
     %(prog)s --query "audit" --security-filter critical
     %(prog)s --interactive
-        """
+        """,
     )
 
     parser.add_argument("query", nargs="?", help="Search query")
-    parser.add_argument("--query", "-q", dest="query_opt", help="Search query (alternative)")
-    parser.add_argument("--top-k", "-k", type=int, default=5, help="Number of results (default: 5)")
-    parser.add_argument("--verbose", "-v", action="store_true", help="Show detailed results")
-    parser.add_argument("--security-filter", "-s", choices=["critical", "high", "medium", "low"],
-                        help="Filter by security level")
-    parser.add_argument("--compliance", "-c", action="store_true",
-                        help="Show compliance info for top result")
-    parser.add_argument("--dependencies", "-d", action="store_true",
-                        help="Show dependencies for top result")
-    parser.add_argument("--interactive", "-i", action="store_true",
-                        help="Run in interactive mode")
+    parser.add_argument(
+        "--query", "-q", dest="query_opt", help="Search query (alternative)"
+    )
+    parser.add_argument(
+        "--top-k", "-k", type=int, default=5, help="Number of results (default: 5)"
+    )
+    parser.add_argument(
+        "--verbose", "-v", action="store_true", help="Show detailed results"
+    )
+    parser.add_argument(
+        "--security-filter",
+        "-s",
+        choices=["critical", "high", "medium", "low"],
+        help="Filter by security level",
+    )
+    parser.add_argument(
+        "--compliance",
+        "-c",
+        action="store_true",
+        help="Show compliance info for top result",
+    )
+    parser.add_argument(
+        "--dependencies",
+        "-d",
+        action="store_true",
+        help="Show dependencies for top result",
+    )
+    parser.add_argument(
+        "--interactive", "-i", action="store_true", help="Run in interactive mode"
+    )
     parser.add_argument("--index-path", type=Path, help="Path to index directory")
 
     args = parser.parse_args()
@@ -371,7 +417,9 @@ Examples:
                 if not query:
                     continue
 
-                results = rag.search(query, args.top_k, security_filter=args.security_filter)
+                results = rag.search(
+                    query, args.top_k, security_filter=args.security_filter
+                )
                 print(rag.format_results(results, args.verbose))
 
             except KeyboardInterrupt:

@@ -9,16 +9,17 @@ Responsibilities:
 - Client management and synchronization
 """
 
-from typing import Dict, List, Optional, Any
-from dataclasses import dataclass, field
-from enum import Enum
-from datetime import datetime, timezone
 import asyncio
 import random
+from dataclasses import dataclass, field
+from datetime import datetime, timezone
+from enum import Enum
+from typing import Any, Dict, List, Optional
 
 
 class AggregationMethod(Enum):
     """Model aggregation methods."""
+
     FED_AVG = "fed_avg"  # Federated Averaging
     FED_PROX = "fed_prox"  # Federated Proximal
     FED_ADAM = "fed_adam"  # Federated Adam
@@ -27,6 +28,7 @@ class AggregationMethod(Enum):
 
 class ClientStatus(Enum):
     """Federated client status."""
+
     IDLE = "idle"
     TRAINING = "training"
     UPLOADING = "uploading"
@@ -36,6 +38,7 @@ class ClientStatus(Enum):
 @dataclass
 class ModelUpdate:
     """Model update from a client."""
+
     client_id: str
     round_id: int
     weights: Dict[str, List[float]]
@@ -47,6 +50,7 @@ class ModelUpdate:
 @dataclass
 class FederatedClient:
     """Federated learning client."""
+
     id: str
     name: str
     status: ClientStatus = ClientStatus.IDLE
@@ -59,6 +63,7 @@ class FederatedClient:
 @dataclass
 class FederationConfig:
     """Federation configuration."""
+
     min_clients: int = 2
     max_clients: int = 100
     rounds: int = 10
@@ -72,6 +77,7 @@ class FederationConfig:
 @dataclass
 class RoundResult:
     """Result of a federation round."""
+
     round_id: int
     participants: int
     aggregated_weights: Dict[str, List[float]]
@@ -135,7 +141,9 @@ class FederationFramework:
         # Select clients for this round
         selected = self._select_clients()
         if len(selected) < self.config.min_clients:
-            raise ValueError(f"Not enough clients: {len(selected)} < {self.config.min_clients}")
+            raise ValueError(
+                f"Not enough clients: {len(selected)} < {self.config.min_clients}"
+            )
 
         # Distribute model to clients
         for client_id in selected:
@@ -165,13 +173,13 @@ class FederationFramework:
     def _select_clients(self) -> List[str]:
         """Select clients for the current round."""
         available = [
-            cid for cid, c in self._clients.items()
+            cid
+            for cid, c in self._clients.items()
             if c.status != ClientStatus.DISCONNECTED
         ]
 
         num_to_select = max(
-            self.config.min_clients,
-            int(len(available) * self.config.client_fraction)
+            self.config.min_clients, int(len(available) * self.config.client_fraction)
         )
         num_to_select = min(num_to_select, len(available))
 
@@ -210,7 +218,10 @@ class FederationFramework:
             client_id=client_id,
             round_id=round_id,
             weights=weights,
-            metrics={"loss": random.uniform(0.1, 0.5), "accuracy": random.uniform(0.7, 0.95)},
+            metrics={
+                "loss": random.uniform(0.1, 0.5),
+                "accuracy": random.uniform(0.7, 0.95),
+            },
             data_size=self._clients[client_id].data_size,
             timestamp=datetime.now(timezone.utc),
         )
@@ -233,7 +244,9 @@ class FederationFramework:
         num_updates = len(self._round_updates)
 
         for layer in self._global_weights.keys():
-            layer_weights = [update.weights.get(layer, []) for update in self._round_updates]
+            layer_weights = [
+                update.weights.get(layer, []) for update in self._round_updates
+            ]
             if layer_weights and layer_weights[0]:
                 avg_weights = []
                 for i in range(len(layer_weights[0])):

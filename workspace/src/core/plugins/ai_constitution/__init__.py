@@ -60,44 +60,44 @@ from .policy_as_prompt import (
 
 __all__ = [
     # Fundamental Laws
-    'FundamentalLaws',
-    'LawZero',
-    'LawOne',
-    'LawTwo',
-    'LawThree',
-    'EnforcementLevel',
+    "FundamentalLaws",
+    "LawZero",
+    "LawOne",
+    "LawTwo",
+    "LawThree",
+    "EnforcementLevel",
     # Operational Rules
-    'OperationalRules',
-    'DataHandlingRule',
-    'SystemAccessRule',
-    'ResourceUsageRule',
-    'CommunicationRule',
-    'OperationalRuleEngine',
+    "OperationalRules",
+    "DataHandlingRule",
+    "SystemAccessRule",
+    "ResourceUsageRule",
+    "CommunicationRule",
+    "OperationalRuleEngine",
     # Adaptive Guidelines
-    'AdaptiveGuidelines',
-    'DomainGuideline',
-    'ContextualGuideline',
-    'LearningGuideline',
-    'AdaptiveGuidelineEngine',
+    "AdaptiveGuidelines",
+    "DomainGuideline",
+    "ContextualGuideline",
+    "LearningGuideline",
+    "AdaptiveGuidelineEngine",
     # Constitution Engine
-    'ConstitutionEngine',
-    'ConstitutionVerdict',
-    'VerdictType',
-    'ActionProposal',
+    "ConstitutionEngine",
+    "ConstitutionVerdict",
+    "VerdictType",
+    "ActionProposal",
     # Policy as Prompt
-    'PolicyAsPrompt',
-    'PolicyPrompt',
-    'PromptGuardrail',
-    'PolicyEnforcer',
+    "PolicyAsPrompt",
+    "PolicyPrompt",
+    "PromptGuardrail",
+    "PolicyEnforcer",
     # Guardrails
-    'GuardrailSystem',
-    'Guardrail',
-    'GuardrailType',
-    'GuardrailResult',
-    'SafetyGuardrail',
-    'ComplianceGuardrail',
-    'EthicsGuardrail',
+    "GuardrailSystem",
+    "Guardrail",
+    "GuardrailType",
+    "GuardrailResult",
+    "SafetyGuardrail",
+    "ComplianceGuardrail",
+    "EthicsGuardrail",
 ]
 
-__version__ = '1.0.0'
-__author__ = 'SynergyMesh Team'
+__version__ = "1.0.0"
+__author__ = "SynergyMesh Team"

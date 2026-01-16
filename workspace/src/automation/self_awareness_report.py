@@ -44,7 +44,11 @@ def _parse_sections(manifest_text: str) -> dict[str, str]:
     for index, match in enumerate(matches):
         title = match.group("title").strip()
         start = match.end()
-        end = matches[index + 1].start() if index + 1 < len(matches) else len(manifest_text)
+        end = (
+            matches[index + 1].start()
+            if index + 1 < len(matches)
+            else len(manifest_text)
+        )
         sections[title.lower()] = manifest_text[start:end].strip()
 
     return sections
@@ -80,18 +84,20 @@ def _summarize_sections(sections: dict[str, str]) -> SectionSummary:
     guardrails = _split_bullets(sections.get("guardrails (what we avoid)", ""))
     signals = _split_bullets(sections.get("proof & self-check signals", ""))
 
-    return SectionSummary(identity=identity, needs=needs, guardrails=guardrails, signals=signals)
+    return SectionSummary(
+        identity=identity, needs=needs, guardrails=guardrails, signals=signals
+    )
 
 
 def _validate_command(command: str) -> bool:
     """Validate that a command is safe to execute.
-    
+
     Args:
         command: The command string to validate
-        
+
     Returns:
         True if the command passes basic safety checks
-        
+
     Raises:
         ValueError: If the command contains dangerous patterns
     """
@@ -99,7 +105,7 @@ def _validate_command(command: str) -> bool:
     dangerous_patterns = [
         r";\s*\w+",  # Command chaining with semicolon
         r"&&",  # AND command chaining
-        r"\|\|",  # OR command chaining  
+        r"\|\|",  # OR command chaining
         r"\|\s*sh\s*",  # Piping to shell
         r"\|\s*bash\s*",  # Piping to bash
         r"\$\(.*\)",  # Command substitution
@@ -112,14 +118,14 @@ def _validate_command(command: str) -> bool:
         r">\s*/etc/",  # Writing to /etc
         r"chmod\s+777",  # Overly permissive chmod
     ]
-    
+
     for pattern in dangerous_patterns:
         if re.search(pattern, command, re.IGNORECASE):
             raise ValueError(
                 f"Command contains potentially dangerous pattern matching '{pattern}'. "
                 "Command rejected for security reasons."
             )
-    
+
     return True
 
 
@@ -127,21 +133,21 @@ def _run_command_summary(
     label: str, command: str | None, cwd: Path, max_lines: int
 ) -> AutomationResult | None:
     """Execute a command and capture its output summary.
-    
+
     Security Note: Commands are validated for dangerous patterns before execution.
     Commands are parsed with shlex.split() and executed with shell=False for security.
     The --allow-unsafe-shell flag is required to execute user-provided commands.
     Always review automation commands carefully before execution.
-    
+
     Args:
         label: Human-readable label for the command
         command: The command to execute (None returns None)
         cwd: Working directory for command execution
         max_lines: Maximum number of output lines to capture
-        
+
     Returns:
         AutomationResult with command output, or None if command is None
-        
+
     Raises:
         ValueError: If the command fails validation checks or has invalid syntax
     """
@@ -162,15 +168,15 @@ def _run_command_summary(
                 command=command,
                 exit_code=-1,
                 success=False,
-                output_tail=["Command string is empty or invalid."]
+                output_tail=["Command string is empty or invalid."],
             )
         result = subprocess.run(
             cmd_args,
             shell=False,
             capture_output=True,
             text=True,
-            cwd=cwd,         # Path object accepted in Python 3.6+
-            timeout=COMMAND_TIMEOUT
+            cwd=cwd,  # Path object accepted in Python 3.6+
+            timeout=COMMAND_TIMEOUT,
         )
     except ValueError as e:
         # Handle shlex.split() errors (e.g., unclosed quotes)
@@ -180,7 +186,9 @@ def _run_command_summary(
             command=command,
             exit_code=-1,
             success=False,
-            output_tail=["Invalid command syntax. Check for unclosed quotes or escape characters."]
+            output_tail=[
+                "Invalid command syntax. Check for unclosed quotes or escape characters."
+            ],
         )
     except subprocess.TimeoutExpired as e:
         # Handle timeout: return a special AutomationResult
@@ -189,7 +197,7 @@ def _run_command_summary(
             command=command,
             exit_code=-1,
             success=False,
-            output_tail=[f"Command timed out after {e.timeout} seconds."]
+            output_tail=[f"Command timed out after {e.timeout} seconds."],
         )
     except (OSError, subprocess.SubprocessError) as e:
         # Handle subprocess-related errors (file not found, permission denied, etc.)
@@ -200,7 +208,7 @@ def _run_command_summary(
             command=command,
             exit_code=-1,
             success=False,
-            output_tail=[f"Command execution failed: {error_type}"]
+            output_tail=[f"Command execution failed: {error_type}"],
         )
     except Exception as e:
         # Catch-all for unexpected errors - log minimal information
@@ -209,12 +217,13 @@ def _run_command_summary(
             command=command,
             exit_code=-1,
             success=False,
-            output_tail=["Command execution failed: Unexpected error"]
+            output_tail=["Command execution failed: Unexpected error"],
         )
 
     joined_lines = [
         line
-        for line in (result.stdout or "").splitlines() + (result.stderr or "").splitlines()
+        for line in (result.stdout or "").splitlines()
+        + (result.stderr or "").splitlines()
         if line
     ]
     tail = joined_lines[-max_lines:] if joined_lines else []
@@ -252,9 +261,13 @@ def _render_report(
 
     needs_md = "\n".join(f"- {item}" for item in needs) if needs else "- (none listed)"
     guardrails_md = (
-        "\n".join(f"- {item}" for item in guardrails) if guardrails else "- (none listed)"
+        "\n".join(f"- {item}" for item in guardrails)
+        if guardrails
+        else "- (none listed)"
     )
-    signals_md = "\n".join(f"- {item}" for item in signals) if signals else "- (none listed)"
+    signals_md = (
+        "\n".join(f"- {item}" for item in signals) if signals else "- (none listed)"
+    )
 
     sections_md = [
         "## 📣 Repository Self-Awareness Report",
@@ -320,8 +333,7 @@ def main() -> None:
         help=(
             "Additional automation commands in the form Label=command (can be repeated). "
             "SECURITY WARNING: Commands are validated and executed with shell=False. "
-            "Only use with trusted input. Requires --allow-unsafe-shell flag."
-        ),
+            "Only use with trusted input. Requires --allow-unsafe-shell flag."),
     )
     parser.add_argument(
         "--allow-unsafe-shell",
@@ -330,8 +342,7 @@ def main() -> None:
             "Allow execution of user-provided automation commands. "
             "SECURITY WARNING: This is dangerous with untrusted input. "
             "Commands are validated for dangerous patterns and executed with shell=False. "
-            "Only enable if you trust all --automation-cmd input sources."
-        ),
+            "Only enable if you trust all --automation-cmd input sources."),
     )
     parser.add_argument(
         "--fail-on-errors",
@@ -350,7 +361,7 @@ def main() -> None:
         ("Lint", args.lint_cmd),
         ("Tests", args.test_cmd),
     ]
-    
+
     # Validate automation commands if provided
     if args.automation_cmd:
         if not args.allow_unsafe_shell:
@@ -371,7 +382,9 @@ def main() -> None:
     if args.automation_cmd:
         for entry in args.automation_cmd:
             if not entry or "=" not in entry:
-                raise ValueError("automation-cmd entries must be in the form Label=command")
+                raise ValueError(
+                    "automation-cmd entries must be in the form Label=command"
+                )
             label, command = entry.split("=", 1)
             command_pairs.append((label.strip() or "Custom", command.strip()))
 
@@ -389,7 +402,9 @@ def main() -> None:
 
     json_output = args.json_output
     if json_output:
-        generated_at = datetime.now(UTC).replace(microsecond=0).isoformat().replace("+00:00", "Z")
+        generated_at = (
+            datetime.now(UTC).replace(microsecond=0).isoformat().replace("+00:00", "Z")
+        )
         payload = {
             "generated_at": generated_at,
             "manifest_path": str(manifest_path),

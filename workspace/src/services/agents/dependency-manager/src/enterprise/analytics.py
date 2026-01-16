@@ -20,36 +20,40 @@ from typing import Any
 
 class CostCategory(Enum):
     """成本類別"""
-    LICENSE = "license"              # 授權費用
-    MAINTENANCE = "maintenance"      # 維護成本
-    SECURITY = "security"            # 安全修復
-    UPGRADE = "upgrade"              # 升級成本
-    TRAINING = "training"            # 培訓成本
-    DOWNTIME = "downtime"            # 停機損失
-    COMPLIANCE = "compliance"        # 合規成本
+
+    LICENSE = "license"  # 授權費用
+    MAINTENANCE = "maintenance"  # 維護成本
+    SECURITY = "security"  # 安全修復
+    UPGRADE = "upgrade"  # 升級成本
+    TRAINING = "training"  # 培訓成本
+    DOWNTIME = "downtime"  # 停機損失
+    COMPLIANCE = "compliance"  # 合規成本
 
 
 class ValueCategory(Enum):
     """價值類別"""
-    PRODUCTIVITY = "productivity"        # 生產力提升
-    SECURITY_REDUCTION = "security"      # 安全風險降低
+
+    PRODUCTIVITY = "productivity"  # 生產力提升
+    SECURITY_REDUCTION = "security"  # 安全風險降低
     COMPLIANCE_ASSURANCE = "compliance"  # 合規保障
-    TIME_SAVING = "time_saving"          # 時間節省
-    QUALITY_IMPROVEMENT = "quality"      # 品質提升
+    TIME_SAVING = "time_saving"  # 時間節省
+    QUALITY_IMPROVEMENT = "quality"  # 品質提升
 
 
 class TechDebtType(Enum):
     """技術債務類型"""
-    OUTDATED_DEPENDENCY = "outdated"     # 過時依賴
+
+    OUTDATED_DEPENDENCY = "outdated"  # 過時依賴
     SECURITY_VULNERABILITY = "security"  # 安全漏洞
-    LICENSE_RISK = "license"             # 授權風險
-    DEPRECATED_API = "deprecated"        # 已棄用 API
-    MISSING_TESTS = "tests"              # 缺少測試
+    LICENSE_RISK = "license"  # 授權風險
+    DEPRECATED_API = "deprecated"  # 已棄用 API
+    MISSING_TESTS = "tests"  # 缺少測試
 
 
 @dataclass
 class CostItem:
     """成本項目"""
+
     category: CostCategory
     amount: float
     currency: str = "USD"
@@ -61,6 +65,7 @@ class CostItem:
 @dataclass
 class ValueItem:
     """價值項目"""
+
     category: ValueCategory
     amount: float
     currency: str = "USD"
@@ -72,6 +77,7 @@ class ValueItem:
 @dataclass
 class TechDebtItem:
     """技術債務項目"""
+
     debt_type: TechDebtType
     dependency_name: str
     severity: str  # critical, high, medium, low
@@ -100,6 +106,7 @@ class TechDebtItem:
 @dataclass
 class ROIAnalysis:
     """ROI 分析結果"""
+
     total_investment: float
     total_return: float
     roi_percentage: float
@@ -114,6 +121,7 @@ class ROIAnalysis:
 @dataclass
 class DependencyEconomics:
     """依賴項經濟分析"""
+
     dependency_name: str
     version: str
     total_cost: float
@@ -128,7 +136,7 @@ class DependencyEconomics:
 class CommercialAnalytics:
     """
     商業分析引擎
-    
+
     提供依賴管理的商業價值分析，包括：
     - ROI 計算
     - 成本效益分析
@@ -138,26 +146,24 @@ class CommercialAnalytics:
 
     # 預設成本參數
     DEFAULT_COSTS = {
-        CostCategory.MAINTENANCE: 50.0,      # 每月每依賴維護成本
-        CostCategory.SECURITY: 500.0,        # 每個安全漏洞修復成本
-        CostCategory.UPGRADE: 100.0,         # 每次升級成本
-        CostCategory.DOWNTIME: 1000.0,       # 每小時停機成本
-        CostCategory.COMPLIANCE: 200.0,      # 合規審查成本
+        CostCategory.MAINTENANCE: 50.0,  # 每月每依賴維護成本
+        CostCategory.SECURITY: 500.0,  # 每個安全漏洞修復成本
+        CostCategory.UPGRADE: 100.0,  # 每次升級成本
+        CostCategory.DOWNTIME: 1000.0,  # 每小時停機成本
+        CostCategory.COMPLIANCE: 200.0,  # 合規審查成本
     }
 
     # 預設價值參數
     DEFAULT_VALUES = {
-        ValueCategory.PRODUCTIVITY: 200.0,       # 生產力提升價值/月
-        ValueCategory.SECURITY_REDUCTION: 500.0, # 安全風險降低價值
-        ValueCategory.TIME_SAVING: 150.0,        # 時間節省價值/月
+        ValueCategory.PRODUCTIVITY: 200.0,  # 生產力提升價值/月
+        ValueCategory.SECURITY_REDUCTION: 500.0,  # 安全風險降低價值
+        ValueCategory.TIME_SAVING: 150.0,  # 時間節省價值/月
     }
 
-    def __init__(self,
-                 hourly_rate: float = 100.0,
-                 discount_rate: float = 0.10):
+    def __init__(self, hourly_rate: float = 100.0, discount_rate: float = 0.10):
         """
         初始化分析引擎
-        
+
         Args:
             hourly_rate: 開發人員時薪
             discount_rate: 年折現率
@@ -170,18 +176,17 @@ class CommercialAnalytics:
 
     # ==================== ROI 分析 ====================
 
-    def calculate_roi(self,
-                     investment: float,
-                     returns: list[float],
-                     periods: int = 12) -> ROIAnalysis:
+    def calculate_roi(
+        self, investment: float, returns: list[float], periods: int = 12
+    ) -> ROIAnalysis:
         """
         計算投資回報率
-        
+
         Args:
             investment: 初始投資
             returns: 各期回報
             periods: 分析期數
-            
+
         Returns:
             ROI 分析結果
         """
@@ -219,13 +224,12 @@ class CommercialAnalytics:
             payback_period_months=payback_months,
             net_present_value=npv,
             internal_rate_of_return=irr,
-            break_even_point=break_even
+            break_even_point=break_even,
         )
 
-    def _calculate_irr(self,
-                       investment: float,
-                       cash_flows: list[float],
-                       precision: float = 0.0001) -> float:
+    def _calculate_irr(
+        self, investment: float, cash_flows: list[float], precision: float = 0.0001
+    ) -> float:
         """計算內部收益率"""
         flows = [-investment] + cash_flows
 
@@ -242,16 +246,18 @@ class CommercialAnalytics:
 
     # ==================== 成本分析 ====================
 
-    def analyze_dependency_cost(self,
-                               dependency_name: str,
-                               version: str,
-                               is_outdated: bool = False,
-                               has_vulnerabilities: int = 0,
-                               has_license_risk: bool = False,
-                               monthly_maintenance_hours: float = 1.0) -> list[CostItem]:
+    def analyze_dependency_cost(
+        self,
+        dependency_name: str,
+        version: str,
+        is_outdated: bool = False,
+        has_vulnerabilities: int = 0,
+        has_license_risk: bool = False,
+        monthly_maintenance_hours: float = 1.0,
+    ) -> list[CostItem]:
         """
         分析依賴項成本
-        
+
         Args:
             dependency_name: 依賴名稱
             version: 版本
@@ -259,49 +265,58 @@ class CommercialAnalytics:
             has_vulnerabilities: 漏洞數量
             has_license_risk: 是否有授權風險
             monthly_maintenance_hours: 每月維護時數
-            
+
         Returns:
             成本項目列表
         """
         costs = []
 
         # 基本維護成本
-        costs.append(CostItem(
-            category=CostCategory.MAINTENANCE,
-            amount=monthly_maintenance_hours * self.hourly_rate,
-            description=f"{dependency_name} 每月維護成本",
-            confidence=0.9
-        ))
+        costs.append(
+            CostItem(
+                category=CostCategory.MAINTENANCE,
+                amount=monthly_maintenance_hours * self.hourly_rate,
+                description=f"{dependency_name} 每月維護成本",
+                confidence=0.9,
+            )
+        )
 
         # 過時升級成本
         if is_outdated:
-            costs.append(CostItem(
-                category=CostCategory.UPGRADE,
-                amount=self.DEFAULT_COSTS[CostCategory.UPGRADE],
-                period="one-time",
-                description=f"{dependency_name} 升級成本",
-                confidence=0.7
-            ))
+            costs.append(
+                CostItem(
+                    category=CostCategory.UPGRADE,
+                    amount=self.DEFAULT_COSTS[CostCategory.UPGRADE],
+                    period="one-time",
+                    description=f"{dependency_name} 升級成本",
+                    confidence=0.7,
+                )
+            )
 
         # 安全修復成本
         if has_vulnerabilities > 0:
-            costs.append(CostItem(
-                category=CostCategory.SECURITY,
-                amount=has_vulnerabilities * self.DEFAULT_COSTS[CostCategory.SECURITY],
-                period="one-time",
-                description=f"{dependency_name} 安全修復成本 ({has_vulnerabilities} 個漏洞)",
-                confidence=0.8
-            ))
+            costs.append(
+                CostItem(
+                    category=CostCategory.SECURITY,
+                    amount=has_vulnerabilities
+                    * self.DEFAULT_COSTS[CostCategory.SECURITY],
+                    period="one-time",
+                    description=f"{dependency_name} 安全修復成本 ({has_vulnerabilities} 個漏洞)",
+                    confidence=0.8,
+                )
+            )
 
         # 合規風險成本
         if has_license_risk:
-            costs.append(CostItem(
-                category=CostCategory.COMPLIANCE,
-                amount=self.DEFAULT_COSTS[CostCategory.COMPLIANCE],
-                period="one-time",
-                description=f"{dependency_name} 授權合規審查成本",
-                confidence=0.6
-            ))
+            costs.append(
+                CostItem(
+                    category=CostCategory.COMPLIANCE,
+                    amount=self.DEFAULT_COSTS[CostCategory.COMPLIANCE],
+                    period="one-time",
+                    description=f"{dependency_name} 授權合規審查成本",
+                    confidence=0.6,
+                )
+            )
 
         return costs
 
@@ -310,7 +325,7 @@ class CommercialAnalytics:
     def register_tech_debt(self, item: TechDebtItem) -> None:
         """
         註冊技術債務
-        
+
         Args:
             item: 技術債務項目
         """
@@ -321,7 +336,7 @@ class CommercialAnalytics:
     def get_tech_debt_summary(self) -> dict[str, Any]:
         """
         取得技術債務摘要
-        
+
         Returns:
             債務摘要
         """
@@ -340,7 +355,9 @@ class CommercialAnalytics:
                 type_key = item.debt_type.value
                 by_type[type_key] = by_type.get(type_key, 0) + item.total_debt
 
-                by_severity[item.severity] = by_severity.get(item.severity, 0) + item.total_debt
+                by_severity[item.severity] = (
+                    by_severity.get(item.severity, 0) + item.total_debt
+                )
 
         return {
             "total_principal": total_principal,
@@ -348,19 +365,19 @@ class CommercialAnalytics:
             "total_debt": total_debt,
             "debt_by_type": by_type,
             "debt_by_severity": by_severity,
-            "affected_dependencies": len(self._tech_debt_registry)
+            "affected_dependencies": len(self._tech_debt_registry),
         }
 
-    def calculate_debt_payoff_plan(self,
-                                  monthly_budget: float,
-                                  strategy: str = "highest_interest") -> list[dict[str, Any]]:
+    def calculate_debt_payoff_plan(
+        self, monthly_budget: float, strategy: str = "highest_interest"
+    ) -> list[dict[str, Any]]:
         """
         計算債務還清計畫
-        
+
         Args:
             monthly_budget: 每月預算
             strategy: 還款策略 (highest_interest, highest_debt, critical_first)
-            
+
         Returns:
             還款計畫
         """
@@ -387,35 +404,39 @@ class CommercialAnalytics:
 
         for debt in all_debts:
             months_to_pay = math.ceil(debt.total_debt / monthly_budget)
-            plan.append({
-                "dependency": debt.dependency_name,
-                "debt_type": debt.debt_type.value,
-                "severity": debt.severity,
-                "amount": debt.total_debt,
-                "start_month": current_month,
-                "end_month": current_month + months_to_pay - 1,
-                "monthly_payment": min(monthly_budget, debt.total_debt)
-            })
+            plan.append(
+                {
+                    "dependency": debt.dependency_name,
+                    "debt_type": debt.debt_type.value,
+                    "severity": debt.severity,
+                    "amount": debt.total_debt,
+                    "start_month": current_month,
+                    "end_month": current_month + months_to_pay - 1,
+                    "monthly_payment": min(monthly_budget, debt.total_debt),
+                }
+            )
             current_month += months_to_pay
 
         return plan
 
     # ==================== 價值分析 ====================
 
-    def analyze_automation_value(self,
-                                dependencies_count: int,
-                                monthly_manual_hours: float,
-                                error_rate_reduction: float = 0.5,
-                                security_improvement: float = 0.3) -> list[ValueItem]:
+    def analyze_automation_value(
+        self,
+        dependencies_count: int,
+        monthly_manual_hours: float,
+        error_rate_reduction: float = 0.5,
+        security_improvement: float = 0.3,
+    ) -> list[ValueItem]:
         """
         分析自動化價值
-        
+
         Args:
             dependencies_count: 依賴項數量
             monthly_manual_hours: 手動管理時數/月
             error_rate_reduction: 錯誤率降低比例
             security_improvement: 安全改善比例
-            
+
         Returns:
             價值項目列表
         """
@@ -423,46 +444,58 @@ class CommercialAnalytics:
 
         # 時間節省
         time_saved_hours = monthly_manual_hours * 0.8  # 假設自動化節省 80%
-        values.append(ValueItem(
-            category=ValueCategory.TIME_SAVING,
-            amount=time_saved_hours * self.hourly_rate,
-            description=f"每月節省 {time_saved_hours:.1f} 小時人工作業",
-            confidence=0.85
-        ))
+        values.append(
+            ValueItem(
+                category=ValueCategory.TIME_SAVING,
+                amount=time_saved_hours * self.hourly_rate,
+                description=f"每月節省 {time_saved_hours:.1f} 小時人工作業",
+                confidence=0.85,
+            )
+        )
 
         # 生產力提升
-        productivity_gain = dependencies_count * self.DEFAULT_VALUES[ValueCategory.PRODUCTIVITY] / 10
-        values.append(ValueItem(
-            category=ValueCategory.PRODUCTIVITY,
-            amount=productivity_gain,
-            description="依賴管理自動化帶來的生產力提升",
-            confidence=0.7
-        ))
+        productivity_gain = (
+            dependencies_count * self.DEFAULT_VALUES[ValueCategory.PRODUCTIVITY] / 10
+        )
+        values.append(
+            ValueItem(
+                category=ValueCategory.PRODUCTIVITY,
+                amount=productivity_gain,
+                description="依賴管理自動化帶來的生產力提升",
+                confidence=0.7,
+            )
+        )
 
         # 安全風險降低
-        security_value = dependencies_count * self.DEFAULT_VALUES[ValueCategory.SECURITY_REDUCTION] * security_improvement
-        values.append(ValueItem(
-            category=ValueCategory.SECURITY_REDUCTION,
-            amount=security_value,
-            period="yearly",
-            description=f"安全風險降低 {security_improvement*100:.0f}%",
-            confidence=0.6
-        ))
+        security_value = (
+            dependencies_count
+            * self.DEFAULT_VALUES[ValueCategory.SECURITY_REDUCTION]
+            * security_improvement
+        )
+        values.append(
+            ValueItem(
+                category=ValueCategory.SECURITY_REDUCTION,
+                amount=security_value,
+                period="yearly",
+                description=f"安全風險降低 {security_improvement*100:.0f}%",
+                confidence=0.6,
+            )
+        )
 
         return values
 
     # ==================== 綜合分析 ====================
 
-    def comprehensive_analysis(self,
-                              dependencies: list[dict[str, Any]],
-                              automation_hours_saved: float = 20.0) -> dict[str, Any]:
+    def comprehensive_analysis(
+        self, dependencies: list[dict[str, Any]], automation_hours_saved: float = 20.0
+    ) -> dict[str, Any]:
         """
         綜合商業分析
-        
+
         Args:
             dependencies: 依賴項列表
             automation_hours_saved: 自動化節省時數/月
-            
+
         Returns:
             綜合分析結果
         """
@@ -477,7 +510,7 @@ class CommercialAnalytics:
                 version=dep.get("version", "0.0.0"),
                 is_outdated=dep.get("outdated", False),
                 has_vulnerabilities=dep.get("vulnerabilities", 0),
-                has_license_risk=dep.get("license_risk", False)
+                has_license_risk=dep.get("license_risk", False),
             )
             total_costs.extend(costs)
 
@@ -490,19 +523,21 @@ class CommercialAnalytics:
                         dependency_name=dep.get("name", "unknown"),
                         severity="medium",
                         estimated_fix_hours=2.0,
-                        hourly_rate=self.hourly_rate
+                        hourly_rate=self.hourly_rate,
                     )
                     self.register_tech_debt(debt)
                     debt_items.append(debt)
 
                 if dep.get("vulnerabilities", 0) > 0:
-                    severity = "critical" if dep.get("vulnerabilities", 0) >= 3 else "high"
+                    severity = (
+                        "critical" if dep.get("vulnerabilities", 0) >= 3 else "high"
+                    )
                     debt = TechDebtItem(
                         debt_type=TechDebtType.SECURITY_VULNERABILITY,
                         dependency_name=dep.get("name", "unknown"),
                         severity=severity,
                         estimated_fix_hours=dep.get("vulnerabilities", 0) * 4.0,
-                        hourly_rate=self.hourly_rate
+                        hourly_rate=self.hourly_rate,
                     )
                     self.register_tech_debt(debt)
                     debt_items.append(debt)
@@ -511,19 +546,21 @@ class CommercialAnalytics:
             dep_cost = sum(c.amount for c in costs)
             dep_value = 50.0  # 基本價值
 
-            dependency_analyses.append(DependencyEconomics(
-                dependency_name=dep.get("name", "unknown"),
-                version=dep.get("version", "0.0.0"),
-                total_cost=dep_cost,
-                total_value=dep_value,
-                net_value=dep_value - dep_cost,
-                cost_breakdown=costs
-            ))
+            dependency_analyses.append(
+                DependencyEconomics(
+                    dependency_name=dep.get("name", "unknown"),
+                    version=dep.get("version", "0.0.0"),
+                    total_cost=dep_cost,
+                    total_value=dep_value,
+                    net_value=dep_value - dep_cost,
+                    cost_breakdown=costs,
+                )
+            )
 
         # 分析自動化價值
         automation_values = self.analyze_automation_value(
             dependencies_count=len(dependencies),
-            monthly_manual_hours=automation_hours_saved
+            monthly_manual_hours=automation_hours_saved,
         )
         total_values.extend(automation_values)
 
@@ -545,7 +582,7 @@ class CommercialAnalytics:
                 "total_monthly_cost": monthly_cost,
                 "total_one_time_cost": one_time_cost,
                 "total_monthly_value": monthly_value,
-                "net_monthly_benefit": monthly_value - monthly_cost
+                "net_monthly_benefit": monthly_value - monthly_cost,
             },
             "roi_analysis": {
                 "investment": roi_analysis.total_investment,
@@ -553,7 +590,7 @@ class CommercialAnalytics:
                 "roi_percentage": roi_analysis.roi_percentage,
                 "payback_months": roi_analysis.payback_period_months,
                 "npv": roi_analysis.net_present_value,
-                "irr": roi_analysis.internal_rate_of_return
+                "irr": roi_analysis.internal_rate_of_return,
             },
             "tech_debt": debt_summary,
             "dependency_economics": [
@@ -562,19 +599,18 @@ class CommercialAnalytics:
                     "version": d.version,
                     "cost": d.total_cost,
                     "value": d.total_value,
-                    "net": d.net_value
+                    "net": d.net_value,
                 }
                 for d in dependency_analyses
             ],
             "recommendations": self._generate_recommendations(
                 roi_analysis, debt_summary, dependency_analyses
-            )
+            ),
         }
 
-    def _generate_recommendations(self,
-                                 roi: ROIAnalysis,
-                                 debt: dict[str, Any],
-                                 deps: list[DependencyEconomics]) -> list[str]:
+    def _generate_recommendations(
+        self, roi: ROIAnalysis, debt: dict[str, Any], deps: list[DependencyEconomics]
+    ) -> list[str]:
         """生成建議"""
         recommendations = []
 
@@ -601,10 +637,10 @@ class CommercialAnalytics:
     def format_report_zh_tw(self, analysis: dict[str, Any]) -> str:
         """
         生成繁體中文報告
-        
+
         Args:
             analysis: 分析結果
-            
+
         Returns:
             格式化報告
         """

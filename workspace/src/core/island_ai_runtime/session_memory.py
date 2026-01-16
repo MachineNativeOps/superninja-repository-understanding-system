@@ -105,7 +105,9 @@ class ShortTermMemory:
 
     def to_messages(self) -> list[dict[str, str]]:
         """轉換為 LLM 訊息格式"""
-        return [{"role": msg.role.value, "content": msg.content} for msg in self.messages]
+        return [
+            {"role": msg.role.value, "content": msg.content} for msg in self.messages
+        ]
 
 
 class WorkingMemory:
@@ -240,13 +242,20 @@ class SessionMemory:
 
     def __init__(self, config: dict[str, Any] | None = None):
         self.config = config or {}
-        self.short_term = ShortTermMemory(max_messages=self.config.get("max_messages", 100))
+        self.short_term = ShortTermMemory(
+            max_messages=self.config.get("max_messages", 100)
+        )
         self.working = WorkingMemory()
         self.planner = Planner()
-        self.context_window = ContextWindow(max_tokens=self.config.get("max_tokens", 128000))
+        self.context_window = ContextWindow(
+            max_tokens=self.config.get("max_tokens", 128000)
+        )
 
     def add_message(
-        self, role: str | MessageRole, content: str, metadata: dict[str, Any] | None = None
+        self,
+        role: str | MessageRole,
+        content: str,
+        metadata: dict[str, Any] | None = None,
     ) -> None:
         """添加訊息到記憶"""
         if isinstance(role, str):
@@ -291,10 +300,15 @@ class SessionMemory:
                 "message_count": len(self.short_term.messages),
                 "recent_topics": self._extract_topics(),
             },
-            "working": {"focus": self.working.focus, "data_keys": list(self.working.data.keys())},
+            "working": {
+                "focus": self.working.focus,
+                "data_keys": list(self.working.data.keys()),
+            },
             "planning": {
                 "current_plan": (
-                    self.planner.current_plan.goal if self.planner.current_plan else None
+                    self.planner.current_plan.goal
+                    if self.planner.current_plan
+                    else None
                 ),
                 "plan_count": len(self.planner.plans),
             },

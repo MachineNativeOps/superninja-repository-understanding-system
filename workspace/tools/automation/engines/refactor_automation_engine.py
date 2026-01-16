@@ -16,22 +16,29 @@ Version: 1.0.0
 """
 
 import asyncio
-import yaml
 import json
 import re
 import shutil
-from pathlib import Path
-from datetime import datetime
-from typing import Dict, List, Optional, Any
-from dataclasses import dataclass, field, asdict
-
 import sys
+from dataclasses import asdict, dataclass, field
+from datetime import datetime
+from pathlib import Path
+from typing import Any, Dict, List, Optional
+
+import yaml
+from engine_base import (
+    BaseEngine,
+    EngineConfig,
+    EngineState,
+    EngineType,
+    ExecutionEngineBase,
+    ExecutionMode,
+    Priority,
+    TaskResult,
+)
+
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
-from engine_base import (
-    BaseEngine, ExecutionEngineBase, EngineConfig, EngineState,
-    EngineType, ExecutionMode, Priority, TaskResult
-)
 
 # ============================================================================
 # 常數
@@ -43,6 +50,7 @@ PLAYBOOKS_PATH = BASE_PATH / "docs" / "refactor_playbooks"
 # ============================================================================
 # 重構自動化引擎
 # ============================================================================
+
 
 class RefactorAutomationEngine(ExecutionEngineBase):
     """
@@ -151,8 +159,13 @@ class RefactorAutomationEngine(ExecutionEngineBase):
         """獲取能力描述"""
         return {
             "operations": [
-                "scan", "plan", "execute_plan", "fix_issues",
-                "validate", "optimize", "full_cycle"
+                "scan",
+                "plan",
+                "execute_plan",
+                "fix_issues",
+                "validate",
+                "optimize",
+                "full_cycle",
             ],
             "auto_fix": self._auto_fix,
             "backup_enabled": self._backup_enabled,
@@ -255,13 +268,15 @@ class RefactorAutomationEngine(ExecutionEngineBase):
             operations.extend(fix_ops)
 
         # 排序操作 (目錄創建優先)
-        operations.sort(key=lambda x: {
-            "create_directory": 0,
-            "move_file": 1,
-            "rename_file": 2,
-            "update_content": 3,
-            "delete": 4,
-        }.get(x.get("type"), 5))
+        operations.sort(
+            key=lambda x: {
+                "create_directory": 0,
+                "move_file": 1,
+                "rename_file": 2,
+                "update_content": 3,
+                "delete": 4,
+            }.get(x.get("type"), 5)
+        )
 
         plan = {
             "plan_id": f"plan_{datetime.now().strftime('%Y%m%d%H%M%S')}",
@@ -284,7 +299,9 @@ class RefactorAutomationEngine(ExecutionEngineBase):
 
         # 創建備份
         if self._backup_enabled:
-            backup_dir = self._target_path / ".backup" / datetime.now().strftime("%Y%m%d%H%M%S")
+            backup_dir = (
+                self._target_path / ".backup" / datetime.now().strftime("%Y%m%d%H%M%S")
+            )
             backup_dir.mkdir(parents=True, exist_ok=True)
 
         results = {
@@ -347,7 +364,7 @@ class RefactorAutomationEngine(ExecutionEngineBase):
         index_yaml = self._target_path / "03_refactor" / "index.yaml"
         if index_yaml.exists():
             try:
-                with open(index_yaml, 'r', encoding='utf-8') as f:
+                with open(index_yaml, "r", encoding="utf-8") as f:
                     data = yaml.safe_load(f)
                 # 驗證引用
                 for cluster in data.get("refactor_clusters", []):
@@ -376,19 +393,23 @@ class RefactorAutomationEngine(ExecutionEngineBase):
             # 自動分類
             for f in root_files:
                 if "_report" in f.name.lower():
-                    optimizations.append({
-                        "type": "move_file",
-                        "source": str(f),
-                        "target": str(self._target_path / "reports" / f.name),
-                        "reason": "分類報告檔案",
-                    })
+                    optimizations.append(
+                        {
+                            "type": "move_file",
+                            "source": str(f),
+                            "target": str(self._target_path / "reports" / f.name),
+                            "reason": "分類報告檔案",
+                        }
+                    )
                 elif "__playbook" in f.name.lower():
-                    optimizations.append({
-                        "type": "move_file",
-                        "source": str(f),
-                        "target": str(self._target_path / "generated" / f.name),
-                        "reason": "分類生成檔案",
-                    })
+                    optimizations.append(
+                        {
+                            "type": "move_file",
+                            "source": str(f),
+                            "target": str(self._target_path / "generated" / f.name),
+                            "reason": "分類生成檔案",
+                        }
+                    )
 
         # 執行優化
         for opt in optimizations:
@@ -459,11 +480,13 @@ class RefactorAutomationEngine(ExecutionEngineBase):
         target.parent.mkdir(parents=True, exist_ok=True)
         shutil.move(str(source), str(target))
 
-        self._rollback_stack.append({
-            "type": "move_file",
-            "source": str(target),
-            "target": str(source),
-        })
+        self._rollback_stack.append(
+            {
+                "type": "move_file",
+                "source": str(target),
+                "target": str(source),
+            }
+        )
 
         return {"success": True, "moved": f"{source} -> {target}"}
 
@@ -478,11 +501,13 @@ class RefactorAutomationEngine(ExecutionEngineBase):
 
         source.rename(target)
 
-        self._rollback_stack.append({
-            "type": "rename_file",
-            "source": str(target),
-            "new_name": source.name,
-        })
+        self._rollback_stack.append(
+            {
+                "type": "rename_file",
+                "source": str(target),
+                "new_name": source.name,
+            }
+        )
 
         return {"success": True, "renamed": f"{source.name} -> {new_name}"}
 
@@ -494,7 +519,7 @@ class RefactorAutomationEngine(ExecutionEngineBase):
             return {"success": False, "error": f"檔案不存在: {target}"}
 
         # 備份原內容
-        original_content = target.read_text(encoding='utf-8')
+        original_content = target.read_text(encoding="utf-8")
 
         # 執行更新
         if "search" in op and "replace" in op:
@@ -504,13 +529,15 @@ class RefactorAutomationEngine(ExecutionEngineBase):
         else:
             return {"success": False, "error": "缺少更新參數"}
 
-        target.write_text(new_content, encoding='utf-8')
+        target.write_text(new_content, encoding="utf-8")
 
-        self._rollback_stack.append({
-            "type": "update_content",
-            "target": str(target),
-            "content": original_content,
-        })
+        self._rollback_stack.append(
+            {
+                "type": "update_content",
+                "target": str(target),
+                "content": original_content,
+            }
+        )
 
         return {"success": True, "updated": str(target)}
 
@@ -532,11 +559,13 @@ class RefactorAutomationEngine(ExecutionEngineBase):
             shutil.copytree(str(target), str(backup_path))
             shutil.rmtree(str(target))
 
-        self._rollback_stack.append({
-            "type": "restore",
-            "source": str(backup_path),
-            "target": str(target),
-        })
+        self._rollback_stack.append(
+            {
+                "type": "restore",
+                "source": str(backup_path),
+                "target": str(target),
+            }
+        )
 
         return {"success": True, "deleted": str(target)}
 
@@ -553,7 +582,7 @@ class RefactorAutomationEngine(ExecutionEngineBase):
             source.rename(source.parent / rollback_info["new_name"])
         elif op_type == "update_content":
             Path(rollback_info["target"]).write_text(
-                rollback_info["content"], encoding='utf-8'
+                rollback_info["content"], encoding="utf-8"
             )
         elif op_type == "restore":
             if Path(rollback_info["source"]).is_file():
@@ -571,13 +600,15 @@ class RefactorAutomationEngine(ExecutionEngineBase):
         rel_path = file_path.relative_to(self._target_path)
 
         # 命名問題
-        if re.search(r'[A-Z]', file_path.stem) and '_' in file_path.stem:
-            issues.append({
-                "type": "naming_inconsistent",
-                "path": str(rel_path),
-                "message": "命名風格混合",
-                "severity": "low",
-            })
+        if re.search(r"[A-Z]", file_path.stem) and "_" in file_path.stem:
+            issues.append(
+                {
+                    "type": "naming_inconsistent",
+                    "path": str(rel_path),
+                    "message": "命名風格混合",
+                    "severity": "low",
+                }
+            )
 
         return issues
 
@@ -586,13 +617,15 @@ class RefactorAutomationEngine(ExecutionEngineBase):
         issues = []
 
         # 空目錄
-        if not any(dir_path.iterdir()) and not dir_path.name.startswith('.'):
-            issues.append({
-                "type": "empty_directory",
-                "path": str(dir_path.relative_to(self._target_path)),
-                "message": "空目錄",
-                "severity": "info",
-            })
+        if not any(dir_path.iterdir()) and not dir_path.name.startswith("."):
+            issues.append(
+                {
+                    "type": "empty_directory",
+                    "path": str(dir_path.relative_to(self._target_path)),
+                    "message": "空目錄",
+                    "severity": "info",
+                }
+            )
 
         return issues
 
@@ -603,12 +636,14 @@ class RefactorAutomationEngine(ExecutionEngineBase):
         # 根目錄檔案過多
         root_files = [f for f in self._target_path.iterdir() if f.is_file()]
         if len(root_files) > 10:
-            issues.append({
-                "type": "root_bloat",
-                "count": len(root_files),
-                "message": f"根目錄檔案過多 ({len(root_files)} 個)",
-                "severity": "medium",
-            })
+            issues.append(
+                {
+                    "type": "root_bloat",
+                    "count": len(root_files),
+                    "message": f"根目錄檔案過多 ({len(root_files)} 個)",
+                    "severity": "medium",
+                }
+            )
 
         return issues
 
@@ -623,11 +658,13 @@ class RefactorAutomationEngine(ExecutionEngineBase):
                 file_path = self._target_path / path
                 new_name = self._to_snake_case(file_path.stem) + file_path.suffix
                 if new_name != file_path.name:
-                    operations.append({
-                        "type": "rename_file",
-                        "source": str(file_path),
-                        "new_name": new_name,
-                    })
+                    operations.append(
+                        {
+                            "type": "rename_file",
+                            "source": str(file_path),
+                            "new_name": new_name,
+                        }
+                    )
 
         elif issue_type == "empty_directory":
             # 不自動刪除空目錄，只記錄
@@ -641,10 +678,10 @@ class RefactorAutomationEngine(ExecutionEngineBase):
 
     def _to_snake_case(self, name: str) -> str:
         """轉換為 snake_case"""
-        name = re.sub(r'([A-Z]+)([A-Z][a-z])', r'\1_\2', name)
-        name = re.sub(r'([a-z\d])([A-Z])', r'\1_\2', name)
-        name = name.replace('-', '_')
-        name = re.sub(r'_+', '_', name)
+        name = re.sub(r"([A-Z]+)([A-Z][a-z])", r"\1_\2", name)
+        name = re.sub(r"([a-z\d])([A-Z])", r"\1_\2", name)
+        name = name.replace("-", "_")
+        name = re.sub(r"_+", "_", name)
         return name.lower()
 
     def _load_rules(self) -> List[Dict]:
@@ -679,6 +716,7 @@ class RefactorAutomationEngine(ExecutionEngineBase):
 # CLI 入口
 # ============================================================================
 
+
 async def main():
     import argparse
 
@@ -709,13 +747,19 @@ async def main():
         task = {"operation": args.command.replace("-", "_")}
         result = await engine.execute_now(task)
 
-        print(yaml.dump(asdict(result) if hasattr(result, '__dataclass_fields__') else result,
-                       allow_unicode=True, default_flow_style=False))
+        print(
+            yaml.dump(
+                asdict(result) if hasattr(result, "__dataclass_fields__") else result,
+                allow_unicode=True,
+                default_flow_style=False,
+            )
+        )
 
         await engine.stop()
 
     else:
         parser.print_help()
+
 
 if __name__ == "__main__":
     asyncio.run(main())

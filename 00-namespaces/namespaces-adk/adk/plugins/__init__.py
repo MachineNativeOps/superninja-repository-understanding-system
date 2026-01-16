@@ -5,8 +5,13 @@ This package provides plugin infrastructure for tools, memory,
 workflows, and SDK integrations.
 """
 
-from ..core.plugin_manager import PluginManager, Plugin, PluginManifest, PluginType
-from ..core.plugin_manager import PluginInterface
+from ..core.plugin_manager import (
+    Plugin,
+    PluginInterface,
+    PluginManager,
+    PluginManifest,
+    PluginType,
+)
 
 __all__ = [
     "PluginManager",

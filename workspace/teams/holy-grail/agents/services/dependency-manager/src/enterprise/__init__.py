@@ -16,8 +16,8 @@ from .recommendation import IntelligentRecommendation
 from .security import NextGenSecurity
 
 __all__ = [
-    'EnterpriseIntegration',
-    'CommercialAnalytics',
-    'IntelligentRecommendation',
-    'NextGenSecurity',
+    "EnterpriseIntegration",
+    "CommercialAnalytics",
+    "IntelligentRecommendation",
+    "NextGenSecurity",
 ]

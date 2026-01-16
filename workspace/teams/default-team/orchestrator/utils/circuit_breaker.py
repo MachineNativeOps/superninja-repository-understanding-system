@@ -12,14 +12,15 @@ import asyncio
 import time
 from datetime import datetime
 from enum import Enum
-from typing import Any, Callable, Dict, Optional, TypeVar
 from functools import wraps
+from typing import Any, Callable, Dict, Optional, TypeVar
 
 
 class CircuitState(str, Enum):
     """Circuit breaker states."""
-    CLOSED = "closed"      # Normal operation
-    OPEN = "open"          # Failing fast
+
+    CLOSED = "closed"  # Normal operation
+    OPEN = "open"  # Failing fast
     HALF_OPEN = "half_open"  # Testing recovery
 
 
@@ -87,11 +88,13 @@ class CircuitBreaker:
         if new_state != self._state:
             old_state = self._state
             self._state = new_state
-            self._state_changes.append({
-                "from": old_state.value,
-                "to": new_state.value,
-                "timestamp": datetime.now().isoformat(),
-            })
+            self._state_changes.append(
+                {
+                    "from": old_state.value,
+                    "to": new_state.value,
+                    "timestamp": datetime.now().isoformat(),
+                }
+            )
 
     async def _check_recovery(self) -> None:
         """Check if recovery timeout has passed."""
@@ -150,7 +153,11 @@ class CircuitBreaker:
             raise CircuitOpenError(f"Circuit {self.name} is open")
 
         try:
-            result = await func(*args, **kwargs) if asyncio.iscoroutinefunction(func) else func(*args, **kwargs)
+            result = (
+                await func(*args, **kwargs)
+                if asyncio.iscoroutinefunction(func)
+                else func(*args, **kwargs)
+            )
             await self.record_success()
             return result
         except Exception as e:
@@ -159,9 +166,11 @@ class CircuitBreaker:
 
     def __call__(self, func: Callable) -> Callable:
         """Decorator to wrap a function with circuit breaker."""
+
         @wraps(func)
         async def wrapper(*args, **kwargs):
             return await self.execute(func, *args, **kwargs)
+
         return wrapper
 
     async def reset(self) -> None:
@@ -183,14 +192,23 @@ class CircuitBreaker:
             "total_requests": self._total_requests,
             "total_failures": self._total_failures,
             "total_successes": self._total_successes,
-            "failure_rate": self._total_failures / self._total_requests * 100 if self._total_requests > 0 else 0,
-            "last_failure": datetime.fromtimestamp(self._last_failure_time).isoformat() if self._last_failure_time else None,
+            "failure_rate": (
+                self._total_failures / self._total_requests * 100
+                if self._total_requests > 0
+                else 0
+            ),
+            "last_failure": (
+                datetime.fromtimestamp(self._last_failure_time).isoformat()
+                if self._last_failure_time
+                else None
+            ),
             "state_changes": self._state_changes[-10:],  # Last 10 changes
         }
 
 
 class CircuitOpenError(Exception):
     """Exception raised when circuit is open."""
+
     pass
 
 

@@ -3,10 +3,7 @@
 漏洞和許可證掃描器
 """
 
-from .vulnerability_scanner import VulnerabilityScanner
 from .license_scanner import LicenseScanner
+from .vulnerability_scanner import VulnerabilityScanner
 
-__all__ = [
-    "VulnerabilityScanner",
-    "LicenseScanner"
-]
+__all__ = ["VulnerabilityScanner", "LicenseScanner"]

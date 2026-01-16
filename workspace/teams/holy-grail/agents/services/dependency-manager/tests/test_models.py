@@ -7,13 +7,12 @@ import sys
 from pathlib import Path
 
 import pytest
-
-# 添加 src 目錄到路徑
-sys.path.insert(0, str(Path(__file__).parent.parent / 'src'))
-
 from models.dependency import Dependency, DependencyAnalysis, DependencyType, Ecosystem
 from models.update import Update, UpdateResult, UpdateStatus, UpdateType
 from models.vulnerability import Vulnerability, VulnerabilitySeverity
+
+# 添加 src 目錄到路徑
+sys.path.insert(0, str(Path(__file__).parent.parent / "src"))
 
 
 class TestDependencyModel:
@@ -25,7 +24,7 @@ class TestDependencyModel:
             name="express",
             current_version="4.18.0",
             ecosystem=Ecosystem.NPM,
-            latest_version="4.21.2"
+            latest_version="4.21.2",
         )
 
         assert dep.name == "express"
@@ -39,7 +38,7 @@ class TestDependencyModel:
             name="lodash",
             current_version="4.17.0",
             ecosystem=Ecosystem.NPM,
-            latest_version="4.17.21"
+            latest_version="4.17.21",
         )
 
         assert dep.is_outdated() is True
@@ -49,7 +48,7 @@ class TestDependencyModel:
             name="axios",
             current_version="1.6.0",
             ecosystem=Ecosystem.NPM,
-            latest_version="1.6.0"
+            latest_version="1.6.0",
         )
 
         assert dep_current.is_outdated() is False
@@ -57,9 +56,7 @@ class TestDependencyModel:
     def test_dependency_analysis(self):
         """測試依賴分析"""
         analysis = DependencyAnalysis(
-            analysis_id="test-123",
-            project="test-project",
-            ecosystem=Ecosystem.NPM
+            analysis_id="test-123", project="test-project", ecosystem=Ecosystem.NPM
         )
 
         # 添加依賴項
@@ -68,7 +65,7 @@ class TestDependencyModel:
             current_version="4.18.0",
             ecosystem=Ecosystem.NPM,
             latest_version="4.21.2",
-            dep_type=DependencyType.DIRECT
+            dep_type=DependencyType.DIRECT,
         )
 
         dep2 = Dependency(
@@ -76,7 +73,7 @@ class TestDependencyModel:
             current_version="4.17.21",
             ecosystem=Ecosystem.NPM,
             latest_version="4.17.21",
-            dep_type=DependencyType.TRANSITIVE
+            dep_type=DependencyType.TRANSITIVE,
         )
 
         analysis.add_dependency(dep1)
@@ -98,7 +95,7 @@ class TestVulnerabilityModel:
             package="lodash",
             severity=VulnerabilitySeverity.HIGH,
             title="Prototype Pollution",
-            fixed_version="4.17.21"
+            fixed_version="4.17.21",
         )
 
         assert vuln.id == "CVE-2021-23337"
@@ -115,15 +112,11 @@ class TestVulnerabilityModel:
     def test_is_critical(self):
         """測試嚴重漏洞檢查"""
         critical_vuln = Vulnerability(
-            id="CVE-2024-0001",
-            package="test",
-            severity=VulnerabilitySeverity.CRITICAL
+            id="CVE-2024-0001", package="test", severity=VulnerabilitySeverity.CRITICAL
         )
 
         low_vuln = Vulnerability(
-            id="CVE-2024-0002",
-            package="test",
-            severity=VulnerabilitySeverity.LOW
+            id="CVE-2024-0002", package="test", severity=VulnerabilitySeverity.LOW
         )
 
         assert critical_vuln.is_critical() is True
@@ -140,7 +133,7 @@ class TestUpdateModel:
             from_version="4.18.0",
             to_version="4.21.2",
             update_type=UpdateType.MINOR,
-            is_security_fix=False
+            is_security_fix=False,
         )
 
         assert update.package == "express"
@@ -153,7 +146,7 @@ class TestUpdateModel:
             package="typescript",
             from_version="4.9.5",
             to_version="5.0.0",
-            update_type=UpdateType.MAJOR
+            update_type=UpdateType.MAJOR,
         )
 
         assert update.is_major_update() is True
@@ -167,14 +160,14 @@ class TestUpdateModel:
             package="axios",
             from_version="1.5.0",
             to_version="1.6.0",
-            status=UpdateStatus.SUCCESS
+            status=UpdateStatus.SUCCESS,
         )
 
         failed_update = Update(
             package="moment",
             from_version="2.29.0",
             to_version="2.30.0",
-            status=UpdateStatus.FAILED
+            status=UpdateStatus.FAILED,
         )
 
         result.add_update(success_update)

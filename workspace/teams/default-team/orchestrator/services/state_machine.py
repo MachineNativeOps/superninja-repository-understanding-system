@@ -9,24 +9,26 @@ Manages incident lifecycle with:
 - Event emission
 """
 
+import asyncio
 from datetime import datetime
 from typing import Any, Callable, Dict, List, Optional, Tuple
-import asyncio
 
 from ..models.incidents import (
+    VALID_TRANSITIONS,
     Incident,
     IncidentState,
     IncidentTransition,
-    VALID_TRANSITIONS,
 )
+from .audit_trail import AuditAction, AuditTrail
 from .event_store import EventStore
-from .audit_trail import AuditTrail, AuditAction
 
 
 class TransitionError(Exception):
     """Error during state transition."""
 
-    def __init__(self, message: str, from_state: IncidentState, to_state: IncidentState):
+    def __init__(
+        self, message: str, from_state: IncidentState, to_state: IncidentState
+    ):
         super().__init__(message)
         self.from_state = from_state
         self.to_state = to_state
@@ -133,7 +135,9 @@ class IncidentStateMachine:
 
             # Validate transition
             if not incident.can_transition_to(to_state):
-                error = f"Invalid transition from {from_state.value} to {to_state.value}"
+                error = (
+                    f"Invalid transition from {from_state.value} to {to_state.value}"
+                )
                 return False, error
 
             # Execute pre-hooks
@@ -324,6 +328,7 @@ class IncidentStateMachine:
                     hook(incident, from_state, to_state)
             except Exception as e:
                 import logging
+
                 logging.getLogger(__name__).warning(f"Post-hook error: {e}")
 
     async def _execute_on_enter(
@@ -341,6 +346,7 @@ class IncidentStateMachine:
                     hook(incident, state)
             except Exception as e:
                 import logging
+
                 logging.getLogger(__name__).warning(f"On-enter hook error: {e}")
 
     async def _execute_on_exit(
@@ -358,6 +364,7 @@ class IncidentStateMachine:
                     hook(incident, state)
             except Exception as e:
                 import logging
+
                 logging.getLogger(__name__).warning(f"On-exit hook error: {e}")
 
     def get_valid_transitions(self, state: IncidentState) -> List[IncidentState]:

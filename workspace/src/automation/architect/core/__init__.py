@@ -7,9 +7,9 @@ __version__ = "2.0.0"
 __author__ = "SLASolve Team"
 __license__ = "MIT"
 
-from .analysis import StaticAnalyzer, SecurityScanner, PerformanceAnalyzer
-from .repair import RuleEngine, ASTTransformer, RepairVerifier
+from .analysis import PerformanceAnalyzer, SecurityScanner, StaticAnalyzer
 from .orchestration import AnalysisPipeline, EventBus
+from .repair import ASTTransformer, RepairVerifier, RuleEngine
 
 __all__ = [
     "StaticAnalyzer",

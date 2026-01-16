@@ -7,8 +7,4 @@ Security Layer - INSTANT 執行標準
 from .encryption_manager import EncryptionManager
 from .key_management import KeyManagement, KeyMetadata
 
-__all__ = [
-    'EncryptionManager',
-    'KeyManagement',
-    'KeyMetadata'
-]
+__all__ = ["EncryptionManager", "KeyManagement", "KeyMetadata"]

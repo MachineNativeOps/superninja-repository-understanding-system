@@ -13,11 +13,10 @@ import sys
 from pathlib import Path
 
 import pytest
+from runtime.mind_matrix.executive_auto import ExecutiveAutoController
 
 # Add runtime to path for imports
 sys.path.insert(0, str(Path(__file__).parent.parent))
-
-from runtime.mind_matrix.executive_auto import ExecutiveAutoController
 
 
 class TestExecutiveAutoController:
@@ -48,7 +47,9 @@ class TestPerceiveLayer:
         """Create ExecutiveAutoController instance."""
         return ExecutiveAutoController()
 
-    def test_perceive_default_signals(self, controller: ExecutiveAutoController) -> None:
+    def test_perceive_default_signals(
+        self, controller: ExecutiveAutoController
+    ) -> None:
         """Test perception with default signals."""
         signals = controller.perceive()
 
@@ -71,7 +72,9 @@ class TestPerceiveLayer:
         assert signals["error_rate"] == 0.1
         assert signals["deploy_pending"] is False
 
-    def test_perceive_creates_evidence(self, controller: ExecutiveAutoController) -> None:
+    def test_perceive_creates_evidence(
+        self, controller: ExecutiveAutoController
+    ) -> None:
         """Test that perception creates audit evidence."""
         controller.perceive()
 
@@ -87,7 +90,9 @@ class TestReasonLayer:
         """Create ExecutiveAutoController instance."""
         return ExecutiveAutoController()
 
-    def test_reason_with_deploy_pending(self, controller: ExecutiveAutoController) -> None:
+    def test_reason_with_deploy_pending(
+        self, controller: ExecutiveAutoController
+    ) -> None:
         """Test reasoning suggests progressive_deploy when deploy_pending."""
         signals = {"deploy_pending": True, "error_rate": 0.01}
 
@@ -96,7 +101,9 @@ class TestReasonLayer:
         actions = [d["action"] for d in plan["decisions"]]
         assert "progressive_deploy" in actions
 
-    def test_reason_with_high_error_rate(self, controller: ExecutiveAutoController) -> None:
+    def test_reason_with_high_error_rate(
+        self, controller: ExecutiveAutoController
+    ) -> None:
         """Test reasoning suggests rollback_and_rerun on high error rate."""
         signals = {"deploy_pending": False, "error_rate": 0.1}
 
@@ -105,7 +112,9 @@ class TestReasonLayer:
         actions = [d["action"] for d in plan["decisions"]]
         assert "rollback_and_rerun" in actions
 
-    def test_reason_with_elevated_error_rate(self, controller: ExecutiveAutoController) -> None:
+    def test_reason_with_elevated_error_rate(
+        self, controller: ExecutiveAutoController
+    ) -> None:
         """Test reasoning suggests health_check on elevated error rate."""
         signals = {"deploy_pending": False, "error_rate": 0.04}
 
@@ -162,7 +171,9 @@ class TestPolicyGate:
         """Create ExecutiveAutoController instance."""
         return ExecutiveAutoController()
 
-    def test_policy_gate_allows_valid_actions(self, controller: ExecutiveAutoController) -> None:
+    def test_policy_gate_allows_valid_actions(
+        self, controller: ExecutiveAutoController
+    ) -> None:
         """Test policy gate allows whitelisted actions."""
         plan = {
             "decisions": [
@@ -177,7 +188,9 @@ class TestPolicyGate:
         assert len(gated["decisions"]) == 2
         assert gated["policy_applied"] is True
 
-    def test_policy_gate_blocks_invalid_actions(self, controller: ExecutiveAutoController) -> None:
+    def test_policy_gate_blocks_invalid_actions(
+        self, controller: ExecutiveAutoController
+    ) -> None:
         """Test policy gate blocks non-whitelisted actions."""
         plan = {
             "decisions": [
@@ -193,7 +206,9 @@ class TestPolicyGate:
         assert "progressive_deploy" in actions
         assert "dangerous_action" not in actions
 
-    def test_policy_gate_creates_evidence(self, controller: ExecutiveAutoController) -> None:
+    def test_policy_gate_creates_evidence(
+        self, controller: ExecutiveAutoController
+    ) -> None:
         """Test policy gate creates audit evidence."""
         plan = {"decisions": [], "timestamp": "2024-01-01T00:00:00"}
         controller.policy_gate(plan)
@@ -209,7 +224,9 @@ class TestExecuteLayer:
         """Create ExecutiveAutoController instance."""
         return ExecutiveAutoController()
 
-    def test_execute_progressive_deploy(self, controller: ExecutiveAutoController) -> None:
+    def test_execute_progressive_deploy(
+        self, controller: ExecutiveAutoController
+    ) -> None:
         """Test execution of progressive_deploy action."""
         gated_plan = {
             "decisions": [{"action": "progressive_deploy", "risk": 0.3}],
@@ -220,7 +237,9 @@ class TestExecuteLayer:
         assert len(result["results"]) >= 1
         assert any(r["payload"]["op"] == "deploy" for r in result["results"])
 
-    def test_execute_rollback_and_rerun(self, controller: ExecutiveAutoController) -> None:
+    def test_execute_rollback_and_rerun(
+        self, controller: ExecutiveAutoController
+    ) -> None:
         """Test execution of rollback_and_rerun action."""
         gated_plan = {
             "decisions": [{"action": "rollback_and_rerun", "risk": 0.2}],
@@ -244,7 +263,9 @@ class TestExecuteLayer:
         assert len(result["results"]) == 1
         assert result["results"][0]["status"] == "noop"
 
-    def test_execute_creates_evidence(self, controller: ExecutiveAutoController) -> None:
+    def test_execute_creates_evidence(
+        self, controller: ExecutiveAutoController
+    ) -> None:
         """Test execution creates audit evidence."""
         gated_plan = {"decisions": [{"action": "observe_only", "risk": 0.1}]}
         controller.execute(gated_plan)
@@ -279,7 +300,9 @@ class TestProveAndFreeze:
         exec_result = {"results": []}
         controller.prove_and_freeze(exec_result)
 
-        evidence = [ev for ev in controller.audit_log if ev["stage"] == "history_freeze"]
+        evidence = [
+            ev for ev in controller.audit_log if ev["stage"] == "history_freeze"
+        ]
         assert len(evidence) == 1
         assert evidence[0]["data"]["checkpoint"] is True
 
@@ -326,7 +349,9 @@ class TestHealLoop:
 
         assert outcome["escalated"] is True
 
-    def test_heal_loop_resets_on_success(self, controller: ExecutiveAutoController) -> None:
+    def test_heal_loop_resets_on_success(
+        self, controller: ExecutiveAutoController
+    ) -> None:
         """Test heal counter resets on success."""
         controller._heal_attempt_count = 2
 
@@ -397,14 +422,18 @@ class TestAutonomousCycle:
         assert "heal_loop" in stages
         assert "evolve" in stages
 
-    def test_run_once_minimum_audit_events(self, controller: ExecutiveAutoController) -> None:
+    def test_run_once_minimum_audit_events(
+        self, controller: ExecutiveAutoController
+    ) -> None:
         """Test minimum audit events are generated."""
         report = controller.run_once()
 
         # Should have at least events from 7 main stages
         assert len(report["audit"]) >= 7
 
-    def test_run_once_with_custom_signals(self, controller: ExecutiveAutoController) -> None:
+    def test_run_once_with_custom_signals(
+        self, controller: ExecutiveAutoController
+    ) -> None:
         """Test autonomous cycle with custom signals."""
         custom_signals = {
             "latency_ms": 500,
@@ -427,7 +456,9 @@ class TestAuditLog:
         """Create ExecutiveAutoController instance."""
         return ExecutiveAutoController()
 
-    def test_get_audit_log_returns_copy(self, controller: ExecutiveAutoController) -> None:
+    def test_get_audit_log_returns_copy(
+        self, controller: ExecutiveAutoController
+    ) -> None:
         """Test get_audit_log returns a copy."""
         controller.perceive()
 

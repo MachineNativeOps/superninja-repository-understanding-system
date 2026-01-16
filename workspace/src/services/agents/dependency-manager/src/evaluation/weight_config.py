@@ -13,16 +13,18 @@ from typing import Any
 
 class CompanyStage(Enum):
     """公司發展階段"""
-    STARTUP = "startup"           # 初創期
-    GROWTH = "growth"             # 成長期
-    ENTERPRISE = "enterprise"     # 成熟企業
-    INNOVATION = "innovation"     # 創新轉型
+
+    STARTUP = "startup"  # 初創期
+    GROWTH = "growth"  # 成長期
+    ENTERPRISE = "enterprise"  # 成熟企業
+    INNOVATION = "innovation"  # 創新轉型
     RESTRUCTURING = "restructuring"  # 重組期
 
 
 @dataclass
 class WeightProfile:
     """權重配置檔"""
+
     name: str
     stage: CompanyStage
     weights: dict[str, float]
@@ -37,7 +39,7 @@ class WeightProfile:
             "weights": self.weights,
             "description": self.description,
             "use_cases": self.use_cases,
-            "created_at": self.created_at
+            "created_at": self.created_at,
         }
 
 
@@ -111,7 +113,7 @@ class WeightConfigManager:
         stage: CompanyStage,
         weights: dict[str, float],
         description: str = "",
-        use_cases: list[str] | None = None
+        use_cases: list[str] | None = None,
     ) -> WeightProfile:
         """創建自定義權重配置"""
         # 驗證權重
@@ -122,7 +124,7 @@ class WeightConfigManager:
             stage=stage,
             weights=self._normalize_weights(weights),
             description=description,
-            use_cases=use_cases or []
+            use_cases=use_cases or [],
         )
 
         self.custom_profiles[name] = profile
@@ -161,9 +163,8 @@ class WeightConfigManager:
         return {k: v / total for k, v in weights.items()}
 
     def suggest_weights(
-        self,
-        priorities: dict[str, int]  # 1-5 的優先級
-    ) -> dict[str, float]:
+        self, priorities: dict[str, int]
+    ) -> dict[str, float]:  # 1-5 的優先級
         """根據優先級建議權重"""
         # 將優先級轉換為權重
         weights = {}
@@ -179,10 +180,7 @@ class WeightConfigManager:
 
         return self._normalize_weights(weights)
 
-    def compare_profiles(
-        self,
-        profile_names: list[str]
-    ) -> dict[str, dict[str, float]]:
+    def compare_profiles(self, profile_names: list[str]) -> dict[str, dict[str, float]]:
         """比較多個權重配置"""
         comparison = {}
         for name in profile_names:
@@ -206,7 +204,7 @@ class WeightConfigManager:
             stage=CompanyStage(data["stage"]),
             weights=data["weights"],
             description=data.get("description", ""),
-            use_cases=data.get("use_cases", [])
+            use_cases=data.get("use_cases", []),
         )
 
     def get_stage_description(self, stage: CompanyStage) -> str:
