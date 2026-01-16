@@ -1,0 +1,44 @@
+{
+  "executive_summary": {
+    "total_findings": 56,
+    "critical": 0,
+    "high": 29,
+    "medium": 27,
+    "low": 0
+  },
+  "findings_by_category": {
+    "eval_usage": 32,
+    "shell_execution": 0,
+    "weak_cryptography": 24,
+    "hardcoded_secrets": 0,
+    "insecure_dependencies": 0,
+    "other": 0
+  },
+  "risk_assessment": {
+    "critical_risks_count": 0,
+    "high_risks_count": 33,
+    "medium_risks_count": 23,
+    "low_risks_count": 0
+  },
+  "recommendations": [
+    {
+      "priority": "high",
+      "category": "eval() in production code",
+      "count": 29,
+      "action": "Review and replace eval() in production code with safer alternatives",
+      "files": [
+        "fix_remaining_issues.py",
+        "fix_remaining_issues.py",
+        "fix_remaining_issues.py"
+      ]
+    },
+    {
+      "priority": "medium",
+      "category": "eval() in analysis tools",
+      "count": 3,
+      "action": "Document eval() usage in analysis tools with security warnings",
+      "rationale": "Acceptable in analysis tools if properly documented"
+    }
+  ],
+  "overall_security_status": "HIGH - Multiple high-risk issues found"
+}
