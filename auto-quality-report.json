@@ -1,21 +1,20 @@
 {
-  "timestamp": "2026-01-16T08:58:28.095229",
+  "timestamp": "2026-01-17T03:07:27.363498",
   "summary": {
     "total_checks": 8,
     "passed": 2,
-    "warnings": 6,
+    "warnings": 5,
     "pass_rate": "25.0%"
   },
   "details": {
     "security": {
-      "status": "⚠️ WARNING",
-      "secrets_detected": true,
-      "details": "請審查包含敏感關鍵字的檔案"
+      "status": "⚠️ SKIP",
+      "details": "detect-secrets 未安裝，請執行: pip install detect-secrets"
     },
     "python_quality": {
-      "total_files": 1328,
-      "files_with_type_hints": 883,
-      "type_hint_coverage": "66.5%",
+      "total_files": 1366,
+      "files_with_type_hints": 903,
+      "type_hint_coverage": "66.1%",
       "status": "⚠️ WARNING",
       "target": "90%"
     },
@@ -40,9 +39,9 @@
       "status": "⚠️ WARNING"
     },
     "docstring_coverage": {
-      "total_files": 1328,
-      "files_with_docstrings": 1284,
-      "coverage": "96.7%",
+      "total_files": 1366,
+      "files_with_docstrings": 1315,
+      "coverage": "96.3%",
       "status": "✅ PASS",
       "target": "85%"
     },
@@ -86,11 +85,13 @@
       "status": "⚠️ WARNING"
     },
     "eval_usage": {
-      "count": 27,
+      "count": 29,
       "files": [
+        "add_eval_security_warnings.py",
         "scripts/auto-quality-check.py",
         "00-namespaces/namespaces-adk/adk/core/workflow_orchestrator.py",
         "00-namespaces/namespaces-adk/tests/integration/test_agent_workflows.py",
+        "workspace/tools/security_audit.py",
         "workspace/tests/test_tool_executor_validation.py",
         "workspace/teams/holy-grail/automation/architect/core/analysis/security_scanner.py",
         "workspace/teams/holy-grail/agents/autonomous/pipeline_service.py",
