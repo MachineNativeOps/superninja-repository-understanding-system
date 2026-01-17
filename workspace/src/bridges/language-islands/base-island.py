@@ -18,22 +18,24 @@ sys.path.insert(0, str(_current_dir.parent))
 
 class IslandStatus:
     """島嶼狀態"""
-    DORMANT = "dormant"       # 休眠
+
+    DORMANT = "dormant"  # 休眠
     ACTIVATING = "activating"  # 啟動中
-    ACTIVE = "active"         # 活躍
-    SUSPENDED = "suspended"   # 暫停
-    ERROR = "error"          # 錯誤
+    ACTIVE = "active"  # 活躍
+    SUSPENDED = "suspended"  # 暫停
+    ERROR = "error"  # 錯誤
 
 
 class Colors:
     """終端機顏色輸出"""
-    RED = '\033[0;31m'
-    GREEN = '\033[0;32m'
-    YELLOW = '\033[1;33m'
-    BLUE = '\033[0;34m'
-    PURPLE = '\033[0;35m'
-    CYAN = '\033[0;36m'
-    NC = '\033[0m'
+
+    RED = "\033[0;31m"
+    GREEN = "\033[0;32m"
+    YELLOW = "\033[1;33m"
+    BLUE = "\033[0;34m"
+    PURPLE = "\033[0;35m"
+    CYAN = "\033[0;36m"
+    NC = "\033[0m"
 
 
 class BaseIsland(ABC):
@@ -64,11 +66,11 @@ class BaseIsland(ABC):
         """尋找專案根目錄"""
         current = Path(__file__).resolve().parent
         while current != current.parent:
-            if (current / 'island-control.yml').exists():
+            if (current / "island-control.yml").exists():
                 return current
-            if (current / 'drone-config.yml').exists():
+            if (current / "drone-config.yml").exists():
                 return current
-            if (current / 'package.json').exists():
+            if (current / "package.json").exists():
                 return current
             current = current.parent
         return Path.cwd()
@@ -99,11 +101,14 @@ class BaseIsland(ABC):
         """載入島嶼配置"""
         try:
             import importlib
-            config_module = importlib.import_module('bridges.language-islands.config.island-config')
+
+            config_module = importlib.import_module(
+                "bridges.language-islands.config.island-config"
+            )
             IslandConfig = config_module.IslandConfig
             island_config = IslandConfig.load()
             self.config = island_config.get_island(self.island_id) or {}
-            self.capabilities = self.config.get('capabilities', [])
+            self.capabilities = self.config.get("capabilities", [])
             self.log_success("配置已載入")
             return True
         except Exception as e:
@@ -120,13 +125,10 @@ class BaseIsland(ABC):
         cmd, arg = self._get_language_check_command()
         try:
             result = subprocess.run(
-                [cmd, arg],
-                capture_output=True,
-                text=True,
-                timeout=5
+                [cmd, arg], capture_output=True, text=True, timeout=5
             )
             if result.returncode == 0:
-                version = result.stdout.strip().split('\n')[0]
+                version = result.stdout.strip().split("\n")[0]
                 return True, version
             return False, None
         except (FileNotFoundError, subprocess.TimeoutExpired):
@@ -185,7 +187,9 @@ class BaseIsland(ABC):
             "island_id": self.island_id,
             "language": self.language,
             "status": self.status,
-            "activated_at": self.activated_at.isoformat() if self.activated_at else None,
+            "activated_at": (
+                self.activated_at.isoformat() if self.activated_at else None
+            ),
             "capabilities": self.capabilities,
             "tool_available": available,
             "tool_version": version,
@@ -193,4 +197,6 @@ class BaseIsland(ABC):
         }
 
     def __repr__(self) -> str:
-        return f"<{self.__class__.__name__}(name='{self.name}', status='{self.status}')>"
+        return (
+            f"<{self.__class__.__name__}(name='{self.name}', status='{self.status}')>"
+        )

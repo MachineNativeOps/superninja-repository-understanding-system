@@ -20,21 +20,23 @@ logger = logging.getLogger(__name__)
 
 class ServerStatus(Enum):
     """MCP Server status enumeration"""
-    INITIALIZING = 'initializing'
-    HEALTHY = 'healthy'
-    DEGRADED = 'degraded'
-    UNHEALTHY = 'unhealthy'
-    STOPPED = 'stopped'
+
+    INITIALIZING = "initializing"
+    HEALTHY = "healthy"
+    DEGRADED = "degraded"
+    UNHEALTHY = "unhealthy"
+    STOPPED = "stopped"
 
 
 @dataclass
 class MCPServerConfig:
     """Configuration for an MCP server"""
+
     name: str
-    version: str = '1.0.0'
-    host: str = 'localhost'
+    version: str = "1.0.0"
+    host: str = "localhost"
     port: int = 3000
-    transport: str = 'stdio'  # stdio, http, websocket
+    transport: str = "stdio"  # stdio, http, websocket
     timeout: int = 30000  # milliseconds
     max_retries: int = 3
     retry_delay: int = 1000  # milliseconds
@@ -46,6 +48,7 @@ class MCPServerConfig:
 @dataclass
 class MCPServer:
     """Represents an MCP server instance"""
+
     id: str
     config: MCPServerConfig
     status: ServerStatus = ServerStatus.INITIALIZING
@@ -60,25 +63,27 @@ class MCPServer:
     def to_dict(self) -> dict[str, Any]:
         """Convert server to dictionary representation"""
         return {
-            'id': self.id,
-            'name': self.config.name,
-            'version': self.config.version,
-            'status': self.status.value,
-            'transport': self.config.transport,
-            'tools_count': len(self.tools),
-            'resources_count': len(self.resources),
-            'prompts_count': len(self.prompts),
-            'last_health_check': self.last_health_check.isoformat() if self.last_health_check else None,
-            'error_count': self.error_count,
-            'request_count': self.request_count,
-            'created_at': self.created_at.isoformat()
+            "id": self.id,
+            "name": self.config.name,
+            "version": self.config.version,
+            "status": self.status.value,
+            "transport": self.config.transport,
+            "tools_count": len(self.tools),
+            "resources_count": len(self.resources),
+            "prompts_count": len(self.prompts),
+            "last_health_check": (
+                self.last_health_check.isoformat() if self.last_health_check else None
+            ),
+            "error_count": self.error_count,
+            "request_count": self.request_count,
+            "created_at": self.created_at.isoformat(),
         }
 
 
 class MCPServerManager:
     """
     Central manager for MCP servers
-    
+
     Handles server registration, health monitoring, load balancing,
     and tool execution routing across multiple MCP servers.
     """
@@ -97,7 +102,7 @@ class MCPServerManager:
 
         self._is_running = True
         self._health_check_task = asyncio.create_task(self._health_check_loop())
-        logger.info('MCPServerManager started')
+        logger.info("MCPServerManager started")
 
     async def stop(self) -> None:
         """Stop the server manager and cleanup"""
@@ -112,23 +117,20 @@ class MCPServerManager:
         for server_id in list(self._servers.keys()):
             await self.unregister_server(server_id)
 
-        logger.info('MCPServerManager stopped')
+        logger.info("MCPServerManager stopped")
 
     async def register_server(self, config: MCPServerConfig) -> MCPServer:
         """
         Register a new MCP server
-        
+
         Args:
             config: Server configuration
-            
+
         Returns:
             Registered MCPServer instance
         """
         server_id = str(uuid4())
-        server = MCPServer(
-            id=server_id,
-            config=config
-        )
+        server = MCPServer(id=server_id, config=config)
 
         # Initialize server and load tools
         await self._initialize_server(server)
@@ -137,22 +139,22 @@ class MCPServerManager:
 
         # Index all tools from this server
         for tool in server.tools:
-            tool_name = tool.get('name', '')
+            tool_name = tool.get("name", "")
             if tool_name:
                 self._tool_index[tool_name] = server_id
 
-        await self._emit_event('server_registered', server)
-        logger.info(f'Registered MCP server: {config.name} (id: {server_id})')
+        await self._emit_event("server_registered", server)
+        logger.info(f"Registered MCP server: {config.name} (id: {server_id})")
 
         return server
 
     async def unregister_server(self, server_id: str) -> bool:
         """
         Unregister an MCP server
-        
+
         Args:
             server_id: ID of server to unregister
-            
+
         Returns:
             True if server was unregistered, False if not found
         """
@@ -162,15 +164,14 @@ class MCPServerManager:
 
         # Remove tool index entries
         tools_to_remove = [
-            tool_name for tool_name, sid in self._tool_index.items()
-            if sid == server_id
+            tool_name for tool_name, sid in self._tool_index.items() if sid == server_id
         ]
         for tool_name in tools_to_remove:
             del self._tool_index[tool_name]
 
         server.status = ServerStatus.STOPPED
-        await self._emit_event('server_unregistered', server)
-        logger.info(f'Unregistered MCP server: {server.config.name}')
+        await self._emit_event("server_unregistered", server)
+        logger.info(f"Unregistered MCP server: {server.config.name}")
 
         return True
 
@@ -188,10 +189,10 @@ class MCPServerManager:
     def list_servers(self, status: ServerStatus | None = None) -> list[MCPServer]:
         """
         List all registered servers
-        
+
         Args:
             status: Optional filter by status
-            
+
         Returns:
             List of servers
         """
@@ -208,33 +209,31 @@ class MCPServerManager:
         return None
 
     async def execute_tool(
-        self,
-        tool_name: str,
-        arguments: dict[str, Any]
+        self, tool_name: str, arguments: dict[str, Any]
     ) -> dict[str, Any]:
         """
         Execute a tool on the appropriate server
-        
+
         Args:
             tool_name: Name of tool to execute
             arguments: Tool arguments
-            
+
         Returns:
             Tool execution result
         """
         server = self.get_tool_server(tool_name)
         if not server:
             return {
-                'success': False,
-                'error': f'Tool not found: {tool_name}',
-                'error_code': 'TOOL_NOT_FOUND'
+                "success": False,
+                "error": f"Tool not found: {tool_name}",
+                "error_code": "TOOL_NOT_FOUND",
             }
 
         if server.status not in (ServerStatus.HEALTHY, ServerStatus.DEGRADED):
             return {
-                'success': False,
-                'error': f'Server {server.config.name} is not available',
-                'error_code': 'SERVER_UNAVAILABLE'
+                "success": False,
+                "error": f"Server {server.config.name} is not available",
+                "error_code": "SERVER_UNAVAILABLE",
             }
 
         try:
@@ -243,12 +242,8 @@ class MCPServerManager:
             return result
         except Exception as e:
             server.error_count += 1
-            logger.error(f'Tool execution failed: {tool_name} - {e}')
-            return {
-                'success': False,
-                'error': str(e),
-                'error_code': 'EXECUTION_ERROR'
-            }
+            logger.error(f"Tool execution failed: {tool_name} - {e}")
+            return {"success": False, "error": str(e), "error_code": "EXECUTION_ERROR"}
 
     def list_all_tools(self) -> list[dict[str, Any]]:
         """Get all available tools across all servers"""
@@ -256,11 +251,13 @@ class MCPServerManager:
         for server in self._servers.values():
             if server.status == ServerStatus.HEALTHY:
                 for tool in server.tools:
-                    tools.append({
-                        **tool,
-                        'server_id': server.id,
-                        'server_name': server.config.name
-                    })
+                    tools.append(
+                        {
+                            **tool,
+                            "server_id": server.id,
+                            "server_name": server.config.name,
+                        }
+                    )
         return tools
 
     def on(self, event: str, handler: Callable) -> None:
@@ -280,7 +277,7 @@ class MCPServerManager:
             server.last_health_check = datetime.now()
         except Exception as e:
             server.status = ServerStatus.UNHEALTHY
-            logger.error(f'Failed to initialize server {server.config.name}: {e}')
+            logger.error(f"Failed to initialize server {server.config.name}: {e}")
             raise
 
     async def _health_check_loop(self) -> None:
@@ -295,7 +292,7 @@ class MCPServerManager:
             except asyncio.CancelledError:
                 break
             except Exception as e:
-                logger.error(f'Health check loop error: {e}')
+                logger.error(f"Health check loop error: {e}")
 
     async def _check_server_health(self, server: MCPServer) -> None:
         """Check health of a specific server"""
@@ -315,39 +312,33 @@ class MCPServerManager:
 
         except Exception as e:
             server.status = ServerStatus.UNHEALTHY
-            logger.error(f'Health check failed for {server.config.name}: {e}')
+            logger.error(f"Health check failed for {server.config.name}: {e}")
 
     async def _execute_tool_on_server(
-        self,
-        server: MCPServer,
-        tool_name: str,
-        arguments: dict[str, Any]
+        self, server: MCPServer, tool_name: str, arguments: dict[str, Any]
     ) -> dict[str, Any]:
         """Execute a tool on a specific server"""
         # Find the tool definition
         tool_def = None
         for tool in server.tools:
-            if tool.get('name') == tool_name:
+            if tool.get("name") == tool_name:
                 tool_def = tool
                 break
 
         if not tool_def:
             return {
-                'success': False,
-                'error': f'Tool {tool_name} not found on server {server.config.name}',
-                'error_code': 'TOOL_NOT_FOUND'
+                "success": False,
+                "error": f"Tool {tool_name} not found on server {server.config.name}",
+                "error_code": "TOOL_NOT_FOUND",
             }
 
         # Simulate tool execution
         result = {
-            'success': True,
-            'tool': tool_name,
-            'server': server.config.name,
-            'arguments': arguments,
-            'result': {
-                'status': 'completed',
-                'timestamp': datetime.now().isoformat()
-            }
+            "success": True,
+            "tool": tool_name,
+            "server": server.config.name,
+            "arguments": arguments,
+            "result": {"status": "completed", "timestamp": datetime.now().isoformat()},
         }
 
         return result
@@ -362,134 +353,168 @@ class MCPServerManager:
                 else:
                     handler(data)
             except Exception as e:
-                logger.error(f'Event handler error for {event}: {e}')
+                logger.error(f"Event handler error for {event}: {e}")
 
     def _get_default_tools(self, server_name: str) -> list[dict[str, Any]]:
         """Get default tools based on server name"""
         tool_sets = {
-            'code-analyzer': [
+            "code-analyzer": [
                 {
-                    'name': 'analyze-code',
-                    'description': 'Analyze code for patterns, complexity, and quality',
-                    'inputSchema': {
-                        'type': 'object',
-                        'properties': {
-                            'code': {'type': 'string', 'description': 'Source code to analyze'},
-                            'language': {'type': 'string', 'description': 'Programming language'},
-                            'metrics': {'type': 'array', 'items': {'type': 'string'}}
+                    "name": "analyze-code",
+                    "description": "Analyze code for patterns, complexity, and quality",
+                    "inputSchema": {
+                        "type": "object",
+                        "properties": {
+                            "code": {
+                                "type": "string",
+                                "description": "Source code to analyze",
+                            },
+                            "language": {
+                                "type": "string",
+                                "description": "Programming language",
+                            },
+                            "metrics": {"type": "array", "items": {"type": "string"}},
                         },
-                        'required': ['code']
-                    }
+                        "required": ["code"],
+                    },
                 },
                 {
-                    'name': 'detect-patterns',
-                    'description': 'Detect design patterns and anti-patterns',
-                    'inputSchema': {
-                        'type': 'object',
-                        'properties': {
-                            'code': {'type': 'string'},
-                            'pattern_types': {'type': 'array', 'items': {'type': 'string'}}
+                    "name": "detect-patterns",
+                    "description": "Detect design patterns and anti-patterns",
+                    "inputSchema": {
+                        "type": "object",
+                        "properties": {
+                            "code": {"type": "string"},
+                            "pattern_types": {
+                                "type": "array",
+                                "items": {"type": "string"},
+                            },
                         },
-                        'required': ['code']
-                    }
-                }
+                        "required": ["code"],
+                    },
+                },
             ],
-            'security-scanner': [
+            "security-scanner": [
                 {
-                    'name': 'scan-vulnerabilities',
-                    'description': 'Scan code for security vulnerabilities',
-                    'inputSchema': {
-                        'type': 'object',
-                        'properties': {
-                            'code': {'type': 'string'},
-                            'severity_threshold': {'type': 'string', 'enum': ['low', 'medium', 'high', 'critical']}
+                    "name": "scan-vulnerabilities",
+                    "description": "Scan code for security vulnerabilities",
+                    "inputSchema": {
+                        "type": "object",
+                        "properties": {
+                            "code": {"type": "string"},
+                            "severity_threshold": {
+                                "type": "string",
+                                "enum": ["low", "medium", "high", "critical"],
+                            },
                         },
-                        'required': ['code']
-                    }
+                        "required": ["code"],
+                    },
                 },
                 {
-                    'name': 'check-dependencies',
-                    'description': 'Check dependencies for known vulnerabilities',
-                    'inputSchema': {
-                        'type': 'object',
-                        'properties': {
-                            'manifest': {'type': 'string', 'description': 'Package manifest file content'},
-                            'ecosystem': {'type': 'string', 'enum': ['npm', 'pip', 'maven', 'go']}
+                    "name": "check-dependencies",
+                    "description": "Check dependencies for known vulnerabilities",
+                    "inputSchema": {
+                        "type": "object",
+                        "properties": {
+                            "manifest": {
+                                "type": "string",
+                                "description": "Package manifest file content",
+                            },
+                            "ecosystem": {
+                                "type": "string",
+                                "enum": ["npm", "pip", "maven", "go"],
+                            },
                         },
-                        'required': ['manifest']
-                    }
-                }
+                        "required": ["manifest"],
+                    },
+                },
             ],
-            'slsa-validator': [
+            "slsa-validator": [
                 {
-                    'name': 'validate-provenance',
-                    'description': 'Validate SLSA provenance data',
-                    'inputSchema': {
-                        'type': 'object',
-                        'properties': {
-                            'provenance': {'type': 'object'},
-                            'level': {'type': 'string', 'enum': ['1', '2', '3', '4']}
+                    "name": "validate-provenance",
+                    "description": "Validate SLSA provenance data",
+                    "inputSchema": {
+                        "type": "object",
+                        "properties": {
+                            "provenance": {"type": "object"},
+                            "level": {"type": "string", "enum": ["1", "2", "3", "4"]},
                         },
-                        'required': ['provenance']
-                    }
+                        "required": ["provenance"],
+                    },
                 },
                 {
-                    'name': 'check-slsa-compliance',
-                    'description': 'Check SLSA compliance for target level',
-                    'inputSchema': {
-                        'type': 'object',
-                        'properties': {
-                            'provenance': {'type': 'object'},
-                            'targetLevel': {'type': 'string', 'enum': ['1', '2', '3', '4']}
+                    "name": "check-slsa-compliance",
+                    "description": "Check SLSA compliance for target level",
+                    "inputSchema": {
+                        "type": "object",
+                        "properties": {
+                            "provenance": {"type": "object"},
+                            "targetLevel": {
+                                "type": "string",
+                                "enum": ["1", "2", "3", "4"],
+                            },
                         },
-                        'required': ['provenance']
-                    }
+                        "required": ["provenance"],
+                    },
+                },
+            ],
+            "test-generator": [
+                {
+                    "name": "generate-tests",
+                    "description": "Generate unit tests for code",
+                    "inputSchema": {
+                        "type": "object",
+                        "properties": {
+                            "code": {"type": "string"},
+                            "framework": {
+                                "type": "string",
+                                "enum": ["jest", "pytest", "mocha", "junit"],
+                            },
+                            "coverage_target": {
+                                "type": "number",
+                                "minimum": 0,
+                                "maximum": 100,
+                            },
+                        },
+                        "required": ["code"],
+                    },
                 }
             ],
-            'test-generator': [
+            "doc-generator": [
                 {
-                    'name': 'generate-tests',
-                    'description': 'Generate unit tests for code',
-                    'inputSchema': {
-                        'type': 'object',
-                        'properties': {
-                            'code': {'type': 'string'},
-                            'framework': {'type': 'string', 'enum': ['jest', 'pytest', 'mocha', 'junit']},
-                            'coverage_target': {'type': 'number', 'minimum': 0, 'maximum': 100}
+                    "name": "generate-docs",
+                    "description": "Generate documentation for code",
+                    "inputSchema": {
+                        "type": "object",
+                        "properties": {
+                            "code": {"type": "string"},
+                            "format": {
+                                "type": "string",
+                                "enum": ["markdown", "jsdoc", "sphinx", "openapi"],
+                            },
+                            "language": {"type": "string"},
                         },
-                        'required': ['code']
-                    }
+                        "required": ["code"],
+                    },
                 }
             ],
-            'doc-generator': [
+            "performance-analyzer": [
                 {
-                    'name': 'generate-docs',
-                    'description': 'Generate documentation for code',
-                    'inputSchema': {
-                        'type': 'object',
-                        'properties': {
-                            'code': {'type': 'string'},
-                            'format': {'type': 'string', 'enum': ['markdown', 'jsdoc', 'sphinx', 'openapi']},
-                            'language': {'type': 'string'}
+                    "name": "analyze-performance",
+                    "description": "Analyze code performance characteristics",
+                    "inputSchema": {
+                        "type": "object",
+                        "properties": {
+                            "code": {"type": "string"},
+                            "analysis_type": {
+                                "type": "string",
+                                "enum": ["complexity", "memory", "runtime"],
+                            },
                         },
-                        'required': ['code']
-                    }
+                        "required": ["code"],
+                    },
                 }
             ],
-            'performance-analyzer': [
-                {
-                    'name': 'analyze-performance',
-                    'description': 'Analyze code performance characteristics',
-                    'inputSchema': {
-                        'type': 'object',
-                        'properties': {
-                            'code': {'type': 'string'},
-                            'analysis_type': {'type': 'string', 'enum': ['complexity', 'memory', 'runtime']}
-                        },
-                        'required': ['code']
-                    }
-                }
-            ]
         }
 
         return tool_sets.get(server_name, [])

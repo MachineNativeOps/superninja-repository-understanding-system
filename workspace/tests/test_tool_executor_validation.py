@@ -6,16 +6,15 @@ Tests for CodeRunner validation logic - context-aware security checks
 import sys
 from pathlib import Path
 
-# Add src to path for imports
-sys.path.insert(0, str(Path(__file__).parent.parent / "src"))
-
 import pytest
-
 from core.island_ai_runtime.tool_executor import (
     CodeRunner,
     ExecutionRequest,
     ToolType,
 )
+
+# Add src to path for imports
+sys.path.insert(0, str(Path(__file__).parent.parent / "src"))
 
 
 def create_request(code: str, language: str = "python") -> ExecutionRequest:

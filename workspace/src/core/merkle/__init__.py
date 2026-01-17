@@ -5,8 +5,8 @@ AXIOM Layer 0 Components
 """
 
 from .merkle_foundation import (
-    MerkleTree,
     MerkleNode,
+    MerkleTree,
     StateVerifier,
 )
 

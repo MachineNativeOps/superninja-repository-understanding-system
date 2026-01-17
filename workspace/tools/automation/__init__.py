@@ -29,11 +29,11 @@ __author__ = "SynergyMesh"
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from .master_orchestrator import MasterOrchestrator
     from .engine_base import BaseEngine, EngineConfig, EngineState
     from .engine_registry import EngineRegistry
     from .engine_scheduler import EngineScheduler
     from .event_bus import EventBus
+    from .master_orchestrator import MasterOrchestrator
 
 __all__ = [
     "MasterOrchestrator",

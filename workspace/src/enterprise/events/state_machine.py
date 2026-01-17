@@ -22,35 +22,52 @@ logger = logging.getLogger(__name__)
 
 class RunState(Enum):
     """Run lifecycle states"""
-    QUEUED = "queued"           # Waiting to be processed
-    PREPARING = "preparing"     # Setting up (cloning, etc.)
-    RUNNING = "running"         # Analysis in progress
-    COMPLETED = "completed"     # Successfully completed
-    FAILED = "failed"          # Failed with error
-    CANCELED = "canceled"      # Manually canceled
-    TIMED_OUT = "timed_out"    # Exceeded timeout
-    SKIPPED = "skipped"        # Skipped (e.g., policy doesn't apply)
+
+    QUEUED = "queued"  # Waiting to be processed
+    PREPARING = "preparing"  # Setting up (cloning, etc.)
+    RUNNING = "running"  # Analysis in progress
+    COMPLETED = "completed"  # Successfully completed
+    FAILED = "failed"  # Failed with error
+    CANCELED = "canceled"  # Manually canceled
+    TIMED_OUT = "timed_out"  # Exceeded timeout
+    SKIPPED = "skipped"  # Skipped (e.g., policy doesn't apply)
 
 
 # Valid state transitions
 VALID_TRANSITIONS: dict[RunState, set[RunState]] = {
-    RunState.QUEUED: {RunState.PREPARING, RunState.RUNNING, RunState.CANCELED, RunState.SKIPPED},
-    RunState.PREPARING: {RunState.RUNNING, RunState.FAILED, RunState.CANCELED, RunState.TIMED_OUT},
-    RunState.RUNNING: {RunState.COMPLETED, RunState.FAILED, RunState.CANCELED, RunState.TIMED_OUT},
+    RunState.QUEUED: {
+        RunState.PREPARING,
+        RunState.RUNNING,
+        RunState.CANCELED,
+        RunState.SKIPPED,
+    },
+    RunState.PREPARING: {
+        RunState.RUNNING,
+        RunState.FAILED,
+        RunState.CANCELED,
+        RunState.TIMED_OUT,
+    },
+    RunState.RUNNING: {
+        RunState.COMPLETED,
+        RunState.FAILED,
+        RunState.CANCELED,
+        RunState.TIMED_OUT,
+    },
     RunState.COMPLETED: set(),  # Terminal state
-    RunState.FAILED: set(),     # Terminal state
-    RunState.CANCELED: set(),   # Terminal state
+    RunState.FAILED: set(),  # Terminal state
+    RunState.CANCELED: set(),  # Terminal state
     RunState.TIMED_OUT: set(),  # Terminal state
-    RunState.SKIPPED: set(),    # Terminal state
+    RunState.SKIPPED: set(),  # Terminal state
 }
 
 
 class TransitionType(Enum):
     """Types of state transitions"""
-    AUTOMATIC = "automatic"     # System-initiated
-    MANUAL = "manual"          # User-initiated
-    TIMEOUT = "timeout"        # Timeout-triggered
-    ERROR = "error"            # Error-triggered
+
+    AUTOMATIC = "automatic"  # System-initiated
+    MANUAL = "manual"  # User-initiated
+    TIMEOUT = "timeout"  # Timeout-triggered
+    ERROR = "error"  # Error-triggered
 
 
 @dataclass
@@ -60,6 +77,7 @@ class RunTransition:
 
     Creates a complete audit trail of state changes.
     """
+
     id: UUID = field(default_factory=uuid4)
     run_id: UUID = field(default_factory=uuid4)
 
@@ -88,6 +106,7 @@ class Run:
 
     Represents a single analysis execution.
     """
+
     id: UUID = field(default_factory=uuid4)
 
     # Tenant isolation
@@ -111,7 +130,7 @@ class Run:
     previous_state: RunState | None = None
 
     # Execution
-    run_type: str = ""          # "gate", "report", "scan"
+    run_type: str = ""  # "gate", "report", "scan"
     policy_ids: list[UUID] = field(default_factory=list)
     tools: list[str] = field(default_factory=list)  # Tools to run
 
@@ -180,7 +199,9 @@ class Run:
             "ref": self.ref,
             "pr_number": self.pr_number,
             "state": self.state.value,
-            "previous_state": self.previous_state.value if self.previous_state else None,
+            "previous_state": (
+                self.previous_state.value if self.previous_state else None
+            ),
             "run_type": self.run_type,
             "policy_ids": [str(p) for p in self.policy_ids],
             "tools": self.tools,
@@ -191,7 +212,9 @@ class Run:
             "created_at": self.created_at.isoformat(),
             "queued_at": self.queued_at.isoformat() if self.queued_at else None,
             "started_at": self.started_at.isoformat() if self.started_at else None,
-            "completed_at": self.completed_at.isoformat() if self.completed_at else None,
+            "completed_at": (
+                self.completed_at.isoformat() if self.completed_at else None
+            ),
             "timeout_seconds": self.timeout_seconds,
             "worker_id": self.worker_id,
             "attempt": self.attempt,
@@ -201,20 +224,18 @@ class Run:
 
 class InvalidTransitionError(Exception):
     """Raised when an invalid state transition is attempted"""
+
     pass
 
 
 class RunStorage(Protocol):
     """Storage interface for runs"""
 
-    async def save(self, run: Run) -> Run:
-        ...
+    async def save(self, run: Run) -> Run: ...
 
-    async def get(self, run_id: UUID) -> Run | None:
-        ...
+    async def get(self, run_id: UUID) -> Run | None: ...
 
-    async def update(self, run: Run) -> Run:
-        ...
+    async def update(self, run: Run) -> Run: ...
 
     async def query(
         self,
@@ -225,21 +246,17 @@ class RunStorage(Protocol):
         pr_number: int | None = None,
         offset: int = 0,
         limit: int = 100,
-    ) -> list[Run]:
-        ...
+    ) -> list[Run]: ...
 
-    async def save_transition(self, transition: RunTransition) -> RunTransition:
-        ...
+    async def save_transition(self, transition: RunTransition) -> RunTransition: ...
 
-    async def get_transitions(self, run_id: UUID) -> list[RunTransition]:
-        ...
+    async def get_transitions(self, run_id: UUID) -> list[RunTransition]: ...
 
 
 class EventPublisher(Protocol):
     """Interface for publishing run events"""
 
-    async def publish(self, event_type: str, payload: dict[str, Any]) -> None:
-        ...
+    async def publish(self, event_type: str, payload: dict[str, Any]) -> None: ...
 
 
 @dataclass
@@ -412,7 +429,12 @@ class RunStateMachine:
             run.started_at = datetime.utcnow()
             run.worker_id = worker_id
 
-        if to_state in {RunState.COMPLETED, RunState.FAILED, RunState.CANCELED, RunState.TIMED_OUT}:
+        if to_state in {
+            RunState.COMPLETED,
+            RunState.FAILED,
+            RunState.CANCELED,
+            RunState.TIMED_OUT,
+        }:
             run.completed_at = datetime.utcnow()
 
         if error:

@@ -21,6 +21,7 @@ logger = logging.getLogger(__name__)
 
 class GitProvider(Enum):
     """Supported Git providers"""
+
     GITHUB = "github"
     GITLAB = "gitlab"
     BITBUCKET = "bitbucket"
@@ -28,9 +29,10 @@ class GitProvider(Enum):
 
 class AuthType(Enum):
     """Authentication type"""
+
     GITHUB_APP = "github_app"
     OAUTH_APP = "oauth_app"
-    PERSONAL_TOKEN = "personal_token"
+    PERSONAL_TOKEN = os.getenv("PERSONAL_TOKEN", "personal_token")
     GITLAB_INTEGRATION = "gitlab_integration"
     BITBUCKET_APP = "bitbucket_app"
 
@@ -42,6 +44,7 @@ class ProviderAuth:
 
     Handles token storage and refresh.
     """
+
     id: UUID = field(default_factory=uuid4)
     org_id: UUID = field(default_factory=uuid4)  # Tenant isolation
 
@@ -85,6 +88,7 @@ class ProviderInstallation:
 
     Tracks where the app is installed and its permissions.
     """
+
     id: UUID = field(default_factory=uuid4)
     org_id: UUID = field(default_factory=uuid4)  # Tenant isolation
 
@@ -122,39 +126,29 @@ class ProviderInstallation:
 class ProviderRepository(Protocol):
     """Repository interface for provider data"""
 
-    async def save_auth(self, auth: ProviderAuth) -> ProviderAuth:
-        ...
+    async def save_auth(self, auth: ProviderAuth) -> ProviderAuth: ...
 
-    async def get_auth(self, org_id: UUID, auth_id: UUID) -> ProviderAuth | None:
-        ...
+    async def get_auth(self, org_id: UUID, auth_id: UUID) -> ProviderAuth | None: ...
 
     async def get_auth_by_installation(
         self, org_id: UUID, installation_id: str
-    ) -> ProviderAuth | None:
-        ...
+    ) -> ProviderAuth | None: ...
 
-    async def update_auth(self, auth: ProviderAuth) -> ProviderAuth:
-        ...
+    async def update_auth(self, auth: ProviderAuth) -> ProviderAuth: ...
 
     async def save_installation(
         self, installation: ProviderInstallation
-    ) -> ProviderInstallation:
-        ...
+    ) -> ProviderInstallation: ...
 
     async def get_installation(
         self, org_id: UUID, installation_id: str
-    ) -> ProviderInstallation | None:
-        ...
+    ) -> ProviderInstallation | None: ...
 
-    async def list_installations(
-        self, org_id: UUID
-    ) -> list[ProviderInstallation]:
-        ...
+    async def list_installations(self, org_id: UUID) -> list[ProviderInstallation]: ...
 
     async def update_installation(
         self, installation: ProviderInstallation
-    ) -> ProviderInstallation:
-        ...
+    ) -> ProviderInstallation: ...
 
 
 class SecretsManager(Protocol):
@@ -176,16 +170,14 @@ class HTTPClient(Protocol):
         self,
         url: str,
         headers: dict[str, str] = None,
-    ) -> dict[str, Any]:
-        ...
+    ) -> dict[str, Any]: ...
 
     async def post(
         self,
         url: str,
         data: dict[str, Any] = None,
         headers: dict[str, str] = None,
-    ) -> dict[str, Any]:
-        ...
+    ) -> dict[str, Any]: ...
 
 
 @dataclass
@@ -407,9 +399,11 @@ class GitProviderManager:
         expires_at = response.get("expires_at")
 
         auth.access_token_encrypted = await self.secrets_manager.encrypt(token)
-        auth.token_expires_at = datetime.fromisoformat(
-            expires_at.replace("Z", "+00:00")
-        ) if expires_at else datetime.utcnow() + timedelta(hours=1)
+        auth.token_expires_at = (
+            datetime.fromisoformat(expires_at.replace("Z", "+00:00"))
+            if expires_at
+            else datetime.utcnow() + timedelta(hours=1)
+        )
         auth.last_refreshed_at = datetime.utcnow()
         auth.updated_at = datetime.utcnow()
 
@@ -511,6 +505,9 @@ class GitProviderManager:
                 f"Waiting {wait_seconds}s for rate limit reset: {installation_id}"
             )
             import asyncio
+import os
+
+
             await asyncio.sleep(wait_seconds)
 
         return True

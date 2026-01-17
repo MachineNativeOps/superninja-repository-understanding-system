@@ -18,14 +18,15 @@ Version: 1.0.0
 """
 
 import argparse
-import yaml
 import os
 import re
-from pathlib import Path
-from datetime import datetime
-from typing import Dict, List, Optional, Tuple, Any
-from dataclasses import dataclass, field, asdict
 from collections import defaultdict
+from dataclasses import asdict, dataclass, field
+from datetime import datetime
+from pathlib import Path
+from typing import Any, Dict, List, Optional, Tuple
+
+import yaml
 
 # ============================================================================
 # 常數與配置
@@ -42,9 +43,11 @@ LEGACY_INDEX_PATH = PLAYBOOKS_PATH / "01_deconstruction" / "legacy_assets_index.
 # 資料結構
 # ============================================================================
 
+
 @dataclass
 class IndexEntry:
     """索引條目"""
+
     id: str
     name: str
     path: str
@@ -53,9 +56,11 @@ class IndexEntry:
     description: str = ""
     metadata: Dict = field(default_factory=dict)
 
+
 @dataclass
 class ClusterEntry:
     """叢集條目"""
+
     cluster_id: str
     name: str
     description: str
@@ -65,9 +70,11 @@ class ClusterEntry:
     files: List[str] = field(default_factory=list)
     tags: List[str] = field(default_factory=list)
 
+
 @dataclass
 class LegacyAssetEntry:
     """遺留資產條目"""
+
     asset_id: str
     name: str
     source_path: str
@@ -76,9 +83,11 @@ class LegacyAssetEntry:
     target_path: Optional[str] = None
     notes: str = ""
 
+
 @dataclass
 class IndexVerificationResult:
     """索引驗證結果"""
+
     is_valid: bool
     errors: List[str]
     warnings: List[str]
@@ -86,9 +95,11 @@ class IndexVerificationResult:
     orphan_files: List[str]
     sync_status: Dict[str, bool]
 
+
 # ============================================================================
 # 索引掃描器
 # ============================================================================
+
 
 class IndexScanner:
     """
@@ -107,8 +118,9 @@ class IndexScanner:
             return clusters
 
         # 掃描 playbook 檔案
-        playbook_files = list(refactor_path.rglob("*_playbook.md")) + \
-                        list(refactor_path.rglob("*__playbook.md"))
+        playbook_files = list(refactor_path.rglob("*_playbook.md")) + list(
+            refactor_path.rglob("*__playbook.md")
+        )
 
         for pb_file in playbook_files:
             cluster_info = self._parse_playbook(pb_file)
@@ -117,20 +129,24 @@ class IndexScanner:
 
         # 掃描子目錄作為叢集
         for subdir in refactor_path.iterdir():
-            if subdir.is_dir() and not subdir.name.startswith(('_', '.')):
+            if subdir.is_dir() and not subdir.name.startswith(("_", ".")):
                 # 檢查是否已有 playbook
-                existing = next((c for c in clusters if subdir.name in c.playbook_path), None)
+                existing = next(
+                    (c for c in clusters if subdir.name in c.playbook_path), None
+                )
                 if not existing:
-                    clusters.append(ClusterEntry(
-                        cluster_id=subdir.name,
-                        name=self._format_name(subdir.name),
-                        description=f"{subdir.name} 相關檔案",
-                        playbook_path="_pending",
-                        status="pending",
-                        priority="P3",
-                        files=self._list_files(subdir),
-                        tags=[subdir.name],
-                    ))
+                    clusters.append(
+                        ClusterEntry(
+                            cluster_id=subdir.name,
+                            name=self._format_name(subdir.name),
+                            description=f"{subdir.name} 相關檔案",
+                            playbook_path="_pending",
+                            status="pending",
+                            priority="P3",
+                            files=self._list_files(subdir),
+                            tags=[subdir.name],
+                        )
+                    )
 
         return clusters
 
@@ -143,14 +159,16 @@ class IndexScanner:
             return assets
 
         for file in legacy_path.rglob("*"):
-            if file.is_file() and not file.name.startswith('.'):
-                assets.append(LegacyAssetEntry(
-                    asset_id=file.stem[:8],
-                    name=file.name,
-                    source_path=str(file.relative_to(self.base_path)),
-                    type=self._classify_type(file),
-                    status="intake",
-                ))
+            if file.is_file() and not file.name.startswith("."):
+                assets.append(
+                    LegacyAssetEntry(
+                        asset_id=file.stem[:8],
+                        name=file.name,
+                        source_path=str(file.relative_to(self.base_path)),
+                        type=self._classify_type(file),
+                        status="intake",
+                    )
+                )
 
         return assets
 
@@ -159,29 +177,31 @@ class IndexScanner:
         entries = []
 
         for file in self.base_path.rglob("*.md"):
-            if file.is_file() and not any(p.startswith('_') for p in file.parts):
-                entries.append(IndexEntry(
-                    id=file.stem,
-                    name=self._format_name(file.stem),
-                    path=str(file.relative_to(self.base_path)),
-                    type="document",
-                    status="active",
-                    description=self._extract_description(file),
-                ))
+            if file.is_file() and not any(p.startswith("_") for p in file.parts):
+                entries.append(
+                    IndexEntry(
+                        id=file.stem,
+                        name=self._format_name(file.stem),
+                        path=str(file.relative_to(self.base_path)),
+                        type="document",
+                        status="active",
+                        description=self._extract_description(file),
+                    )
+                )
 
         return entries
 
     def _parse_playbook(self, pb_file: Path) -> Optional[ClusterEntry]:
         """解析 playbook 檔案"""
         try:
-            content = pb_file.read_text(encoding='utf-8')
+            content = pb_file.read_text(encoding="utf-8")
 
             # 提取標題
-            title_match = re.search(r'^#\s+(.+)$', content, re.MULTILINE)
+            title_match = re.search(r"^#\s+(.+)$", content, re.MULTILINE)
             name = title_match.group(1) if title_match else pb_file.stem
 
             # 提取描述
-            desc_match = re.search(r'^>\s*(.+)$', content, re.MULTILINE)
+            desc_match = re.search(r"^>\s*(.+)$", content, re.MULTILINE)
             description = desc_match.group(1) if desc_match else ""
 
             # 提取狀態
@@ -197,7 +217,9 @@ class IndexScanner:
                 priority = "P3"
 
             return ClusterEntry(
-                cluster_id=pb_file.stem.replace("__playbook", "").replace("_playbook", ""),
+                cluster_id=pb_file.stem.replace("__playbook", "").replace(
+                    "_playbook", ""
+                ),
                 name=name,
                 description=description,
                 playbook_path=str(pb_file.relative_to(self.base_path)),
@@ -214,9 +236,9 @@ class IndexScanner:
     def _format_name(self, raw_name: str) -> str:
         """格式化名稱"""
         # 移除前綴數字
-        name = re.sub(r'^\d+_', '', raw_name)
+        name = re.sub(r"^\d+_", "", raw_name)
         # 轉換下劃線為空格
-        name = name.replace('_', ' ').replace('-', ' ')
+        name = name.replace("_", " ").replace("-", " ")
         # 首字母大寫
         return name.title()
 
@@ -224,36 +246,41 @@ class IndexScanner:
         """分類檔案類型"""
         ext = file.suffix.lower()
         type_map = {
-            '.md': 'documentation',
-            '.yaml': 'configuration',
-            '.yml': 'configuration',
-            '.json': 'data',
-            '.py': 'code',
-            '.txt': 'text',
+            ".md": "documentation",
+            ".yaml": "configuration",
+            ".yml": "configuration",
+            ".json": "data",
+            ".py": "code",
+            ".txt": "text",
         }
-        return type_map.get(ext, 'unknown')
+        return type_map.get(ext, "unknown")
 
     def _extract_description(self, file: Path) -> str:
         """提取檔案描述"""
         try:
-            content = file.read_text(encoding='utf-8')
+            content = file.read_text(encoding="utf-8")
             # 嘗試提取第一段非標題文字
-            for line in content.split('\n'):
+            for line in content.split("\n"):
                 line = line.strip()
-                if line and not line.startswith('#') and not line.startswith('>'):
+                if line and not line.startswith("#") and not line.startswith(">"):
                     return line[:200]
-        except:
+        except BaseException:
             pass
         return ""
 
     def _list_files(self, directory: Path) -> List[str]:
         """列出目錄中的檔案"""
-        return [str(f.relative_to(self.base_path))
-                for f in directory.rglob("*") if f.is_file()]
+        return [
+            str(f.relative_to(self.base_path))
+            for f in directory.rglob("*")
+            if f.is_file()
+        ]
+
 
 # ============================================================================
 # 索引生成器
 # ============================================================================
+
 
 class IndexGenerator:
     """
@@ -314,10 +341,16 @@ class IndexGenerator:
 
         for priority in ["P1", "P2", "P3"]:
             if priority in by_priority:
-                lines.append(f"### {priority} - {'緊急' if priority == 'P1' else '一般' if priority == 'P2' else '低優先級'}")
+                lines.append(
+                    f"### {priority} - {'緊急' if priority == 'P1' else '一般' if priority == 'P2' else '低優先級'}"
+                )
                 lines.append("")
                 for c in by_priority[priority]:
-                    status_emoji = {"pending": "⏳", "active": "🔄", "completed": "✅"}.get(c.status, "❓")
+                    status_emoji = {
+                        "pending": "⏳",
+                        "active": "🔄",
+                        "completed": "✅",
+                    }.get(c.status, "❓")
                     if c.playbook_path != "_pending":
                         lines.append(f"- [{c.name}]({c.playbook_path}) {status_emoji}")
                     else:
@@ -325,24 +358,28 @@ class IndexGenerator:
                 lines.append("")
 
         # 添加目錄結構
-        lines.extend([
-            "## 目錄結構",
-            "",
-            "```",
-            "03_refactor/",
-        ])
+        lines.extend(
+            [
+                "## 目錄結構",
+                "",
+                "```",
+                "03_refactor/",
+            ]
+        )
 
         for c in sorted(clusters, key=lambda x: x.cluster_id):
             lines.append(f"├── {c.cluster_id}/")
 
-        lines.extend([
-            "└── index.yaml",
-            "```",
-            "",
-            "---",
-            "",
-            "*此檔案由 `update_indexes.py` 自動生成*",
-        ])
+        lines.extend(
+            [
+                "└── index.yaml",
+                "```",
+                "",
+                "---",
+                "",
+                "*此檔案由 `update_indexes.py` 自動生成*",
+            ]
+        )
 
         return "\n".join(lines)
 
@@ -379,9 +416,11 @@ class IndexGenerator:
             counts[value] += 1
         return dict(counts)
 
+
 # ============================================================================
 # 索引驗證器
 # ============================================================================
+
 
 class IndexVerifier:
     """
@@ -413,7 +452,9 @@ class IndexVerifier:
         # 驗證 legacy_assets_index.yaml
         legacy_result = self._verify_legacy_index()
         errors.extend(legacy_result.get("errors", []))
-        sync_status["legacy_assets_index.yaml"] = len(legacy_result.get("errors", [])) == 0
+        sync_status["legacy_assets_index.yaml"] = (
+            len(legacy_result.get("errors", [])) == 0
+        )
 
         # 檢查孤立檔案
         orphan_files = self._find_orphan_files()
@@ -438,7 +479,7 @@ class IndexVerifier:
             return result
 
         try:
-            with open(INDEX_YAML_PATH, 'r', encoding='utf-8') as f:
+            with open(INDEX_YAML_PATH, "r", encoding="utf-8") as f:
                 data = yaml.safe_load(f)
 
             # 檢查結構
@@ -469,12 +510,12 @@ class IndexVerifier:
             return result
 
         try:
-            content = INDEX_MD_PATH.read_text(encoding='utf-8')
+            content = INDEX_MD_PATH.read_text(encoding="utf-8")
 
             # 檢查連結
-            links = re.findall(r'\[([^\]]+)\]\(([^)]+)\)', content)
+            links = re.findall(r"\[([^\]]+)\]\(([^)]+)\)", content)
             for text, href in links:
-                if not href.startswith(('http', '#')):
+                if not href.startswith(("http", "#")):
                     full_path = INDEX_MD_PATH.parent / href
                     if not full_path.exists():
                         result["warnings"].append(f"斷開的連結: {href}")
@@ -493,7 +534,7 @@ class IndexVerifier:
             return result
 
         try:
-            with open(LEGACY_INDEX_PATH, 'r', encoding='utf-8') as f:
+            with open(LEGACY_INDEX_PATH, "r", encoding="utf-8") as f:
                 data = yaml.safe_load(f)
 
             # 驗證每個資產
@@ -518,12 +559,12 @@ class IndexVerifier:
 
         if INDEX_YAML_PATH.exists():
             try:
-                with open(INDEX_YAML_PATH, 'r', encoding='utf-8') as f:
+                with open(INDEX_YAML_PATH, "r", encoding="utf-8") as f:
                     data = yaml.safe_load(f)
                 for cluster in data.get("refactor_clusters", []):
                     if cluster.get("playbook_path"):
                         indexed_paths.add(cluster["playbook_path"])
-            except:
+            except BaseException:
                 pass
 
         # 掃描實際檔案
@@ -536,9 +577,11 @@ class IndexVerifier:
 
         return orphans
 
+
 # ============================================================================
 # 索引更新器 (主類)
 # ============================================================================
+
 
 class IndexUpdater:
     """
@@ -577,8 +620,14 @@ class IndexUpdater:
             index_data = self.generator.generate_machine_index(clusters)
 
             INDEX_YAML_PATH.parent.mkdir(parents=True, exist_ok=True)
-            with open(INDEX_YAML_PATH, 'w', encoding='utf-8') as f:
-                yaml.dump(index_data, f, allow_unicode=True, default_flow_style=False, sort_keys=False)
+            with open(INDEX_YAML_PATH, "w", encoding="utf-8") as f:
+                yaml.dump(
+                    index_data,
+                    f,
+                    allow_unicode=True,
+                    default_flow_style=False,
+                    sort_keys=False,
+                )
 
             print(f"   ✓ 已更新 ({len(clusters)} 叢集)")
             return True
@@ -596,7 +645,7 @@ class IndexUpdater:
             index_content = self.generator.generate_human_index(clusters)
 
             INDEX_MD_PATH.parent.mkdir(parents=True, exist_ok=True)
-            with open(INDEX_MD_PATH, 'w', encoding='utf-8') as f:
+            with open(INDEX_MD_PATH, "w", encoding="utf-8") as f:
                 f.write(index_content)
 
             print(f"   ✓ 已更新")
@@ -615,8 +664,14 @@ class IndexUpdater:
             index_data = self.generator.generate_legacy_index(assets)
 
             LEGACY_INDEX_PATH.parent.mkdir(parents=True, exist_ok=True)
-            with open(LEGACY_INDEX_PATH, 'w', encoding='utf-8') as f:
-                yaml.dump(index_data, f, allow_unicode=True, default_flow_style=False, sort_keys=False)
+            with open(LEGACY_INDEX_PATH, "w", encoding="utf-8") as f:
+                yaml.dump(
+                    index_data,
+                    f,
+                    allow_unicode=True,
+                    default_flow_style=False,
+                    sort_keys=False,
+                )
 
             print(f"   ✓ 已更新 ({len(assets)} 資產)")
             return True
@@ -630,9 +685,11 @@ class IndexUpdater:
         print("🔍 驗證索引...")
         return self.verifier.verify_all()
 
+
 # ============================================================================
 # CLI 入口
 # ============================================================================
+
 
 def main():
     parser = argparse.ArgumentParser(
@@ -652,7 +709,9 @@ def main():
     human_parser = subparsers.add_parser("human", help="更新 INDEX.md")
 
     # legacy 命令
-    legacy_parser = subparsers.add_parser("legacy", help="更新 legacy_assets_index.yaml")
+    legacy_parser = subparsers.add_parser(
+        "legacy", help="更新 legacy_assets_index.yaml"
+    )
 
     # verify 命令
     verify_parser = subparsers.add_parser("verify", help="驗證索引")
@@ -737,11 +796,12 @@ def main():
         output_str = yaml.dump(output, allow_unicode=True, default_flow_style=False)
 
         if args.output:
-            with open(args.output, 'w', encoding='utf-8') as f:
+            with open(args.output, "w", encoding="utf-8") as f:
                 f.write(output_str)
             print(f"掃描結果已儲存: {args.output}")
         else:
             print(output_str)
+
 
 if __name__ == "__main__":
     main()

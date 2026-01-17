@@ -21,6 +21,7 @@ from typing import Any
 
 class SBOMFormat(Enum):
     """SBOM 格式"""
+
     SPDX = "spdx"
     CYCLONEDX = "cyclonedx"
     SWID = "swid"
@@ -29,6 +30,7 @@ class SBOMFormat(Enum):
 
 class ComplianceFramework(Enum):
     """合規框架"""
+
     SOC2 = "soc2"
     ISO27001 = "iso27001"
     NIST = "nist"
@@ -40,26 +42,29 @@ class ComplianceFramework(Enum):
 
 class SupplyChainRisk(Enum):
     """供應鏈風險類型"""
-    TYPOSQUATTING = "typosquatting"         # 拼寫劫持
+
+    TYPOSQUATTING = "typosquatting"  # 拼寫劫持
     DEPENDENCY_CONFUSION = "dependency_confusion"  # 依賴混淆
-    MALICIOUS_PACKAGE = "malicious"         # 惡意套件
+    MALICIOUS_PACKAGE = "malicious"  # 惡意套件
     COMPROMISED_MAINTAINER = "compromised"  # 維護者帳號被盜
-    BUILD_TAMPERING = "build_tampering"     # 構建篡改
-    UNPINNED_DEPENDENCY = "unpinned"        # 未鎖定版本
+    BUILD_TAMPERING = "build_tampering"  # 構建篡改
+    UNPINNED_DEPENDENCY = "unpinned"  # 未鎖定版本
 
 
 class TrustLevel(Enum):
     """信任等級"""
-    VERIFIED = "verified"      # 已驗證
-    TRUSTED = "trusted"        # 可信任
-    UNKNOWN = "unknown"        # 未知
+
+    VERIFIED = "verified"  # 已驗證
+    TRUSTED = "trusted"  # 可信任
+    UNKNOWN = "unknown"  # 未知
     SUSPICIOUS = "suspicious"  # 可疑
-    UNTRUSTED = "untrusted"    # 不可信
+    UNTRUSTED = "untrusted"  # 不可信
 
 
 @dataclass
 class SBOMEntry:
     """SBOM 條目"""
+
     name: str
     version: str
     purl: str  # Package URL
@@ -74,6 +79,7 @@ class SBOMEntry:
 @dataclass
 class SBOM:
     """Software Bill of Materials"""
+
     format: SBOMFormat
     spec_version: str
     serial_number: str
@@ -87,6 +93,7 @@ class SBOM:
 @dataclass
 class ComplianceCheck:
     """合規檢查結果"""
+
     framework: ComplianceFramework
     requirement_id: str
     requirement_name: str
@@ -98,6 +105,7 @@ class ComplianceCheck:
 @dataclass
 class ComplianceReport:
     """合規報告"""
+
     framework: ComplianceFramework
     scan_date: datetime
     total_requirements: int
@@ -112,6 +120,7 @@ class ComplianceReport:
 @dataclass
 class SupplyChainAlert:
     """供應鏈安全警報"""
+
     risk_type: SupplyChainRisk
     severity: str  # critical, high, medium, low
     package_name: str
@@ -124,6 +133,7 @@ class SupplyChainAlert:
 @dataclass
 class TrustAssessment:
     """信任評估"""
+
     package_name: str
     trust_level: TrustLevel
     score: float  # 0-100
@@ -134,6 +144,7 @@ class TrustAssessment:
 @dataclass
 class IntegrityCheck:
     """完整性檢查"""
+
     package_name: str
     version: str
     expected_checksum: str
@@ -146,7 +157,7 @@ class IntegrityCheck:
 class NextGenSecurity:
     """
     下世代安全引擎
-    
+
     提供企業級供應鏈安全功能：
     - SBOM 管理
     - 合規檢查
@@ -158,8 +169,8 @@ class NextGenSecurity:
     KNOWN_MALICIOUS = {
         "event-stream": "2018-11-26",  # 惡意後門
         "ua-parser-js": "2021-10-22",  # 供應鏈攻擊
-        "coa": "2021-11-04",           # 供應鏈攻擊
-        "rc": "2021-11-04",            # 供應鏈攻擊
+        "coa": "2021-11-04",  # 供應鏈攻擊
+        "rc": "2021-11-04",  # 供應鏈攻擊
     }
 
     # 拼寫劫持檢測模式
@@ -202,20 +213,22 @@ class NextGenSecurity:
 
     # ==================== SBOM 管理 ====================
 
-    def generate_sbom(self,
-                     project_name: str,
-                     version: str,
-                     dependencies: list[dict[str, Any]],
-                     sbom_format: SBOMFormat = SBOMFormat.CYCLONEDX) -> SBOM:
+    def generate_sbom(
+        self,
+        project_name: str,
+        version: str,
+        dependencies: list[dict[str, Any]],
+        sbom_format: SBOMFormat = SBOMFormat.CYCLONEDX,
+    ) -> SBOM:
         """
         生成 SBOM
-        
+
         Args:
             project_name: 專案名稱
             version: 版本
             dependencies: 依賴項列表
             sbom_format: SBOM 格式
-            
+
         Returns:
             SBOM 文件
         """
@@ -232,15 +245,17 @@ class NextGenSecurity:
             # 計算校驗和
             checksum = self._calculate_checksum(f"{name}@{ver}")
 
-            components.append(SBOMEntry(
-                name=name,
-                version=ver,
-                purl=purl,
-                license=dep.get("license", "UNKNOWN"),
-                supplier=dep.get("supplier"),
-                checksum_sha256=checksum,
-                dependencies=dep.get("dependencies", [])
-            ))
+            components.append(
+                SBOMEntry(
+                    name=name,
+                    version=ver,
+                    purl=purl,
+                    license=dep.get("license", "UNKNOWN"),
+                    supplier=dep.get("supplier"),
+                    checksum_sha256=checksum,
+                    dependencies=dep.get("dependencies", []),
+                )
+            )
 
         # 生成序列號
         serial = self._generate_serial()
@@ -253,10 +268,7 @@ class NextGenSecurity:
             version=version,
             created_at=datetime.now(),
             components=components,
-            metadata={
-                "tool": "dependency-manager",
-                "tool_version": "1.0.0"
-            }
+            metadata={"tool": "dependency-manager", "tool_version": "1.0.0"},
         )
 
         self._sbom_cache[f"{project_name}@{version}"] = sbom
@@ -269,7 +281,7 @@ class NextGenSecurity:
             "pip": "pypi",
             "go": "golang",
             "maven": "maven",
-            "cargo": "cargo"
+            "cargo": "cargo",
         }
         pkg_type = ecosystem_map.get(ecosystem, ecosystem)
         return f"pkg:{pkg_type}/{name}@{version}"
@@ -281,7 +293,7 @@ class NextGenSecurity:
     def _generate_serial(self) -> str:
         """生成序列號"""
         timestamp = datetime.now().isoformat()
-        return f"urn:uuid:{hashlib.md5(timestamp.encode()).hexdigest()}"
+        return f"urn:uuid:{hashlib.sha256(timestamp.encode()).hexdigest()}"
 
     def _get_spec_version(self, sbom_format: SBOMFormat) -> str:
         """取得規範版本"""
@@ -289,17 +301,17 @@ class NextGenSecurity:
             SBOMFormat.CYCLONEDX: "1.5",
             SBOMFormat.SPDX: "2.3",
             SBOMFormat.SWID: "2015",
-            SBOMFormat.SYFT: "1.0.0"
+            SBOMFormat.SYFT: "1.0.0",
         }
         return versions.get(sbom_format, "1.0")
 
     def export_sbom(self, sbom: SBOM) -> str:
         """
         匯出 SBOM
-        
+
         Args:
             sbom: SBOM 物件
-            
+
         Returns:
             JSON 字串
         """
@@ -323,8 +335,8 @@ class NextGenSecurity:
                 "component": {
                     "type": "application",
                     "name": sbom.name,
-                    "version": sbom.version
-                }
+                    "version": sbom.version,
+                },
             },
             "components": [
                 {
@@ -333,12 +345,14 @@ class NextGenSecurity:
                     "version": c.version,
                     "purl": c.purl,
                     "licenses": [{"license": {"id": c.license}}] if c.license else [],
-                    "hashes": [
-                        {"alg": "SHA-256", "content": c.checksum_sha256}
-                    ] if c.checksum_sha256 else []
+                    "hashes": (
+                        [{"alg": "SHA-256", "content": c.checksum_sha256}]
+                        if c.checksum_sha256
+                        else []
+                    ),
                 }
                 for c in sbom.components
-            ]
+            ],
         }
         return json.dumps(doc, indent=2)
 
@@ -352,7 +366,7 @@ class NextGenSecurity:
             "documentNamespace": sbom.serial_number,
             "creationInfo": {
                 "created": sbom.created_at.isoformat(),
-                "creators": [f"Tool: {sbom.metadata.get('tool', 'unknown')}"]
+                "creators": [f"Tool: {sbom.metadata.get('tool', 'unknown')}"],
             },
             "packages": [
                 {
@@ -361,43 +375,55 @@ class NextGenSecurity:
                     "versionInfo": c.version,
                     "downloadLocation": c.purl,
                     "licenseConcluded": c.license or "NOASSERTION",
-                    "checksums": [
-                        {"algorithm": "SHA256", "checksumValue": c.checksum_sha256}
-                    ] if c.checksum_sha256 else []
+                    "checksums": (
+                        [{"algorithm": "SHA256", "checksumValue": c.checksum_sha256}]
+                        if c.checksum_sha256
+                        else []
+                    ),
                 }
                 for c in sbom.components
-            ]
+            ],
         }
         return json.dumps(doc, indent=2)
 
     def _export_generic(self, sbom: SBOM) -> str:
         """匯出通用格式"""
-        return json.dumps({
-            "format": sbom.format.value,
-            "version": sbom.spec_version,
-            "project": sbom.name,
-            "project_version": sbom.version,
-            "created": sbom.created_at.isoformat(),
-            "components": [
-                {"name": c.name, "version": c.version, "purl": c.purl, "license": c.license}
-                for c in sbom.components
-            ]
-        }, indent=2)
+        return json.dumps(
+            {
+                "format": sbom.format.value,
+                "version": sbom.spec_version,
+                "project": sbom.name,
+                "project_version": sbom.version,
+                "created": sbom.created_at.isoformat(),
+                "components": [
+                    {
+                        "name": c.name,
+                        "version": c.version,
+                        "purl": c.purl,
+                        "license": c.license,
+                    }
+                    for c in sbom.components
+                ],
+            },
+            indent=2,
+        )
 
     # ==================== 合規檢查 ====================
 
-    def check_compliance(self,
-                        framework: ComplianceFramework,
-                        dependencies: list[dict[str, Any]],
-                        config: dict[str, Any] | None = None) -> ComplianceReport:
+    def check_compliance(
+        self,
+        framework: ComplianceFramework,
+        dependencies: list[dict[str, Any]],
+        config: dict[str, Any] | None = None,
+    ) -> ComplianceReport:
         """
         執行合規檢查
-        
+
         Args:
             framework: 合規框架
             dependencies: 依賴項列表
             config: 配置選項
-            
+
         Returns:
             合規報告
         """
@@ -428,15 +454,17 @@ class NextGenSecurity:
             partial=partial,
             not_applicable=na,
             score=score,
-            checks=checks
+            checks=checks,
         )
 
-    def _evaluate_requirement(self,
-                             framework: ComplianceFramework,
-                             req_id: str,
-                             req_name: str,
-                             dependencies: list[dict[str, Any]],
-                             config: dict[str, Any] | None) -> ComplianceCheck:
+    def _evaluate_requirement(
+        self,
+        framework: ComplianceFramework,
+        req_id: str,
+        req_name: str,
+        dependencies: list[dict[str, Any]],
+        config: dict[str, Any] | None,
+    ) -> ComplianceCheck:
         """評估單一要求"""
         evidence = []
         status = "pass"
@@ -463,7 +491,9 @@ class NextGenSecurity:
 
         elif "變更" in req_name or "change" in req_name.lower():
             # 檢查是否有版本鎖定
-            pinned = len([d for d in dependencies if not d.get("version", "").startswith("^")])
+            pinned = len(
+                [d for d in dependencies if not d.get("version", "").startswith("^")]
+            )
             if pinned < len(dependencies) * 0.8:
                 status = "partial"
                 evidence.append(f"{pinned}/{len(dependencies)} 版本已鎖定")
@@ -472,8 +502,11 @@ class NextGenSecurity:
                 evidence.append("版本控制符合要求")
 
         elif "惡意" in req_name or "malicious" in req_name.lower():
-            malicious = [d for d in dependencies
-                        if d.get("name", "").lower() in self.KNOWN_MALICIOUS]
+            malicious = [
+                d
+                for d in dependencies
+                if d.get("name", "").lower() in self.KNOWN_MALICIOUS
+            ]
             if malicious:
                 status = "fail"
                 evidence.append(f"發現已知惡意套件：{[d['name'] for d in malicious]}")
@@ -491,19 +524,20 @@ class NextGenSecurity:
             requirement_name=req_name,
             status=status,
             evidence=evidence,
-            remediation=remediation
+            remediation=remediation,
         )
 
     # ==================== 供應鏈安全 ====================
 
-    def analyze_supply_chain(self,
-                            dependencies: list[dict[str, Any]]) -> list[SupplyChainAlert]:
+    def analyze_supply_chain(
+        self, dependencies: list[dict[str, Any]]
+    ) -> list[SupplyChainAlert]:
         """
         分析供應鏈安全
-        
+
         Args:
             dependencies: 依賴項列表
-            
+
         Returns:
             安全警報列表
         """
@@ -514,68 +548,73 @@ class NextGenSecurity:
 
             # 檢查已知惡意套件
             if name in self.KNOWN_MALICIOUS:
-                alerts.append(SupplyChainAlert(
-                    risk_type=SupplyChainRisk.MALICIOUS_PACKAGE,
-                    severity="critical",
-                    package_name=dep.get("name", ""),
-                    description=f"已知惡意套件，發現日期：{self.KNOWN_MALICIOUS[name]}",
-                    indicators=["已列入惡意套件清單"],
-                    recommended_actions=[
-                        "立即移除此套件",
-                        "檢查系統是否受影響",
-                        "審查相關代碼"
-                    ]
-                ))
+                alerts.append(
+                    SupplyChainAlert(
+                        risk_type=SupplyChainRisk.MALICIOUS_PACKAGE,
+                        severity="critical",
+                        package_name=dep.get("name", ""),
+                        description=f"已知惡意套件，發現日期：{self.KNOWN_MALICIOUS[name]}",
+                        indicators=["已列入惡意套件清單"],
+                        recommended_actions=[
+                            "立即移除此套件",
+                            "檢查系統是否受影響",
+                            "審查相關代碼",
+                        ],
+                    )
+                )
 
             # 檢查拼寫劫持
             for original, typos in self.TYPOSQUAT_PATTERNS:
                 if name in typos:
-                    alerts.append(SupplyChainAlert(
-                        risk_type=SupplyChainRisk.TYPOSQUATTING,
-                        severity="high",
-                        package_name=dep.get("name", ""),
-                        description=f"可能是 '{original}' 的拼寫劫持套件",
-                        indicators=[f"名稱與 '{original}' 相似"],
-                        recommended_actions=[
-                            f"確認是否應使用 '{original}'",
-                            "驗證套件來源",
-                            "檢查安裝歷史"
-                        ]
-                    ))
+                    alerts.append(
+                        SupplyChainAlert(
+                            risk_type=SupplyChainRisk.TYPOSQUATTING,
+                            severity="high",
+                            package_name=dep.get("name", ""),
+                            description=f"可能是 '{original}' 的拼寫劫持套件",
+                            indicators=[f"名稱與 '{original}' 相似"],
+                            recommended_actions=[
+                                f"確認是否應使用 '{original}'",
+                                "驗證套件來源",
+                                "檢查安裝歷史",
+                            ],
+                        )
+                    )
 
             # 檢查未鎖定版本
             version = dep.get("version", "")
             if version.startswith("*") or version == "latest":
-                alerts.append(SupplyChainAlert(
-                    risk_type=SupplyChainRisk.UNPINNED_DEPENDENCY,
-                    severity="medium",
-                    package_name=dep.get("name", ""),
-                    description="版本未鎖定，可能導致依賴混淆攻擊",
-                    indicators=["使用萬用字元或 latest 版本"],
-                    recommended_actions=[
-                        "鎖定特定版本",
-                        "使用鎖定檔案 (package-lock.json 等)",
-                        "啟用完整性檢查"
-                    ]
-                ))
+                alerts.append(
+                    SupplyChainAlert(
+                        risk_type=SupplyChainRisk.UNPINNED_DEPENDENCY,
+                        severity="medium",
+                        package_name=dep.get("name", ""),
+                        description="版本未鎖定，可能導致依賴混淆攻擊",
+                        indicators=["使用萬用字元或 latest 版本"],
+                        recommended_actions=[
+                            "鎖定特定版本",
+                            "使用鎖定檔案 (package-lock.json 等)",
+                            "啟用完整性檢查",
+                        ],
+                    )
+                )
 
         self._alerts = alerts
         return alerts
 
     # ==================== 零信任驗證 ====================
 
-    def assess_trust(self,
-                    package_name: str,
-                    version: str,
-                    metadata: dict[str, Any] | None = None) -> TrustAssessment:
+    def assess_trust(
+        self, package_name: str, version: str, metadata: dict[str, Any] | None = None
+    ) -> TrustAssessment:
         """
         評估套件信任度
-        
+
         Args:
             package_name: 套件名稱
             version: 版本
             metadata: 元資料
-            
+
         Returns:
             信任評估
         """
@@ -628,28 +667,30 @@ class NextGenSecurity:
             trust_level=trust_level,
             score=score,
             factors=factors,
-            verification_status=verification
+            verification_status=verification,
         )
 
         self._trust_cache[package_name] = assessment
         return assessment
 
-    def verify_integrity(self,
-                        package_name: str,
-                        version: str,
-                        expected_checksum: str,
-                        content: bytes,
-                        algorithm: str = "sha256") -> IntegrityCheck:
+    def verify_integrity(
+        self,
+        package_name: str,
+        version: str,
+        expected_checksum: str,
+        content: bytes,
+        algorithm: str = "sha256",
+    ) -> IntegrityCheck:
         """
         驗證完整性
-        
+
         Args:
             package_name: 套件名稱
             version: 版本
             expected_checksum: 預期校驗和
             content: 內容
             algorithm: 演算法
-            
+
         Returns:
             完整性檢查結果
         """
@@ -658,7 +699,7 @@ class NextGenSecurity:
         elif algorithm == "sha512":
             actual = hashlib.sha512(content).hexdigest()
         elif algorithm == "md5":
-            actual = hashlib.md5(content).hexdigest()
+            actual = hashlib.sha256(content).hexdigest()
         else:
             actual = hashlib.sha256(content).hexdigest()
 
@@ -668,21 +709,23 @@ class NextGenSecurity:
             expected_checksum=expected_checksum,
             actual_checksum=actual,
             algorithm=algorithm,
-            verified=(expected_checksum == actual)
+            verified=(expected_checksum == actual),
         )
 
     # ==================== 報告生成 ====================
 
-    def generate_security_report(self,
-                                dependencies: list[dict[str, Any]],
-                                frameworks: list[ComplianceFramework] | None = None) -> dict[str, Any]:
+    def generate_security_report(
+        self,
+        dependencies: list[dict[str, Any]],
+        frameworks: list[ComplianceFramework] | None = None,
+    ) -> dict[str, Any]:
         """
         生成安全報告
-        
+
         Args:
             dependencies: 依賴項列表
             frameworks: 合規框架列表
-            
+
         Returns:
             安全報告
         """
@@ -696,9 +739,7 @@ class NextGenSecurity:
         trust_assessments = []
         for dep in dependencies:
             assessment = self.assess_trust(
-                dep.get("name", "unknown"),
-                dep.get("version", "0.0.0"),
-                dep
+                dep.get("name", "unknown"), dep.get("version", "0.0.0"), dep
             )
             trust_assessments.append(assessment)
 
@@ -710,9 +751,17 @@ class NextGenSecurity:
                 compliance_reports.append(report)
 
         # 統計
-        critical_alerts = len([a for a in supply_chain_alerts if a.severity == "critical"])
-        untrusted = len([t for t in trust_assessments if t.trust_level == TrustLevel.UNTRUSTED])
-        avg_trust = sum(t.score for t in trust_assessments) / len(trust_assessments) if trust_assessments else 0
+        critical_alerts = len(
+            [a for a in supply_chain_alerts if a.severity == "critical"]
+        )
+        untrusted = len(
+            [t for t in trust_assessments if t.trust_level == TrustLevel.UNTRUSTED]
+        )
+        avg_trust = (
+            sum(t.score for t in trust_assessments) / len(trust_assessments)
+            if trust_assessments
+            else 0
+        )
 
         return {
             "summary": {
@@ -720,18 +769,15 @@ class NextGenSecurity:
                 "critical_alerts": critical_alerts,
                 "untrusted_packages": untrusted,
                 "average_trust_score": avg_trust,
-                "sbom_generated": True
+                "sbom_generated": True,
             },
-            "sbom": {
-                "format": sbom.format.value,
-                "components": len(sbom.components)
-            },
+            "sbom": {"format": sbom.format.value, "components": len(sbom.components)},
             "supply_chain": [
                 {
                     "package": a.package_name,
                     "risk_type": a.risk_type.value,
                     "severity": a.severity,
-                    "description": a.description
+                    "description": a.description,
                 }
                 for a in supply_chain_alerts
             ],
@@ -739,7 +785,7 @@ class NextGenSecurity:
                 {
                     "package": t.package_name,
                     "trust_level": t.trust_level.value,
-                    "score": t.score
+                    "score": t.score,
                 }
                 for t in trust_assessments
             ],
@@ -748,19 +794,19 @@ class NextGenSecurity:
                     "framework": r.framework.value,
                     "score": r.score,
                     "passed": r.passed,
-                    "failed": r.failed
+                    "failed": r.failed,
                 }
                 for r in compliance_reports
-            ]
+            ],
         }
 
     def format_report_zh_tw(self, report: dict[str, Any]) -> str:
         """
         生成繁體中文報告
-        
+
         Args:
             report: 報告資料
-            
+
         Returns:
             格式化報告
         """
@@ -786,12 +832,7 @@ class NextGenSecurity:
             "-" * 40,
         ]
 
-        severity_emoji = {
-            "critical": "🚨",
-            "high": "🔴",
-            "medium": "🟡",
-            "low": "🟢"
-        }
+        severity_emoji = {"critical": "🚨", "high": "🔴", "medium": "🟡", "low": "🟢"}
 
         if report["supply_chain"]:
             for alert in report["supply_chain"]:
@@ -801,35 +842,48 @@ class NextGenSecurity:
         else:
             lines.append("  ✅ 無供應鏈警報")
 
-        lines.extend([
-            "",
-            "🔐 信任評估",
-            "-" * 40,
-        ])
+        lines.extend(
+            [
+                "",
+                "🔐 信任評估",
+                "-" * 40,
+            ]
+        )
 
         trust_emoji = {
             "verified": "🌟",
             "trusted": "✅",
             "unknown": "❓",
             "suspicious": "⚠️",
-            "untrusted": "🚫"
+            "untrusted": "🚫",
         }
 
         # 按信任等級分組顯示
-        for assessment in sorted(report["trust_assessments"],
-                                 key=lambda x: x["score"], reverse=True)[:10]:
+        for assessment in sorted(
+            report["trust_assessments"], key=lambda x: x["score"], reverse=True
+        )[:10]:
             emoji = trust_emoji.get(assessment["trust_level"], "❓")
-            lines.append(f"  {emoji} {assessment['package']}: {assessment['score']:.0f}")
+            lines.append(
+                f"  {emoji} {assessment['package']}: {assessment['score']:.0f}"
+            )
 
         if report["compliance"]:
-            lines.extend([
-                "",
-                "📋 合規狀態",
-                "-" * 40,
-            ])
+            lines.extend(
+                [
+                    "",
+                    "📋 合規狀態",
+                    "-" * 40,
+                ]
+            )
             for comp in report["compliance"]:
-                status = "✅" if comp["score"] >= 80 else "⚠️" if comp["score"] >= 60 else "❌"
-                lines.append(f"  {status} {comp['framework'].upper()}: {comp['score']:.1f}%")
+                status = (
+                    "✅"
+                    if comp["score"] >= 80
+                    else "⚠️" if comp["score"] >= 60 else "❌"
+                )
+                lines.append(
+                    f"  {status} {comp['framework'].upper()}: {comp['score']:.1f}%"
+                )
                 lines.append(f"     通過：{comp['passed']} | 失敗：{comp['failed']}")
 
         lines.extend(["", "=" * 60])

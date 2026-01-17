@@ -120,7 +120,17 @@ class BrandReplacer:
 
     def process_all_files(self) -> dict[str, Any]:
         """處理所有檔案"""
-        extensions = {".md", ".yml", ".yaml", ".json", ".sh", ".txt", ".py", ".ts", ".js"}
+        extensions = {
+            ".md",
+            ".yml",
+            ".yaml",
+            ".json",
+            ".sh",
+            ".txt",
+            ".py",
+            ".ts",
+            ".js",
+        }
         exclude_dirs = {".git", "node_modules", "dist", "build", "__pycache__", ".venv"}
 
         processed = 0

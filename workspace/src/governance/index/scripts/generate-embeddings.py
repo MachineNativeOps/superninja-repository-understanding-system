@@ -13,15 +13,16 @@ Usage:
 This is NOT a "future feature" - it runs immediately to make the system operational.
 """
 
-import json
 import hashlib
-from pathlib import Path
-from typing import List, Dict, Any
+import json
 import sys
+from pathlib import Path
+from typing import Any, Dict, List
 
 # Try to import sentence-transformers
 try:
     from sentence_transformers import SentenceTransformer
+
     HAS_TRANSFORMERS = True
 except ImportError:
     HAS_TRANSFORMERS = False
@@ -35,16 +36,16 @@ def generate_deterministic_embedding(text: str, dimension: int = 384) -> List[fl
     This ensures the system works IMMEDIATELY without external dependencies.
     """
     # Create deterministic hash from text
-    text_bytes = text.encode('utf-8')
+    text_bytes = text.encode("utf-8")
 
     # Generate enough hash bytes for the embedding dimension
     embeddings = []
     for i in range(dimension):
         # Create unique hash for each dimension
-        hash_input = text_bytes + i.to_bytes(2, 'big')
+        hash_input = text_bytes + i.to_bytes(2, "big")
         hash_value = hashlib.sha256(hash_input).digest()
         # Convert to float between -1 and 1
-        int_value = int.from_bytes(hash_value[:4], 'big')
+        int_value = int.from_bytes(hash_value[:4], "big")
         float_value = (int_value / (2**32)) * 2 - 1
         embeddings.append(round(float_value, 6))
 
@@ -61,13 +62,13 @@ def generate_ml_embedding(model, text: str) -> List[float]:
 
 def load_vectors_json(path: Path) -> Dict[str, Any]:
     """Load vectors.json file."""
-    with open(path, 'r', encoding='utf-8') as f:
+    with open(path, "r", encoding="utf-8") as f:
         return json.load(f)
 
 
 def save_vectors_json(path: Path, data: Dict[str, Any]):
     """Save vectors.json file with proper formatting."""
-    with open(path, 'w', encoding='utf-8') as f:
+    with open(path, "w", encoding="utf-8") as f:
         json.dump(data, f, indent=2, ensure_ascii=False)
 
 
@@ -157,7 +158,9 @@ def main():
     print(f"  Dimensions: {len(dimensions)}")
     print(f"  Shared resources: {len(shared)}")
     print(f"  Embedding dimension: {dimension}")
-    print(f"  Method: {'ML (sentence-transformers)' if model else 'Deterministic (hash-based)'}")
+    print(
+        f"  Method: {'ML (sentence-transformers)' if model else 'Deterministic (hash-based)'}"
+    )
     print("=" * 60)
     print("\nThe index is now IMMEDIATELY operational.")
 

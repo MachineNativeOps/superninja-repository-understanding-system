@@ -2,6 +2,7 @@
 工具函數模組
 """
 
+
 def helper(data):
     """輔助函數"""
     return data.upper()

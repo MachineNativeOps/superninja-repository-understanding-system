@@ -17,20 +17,20 @@ from .load_balancer import BalancingStrategy, LoadBalancer, ProviderHealth
 from .task_router import RoutingResult, RoutingRule, RoutingStrategy, TaskRouter
 
 __all__ = [
-    'DelegationManager',
-    'DelegationConfig',
-    'DelegationResult',
-    'CloudProviderAdapter',
-    'ProviderType',
-    'ProviderConfig',
-    'TaskRouter',
-    'RoutingRule',
-    'RoutingResult',
-    'RoutingStrategy',
-    'LoadBalancer',
-    'BalancingStrategy',
-    'ProviderHealth',
+    "DelegationManager",
+    "DelegationConfig",
+    "DelegationResult",
+    "CloudProviderAdapter",
+    "ProviderType",
+    "ProviderConfig",
+    "TaskRouter",
+    "RoutingRule",
+    "RoutingResult",
+    "RoutingStrategy",
+    "LoadBalancer",
+    "BalancingStrategy",
+    "ProviderHealth",
 ]
 
-__version__ = '1.0.0'
-__author__ = 'SynergyMesh Team'
+__version__ = "1.0.0"
+__author__ = "SynergyMesh Team"

@@ -116,8 +116,6 @@ def test_namespace():
 class TestResourceQuotaCreation:
     """資源配額創建測試"""
 
-    
-
     def test_create_compute_resource_quota(self, test_namespace):
         """測試創建計算資源配額"""
         quota = {
@@ -143,8 +141,6 @@ class TestResourceQuotaCreation:
         assert compute_quota["metadata"]["name"] == "compute-quota"
         assert compute_quota["spec"]["hard"]["requests.cpu"] == "4"
         assert compute_quota["spec"]["hard"]["requests.memory"] == "8Gi"
-
-    
 
     def test_create_object_count_quota(self, test_namespace):
         """測試創建物件數量配額"""
@@ -174,8 +170,6 @@ class TestResourceQuotaCreation:
         assert object_quota["spec"]["hard"]["pods"] == "20"
         assert object_quota["spec"]["hard"]["services"] == "10"
 
-    
-
     def test_create_storage_quota(self, test_namespace):
         """測試創建儲存配額"""
         quota = {
@@ -203,8 +197,6 @@ class TestResourceQuotaCreation:
 
 class TestLimitRangeCreation:
     """限制範圍創建測試"""
-
-    
 
     def test_create_container_limit_range(self, test_namespace):
         """測試創建容器限制範圍"""
@@ -238,8 +230,6 @@ class TestLimitRangeCreation:
         assert limit_spec["default"]["cpu"] == "500m"
         assert limit_spec["defaultRequest"]["memory"] == "128Mi"
 
-    
-
     def test_create_pod_limit_range(self, test_namespace):
         """測試創建 Pod 限制範圍"""
         limit_range = {
@@ -267,8 +257,6 @@ class TestLimitRangeCreation:
         assert pod_limits is not None
         limit_spec = pod_limits["spec"]["limits"][0]
         assert limit_spec["type"] == "Pod"
-
-    
 
     def test_create_pvc_limit_range(self, test_namespace):
         """測試創建 PVC 限制範圍"""
@@ -300,8 +288,6 @@ class TestLimitRangeCreation:
 class TestQuotaStatus:
     """配額狀態測試"""
 
-    
-
     def test_quota_status_shows_usage(self, test_namespace):
         """測試配額狀態顯示使用量"""
         quota = {
@@ -323,8 +309,6 @@ class TestQuotaStatus:
         assert "status" in test_quota
         assert "used" in test_quota["status"]
         assert "hard" in test_quota["status"]
-
-    
 
     def test_initial_usage_is_zero(self, test_namespace):
         """測試初始使用量為零"""
@@ -349,8 +333,6 @@ class TestQuotaStatus:
 class TestQuotaScopes:
     """配額作用域測試"""
 
-    
-
     def test_best_effort_scope_quota(self, test_namespace):
         """測試 BestEffort 作用域配額"""
         quota = {
@@ -373,8 +355,6 @@ class TestQuotaScopes:
         assert be_quota is not None
         assert "BestEffort" in be_quota["spec"]["scopes"]
 
-    
-
     def test_not_best_effort_scope_quota(self, test_namespace):
         """測試 NotBestEffort 作用域配額"""
         quota = {
@@ -395,7 +375,8 @@ class TestQuotaScopes:
 
         quotas = get_resource_quotas(test_namespace)
         nbe_quota = next(
-            (q for q in quotas if q["metadata"]["name"] == "not-best-effort-quota"), None
+            (q for q in quotas if q["metadata"]["name"] == "not-best-effort-quota"),
+            None,
         )
 
         assert nbe_quota is not None
@@ -404,8 +385,6 @@ class TestQuotaScopes:
 
 class TestMultipleQuotas:
     """多配額測試"""
-
-    
 
     def test_multiple_quotas_same_namespace(self, test_namespace):
         """測試同一命名空間多個配額"""
@@ -444,8 +423,6 @@ class TestMultipleQuotas:
 
 class TestQuotaValidation:
     """配額驗證測試"""
-
-    
 
     def test_valid_resource_values(self, test_namespace):
         """測試有效的資源值"""

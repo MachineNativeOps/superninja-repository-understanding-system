@@ -15,21 +15,20 @@ Enterprise SynergyMesh Orchestrator - 企業級統一協調系統
 """
 
 import asyncio
+import json
 import logging
 import uuid
-from datetime import datetime, timedelta
-from pathlib import Path
-from typing import Dict, List, Any, Optional, Set, Tuple
-from dataclasses import dataclass, field
-from enum import Enum
 from collections import defaultdict
+from dataclasses import dataclass, field
+from datetime import datetime, timedelta
+from enum import Enum
 from functools import wraps
-import json
+from pathlib import Path
+from typing import Any, Dict, List, Optional, Set, Tuple
 
 # 配置日誌
 logging.basicConfig(
-    level=logging.INFO,
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+    level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
 )
 logger = logging.getLogger(__name__)
 
@@ -38,8 +37,10 @@ logger = logging.getLogger(__name__)
 # 資料結構定義
 # ============================================================================
 
+
 class ExecutionStatus(Enum):
     """執行狀態"""
+
     PENDING = "pending"
     RUNNING = "running"
     SUCCESS = "success"
@@ -53,6 +54,7 @@ class ExecutionStatus(Enum):
 
 class ComponentType(Enum):
     """組件類型"""
+
     AGENT = "agent"
     ISLAND = "island"
     BRIDGE = "bridge"
@@ -61,6 +63,7 @@ class ComponentType(Enum):
 
 class TenantTier(Enum):
     """租戶等級"""
+
     BASIC = "basic"
     PROFESSIONAL = "professional"
     ENTERPRISE = "enterprise"
@@ -69,6 +72,7 @@ class TenantTier(Enum):
 @dataclass
 class RetryPolicy:
     """重試政策"""
+
     max_retries: int = 3
     initial_delay: float = 1.0
     max_delay: float = 60.0
@@ -77,8 +81,7 @@ class RetryPolicy:
     def get_delay(self, attempt: int) -> float:
         """計算重試延遲（指數退避）"""
         delay = min(
-            self.initial_delay * (self.exponential_base ** attempt),
-            self.max_delay
+            self.initial_delay * (self.exponential_base**attempt), self.max_delay
         )
         return delay
 
@@ -86,6 +89,7 @@ class RetryPolicy:
 @dataclass
 class ResourceQuota:
     """資源配額"""
+
     max_concurrent_tasks: int = 10
     max_memory_mb: int = 1024
     max_cpu_percent: float = 80.0
@@ -96,6 +100,7 @@ class ResourceQuota:
 @dataclass
 class TenantConfig:
     """租戶配置"""
+
     tenant_id: str
     tenant_name: str
     tier: TenantTier
@@ -108,6 +113,7 @@ class TenantConfig:
 @dataclass
 class ComponentDependency:
     """組件依賴"""
+
     component_id: str
     depends_on: List[str] = field(default_factory=list)
     type: ComponentType = ComponentType.AGENT
@@ -117,6 +123,7 @@ class ComponentDependency:
 @dataclass
 class AuditLog:
     """審計日誌"""
+
     audit_id: str
     timestamp: datetime
     tenant_id: str
@@ -135,13 +142,14 @@ class AuditLog:
             "component_id": self.component_id,
             "user_id": self.user_id,
             "status": self.status,
-            "metadata": self.metadata
+            "metadata": self.metadata,
         }
 
 
 @dataclass
 class ExecutionResult:
     """執行結果"""
+
     component_id: str
     component_type: ComponentType
     status: ExecutionStatus
@@ -166,7 +174,7 @@ class ExecutionResult:
             "error": self.error,
             "retry_count": self.retry_count,
             "tenant_id": self.tenant_id,
-            "metadata": self.metadata
+            "metadata": self.metadata,
         }
 
 
@@ -174,23 +182,27 @@ class ExecutionResult:
 # 裝飾器和輔助函數
 # ============================================================================
 
+
 def with_tenant_isolation(func):
     """租戶隔離裝飾器"""
+
     @wraps(func)
     async def wrapper(self, *args, **kwargs):
-        tenant_id = kwargs.get('tenant_id')
+        tenant_id = kwargs.get("tenant_id")
         if tenant_id and tenant_id not in self.tenants:
             raise ValueError(f"Tenant {tenant_id} not found")
         return await func(self, *args, **kwargs)
+
     return wrapper
 
 
 def with_audit_log(func):
     """審計日誌裝飾器"""
+
     @wraps(func)
     async def wrapper(self, *args, **kwargs):
-        component_id = kwargs.get('component_id', 'unknown')
-        tenant_id = kwargs.get('tenant_id', 'system')
+        component_id = kwargs.get("component_id", "unknown")
+        tenant_id = kwargs.get("tenant_id", "system")
         action = func.__name__
 
         try:
@@ -200,26 +212,30 @@ def with_audit_log(func):
         except Exception as e:
             self._log_audit(tenant_id, action, component_id, "failure", str(e))
             raise
+
     return wrapper
 
 
 def with_rate_limit(func):
     """速率限制裝飾器"""
+
     @wraps(func)
     async def wrapper(self, *args, **kwargs):
-        tenant_id = kwargs.get('tenant_id', 'system')
+        tenant_id = kwargs.get("tenant_id", "system")
 
         # 檢查速率限制
         if not self._check_rate_limit(tenant_id):
             raise RuntimeError(f"Rate limit exceeded for tenant {tenant_id}")
 
         return await func(self, *args, **kwargs)
+
     return wrapper
 
 
 # ============================================================================
 # 核心企業級協調器
 # ============================================================================
+
 
 class EnterpriseSynergyMeshOrchestrator:
     """
@@ -251,9 +267,7 @@ class EnterpriseSynergyMeshOrchestrator:
         # 執行管理
         self.execution_results: List[ExecutionResult] = []
         self.active_tasks: Set[str] = set()
-        self.retry_policies: Dict[str, RetryPolicy] = defaultdict(
-            lambda: RetryPolicy()
-        )
+        self.retry_policies: Dict[str, RetryPolicy] = defaultdict(lambda: RetryPolicy())
 
         # 資源管理
         self.tenant_resource_usage: Dict[str, Dict[str, float]] = defaultdict(
@@ -270,7 +284,7 @@ class EnterpriseSynergyMeshOrchestrator:
             "successful_executions": 0,
             "failed_executions": 0,
             "total_retry_attempts": 0,
-            "average_execution_time_ms": 0.0
+            "average_execution_time_ms": 0.0,
         }
 
         self.is_running = False
@@ -286,7 +300,7 @@ class EnterpriseSynergyMeshOrchestrator:
         self,
         tenant_name: str,
         tier: TenantTier = TenantTier.BASIC,
-        custom_quota: Optional[ResourceQuota] = None
+        custom_quota: Optional[ResourceQuota] = None,
     ) -> str:
         """創建租戶"""
         tenant_id = f"tenant-{uuid.uuid4().hex[:8]}"
@@ -299,7 +313,7 @@ class EnterpriseSynergyMeshOrchestrator:
             tenant_name=tenant_name,
             tier=tier,
             quota=quota,
-            features_enabled=self._get_features_for_tier(tier)
+            features_enabled=self._get_features_for_tier(tier),
         )
 
         self.tenants[tenant_id] = config
@@ -317,43 +331,49 @@ class EnterpriseSynergyMeshOrchestrator:
                 max_memory_mb=512,
                 max_cpu_percent=50.0,
                 max_tasks_per_hour=100,
-                rate_limit_per_second=10.0
+                rate_limit_per_second=10.0,
             ),
             TenantTier.PROFESSIONAL: ResourceQuota(
                 max_concurrent_tasks=20,
                 max_memory_mb=2048,
                 max_cpu_percent=75.0,
                 max_tasks_per_hour=5000,
-                rate_limit_per_second=100.0
+                rate_limit_per_second=100.0,
             ),
             TenantTier.ENTERPRISE: ResourceQuota(
                 max_concurrent_tasks=100,
                 max_memory_mb=8192,
                 max_cpu_percent=95.0,
                 max_tasks_per_hour=100000,
-                rate_limit_per_second=1000.0
-            )
+                rate_limit_per_second=1000.0,
+            ),
         }
         return quotas.get(tier, ResourceQuota())
 
     def _get_features_for_tier(self, tier: TenantTier) -> Set[str]:
         """根據等級獲取啟用的功能"""
         features = {
-            TenantTier.BASIC: {
-                "basic_execution", "simple_monitoring"
-            },
+            TenantTier.BASIC: {"basic_execution", "simple_monitoring"},
             TenantTier.PROFESSIONAL: {
-                "basic_execution", "simple_monitoring",
-                "advanced_retry", "resource_management",
-                "audit_logs", "sla_monitoring"
+                "basic_execution",
+                "simple_monitoring",
+                "advanced_retry",
+                "resource_management",
+                "audit_logs",
+                "sla_monitoring",
             },
             TenantTier.ENTERPRISE: {
-                "basic_execution", "simple_monitoring",
-                "advanced_retry", "resource_management",
-                "audit_logs", "sla_monitoring",
-                "multi_tenancy", "high_availability",
-                "custom_policies", "advanced_analytics"
-            }
+                "basic_execution",
+                "simple_monitoring",
+                "advanced_retry",
+                "resource_management",
+                "audit_logs",
+                "sla_monitoring",
+                "multi_tenancy",
+                "high_availability",
+                "custom_policies",
+                "advanced_analytics",
+            },
         }
         return features.get(tier, set())
 
@@ -369,7 +389,7 @@ class EnterpriseSynergyMeshOrchestrator:
         self,
         component_id: str,
         depends_on: List[str],
-        component_type: ComponentType = ComponentType.AGENT
+        component_type: ComponentType = ComponentType.AGENT,
     ) -> bool:
         """添加組件依賴"""
         try:
@@ -378,9 +398,7 @@ class EnterpriseSynergyMeshOrchestrator:
                 raise ValueError(f"循環依賴檢測: {component_id}")
 
             self.dependencies[component_id] = ComponentDependency(
-                component_id=component_id,
-                depends_on=depends_on,
-                type=component_type
+                component_id=component_id, depends_on=depends_on, type=component_type
             )
 
             # 清除執行順序快取
@@ -397,7 +415,7 @@ class EnterpriseSynergyMeshOrchestrator:
         self,
         component_id: str,
         new_dependencies: List[str],
-        visited: Optional[Set[str]] = None
+        visited: Optional[Set[str]] = None,
     ) -> bool:
         """檢測循環依賴"""
         if visited is None:
@@ -416,10 +434,7 @@ class EnterpriseSynergyMeshOrchestrator:
 
         return False
 
-    def resolve_execution_order(
-        self,
-        component_ids: List[str]
-    ) -> List[str]:
+    def resolve_execution_order(self, component_ids: List[str]) -> List[str]:
         """解析執行順序（拓撲排序）"""
         cache_key = ",".join(sorted(component_ids))
 
@@ -460,12 +475,11 @@ class EnterpriseSynergyMeshOrchestrator:
         component_id: str,
         tenant_id: str,
         max_retries: Optional[int] = None,
-        **kwargs
+        **kwargs,
     ) -> ExecutionResult:
         """帶重試的執行"""
         policy = self.retry_policies.get(
-            component_id,
-            RetryPolicy(max_retries=max_retries or 3)
+            component_id, RetryPolicy(max_retries=max_retries or 3)
         )
 
         start_time = datetime.now()
@@ -475,7 +489,9 @@ class EnterpriseSynergyMeshOrchestrator:
             try:
                 if attempt > 0:
                     delay = policy.get_delay(attempt - 1)
-                    logger.info(f"⏳ 重試 {component_id} (第 {attempt} 次，延遲 {delay}s)")
+                    logger.info(
+                        f"⏳ 重試 {component_id} (第 {attempt} 次，延遲 {delay}s)"
+                    )
                     await asyncio.sleep(delay)
                     self.metrics["total_retry_attempts"] += 1
 
@@ -490,7 +506,7 @@ class EnterpriseSynergyMeshOrchestrator:
                     end_time=datetime.now(),
                     output=result,
                     duration_ms=(datetime.now() - start_time).total_seconds() * 1000,
-                    retry_count=attempt
+                    retry_count=attempt,
                 )
 
             except Exception as e:
@@ -512,7 +528,7 @@ class EnterpriseSynergyMeshOrchestrator:
             end_time=end_time,
             error=str(last_error),
             duration_ms=duration,
-            retry_count=policy.max_retries
+            retry_count=policy.max_retries,
         )
 
     # ========================================================================
@@ -545,9 +561,7 @@ class EnterpriseSynergyMeshOrchestrator:
             return True
 
     def check_resource_quota(
-        self,
-        tenant_id: str,
-        resource_type: str = "tasks"
+        self, tenant_id: str, resource_type: str = "tasks"
     ) -> bool:
         """檢查資源配額"""
         if tenant_id not in self.tenants:
@@ -557,10 +571,9 @@ class EnterpriseSynergyMeshOrchestrator:
         quota = tenant.quota
 
         if resource_type == "concurrent":
-            active_count = len([
-                t for t in self.active_tasks
-                if t.startswith(tenant_id)
-            ])
+            active_count = len(
+                [t for t in self.active_tasks if t.startswith(tenant_id)]
+            )
             return active_count < quota.max_concurrent_tasks
 
         return True
@@ -575,7 +588,7 @@ class EnterpriseSynergyMeshOrchestrator:
         action: str,
         component_id: str,
         status: str,
-        error_msg: Optional[str] = None
+        error_msg: Optional[str] = None,
     ):
         """記錄審計日誌"""
         audit_log = AuditLog(
@@ -586,22 +599,19 @@ class EnterpriseSynergyMeshOrchestrator:
             component_id=component_id,
             user_id=None,  # 可從上下文提取
             status=status,
-            metadata={"error": error_msg} if error_msg else {}
+            metadata={"error": error_msg} if error_msg else {},
         )
 
         self.audit_logs.append(audit_log)
         logger.debug(f"📋 審計: {action} on {component_id}")
 
-    def get_audit_logs(
-        self,
-        tenant_id: str,
-        hours: int = 24
-    ) -> List[AuditLog]:
+    def get_audit_logs(self, tenant_id: str, hours: int = 24) -> List[AuditLog]:
         """獲取審計日誌"""
         cutoff = datetime.now() - timedelta(hours=hours)
 
         return [
-            log for log in self.audit_logs
+            log
+            for log in self.audit_logs
             if log.tenant_id == tenant_id and log.timestamp >= cutoff
         ]
 
@@ -611,11 +621,7 @@ class EnterpriseSynergyMeshOrchestrator:
 
     @with_audit_log
     async def execute_agent(
-        self,
-        agent_id: str,
-        agent: Any,
-        tenant_id: str,
-        component_id: str = None
+        self, agent_id: str, agent: Any, tenant_id: str, component_id: str = None
     ) -> ExecutionResult:
         """執行 Agent（含容錯）"""
         if not component_id:
@@ -629,20 +635,16 @@ class EnterpriseSynergyMeshOrchestrator:
                 status=ExecutionStatus.FAILED,
                 start_time=datetime.now(),
                 tenant_id=tenant_id,
-                error="Resource quota exceeded"
+                error="Resource quota exceeded",
             )
 
         # 帶重試執行
         async def _execute():
-            if hasattr(agent, 'start'):
+            if hasattr(agent, "start"):
                 agent.start()
-            return agent.execute() if hasattr(agent, 'execute') else None
+            return agent.execute() if hasattr(agent, "execute") else None
 
-        result = await self.execute_with_retry(
-            _execute,
-            component_id,
-            tenant_id
-        )
+        result = await self.execute_with_retry(_execute, component_id, tenant_id)
 
         # 更新指標
         self._update_metrics(result)
@@ -661,9 +663,8 @@ class EnterpriseSynergyMeshOrchestrator:
         # 計算平均執行時間
         total_time = self.metrics["average_execution_time_ms"]
         avg_time = (
-            (total_time * (self.metrics["total_executions"] - 1) + result.duration_ms) /
-            self.metrics["total_executions"]
-        )
+            total_time * (self.metrics["total_executions"] - 1) + result.duration_ms
+        ) / self.metrics["total_executions"]
         self.metrics["average_execution_time_ms"] = avg_time
 
     def get_metrics(self) -> Dict[str, Any]:
@@ -671,25 +672,27 @@ class EnterpriseSynergyMeshOrchestrator:
         return {
             **self.metrics,
             "success_rate": (
-                self.metrics["successful_executions"] /
-                max(self.metrics["total_executions"], 1) * 100
+                self.metrics["successful_executions"]
+                / max(self.metrics["total_executions"], 1)
+                * 100
             ),
             "total_audit_logs": len(self.audit_logs),
             "active_tasks": len(self.active_tasks),
-            "registered_tenants": len(self.tenants)
+            "registered_tenants": len(self.tenants),
         }
 
     def get_tenant_health(self, tenant_id: str) -> Dict[str, Any]:
         """獲取租戶健康狀態"""
         tenant_logs = [
-            log for log in self.execution_results
-            if log.tenant_id == tenant_id
+            log for log in self.execution_results if log.tenant_id == tenant_id
         ]
 
         if not tenant_logs:
             return {"status": "no_data"}
 
-        successful = len([l for l in tenant_logs if l.status == ExecutionStatus.SUCCESS])
+        successful = len(
+            [l for l in tenant_logs if l.status == ExecutionStatus.SUCCESS]
+        )
         total = len(tenant_logs)
 
         return {
@@ -697,7 +700,9 @@ class EnterpriseSynergyMeshOrchestrator:
             "total_executions": total,
             "successful": successful,
             "uptime_percent": (successful / max(total, 1)) * 100,
-            "last_execution": tenant_logs[-1].end_time.isoformat() if tenant_logs else None
+            "last_execution": (
+                tenant_logs[-1].end_time.isoformat() if tenant_logs else None
+            ),
         }
 
 
@@ -711,5 +716,5 @@ __all__ = [
     "ExecutionResult",
     "AuditLog",
     "ExecutionStatus",
-    "ComponentType"
+    "ComponentType",
 ]

@@ -14,22 +14,22 @@ SynergyMesh Orchestrator - 統一協調系統
 
 import asyncio
 import logging
-from datetime import datetime
-from pathlib import Path
-from typing import Dict, List, Any, Optional, Callable
 from dataclasses import dataclass, field
+from datetime import datetime
 from enum import Enum
+from pathlib import Path
+from typing import Any, Callable, Dict, List, Optional
 
 # 配置日誌
 logging.basicConfig(
-    level=logging.INFO,
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+    level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
 )
 logger = logging.getLogger(__name__)
 
 
 class ExecutionStatus(Enum):
     """執行狀態"""
+
     PENDING = "pending"
     RUNNING = "running"
     SUCCESS = "success"
@@ -40,6 +40,7 @@ class ExecutionStatus(Enum):
 
 class ComponentType(Enum):
     """組件類型"""
+
     AGENT = "agent"
     ISLAND = "island"
     BRIDGE = "bridge"
@@ -48,6 +49,7 @@ class ComponentType(Enum):
 @dataclass
 class ExecutionResult:
     """執行結果"""
+
     component_id: str
     component_type: ComponentType
     status: ExecutionStatus
@@ -69,13 +71,14 @@ class ExecutionResult:
             "duration_ms": self.duration_ms,
             "output": self.output,
             "error": self.error,
-            "metadata": self.metadata
+            "metadata": self.metadata,
         }
 
 
 @dataclass
 class SystemStatus:
     """系統狀態"""
+
     timestamp: datetime
     total_components: int
     active_components: int
@@ -91,7 +94,7 @@ class SystemStatus:
             "active_components": self.active_components,
             "successful_executions": self.successful_executions,
             "failed_executions": self.failed_executions,
-            "results": [r.to_dict() for r in self.results]
+            "results": [r.to_dict() for r in self.results],
         }
 
 
@@ -139,10 +142,7 @@ class SynergyMeshOrchestrator:
         logger.info("🔧 SynergyMeshOrchestrator 初始化完成")
 
     def register_agent(
-        self,
-        agent_id: str,
-        agent: Any,
-        auto_start: bool = False
+        self, agent_id: str, agent: Any, auto_start: bool = False
     ) -> bool:
         """
         註冊 Agent
@@ -157,10 +157,10 @@ class SynergyMeshOrchestrator:
         """
         try:
             self.agents[agent_id] = {
-                'instance': agent,
-                'auto_start': auto_start,
-                'registered_at': datetime.now(),
-                'status': 'initialized'
+                "instance": agent,
+                "auto_start": auto_start,
+                "registered_at": datetime.now(),
+                "status": "initialized",
             }
             logger.info(f"✅ Agent 已註冊: {agent_id}")
 
@@ -174,10 +174,7 @@ class SynergyMeshOrchestrator:
             return False
 
     def register_island(
-        self,
-        island_id: str,
-        island: Any,
-        auto_activate: bool = False
+        self, island_id: str, island: Any, auto_activate: bool = False
     ) -> bool:
         """
         註冊 Island
@@ -192,10 +189,10 @@ class SynergyMeshOrchestrator:
         """
         try:
             self.islands[island_id] = {
-                'instance': island,
-                'auto_activate': auto_activate,
-                'registered_at': datetime.now(),
-                'status': 'dormant'
+                "instance": island,
+                "auto_activate": auto_activate,
+                "registered_at": datetime.now(),
+                "status": "dormant",
             }
             logger.info(f"✅ Island 已註冊: {island_id}")
 
@@ -208,11 +205,7 @@ class SynergyMeshOrchestrator:
             logger.error(f"❌ 註冊 Island 失敗 {island_id}: {e}")
             return False
 
-    def register_bridge(
-        self,
-        bridge_id: str,
-        bridge: Any
-    ) -> bool:
+    def register_bridge(self, bridge_id: str, bridge: Any) -> bool:
         """
         註冊 Bridge
 
@@ -225,9 +218,9 @@ class SynergyMeshOrchestrator:
         """
         try:
             self.bridges[bridge_id] = {
-                'instance': bridge,
-                'registered_at': datetime.now(),
-                'status': 'ready'
+                "instance": bridge,
+                "registered_at": datetime.now(),
+                "status": "ready",
             }
             logger.info(f"✅ Bridge 已註冊: {bridge_id}")
             return True
@@ -251,28 +244,28 @@ class SynergyMeshOrchestrator:
                 component_type=ComponentType.AGENT,
                 status=ExecutionStatus.FAILED,
                 start_time=datetime.now(),
-                error=f"Agent {agent_id} 未註冊"
+                error=f"Agent {agent_id} 未註冊",
             )
 
         agent_info = self.agents[agent_id]
-        agent = agent_info['instance']
+        agent = agent_info["instance"]
         start_time = datetime.now()
 
         result = ExecutionResult(
             component_id=agent_id,
             component_type=ComponentType.AGENT,
             status=ExecutionStatus.PENDING,
-            start_time=start_time
+            start_time=start_time,
         )
 
         try:
             logger.info(f"🚀 執行 Agent: {agent_id}")
 
-            if not hasattr(agent, 'start'):
+            if not hasattr(agent, "start"):
                 raise AttributeError(f"Agent {agent_id} 不支援 start() 方法")
 
             agent.start()
-            output = agent.execute() if hasattr(agent, 'execute') else None
+            output = agent.execute() if hasattr(agent, "execute") else None
 
             end_time = datetime.now()
             duration = (end_time - start_time).total_seconds() * 1000
@@ -314,28 +307,28 @@ class SynergyMeshOrchestrator:
                 component_type=ComponentType.ISLAND,
                 status=ExecutionStatus.FAILED,
                 start_time=datetime.now(),
-                error=f"Island {island_id} 未註冊"
+                error=f"Island {island_id} 未註冊",
             )
 
         island_info = self.islands[island_id]
-        island = island_info['instance']
+        island = island_info["instance"]
         start_time = datetime.now()
 
         result = ExecutionResult(
             component_id=island_id,
             component_type=ComponentType.ISLAND,
             status=ExecutionStatus.PENDING,
-            start_time=start_time
+            start_time=start_time,
         )
 
         try:
             logger.info(f"🏝️ 執行 Island: {island_id}")
 
-            if not hasattr(island, 'activate'):
+            if not hasattr(island, "activate"):
                 raise AttributeError(f"Island {island_id} 不支援 activate() 方法")
 
             island.activate()
-            output = island.execute() if hasattr(island, 'execute') else None
+            output = island.execute() if hasattr(island, "execute") else None
 
             end_time = datetime.now()
             duration = (end_time - start_time).total_seconds() * 1000
@@ -401,10 +394,7 @@ class SynergyMeshOrchestrator:
         """
         return await self.execute_all()
 
-    async def execute_manual_mode(
-        self,
-        target_ids: List[str]
-    ) -> Dict[str, Any]:
+    async def execute_manual_mode(self, target_ids: List[str]) -> Dict[str, Any]:
         """
         手動模式執行（執行指定的組件）
 
@@ -432,10 +422,16 @@ class SynergyMeshOrchestrator:
     def _generate_report(self) -> Dict[str, Any]:
         """生成執行報告"""
         end_time = datetime.now()
-        duration = (end_time - self.start_time).total_seconds() if self.start_time else 0
+        duration = (
+            (end_time - self.start_time).total_seconds() if self.start_time else 0
+        )
 
-        successful = sum(1 for r in self.execution_results if r.status == ExecutionStatus.SUCCESS)
-        failed = sum(1 for r in self.execution_results if r.status == ExecutionStatus.FAILED)
+        successful = sum(
+            1 for r in self.execution_results if r.status == ExecutionStatus.SUCCESS
+        )
+        failed = sum(
+            1 for r in self.execution_results if r.status == ExecutionStatus.FAILED
+        )
 
         report = {
             "timestamp": end_time.isoformat(),
@@ -445,7 +441,8 @@ class SynergyMeshOrchestrator:
             "failed": failed,
             "agents_registered": len(self.agents),
             "islands_registered": len(self.islands),
-            "results": [r.to_dict() for r in self.execution_results[-20:]]  # 最後 20 個結果
+            # 最後 20 個結果
+            "results": [r.to_dict() for r in self.execution_results[-20:]],
         }
 
         logger.info(f"\n{'='*60}")
@@ -467,17 +464,23 @@ class SynergyMeshOrchestrator:
         Returns:
             系統狀態
         """
-        successful = sum(1 for r in self.execution_results if r.status == ExecutionStatus.SUCCESS)
-        failed = sum(1 for r in self.execution_results if r.status == ExecutionStatus.FAILED)
+        successful = sum(
+            1 for r in self.execution_results if r.status == ExecutionStatus.SUCCESS
+        )
+        failed = sum(
+            1 for r in self.execution_results if r.status == ExecutionStatus.FAILED
+        )
 
         return SystemStatus(
             timestamp=datetime.now(),
             total_components=len(self.agents) + len(self.islands),
-            active_components=len([a for a in self.agents.values() if a['status'] != 'stopped']) + \
-                             len([i for i in self.islands.values() if i['status'] != 'dormant']),
+            active_components=len(
+                [a for a in self.agents.values() if a["status"] != "stopped"]
+            )
+            + len([i for i in self.islands.values() if i["status"] != "dormant"]),
             successful_executions=successful,
             failed_executions=failed,
-            results=self.execution_results
+            results=self.execution_results,
         )
 
     def list_agents(self) -> List[Dict[str, Any]]:
@@ -485,10 +488,10 @@ class SynergyMeshOrchestrator:
         return [
             {
                 "agent_id": agent_id,
-                "type": type(info['instance']).__name__,
-                "status": info['status'],
-                "auto_start": info['auto_start'],
-                "registered_at": info['registered_at'].isoformat()
+                "type": type(info["instance"]).__name__,
+                "status": info["status"],
+                "auto_start": info["auto_start"],
+                "registered_at": info["registered_at"].isoformat(),
             }
             for agent_id, info in self.agents.items()
         ]
@@ -498,10 +501,10 @@ class SynergyMeshOrchestrator:
         return [
             {
                 "island_id": island_id,
-                "type": type(info['instance']).__name__,
-                "status": info['status'],
-                "auto_activate": info['auto_activate'],
-                "registered_at": info['registered_at'].isoformat()
+                "type": type(info["instance"]).__name__,
+                "status": info["status"],
+                "auto_activate": info["auto_activate"],
+                "registered_at": info["registered_at"].isoformat(),
             }
             for island_id, info in self.islands.items()
         ]
@@ -512,8 +515,8 @@ class SynergyMeshOrchestrator:
 
         # 停止所有 Agent
         for agent_id, agent_info in self.agents.items():
-            agent = agent_info['instance']
-            if hasattr(agent, 'stop'):
+            agent = agent_info["instance"]
+            if hasattr(agent, "stop"):
                 try:
                     agent.stop()
                     logger.info(f"✅ Agent 已停止: {agent_id}")
@@ -522,8 +525,8 @@ class SynergyMeshOrchestrator:
 
         # 停止所有 Island
         for island_id, island_info in self.islands.items():
-            island = island_info['instance']
-            if hasattr(island, 'deactivate'):
+            island = island_info["instance"]
+            if hasattr(island, "deactivate"):
                 try:
                     island.deactivate()
                     logger.info(f"✅ Island 已停止: {island_id}")
@@ -540,5 +543,5 @@ __all__ = [
     "ExecutionResult",
     "SystemStatus",
     "ExecutionStatus",
-    "ComponentType"
+    "ComponentType",
 ]

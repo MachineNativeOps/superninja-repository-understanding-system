@@ -1,0 +1,2446 @@
+🔍 Found 783 files with issues to fix
+============================================================
+
+[1/783] Processing: workspace/src/core/plugins/ai_constitution/constitution_engine.py
+  ✅ Import order fixed
+
+[2/783] Processing: workspace/src/core/validators/syntax_validator.py
+  ✅ Import order fixed
+
+[3/783] Processing: workspace/src/enterprise/execution/quota.py
+  ✅ Import order fixed
+
+[4/783] Processing: 00-namespaces/namespaces-adk/governance_agents/dag_maintenance_agent.py
+  ✅ Import order fixed
+
+[5/783] Processing: workspace/mcp/validation-mcp/tools/github_project_analyzer.py
+  ✅ Import order fixed
+  ✅ Hardcoded URLs fixed
+
+[6/783] Processing: workspace/teams/holy-grail/legacy-archive/v1-python-drones/drones/base_drone.py
+  ✅ Import order fixed
+
+[7/783] Processing: workspace/tools/automation/engines/baseline_validation_engine.py
+  ✅ Import order fixed
+
+[8/783] Processing: workspace/src/services/agents/dependency-manager/src/enterprise/security.py
+  ✅ Import order fixed
+  ✅ MD5 replaced with SHA256
+
+[9/783] Processing: workspace/tools/real-module-launcher.py
+  ✅ Import order fixed
+
+[10/783] Processing: workspace/tools/automation/engine_base.py
+  ✅ Import order fixed
+
+[11/783] Processing: 00-namespaces/namespaces-adk/adk/mcp/mcp_security.py
+  ✅ Import order fixed
+
+[12/783] Processing: workspace/src/enterprise/execution/isolator.py
+  ✅ Import order fixed
+
+[13/783] Processing: 00-namespaces/namespaces-mcp/level1/tools/validator.py
+  ✅ Import order fixed
+
+[14/783] Processing: workspace/src/core/run-debug/engine.py
+  ✅ Import order fixed
+
+[15/783] Processing: workspace/src/core/new/governance/policy_engine.py
+  ✅ Import order fixed
+
+[16/783] Processing: workspace/src/developer-tools/code-complexity-analyzer/complexity_analyzer.py
+  ✅ Import order fixed
+  ✅ Docstrings added
+
+[17/783] Processing: workspace/src/core/plugins/main_system/system_bootstrap.py
+  ✅ Import order fixed
+
+[18/783] Processing: workspace/teams/holy-grail/integration-layer/templates/multi-layer-validator.py
+  ✅ Import order fixed
+
+[19/783] Processing: workspace/src/ai/agents/dependency-manager/src/models/update.py
+  ✅ Import order fixed
+
+[20/783] Processing: workspace/src/core/engine/tool_system.py
+  ✅ Import order fixed
+
+[21/783] Processing: workspace/src/services/agents/dependency-manager/src/future/privacy_framework.py
+  ✅ Import order fixed
+
+[22/783] Processing: workspace/teams/holy-grail/agents/ai-experts/dependency-manager/src/strategy/strategy_advisor.py
+  ✅ Import order fixed
+
+[23/783] Processing: workspace/docs/architecture/configuration/python/test_security_scanner_validation.py
+  ✅ Import order fixed
+
+[24/783] Processing: workspace/teams/default-team/orchestrator/models/consensus.py
+  ✅ Import order fixed
+
+[25/783] Processing: workspace/src/core/integrations/configuration_optimizer.py
+  ✅ Import order fixed
+
+[26/783] Processing: workspace/teams/holy-grail/automation/architect/core/analysis/static_analyzer.py
+  ✅ Import order fixed
+
+[27/783] Processing: workspace/src/autonomous/deployment/instant_execution_pipeline.py
+  ✅ Import order fixed
+
+[28/783] Processing: workspace/src/core/plugins/virtual_experts/expert_team.py
+  ✅ Import order fixed
+
+[29/783] Processing: workspace/config/dev/automation/drone-coordinator.py
+  ✅ Import order fixed
+
+[30/783] Processing: workspace/src/autonomous/agents/__init__.py
+  ✅ Import order fixed
+
+[31/783] Processing: workspace/tools/automation/engines/integration_automation_engine.py
+  ✅ Import order fixed
+  ✅ MD5 replaced with SHA256
+
+[32/783] Processing: 00-namespaces/namespaces-adk/adk/security/pii_filter.py
+  ✅ Import order fixed
+
+[33/783] Processing: workspace/teams/holy-grail/agents/services/dependency-manager/src/analyzers/npm_analyzer.py
+  ✅ Import order fixed
+
+[34/783] Processing: workspace/src/core/integrations/configuration_manager.py
+  ✅ Import order fixed
+
+[35/783] Processing: workspace/src/governance/03-change/automation_engine.py
+  ✅ Import order fixed
+
+[36/783] Processing: workspace/tools/platform-bootstrap-runner.py
+  ✅ Import order fixed
+  ✅ Hardcoded URLs fixed
+
+[37/783] Processing: workspace/teams/holy-grail/automation/zero_touch_deployment.py
+  ✅ Import order fixed
+
+[38/783] Processing: workspace/teams/holy-grail/agents/services/dependency-manager/src/engine.py
+  ✅ Import order fixed
+
+[39/783] Processing: workspace/scripts/ops/migration/migrator.py
+  ✅ Import order fixed
+
+[40/783] Processing: workspace/teams/holy-grail/agents/services/dependency-manager/src/evaluation/weight_config.py
+  ✅ Import order fixed
+
+[41/783] Processing: workspace/src/core/phase4/multi_language/__init__.py
+  ✅ Import order fixed
+
+[42/783] Processing: workspace/archive/legacy/v2-multi-islands/islands/java_island.py
+  ✅ Import order fixed
+
+[43/783] Processing: 00-namespaces/namespaces-adk/adk/core/plugin_manager.py
+  ✅ Import order fixed
+
+[44/783] Processing: workspace/teams/holy-grail/agents/ai-experts/dependency-manager/src/enterprise/integration.py
+  ✅ Import order fixed
+
+[45/783] Processing: workspace/governance/naming-governance-v1.0.0/scripts/audit/exception_manager.py
+  ✅ Import order fixed
+
+[46/783] Processing: workspace/src/governance/dimensions/82-stakeholder/automation_engine.py
+  ✅ Import order fixed
+
+[47/783] Processing: analyze_branches.py
+  ✅ Import order fixed
+
+[48/783] Processing: 00-namespaces/namespaces-adk/adk/mcp/a2a_client.py
+  ✅ Import order fixed
+
+[49/783] Processing: workspace/src/demo_instant_generation.py
+  ✅ Import order fixed
+
+[50/783] Processing: workspace/teams/holy-grail/agents/ai-experts/dependency-manager/src/evaluation/smartv_framework.py
+  ✅ Import order fixed
+
+[51/783] Processing: workspace/teams/holy-grail/legacy-archive/v2-multi-islands/islands/typescript_island.py
+  ✅ Import order fixed
+
+[52/783] Processing: workspace/src/governance/scripts/vision-tracker.py
+  ✅ Import order fixed
+
+[53/783] Processing: workspace/src/governance/33-common/tools/dependency_analyzer.py
+  ✅ Import order fixed
+
+[54/783] Processing: workspace/src/core/plugins/monitoring_system/smart_anomaly_detector.py
+  ✅ Import order fixed
+
+[55/783] Processing: workspace/engine/machinenativenops-auto-monitor/src/machinenativenops_auto_monitor/儲存.py
+  ✅ Import order fixed
+
+[56/783] Processing: workspace/teams/holy-grail/agents/ai-experts/dependency-manager/src/updaters/auto_updater.py
+  ✅ Import order fixed
+
+[57/783] Processing: workspace/teams/holy-grail/agents/services/dependency-manager/src/crossplatform/iot_integration.py
+  ✅ Import order fixed
+
+[58/783] Processing: workspace/src/core/project_factory/validator.py
+  ✅ Import order fixed
+
+[59/783] Processing: workspace/src/governance/39-automation/engines/dimension_automation_engine.py
+  ✅ Import order fixed
+
+[60/783] Processing: workspace/teams/default-team/orchestrator/test_super_agent.py
+  ✅ Import order fixed
+  ✅ Hardcoded URLs fixed
+
+[61/783] Processing: workspace/src/autonomous/agents/base-agent.py
+  ✅ Import order fixed
+
+[62/783] Processing: workspace/src/core/plugins/yaml_module_system/policy_gate.py
+  ✅ Import order fixed
+
+[63/783] Processing: workspace/src/governance/33-common/tools/governance_policy_checker.py
+  ✅ Import order fixed
+
+[64/783] Processing: workspace/src/bridges/language-islands/go-island.py
+  ✅ Import order fixed
+
+[65/783] Processing: workspace/src/ai/agents/dependency-manager/src/evaluation/smartv_framework.py
+  ✅ Import order fixed
+
+[66/783] Processing: workspace/src/ai/agents/dependency-manager/src/strategy/strategy_advisor.py
+  ✅ Import order fixed
+
+[67/783] Processing: workspace/src/services/agents/dependency-manager/src/utils/audit_logger.py
+  ✅ Import order fixed
+
+[68/783] Processing: workspace/src/core/ai_constitution/constitution_engine.py
+  ✅ Import order fixed
+
+[69/783] Processing: workspace/teams/holy-grail/agents/services/dependency-manager/src/implementation/action_guide.py
+  ✅ Import order fixed
+
+[70/783] Processing: workspace/src/core/merkle/merkle_foundation.py
+  ✅ Import order fixed
+
+[71/783] Processing: workspace/src/shared/utils/common_helpers.py
+  ✅ Import order fixed
+
+[72/783] Processing: workspace/teams/holy-grail/agents/ai-experts/dependency-manager/src/enterprise/security.py
+  ✅ Import order fixed
+  ✅ MD5 replaced with SHA256
+
+[73/783] Processing: workspace/src/core/monitoring/auto_remediation.py
+  ✅ Import order fixed
+
+[74/783] Processing: workspace/src/enterprise/iam/sso.py
+  ✅ Import order fixed
+
+[75/783] Processing: workspace/src/ai/agents/dependency-manager/src/updaters/auto_updater.py
+  ✅ Import order fixed
+
+[76/783] Processing: workspace/src/services/agents/dependency-manager/src/crossplatform/arvr_integration.py
+  ✅ Import order fixed
+
+[77/783] Processing: workspace/tools/generate-refactor-playbook.py
+  ✅ Import order fixed
+
+[78/783] Processing: workspace/src/core/new/automation/workflow_engine.py
+  ✅ Import order fixed
+
+[79/783] Processing: workspace/src/core/auto_bug_detector.py
+  ✅ Import order fixed
+
+[80/783] Processing: workspace/src/governance/scripts/intelligent-file-router.py
+  ✅ Import order fixed
+
+[81/783] Processing: workspace/src/developer-tools/deployment-risk-assessor/risk_assessor.py
+  ✅ Import order fixed
+  ✅ Docstrings added
+
+[82/783] Processing: workspace/src/autonomous/core/remediation/auto_remediation.py
+  ✅ Import order fixed
+
+[83/783] Processing: workspace/src/apps/web-backend/services/models.py
+  ✅ Import order fixed
+
+[84/783] Processing: workspace/tools/refactor/validate-phase2.py
+  ✅ Import order fixed
+
+[85/783] Processing: opt/machinenativenops/modules/config-manager/main.py
+  ✅ Import order fixed
+
+[86/783] Processing: workspace/teams/holy-grail/agents/services/dependency-manager/src/crossplatform/emergency_response.py
+  ✅ Import order fixed
+
+[87/783] Processing: workspace/src/services/agents/dependency-manager/src/implementation/implementation_plan.py
+  ✅ Import order fixed
+
+[88/783] Processing: 00-namespaces/governance_layer/policy_engine.py
+  ✅ Import order fixed
+
+[89/783] Processing: workspace/examples/enterprise-orchestrator-example.py
+  ✅ Import order fixed
+
+[90/783] Processing: workspace/teams/holy-grail/agents/ai-experts/dependency-manager/src/evaluation/evaluation_report.py
+  ✅ Import order fixed
+
+[91/783] Processing: workspace/src/core/plugins/yaml_module_system/slsa_compliance.py
+  ✅ Import order fixed
+
+[92/783] Processing: workspace/src/developer-tools/automated-test-generator/test_generator.py
+  ✅ Import order fixed
+  ✅ Docstrings added
+
+[93/783] Processing: workspace/src/core/plugins/tech_stack/architecture_config.py
+  ✅ Import order fixed
+
+[94/783] Processing: workspace/src/core/plugins/mcp_servers_enhanced/mcp_server_manager.py
+  ✅ Import order fixed
+
+[95/783] Processing: workspace/src/core/safety/emergency_stop.py
+  ✅ Import order fixed
+
+[96/783] Processing: workspace/src/core/plugins/virtual_experts/domain_experts.py
+  ✅ Import order fixed
+  ⚠️  eval() usage marked for review
+
+[97/783] Processing: workspace/teams/holy-grail/agents/services/dependency-manager/src/crossplatform/web3_integration.py
+  ✅ Import order fixed
+
+[98/783] Processing: workspace/teams/holy-grail/integration-layer/templates/contract-generator.py
+  ✅ Import order fixed
+
+[99/783] Processing: workspace/root/teams/default-team/orchestrator/services/github_integration.py
+  ✅ Import order fixed
+  ✅ Hardcoded URLs fixed
+
+[100/783] Processing: workspace/src/core/plugins/training_system/knowledge_base.py
+  ✅ Import order fixed
+  ✅ MD5 replaced with SHA256
+
+[101/783] Processing: workspace/teams/holy-grail/agents/autonomous/__init__.py
+  ✅ Import order fixed
+
+[102/783] Processing: workspace/src/enterprise/data/metrics.py
+  ✅ Import order fixed
+
+[103/783] Processing: workspace/src/ai/agents/dependency-manager/src/evaluation/evaluation_report.py
+  ✅ Import order fixed
+
+[104/783] Processing: 00-namespaces/namespaces-mcp/level1/validation/extended-validator.py
+  ✅ Import order fixed
+  ✅ Hardcoded URLs fixed
+
+[105/783] Processing: workspace/src/enterprise/integrations/providers.py
+  ✅ Import order fixed
+  ✅ Hardcoded URLs fixed
+
+[106/783] Processing: workspace/src/ai/agents/dependency-manager/src/enterprise/integration.py
+  ✅ Import order fixed
+
+[107/783] Processing: workspace/tools/automation/engines/generation_engine.py
+  ✅ Import order fixed
+
+[108/783] Processing: workspace/src/core/yaml_module_system/audit_trail.py
+  ✅ Import order fixed
+
+[109/783] Processing: workspace/teams/holy-grail/agents/ai-experts/dependency-manager/src/analyzers/go_analyzer.py
+  ✅ Import order fixed
+
+[110/783] Processing: workspace/src/autonomous/deployment/instant_execution_engine_v2.py
+  ✅ Import order fixed
+
+[111/783] Processing: controlplane/validation/supply-chain-complete-verifier.py
+  ✅ Import order fixed
+
+[112/783] Processing: workspace/src/core/plugins/execution_engine/verification_engine.py
+  ✅ Import order fixed
+
+[113/783] Processing: workspace/tools/verify_p0_safety.py
+  ✅ Import order fixed
+
+[114/783] Processing: workspace/teams/holy-grail/agents/autonomous/agents/task_executor.py
+  ✅ Import order fixed
+  ⚠️  eval() usage marked for review
+
+[115/783] Processing: workspace/scripts/validation/validate-root-specs.py
+  ✅ Import order fixed
+
+[116/783] Processing: workspace/namespace-validator.py
+  ✅ Import order fixed
+
+[117/783] Processing: workspace/src/core/engine/action_executor.py
+  ✅ Import order fixed
+
+[118/783] Processing: workspace/teams/holy-grail/agents/services/dependency-manager/src/analyzers/base_analyzer.py
+  ✅ Import order fixed
+
+[119/783] Processing: workspace/src/governance/35-scripts/validate-python-syntax.py
+  ✅ Import order fixed
+
+[120/783] Processing: workspace/src/core/main_system/synergymesh_core.py
+  ✅ Import order fixed
+
+[121/783] Processing: workspace/src/ai/agents/dependency-manager/src/analyzers/go_analyzer.py
+  ✅ Import order fixed
+
+[122/783] Processing: workspace/src/core/slsa_provenance/signature_verifier.py
+  ✅ Import order fixed
+
+[123/783] Processing: workspace/teams/holy-grail/legacy-archive/v1-python-drones/drones/autopilot_drone.py
+  ✅ Import order fixed
+
+[124/783] Processing: workspace/src/core/ci_error_handler/issue_manager.py
+  ✅ Import order fixed
+
+[125/783] Processing: workspace/scripts/verification/production-verification.py
+  ✅ Import order fixed
+
+[126/783] Processing: workspace/teams/holy-grail/agents/autonomous/synergymesh_core/orchestration_layer.py
+  ✅ Import order fixed
+
+[127/783] Processing: workspace/teams/holy-grail/agents/ai-experts/dependency-manager/src/future/privacy_framework.py
+  ✅ Import order fixed
+
+[128/783] Processing: workspace/teams/holy-grail/automation/self_awareness_report.py
+  ✅ Import order fixed
+
+[129/783] Processing: merge_branches.py
+  ✅ Import order fixed
+
+[130/783] Processing: 00-namespaces/namespaces-adk/adk/governance/ari_index.py
+  ✅ Import order fixed
+
+[131/783] Processing: 00-namespaces/namespaces-adk/adk/mcp/tool_router.py
+  ✅ Import order fixed
+
+[132/783] Processing: workspace/src/ai/agents/dependency-manager/src/enterprise/security.py
+  ✅ Import order fixed
+  ✅ MD5 replaced with SHA256
+
+[133/783] Processing: workspace/teams/holy-grail/agents/services/dependency-manager/src/strategy/resource_optimizer.py
+  ✅ Import order fixed
+
+[134/783] Processing: workspace/src/enterprise/events/job_queue.py
+  ✅ Import order fixed
+
+[135/783] Processing: workspace/tools/subtree_integrate.py
+  ✅ Import order fixed
+
+[136/783] Processing: workspace/tools/build_module.py
+  ✅ Import order fixed
+  ✅ Docstrings added
+
+[137/783] Processing: workspace/src/ai/agents/dependency-manager/src/future/privacy_framework.py
+  ✅ Import order fixed
+
+[138/783] Processing: workspace/src/services/watchdog/system_watchdog.py
+  ✅ Import order fixed
+
+[139/783] Processing: workspace/tools/docs/project_to_superroot.py
+  ✅ Import order fixed
+
+[140/783] Processing: workspace/teams/default-team/orchestrator/services/consensus.py
+  ✅ Import order fixed
+
+[141/783] Processing: workspace/src/enterprise/data/storage.py
+  ✅ Import order fixed
+
+[142/783] Processing: workspace/tools/refactor/cognitive_engine.py
+  ✅ Import order fixed
+
+[143/783] Processing: 00-namespaces/namespaces-mcp/legacy/python-scripts/converter.py
+  ✅ Import order fixed
+
+[144/783] Processing: workspace/src/autonomous/agents/pipeline_service.py
+  ✅ Import order fixed
+  ⚠️  eval() usage marked for review
+
+[145/783] Processing: workspace/teams/holy-grail/automation/architect/examples/basic_usage.py
+  ✅ Import order fixed
+
+[146/783] Processing: workspace/teams/holy-grail/agents/ai-experts/dependency-manager/src/utils/policy_simulator.py
+  ✅ Import order fixed
+
+[147/783] Processing: workspace/teams/holy-grail/agents/services/dependency-manager/src/crossplatform/tech_stack_matrix.py
+  ✅ Import order fixed
+
+[148/783] Processing: workspace/src/services/agents/dependency-manager/src/models/update.py
+  ✅ Import order fixed
+
+[149/783] Processing: workspace/governance-system-implementation.py
+  ✅ Import order fixed
+
+[150/783] Processing: workspace/archive/legacy/v2-multi-islands/islands/python_island.py
+  ✅ Import order fixed
+
+[151/783] Processing: workspace/teams/holy-grail/agents/services/dependency-manager/src/models/vulnerability.py
+  ✅ Import order fixed
+
+[152/783] Processing: workspace/src/services/agents/dependency-manager/src/crossplatform/risk_assessment.py
+  ✅ Import order fixed
+
+[153/783] Processing: workspace/docs/refactor_playbooks/templates/multi-layer-validator.py
+  ✅ Import order fixed
+
+[154/783] Processing: workspace/src/ai/agents/dependency-manager/src/combination/dynamic_adjuster.py
+  ✅ Import order fixed
+
+[155/783] Processing: workspace/teams/holy-grail/agents/ai-experts/dependency-manager/src/strategy/case_study_engine.py
+  ✅ Import order fixed
+
+[156/783] Processing: workspace/src/autonomous/agents/test-vectors/generator.py
+  ✅ Import order fixed
+  ⚠️  eval() usage marked for review
+
+[157/783] Processing: workspace/src/core/ai_decision_engine.py
+  ✅ Import order fixed
+
+[158/783] Processing: workspace/src/core/instant_generation/monitoring/__init__.py
+  ✅ Import order fixed
+
+[159/783] Processing: workspace/src/core/safety/escalation_ladder.py
+  ✅ Import order fixed
+
+[160/783] Processing: workspace/src/core/ai_constitution/fundamental_laws.py
+  ✅ Import order fixed
+
+[161/783] Processing: workspace/mcp/validation-mcp/tools/github_project_analyzer_quantum.py
+  ✅ Import order fixed
+  ✅ Hardcoded URLs fixed
+
+[162/783] Processing: workspace/src/autonomous/infrastructure/security-observability/observability/event_logger.py
+  ✅ Import order fixed
+
+[163/783] Processing: workspace/src/core/run-debug/chat_interface.py
+  ✅ Import order fixed
+
+[164/783] Processing: 00-namespaces/namespaces-adk/adk/core/agent_runtime.py
+  ✅ Import order fixed
+
+[165/783] Processing: workspace/src/core/instant_generation/agents/optimization_agent.py
+  ✅ Import order fixed
+
+[166/783] Processing: workspace/src/autonomous/agents/auto_upgrade_env.py
+  ✅ Import order fixed
+  ✅ MD5 replaced with SHA256
+
+[167/783] Processing: workspace/src/core/integrations/work_configuration_manager.py
+  ✅ Import order fixed
+
+[168/783] Processing: workspace/src/core/engine/verification_engine.py
+  ✅ Import order fixed
+
+[169/783] Processing: workspace/src/core/plugins/monitoring_system/auto_remediation.py
+  ✅ Import order fixed
+
+[170/783] Processing: workspace/src/core/instant_generation/agents/code_generation_agent.py
+  ✅ Import order fixed
+  ✅ Hardcoded URLs fixed
+
+[171/783] Processing: workspace/teams/holy-grail/agents/autonomous/migration/scripts/v1_to_v2.py
+  ✅ Import order fixed
+
+[172/783] Processing: workspace/src/core/plugins/main_system/automation_pipeline.py
+  ✅ Import order fixed
+
+[173/783] Processing: workspace/src/core/phase4/enterprise_features/__init__.py
+  ✅ Import order fixed
+
+[174/783] Processing: workspace/src/core/plugins/drone_system/deployment.py
+  ✅ Import order fixed
+
+[175/783] Processing: workspace/tools/namespace-validator.py
+  ✅ Import order fixed
+
+[176/783] Processing: workspace/teams/default-team/orchestrator/utils/retry.py
+  ✅ Import order fixed
+
+[177/783] Processing: workspace/src/core/yaml_module_system/policy_gate.py
+  ✅ Import order fixed
+
+[178/783] Processing: 00-namespaces/namespaces-adk/adk/core/sandbox.py
+  ✅ Import order fixed
+
+[179/783] Processing: workspace/teams/holy-grail/agents/services/dependency-manager/src/future/sustainable_analyzer.py
+  ✅ Import order fixed
+
+[180/783] Processing: 00-namespaces/namespaces-adk/governance_agents/gitops_workflow_agent.py
+  ✅ Import order fixed
+
+[181/783] Processing: workspace/tools/validation/world_class_validation.py
+  ✅ Import order fixed
+
+[182/783] Processing: workspace/tools/validation/emergency_mode_manager.py
+  ✅ Import order fixed
+
+[183/783] Processing: workspace/teams/holy-grail/agents/ai-experts/dependency-manager/src/crossplatform/arvr_integration.py
+  ✅ Import order fixed
+
+[184/783] Processing: workspace/src/governance/39-automation/self-healing-engine.py
+  ✅ Import order fixed
+
+[185/783] Processing: workspace/src/core/plugins/mcp_servers_enhanced/tool_registry.py
+  ✅ Import order fixed
+
+[186/783] Processing: workspace/engine/machinenativenops-auto-monitor/src/machinenativenops_auto_monitor/storage.py
+  ✅ Import order fixed
+
+[187/783] Processing: workspace/src/enterprise/iam/token_manager.py
+  ✅ Import order fixed
+
+[188/783] Processing: workspace/teams/holy-grail/agents/services/dependency-manager/src/future/development_tracker.py
+  ✅ Import order fixed
+
+[189/783] Processing: workspace/src/automation/architect/examples/basic_usage.py
+  ✅ Import order fixed
+
+[190/783] Processing: workspace/src/shared/language_bridges.py
+  ✅ Import order fixed
+
+[191/783] Processing: workspace/src/core/plugins/ai_constitution/policy_as_prompt.py
+  ✅ Import order fixed
+
+[192/783] Processing: workspace/teams/default-team/orchestrator/services/github_integration.py
+  ✅ Import order fixed
+  ✅ Hardcoded URLs fixed
+
+[193/783] Processing: workspace/src/core/validators/multi_layer_validator.py
+  ✅ Import order fixed
+
+[194/783] Processing: workspace/docs/examples/configuration/python/security_scanner.py
+  ✅ Import order fixed
+  ✅ Docstrings added
+
+[195/783] Processing: workspace/teams/holy-grail/agents/ai-experts/dependency-manager/src/implementation/implementation_plan.py
+  ✅ Import order fixed
+
+[196/783] Processing: workspace/src/core/monitoring/auto_diagnosis.py
+  ✅ Import order fixed
+
+[197/783] Processing: archive/instant_migration/instant_archiver_v1.py
+  ✅ Import order fixed
+
+[198/783] Processing: workspace/src/enterprise/events/state_machine.py
+  ✅ Import order fixed
+
+[199/783] Processing: 00-namespaces/namespaces-adk/adk/observability/logging.py
+  ✅ Import order fixed
+
+[200/783] Processing: 00-namespaces/governance_layer/auth_manager.py
+  ✅ Import order fixed
+
+[201/783] Processing: workspace/teams/holy-grail/automation/architect/core/analysis/performance_analyzer.py
+  ✅ Import order fixed
+
+[202/783] Processing: workspace/src/enterprise/iam/rbac.py
+  ✅ Import order fixed
+
+[203/783] Processing: workspace/teams/holy-grail/automation/architect/core/orchestration/event_bus.py
+  ✅ Import order fixed
+
+[204/783] Processing: workspace/src/ai/agents/dependency-manager/src/strategy/case_study_engine.py
+  ✅ Import order fixed
+
+[205/783] Processing: workspace/governance/naming-governance-v1.0.0/scripts/generation/naming_generator.py
+  ✅ Import order fixed
+
+[206/783] Processing: 00-namespaces/namespaces-mcp/level1/INSTANT-DEPLOY.py
+  ✅ Import order fixed
+  ✅ Hardcoded URLs fixed
+
+[207/783] Processing: workspace/src/enterprise/reliability/versioning.py
+  ✅ Import order fixed
+
+[208/783] Processing: workspace/mcp/validation-mcp/tools/load_unified_pipeline.py
+  ✅ Import order fixed
+
+[209/783] Processing: workspace/teams/holy-grail/agents/services/dependency-manager/src/models/dependency.py
+  ✅ Import order fixed
+
+[210/783] Processing: workspace/root/teams/default-team/orchestrator/services/playbook_runner.py
+  ✅ Import order fixed
+
+[211/783] Processing: workspace/src/core/training_system/knowledge_base.py
+  ✅ Import order fixed
+  ✅ MD5 replaced with SHA256
+
+[212/783] Processing: workspace/teams/holy-grail/agents/autonomous/deployment-agent.py
+  ✅ Import order fixed
+
+[213/783] Processing: workspace/src/core/instant_generation/workflows/__init__.py
+  ✅ Import order fixed
+
+[214/783] Processing: workspace/src/core/phase4/visual_config/__init__.py
+  ✅ Import order fixed
+
+[215/783] Processing: workspace/src/autonomous/agents/synergymesh_core/nli_layer.py
+  ✅ Import order fixed
+
+[216/783] Processing: workspace/src/ai/agents/dependency-manager/src/combination/quarterly_review.py
+  ✅ Import order fixed
+
+[217/783] Processing: fix_code_quality.py
+  ✅ Import order fixed
+
+[218/783] Processing: workspace/src/core/plugins/mcp_servers_enhanced/workflow_orchestrator.py
+  ✅ Import order fixed
+
+[219/783] Processing: workspace/src/services/agents/dependency-manager/src/analyzers/npm_analyzer.py
+  ✅ Import order fixed
+
+[220/783] Processing: workspace/scripts/ops/migration/scripts/v2_to_v1.py
+  ✅ Import order fixed
+
+[221/783] Processing: workspace/scripts/maintenance/brand-replacer.py
+  ✅ Import order fixed
+
+[222/783] Processing: workspace/src/core/cloud_agent_delegation/task_router.py
+  ✅ Import order fixed
+
+[223/783] Processing: workspace/src/core/plugins/execution_architecture/function_calling.py
+  ✅ Import order fixed
+
+[224/783] Processing: workspace/teams/default-team/orchestrator/services/state_machine.py
+  ✅ Import order fixed
+
+[225/783] Processing: workspace/src/autonomous/agents/examples/demo.py
+  ✅ Import order fixed
+  ⚠️  eval() usage marked for review
+
+[226/783] Processing: workspace/src/services/agents/recovery/phoenix_agent.py
+  ✅ Import order fixed
+
+[227/783] Processing: workspace/src/governance/11-tools-systems/automation_engine.py
+  ✅ Import order fixed
+
+[228/783] Processing: workspace/docs/refactor_playbooks/templates/contract-generator.py
+  ✅ Import order fixed
+
+[229/783] Processing: workspace/src/automation/architect/core/orchestration/pipeline.py
+  ✅ Import order fixed
+
+[230/783] Processing: 00-namespaces/scripts/validate-instant-manifest.py
+  ✅ Import order fixed
+
+[231/783] Processing: workspace/tools/refactor/process_legacy_scratch.py
+  ✅ Import order fixed
+  ✅ MD5 replaced with SHA256
+
+[232/783] Processing: workspace/src/core/phase4/monitoring_dashboard/__init__.py
+  ✅ Import order fixed
+
+[233/783] Processing: workspace/src/bridges/language-islands/__init__.py
+  ✅ Import order fixed
+
+[234/783] Processing: workspace/teams/holy-grail/agents/ai-experts/dependency-manager/src/utils/audit_logger.py
+  ✅ Import order fixed
+
+[235/783] Processing: workspace/tools/scripts/manage-secret-patterns.py
+  ✅ Import order fixed
+  ✅ Hardcoded URLs fixed
+
+[236/783] Processing: workspace/src/governance/39-automation/coordinator/engine_coordinator.py
+  ✅ Import order fixed
+
+[237/783] Processing: workspace/src/governance/01-architecture/automation_engine.py
+  ✅ Import order fixed
+
+[238/783] Processing: workspace/src/core/engine/state_machine.py
+  ✅ Import order fixed
+
+[239/783] Processing: workspace/src/autonomous/agents/config/__init__.py
+  ✅ Import order fixed
+
+[240/783] Processing: workspace/src/ai/agents/dependency-manager/src/analyzers/pip_analyzer.py
+  ✅ Import order fixed
+
+[241/783] Processing: workspace/src/enterprise/execution/supply_chain.py
+  ✅ Import order fixed
+
+[242/783] Processing: workspace/src/autonomous/agents/synergymesh_core/natural_language_processor.py
+  ✅ Import order fixed
+
+[243/783] Processing: workspace/teams/holy-grail/agents/services/dependency-manager/src/future/lowcode_integration.py
+  ✅ Import order fixed
+
+[244/783] Processing: workspace/teams/holy-grail/agents/pipeline/input_analysis_agent.py
+  ✅ Import order fixed
+
+[245/783] Processing: workspace/src/core/plugins/yaml_module_system/audit_trail.py
+  ✅ Import order fixed
+
+[246/783] Processing: workspace/tools/automated_directory_restructure.py
+  ✅ Import order fixed
+
+[247/783] Processing: workspace/tools/path_tools/path_scanner.py
+  ✅ Import order fixed
+
+[248/783] Processing: workspace/src/core/plugins/execution_engine/connector_manager.py
+  ✅ Import order fixed
+
+[249/783] Processing: workspace/src/ai/agents/dependency-manager/src/crossplatform/arvr_integration.py
+  ✅ Import order fixed
+
+[250/783] Processing: workspace/teams/holy-grail/agents/ai-experts/dependency-manager/src/models/update.py
+  ✅ Import order fixed
+
+[251/783] Processing: workspace/src/enterprise/reliability/disaster_recovery.py
+  ✅ Import order fixed
+
+[252/783] Processing: workspace/teams/holy-grail/agents/ai-experts/dependency-manager/src/crossplatform/risk_assessment.py
+  ✅ Import order fixed
+
+[253/783] Processing: workspace/governance/naming-governance-v1.0.0/scripts/validation/naming_validator.py
+  ✅ Import order fixed
+
+[254/783] Processing: workspace/src/services/agents/dependency-manager/src/crossplatform/iot_integration.py
+  ✅ Import order fixed
+
+[255/783] Processing: workspace/tools/utilities/validate_vectors.py
+  ✅ Import order fixed
+
+[256/783] Processing: workspace/src/core/plugins/main_system/synergymesh_core.py
+  ✅ Import order fixed
+
+[257/783] Processing: workspace/src/services/agents/dependency-manager/src/strategy/evolution_tracker.py
+  ✅ Import order fixed
+
+[258/783] Processing: workspace/src/apps/web-backend/services/code_analyzer.py
+  ✅ Import order fixed
+  ✅ MD5 replaced with SHA256
+
+[259/783] Processing: workspace/src/core/project_factory/generator.py
+  ✅ Import order fixed
+
+[260/783] Processing: workspace/src/core/plugins/ci_error_handler/issue_manager.py
+  ✅ Import order fixed
+
+[261/783] Processing: workspace/teams/holy-grail/agents/autonomous/config/__init__.py
+  ✅ Import order fixed
+
+[262/783] Processing: workspace/src/core/ai_constitution/policy_as_prompt.py
+  ✅ Import order fixed
+
+[263/783] Processing: workspace/src/core/phase4/__init__.py
+  ✅ Import order fixed
+
+[264/783] Processing: workspace/src/automation/zero_touch_deployment.py
+  ✅ Import order fixed
+
+[265/783] Processing: workspace/src/business/services.py
+  ✅ Import order fixed
+
+[266/783] Processing: workspace/tools/validation/adaptive_decision_engine.py
+  ✅ Import order fixed
+
+[267/783] Processing: workspace/teams/holy-grail/agents/services/dependency-manager/src/enterprise/analytics.py
+  ✅ Import order fixed
+
+[268/783] Processing: 00-namespaces/namespaces-adk/adk/core/error_handling.py
+  ✅ Import order fixed
+
+[269/783] Processing: workspace/src/ai/agents/dependency-manager/src/engine.py
+  ✅ Import order fixed
+
+[270/783] Processing: workspace/tools/governance/python/naming-migration.py
+  ✅ Import order fixed
+
+[271/783] Processing: workspace/scripts/pre-deploy-test.py
+  ✅ Import order fixed
+
+[272/783] Processing: workspace/src/ai/agents/dependency-manager/src/enterprise/recommendation.py
+  ✅ Import order fixed
+
+[273/783] Processing: workspace/teams/holy-grail/agents/autonomous/test-vectors/generator.py
+  ✅ Import order fixed
+  ⚠️  eval() usage marked for review
+
+[274/783] Processing: workspace/src/core/orchestrators/enterprise-synergy-mesh-orchestrator.py
+  ✅ Import order fixed
+
+[275/783] Processing: 00-namespaces/schema_system/schema_registry.py
+  ✅ Import order fixed
+
+[276/783] Processing: 00-namespaces/namespaces-adk/adk/core/event_bus.py
+  ✅ Import order fixed
+
+[277/783] Processing: workspace/scripts/migrate.py
+  ✅ Import order fixed
+
+[278/783] Processing: workspace/teams/holy-grail/agents/autonomous/synergymesh_core/nli_layer.py
+  ✅ Import order fixed
+
+[279/783] Processing: workspace/src/governance/12-culture-capability/automation_engine.py
+  ✅ Import order fixed
+
+[280/783] Processing: workspace/src/core/cloud_agent_delegation/delegation_manager.py
+  ✅ Import order fixed
+
+[281/783] Processing: workspace/teams/holy-grail/legacy-archive/v2-multi-islands/bridges/language_bridge.py
+  ✅ Import order fixed
+
+[282/783] Processing: workspace/src/services/agents/dependency-manager/src/crossplatform/emergency_response.py
+  ✅ Import order fixed
+
+[283/783] Processing: workspace/src/automation/architect/core/repair/rule_engine.py
+  ✅ Import order fixed
+
+[284/783] Processing: workspace/src/core/main_system/automation_pipeline.py
+  ✅ Import order fixed
+
+[285/783] Processing: workspace/engine/machinenativenops-auto-monitor/src/machinenativenops_auto_monitor/config.py
+  ✅ Import order fixed
+
+[286/783] Processing: workspace/src/governance/33-common/tools/schema_validator.py
+  ✅ Import order fixed
+
+[287/783] Processing: workspace/src/core/tech_stack/multi_agent_coordinator.py
+  ✅ Import order fixed
+
+[288/783] Processing: workspace/namespace-converter.py
+  ✅ Import order fixed
+
+[289/783] Processing: workspace/teams/holy-grail/legacy-archive/v2-multi-islands/islands/python_island.py
+  ✅ Import order fixed
+
+[290/783] Processing: workspace/scripts/automation/automation_launcher.py
+  ✅ Import order fixed
+
+[291/783] Processing: workspace/tools/root_schema_gate.py
+  ✅ Import order fixed
+  ✅ Docstrings added
+
+[292/783] Processing: workspace/src/services/agents/dependency-manager/src/crossplatform/web3_integration.py
+  ✅ Import order fixed
+
+[293/783] Processing: workspace/src/ai/agents/dependency-manager/src/utils/audit_logger.py
+  ✅ Import order fixed
+
+[294/783] Processing: workspace/tools/docs/validate_index.py
+  ✅ Import order fixed
+
+[295/783] Processing: workspace/src/core/plugins/monitoring_system/auto_diagnosis.py
+  ✅ Import order fixed
+
+[296/783] Processing: workspace/src/enterprise/events/idempotency.py
+  ✅ Import order fixed
+
+[297/783] Processing: workspace/src/core/plugins/execution_engine/capability_registry.py
+  ✅ Import order fixed
+
+[298/783] Processing: workspace/src/core/orchestrators/synergy-mesh-orchestrator.py
+  ✅ Import order fixed
+
+[299/783] Processing: workspace/teams/holy-grail/agents/pipeline/deployment_agent.py
+  ✅ Import order fixed
+  ✅ Hardcoded URLs fixed
+
+[300/783] Processing: workspace/teams/holy-grail/agents/services/dependency-manager/src/strategy/strategy_advisor.py
+  ✅ Import order fixed
+
+[301/783] Processing: workspace/teams/holy-grail/agents/services/dependency-manager/src/updaters/auto_updater.py
+  ✅ Import order fixed
+
+[302/783] Processing: workspace/teams/holy-grail/dissolved-assets/tools/github_project_analyzer_v2.py
+  ✅ Import order fixed
+  ✅ Hardcoded URLs fixed
+
+[303/783] Processing: workspace/src/governance/14-improvement/automation_engine.py
+  ✅ Import order fixed
+
+[304/783] Processing: workspace/src/autonomous/agents/synergymesh_core/orchestration_layer.py
+  ✅ Import order fixed
+
+[305/783] Processing: workspace/governance/naming-governance-v1.0.0/scripts/audit/change_manager.py
+  ✅ Import order fixed
+
+[306/783] Processing: workspace/src/services/agents/dependency-manager/src/analyzers/base_analyzer.py
+  ✅ Import order fixed
+
+[307/783] Processing: workspace/src/autonomous/agents/synergymesh_core/ecosystem_orchestrator.py
+  ✅ Import order fixed
+
+[308/783] Processing: workspace/teams/holy-grail/agents/autonomous/synergymesh_core/natural_language_processor.py
+  ✅ Import order fixed
+
+[309/783] Processing: workspace/tools/autonomous_cleanup_toolkit.py
+  ✅ Import order fixed
+  ✅ MD5 replaced with SHA256
+
+[310/783] Processing: workspace/engine/machinenativenops-auto-monitor/src/machinenativenops_auto_monitor/alerts.py
+  ✅ Import order fixed
+
+[311/783] Processing: workspace/src/core/project_factory/factory.py
+  ✅ Import order fixed
+
+[312/783] Processing: workspace/src/demo_core.py
+  ✅ Import order fixed
+
+[313/783] Processing: workspace/src/enterprise/reliability/capacity.py
+  ✅ Import order fixed
+
+[314/783] Processing: workspace/src/core/ai_constitution/adaptive_guidelines.py
+  ✅ Import order fixed
+
+[315/783] Processing: workspace/tools/refactor/refactor_engine.py
+  ✅ Import order fixed
+
+[316/783] Processing: workspace/src/autonomous/agents/coordinator-agent.py
+  ✅ Import order fixed
+
+[317/783] Processing: 00-namespaces/namespaces-adk/adk/observability/tracing.py
+  ✅ Import order fixed
+
+[318/783] Processing: 00-namespaces/namespaces-adk/adk/core/workflow_orchestrator.py
+  ✅ Import order fixed
+  ⚠️  eval() usage marked for review
+
+[319/783] Processing: workspace/teams/holy-grail/agents/services/dependency-manager/src/combination/core_satellite.py
+  ✅ Import order fixed
+
+[320/783] Processing: workspace/src/governance/13-metrics-reporting/generate-consolidated-report.py
+  ✅ Import order fixed
+
+[321/783] Processing: workspace/src/governance/index/scripts/index-validator.py
+  ✅ Import order fixed
+
+[322/783] Processing: workspace/src/ai/agents/dependency-manager/src/crossplatform/risk_assessment.py
+  ✅ Import order fixed
+
+[323/783] Processing: workspace/tools/governance/generate-consolidated-report.py
+  ✅ Import order fixed
+
+[324/783] Processing: workspace/teams/holy-grail/agents/ai-experts/dependency-manager/src/strategy/evolution_tracker.py
+  ✅ Import order fixed
+
+[325/783] Processing: workspace/src/services/agents/dependency-manager/src/future/sustainable_analyzer.py
+  ✅ Import order fixed
+
+[326/783] Processing: workspace/teams/holy-grail/agents/ai-experts/dependency-manager/src/analyzers/npm_analyzer.py
+  ✅ Import order fixed
+
+[327/783] Processing: workspace/teams/holy-grail/integration-layer/templates/emergency_recovery.py
+  ✅ Import order fixed
+
+[328/783] Processing: workspace/src/quantum/workflow/engine.py
+  ✅ Import order fixed
+  ✅ Docstrings added
+
+[329/783] Processing: workspace/tools/governance/validate-governance-matrix.py
+  ✅ Import order fixed
+
+[330/783] Processing: workspace/src/core/plugins/ci_error_handler/auto_fix_engine.py
+  ✅ Import order fixed
+
+[331/783] Processing: smart_merge_branches.py
+  ✅ Import order fixed
+
+[332/783] Processing: workspace/teams/holy-grail/agents/services/dependency-manager/src/enterprise/integration.py
+  ✅ Import order fixed
+
+[333/783] Processing: workspace/src/enterprise/execution/secrets.py
+  ✅ Import order fixed
+
+[334/783] Processing: workspace/src/governance/08-process/automation_engine.py
+  ✅ Import order fixed
+
+[335/783] Processing: workspace/teams/default-team/orchestrator/utils/metrics.py
+  ✅ Import order fixed
+
+[336/783] Processing: workspace/src/services/agents/dependency-manager/src/crossplatform/tech_stack_matrix.py
+  ✅ Import order fixed
+
+[337/783] Processing: workspace/src/autonomous/agents/synergymesh_core/evolution_orchestrator.py
+  ✅ Import order fixed
+
+[338/783] Processing: workspace/src/core/plugins/ai_constitution/fundamental_laws.py
+  ✅ Import order fixed
+
+[339/783] Processing: workspace/src/ai/agents/dependency-manager/src/analyzers/npm_analyzer.py
+  ✅ Import order fixed
+
+[340/783] Processing: workspace/src/core/plugins/yaml_module_system/ci_verification_pipeline.py
+  ✅ Import order fixed
+
+[341/783] Processing: workspace/tools/refactor/update_indexes.py
+  ✅ Import order fixed
+
+[342/783] Processing: workspace/tools/docs/generate_knowledge_graph.py
+  ✅ Import order fixed
+
+[343/783] Processing: workspace/teams/holy-grail/agents/services/dependency-manager/src/evaluation/smartv_framework.py
+  ✅ Import order fixed
+
+[344/783] Processing: workspace/tools/validation/validate-artifact.py
+  ✅ Import order fixed
+
+[345/783] Processing: workspace/src/core/monitoring/intelligent_monitoring.py
+  ✅ Import order fixed
+
+[346/783] Processing: workspace/src/governance/index/scripts/rag-query.py
+  ✅ Import order fixed
+
+[347/783] Processing: workspace/src/services/agents/dependency-manager/src/combination/quarterly_review.py
+  ✅ Import order fixed
+
+[348/783] Processing: workspace/teams/holy-grail/agents/ai-experts/dependency-manager/src/combination/dynamic_adjuster.py
+  ✅ Import order fixed
+
+[349/783] Processing: workspace/tools/namespace-converter.py
+  ✅ Import order fixed
+
+[350/783] Processing: workspace/src/automation/self_awareness_report.py
+  ✅ Import order fixed
+
+[351/783] Processing: workspace/teams/holy-grail/agents/services/dependency-manager/src/analyzers/go_analyzer.py
+  ✅ Import order fixed
+
+[352/783] Processing: workspace/src/core/engine/capability_registry.py
+  ✅ Import order fixed
+
+[353/783] Processing: workspace/src/governance/39-automation/governance_automation_launcher.py
+  ✅ Import order fixed
+
+[354/783] Processing: 00-namespaces/namespaces-mcp/level1/instant-system/engine.py
+  ✅ Import order fixed
+
+[355/783] Processing: workspace/src/apps/web-backend/analyzers/analyzer.py
+  ✅ Import order fixed
+
+[356/783] Processing: workspace/tools/ci-cost-dashboard.py
+  ✅ Import order fixed
+  ✅ Hardcoded URLs fixed
+
+[357/783] Processing: workspace/teams/holy-grail/agents/pipeline/architecture_design_agent.py
+  ✅ Import order fixed
+
+[358/783] Processing: workspace/src/core/context_understanding_engine.py
+  ✅ Import order fixed
+
+[359/783] Processing: workspace/teams/holy-grail/agents/services/dependency-manager/src/enterprise/security.py
+  ✅ Import order fixed
+  ✅ MD5 replaced with SHA256
+
+[360/783] Processing: workspace/src/governance/dimensions/99-metadata/knl-pack/reasoning/tasks/run_sync_knowledge.py
+  ✅ Import order fixed
+
+[361/783] Processing: workspace/teams/default-team/orchestrator/services/agent_client.py
+  ✅ Import order fixed
+
+[362/783] Processing: workspace/tools/bootstrap_from_manifest.py
+  ✅ Import order fixed
+
+[363/783] Processing: workspace/tools/scripts/validate_auto_fix_bot_config.py
+  ✅ Import order fixed
+
+[364/783] Processing: workspace/src/quantum/quantum/qiskit_backend.py
+  ✅ Import order fixed
+
+[365/783] Processing: workspace/src/core/bootstrap/bootstrap_core.py
+  ✅ Import order fixed
+
+[366/783] Processing: workspace/src/services/agents/dependency-manager/src/implementation/success_metrics.py
+  ✅ Import order fixed
+
+[367/783] Processing: workspace/src/frontend/ui/services/api.py
+  ✅ Import order fixed
+
+[368/783] Processing: workspace/src/core/plugins/cloud_agent_delegation/task_router.py
+  ✅ Import order fixed
+
+[369/783] Processing: workspace/src/core/integrations/integration_hub.py
+  ✅ Import order fixed
+
+[370/783] Processing: workspace/src/automation/architect/core/analysis/architecture_analyzer.py
+  ✅ Import order fixed
+
+[371/783] Processing: workspace/src/governance/index/scripts/generate-embeddings.py
+  ✅ Import order fixed
+
+[372/783] Processing: workspace/teams/holy-grail/agents/services/dependency-manager/src/utils/policy_simulator.py
+  ✅ Import order fixed
+
+[373/783] Processing: workspace/src/services/agents/dependency-manager/src/analyzers/pip_analyzer.py
+  ✅ Import order fixed
+
+[374/783] Processing: workspace/teams/holy-grail/agents/services/dependency-manager/src/evaluation/evaluation_report.py
+  ✅ Import order fixed
+
+[375/783] Processing: workspace/archive/legacy/v1-python-drones/drones/coordinator_drone.py
+  ✅ Import order fixed
+
+[376/783] Processing: workspace/teams/holy-grail/agents/autonomous/synergymesh_core/ecosystem_orchestrator.py
+  ✅ Import order fixed
+
+[377/783] Processing: workspace/scripts/migration/namespace-validator.py
+  ✅ Import order fixed
+
+[378/783] Processing: workspace/teams/holy-grail/dissolved-assets/tools/github_project_analyzer.py
+  ✅ Import order fixed
+  ✅ Hardcoded URLs fixed
+
+[379/783] Processing: workspace/src/ai/agents/dependency-manager/src/strategy/evolution_tracker.py
+  ✅ Import order fixed
+
+[380/783] Processing: workspace/src/core/plugins/execution_engine/rollback_manager.py
+  ✅ Import order fixed
+
+[381/783] Processing: workspace/teams/default-team/orchestrator/services/audit_trail.py
+  ✅ Import order fixed
+
+[382/783] Processing: workspace/teams/default-team/orchestrator/utils/structured_logging.py
+  ✅ Import order fixed
+
+[383/783] Processing: workspace/archive/legacy/v2-multi-islands/bridges/language_bridge.py
+  ✅ Import order fixed
+
+[384/783] Processing: workspace/teams/holy-grail/agents/ai-experts/dependency-manager/src/crossplatform/emergency_response.py
+  ✅ Import order fixed
+
+[385/783] Processing: workspace/teams/holy-grail/agents/autonomous/base-agent.py
+  ✅ Import order fixed
+
+[386/783] Processing: workspace/tools/validate_restructure.py
+  ✅ Import order fixed
+
+[387/783] Processing: workspace/src/autonomous/agents/migration/migrator.py
+  ✅ Import order fixed
+
+[388/783] Processing: workspace/engine/machinenativenops-auto-monitor/src/machinenativenops_auto_monitor/collectors.py
+  ✅ Import order fixed
+
+[389/783] Processing: workspace/tools/verify-namespace-alignment.py
+  ✅ Import order fixed
+
+[390/783] Processing: workspace/docs/architecture/configuration/python/security_scanner.py
+  ✅ Import order fixed
+  ✅ Docstrings added
+
+[391/783] Processing: workspace/tools/automation/engines/validation_automation_engine.py
+  ✅ Import order fixed
+
+[392/783] Processing: workspace/src/enterprise/reliability/degradation.py
+  ✅ Import order fixed
+
+[393/783] Processing: workspace/teams/holy-grail/agents/ai-experts/dependency-manager/src/crossplatform/web3_integration.py
+  ✅ Import order fixed
+
+[394/783] Processing: workspace/src/bridges/language-islands/typescript-island.py
+  ✅ Import order fixed
+
+[395/783] Processing: workspace/src/services/agents/dependency-manager/src/models/dependency.py
+  ✅ Import order fixed
+
+[396/783] Processing: 00-namespaces/namespaces-mcp/level1/verification/dns-txt-verifier.py
+  ✅ Import order fixed
+
+[397/783] Processing: workspace/teams/holy-grail/agents/autonomous/synergymesh_core/evolution_orchestrator.py
+  ✅ Import order fixed
+
+[398/783] Processing: workspace/src/services/agents/dependency-manager/src/enterprise/recommendation.py
+  ✅ Import order fixed
+
+[399/783] Processing: workspace/tools/semantic-commit-generator.py
+  ✅ Import order fixed
+
+[400/783] Processing: workspace/config/dev/validation-system/scripts/quantum_feature_extractor.py
+  ✅ Import order fixed
+
+[401/783] Processing: workspace/src/core/integrations/realtime_connector.py
+  ✅ Import order fixed
+
+[402/783] Processing: workspace/teams/holy-grail/agents/ai-experts/dependency-manager/src/combination/quarterly_review.py
+  ✅ Import order fixed
+
+[403/783] Processing: workspace/src/core/plugins/execution_architecture/agent_orchestration.py
+  ✅ Import order fixed
+
+[404/783] Processing: workspace/src/developer-tools/ci-monitor-dashboard/app.py
+  ✅ Import order fixed
+  ✅ Docstrings added
+
+[405/783] Processing: workspace/teams/holy-grail/agents/ai-experts/dependency-manager/src/analyzers/base_analyzer.py
+  ✅ Import order fixed
+
+[406/783] Processing: workspace/src/core/plugins/cloud_agent_delegation/delegation_manager.py
+  ✅ Import order fixed
+
+[407/783] Processing: workspace/src/governance/05-compliance/automation_engine.py
+  ✅ Import order fixed
+
+[408/783] Processing: workspace/src/core/auto_governance_hub.py
+  ✅ Import order fixed
+
+[409/783] Processing: workspace/src/core/orchestrators/language-island-orchestrator.py
+  ✅ Import order fixed
+
+[410/783] Processing: workspace/src/core/plugins/tech_stack/multi_agent_coordinator.py
+  ✅ Import order fixed
+
+[411/783] Processing: workspace/src/ai/agents/dependency-manager/src/analyzers/base_analyzer.py
+  ✅ Import order fixed
+
+[412/783] Processing: workspace/src/core/engine/function_calling.py
+  ✅ Import order fixed
+
+[413/783] Processing: workspace/src/ai/agents/dependency-manager/src/crossplatform/iot_integration.py
+  ✅ Import order fixed
+
+[414/783] Processing: workspace/governance/naming-governance-v1.0.0-extended/automation/scripts/naming-governance-migration.py
+  ✅ Import order fixed
+
+[415/783] Processing: workspace/teams/holy-grail/agents/services/recovery/phoenix_agent.py
+  ✅ Import order fixed
+
+[416/783] Processing: workspace/src/core/plugins/monitoring_system/intelligent_monitoring.py
+  ✅ Import order fixed
+
+[417/783] Processing: workspace/src/core/new/runtime/engine.py
+  ✅ Import order fixed
+
+[418/783] Processing: workspace/src/services/agents/dependency-manager/src/evaluation/weight_config.py
+  ✅ Import order fixed
+
+[419/783] Processing: workspace/src/bridges/language-islands/base-island.py
+  ✅ Import order fixed
+
+[420/783] Processing: workspace/src/governance/09-performance/automation_engine.py
+  ✅ Import order fixed
+
+[421/783] Processing: scripts/ci-error-analyzer.py
+  ✅ Import order fixed
+
+[422/783] Processing: workspace/src/core/ci_error_handler/auto_fix_engine.py
+  ✅ Import order fixed
+
+[423/783] Processing: workspace/tools/lkb-update.py
+  ✅ Import order fixed
+
+[424/783] Processing: workspace/src/ai/agents/dependency-manager/src/future/sustainable_analyzer.py
+  ✅ Import order fixed
+
+[425/783] Processing: workspace/src/core/new/security/auth.py
+  ✅ Import order fixed
+
+[426/783] Processing: workspace/src/core/orchestrators/__init__.py
+  ✅ Import order fixed
+
+[427/783] Processing: workspace/src/core/yaml_module_system/ci_verification_pipeline.py
+  ✅ Import order fixed
+
+[428/783] Processing: 00-namespaces/namespaces-mcp/level1/verification/http-well-known-verifier.py
+  ✅ Import order fixed
+
+[429/783] Processing: workspace/src/bridges/language_bridges.py
+  ✅ Import order fixed
+
+[430/783] Processing: workspace/src/core/integrations/tool_registry.py
+  ✅ Import order fixed
+
+[431/783] Processing: workspace/src/ai/agents/dependency-manager/src/crossplatform/emergency_response.py
+  ✅ Import order fixed
+
+[432/783] Processing: workspace/src/services/agents/dependency-manager/src/enterprise/analytics.py
+  ✅ Import order fixed
+
+[433/783] Processing: workspace/src/ai/agents/dependency-manager/src/models/vulnerability.py
+  ✅ Import order fixed
+
+[434/783] Processing: workspace/src/core/integrations/cognitive_processor.py
+  ✅ Import order fixed
+
+[435/783] Processing: workspace/src/ai/agents/dependency-manager/src/future/development_tracker.py
+  ✅ Import order fixed
+
+[436/783] Processing: 00-namespaces/namespaces-adk/adk/governance/audit_trail.py
+  ✅ Import order fixed
+
+[437/783] Processing: workspace/teams/holy-grail/agents/services/dependency-manager/src/utils/audit_logger.py
+  ✅ Import order fixed
+
+[438/783] Processing: workspace/src/core/contract_engine.py
+  ✅ Import order fixed
+
+[439/783] Processing: workspace/teams/holy-grail/agents/autonomous/pipeline_service.py
+  ✅ Import order fixed
+  ⚠️  eval() usage marked for review
+
+[440/783] Processing: workspace/src/ai/agents/dependency-manager/src/combination/combination_templates.py
+  ✅ Import order fixed
+
+[441/783] Processing: workspace/docs/refactor_playbooks/templates/emergency_recovery.py
+  ✅ Import order fixed
+
+[442/783] Processing: workspace/src/ai/agents/dependency-manager/src/crossplatform/web3_integration.py
+  ✅ Import order fixed
+
+[443/783] Processing: workspace/restructure_project.py
+  ✅ Import order fixed
+
+[444/783] Processing: workspace/tools/docs/analyze_root_reports.py
+  ✅ Import order fixed
+
+[445/783] Processing: workspace/src/ci-tools/documentation-generator/doc_generator.py
+  ✅ Import order fixed
+
+[446/783] Processing: workspace/src/core/run-debug/cli.py
+  ✅ Import order fixed
+  ⚠️  eval() usage marked for review
+
+[447/783] Processing: workspace/teams/holy-grail/legacy-archive/v2-multi-islands/orchestrator/island_orchestrator.py
+  ✅ Import order fixed
+
+[448/783] Processing: workspace/src/core/ci_error_handler/fix_status_tracker.py
+  ✅ Import order fixed
+
+[449/783] Processing: workspace/tools/ai-refactor-review.py
+  ✅ Import order fixed
+
+[450/783] Processing: workspace/teams/holy-grail/agents/ai-experts/dependency-manager/src/enterprise/recommendation.py
+  ✅ Import order fixed
+
+[451/783] Processing: workspace/teams/holy-grail/agents/autonomous/migration/migrator.py
+  ✅ Import order fixed
+
+[452/783] Processing: workspace/teams/holy-grail/agents/ai-experts/dependency-manager/src/implementation/success_metrics.py
+  ✅ Import order fixed
+
+[453/783] Processing: workspace/src/services/agents/dependency-manager/src/implementation/action_guide.py
+  ✅ Import order fixed
+
+[454/783] Processing: workspace/src/core/plugins/execution_architecture/langchain_integration.py
+  ✅ Import order fixed
+
+[455/783] Processing: 00-namespaces/namespaces-adk/adk/governance/containment.py
+  ✅ Import order fixed
+
+[456/783] Processing: workspace/tools/refactor/refactor_evolution_workflow.py
+  ✅ Import order fixed
+
+[457/783] Processing: workspace/src/core/safety/autonomous_trust_engine.py
+  ✅ Import order fixed
+
+[458/783] Processing: workspace/src/core/monitoring/self_learning.py
+  ✅ Import order fixed
+
+[459/783] Processing: workspace/teams/default-team/orchestrator/services/event_store.py
+  ✅ Import order fixed
+
+[460/783] Processing: workspace/teams/holy-grail/agents/autonomous/migration/scripts/v2_to_v1.py
+  ✅ Import order fixed
+
+[461/783] Processing: workspace/src/core/instant_generation/agents/input_analysis_agent.py
+  ✅ Import order fixed
+
+[462/783] Processing: workspace/src/ai/agents/dependency-manager/src/implementation/success_metrics.py
+  ✅ Import order fixed
+
+[463/783] Processing: workspace/teams/holy-grail/agents/ai-experts/dependency-manager/src/analyzers/pip_analyzer.py
+  ✅ Import order fixed
+
+[464/783] Processing: workspace/teams/holy-grail/agents/services/dependency-manager/src/implementation/implementation_plan.py
+  ✅ Import order fixed
+
+[465/783] Processing: workspace/src/autonomous/agents/migration/scripts/v2_to_v1.py
+  ✅ Import order fixed
+
+[466/783] Processing: workspace/src/core/tech_stack/framework_integrations.py
+  ✅ Import order fixed
+
+[467/783] Processing: 00-namespaces/governance_layer/compliance_checker.py
+  ✅ Import order fixed
+
+[468/783] Processing: workspace/teams/holy-grail/automation/architect/core/orchestration/pipeline.py
+  ✅ Import order fixed
+
+[469/783] Processing: workspace/src/frontend/ui/core/analyzers/analyzer.py
+  ✅ Import order fixed
+
+[470/783] Processing: workspace/teams/holy-grail/agents/autonomous/auto_upgrade_env.py
+  ✅ Import order fixed
+  ✅ MD5 replaced with SHA256
+
+[471/783] Processing: workspace/src/governance/13-metrics-reporting/automation_engine.py
+  ✅ Import order fixed
+
+[472/783] Processing: workspace/src/shared/config/base_config.py
+  ✅ Import order fixed
+
+[473/783] Processing: workspace/teams/holy-grail/legacy-archive/v1-python-drones/main.py
+  ✅ Import order fixed
+
+[474/783] Processing: workspace/tools/load-playbook.py
+  ✅ Import order fixed
+
+[475/783] Processing: 00-namespaces/schema_system/compatibility_checker.py
+  ✅ Import order fixed
+
+[476/783] Processing: workspace/tools/language-health-score.py
+  ✅ Import order fixed
+
+[477/783] Processing: workspace/src/automation/architect/core/orchestration/event_bus.py
+  ✅ Import order fixed
+
+[478/783] Processing: workspace/teams/holy-grail/legacy-archive/v2-multi-islands/main.py
+  ✅ Import order fixed
+
+[479/783] Processing: workspace/teams/holy-grail/agents/services/dependency-manager/src/models/update.py
+  ✅ Import order fixed
+
+[480/783] Processing: workspace/engine/machinenativenops-auto-monitor/src/machinenativenops_auto_monitor/app.py
+  ✅ Import order fixed
+
+[481/783] Processing: workspace/src/quantum/core/entities.py
+  ✅ Import order fixed
+
+[482/783] Processing: workspace/scripts/maintenance/emergency_recovery.py
+  ✅ Import order fixed
+
+[483/783] Processing: workspace/src/core/safety/hallucination_detector.py
+  ✅ Import order fixed
+
+[484/783] Processing: workspace/src/core/plugins/cloud_agent_delegation/load_balancer.py
+  ✅ Import order fixed
+
+[485/783] Processing: workspace/src/automation/architect/core/analysis/security_scanner.py
+  ✅ Import order fixed
+  ⚠️  eval() usage marked for review
+
+[486/783] Processing: workspace/src/core/plugins/ai_constitution/adaptive_guidelines.py
+  ✅ Import order fixed
+
+[487/783] Processing: workspace/chat_app.py
+  ✅ Import order fixed
+  ✅ Docstrings added
+
+[488/783] Processing: workspace/teams/default-team/orchestrator/gate_handler.py
+  ✅ Import order fixed
+
+[489/783] Processing: workspace/src/autonomous/core/mape-k/mape_k_loop.py
+  ✅ Import order fixed
+
+[490/783] Processing: workspace/tools/docs/provenance_injector.py
+  ✅ Import order fixed
+
+[491/783] Processing: workspace/tools/governance/python/validate_naming.py
+  ✅ Import order fixed
+
+[492/783] Processing: workspace/governance/naming-governance-v1.0.0-extended/automation/scripts/naming-governance-repair.py
+  ✅ Import order fixed
+
+[493/783] Processing: workspace/src/enterprise/data/audit.py
+  ✅ Import order fixed
+
+[494/783] Processing: workspace/teams/holy-grail/agents/ai-experts/dependency-manager/src/models/dependency.py
+  ✅ Import order fixed
+
+[495/783] Processing: workspace/src/quantum/core/logging_config.py
+  ✅ Import order fixed
+
+[496/783] Processing: 00-namespaces/namespaces-adk/adk/core/context_manager.py
+  ✅ Import order fixed
+
+[497/783] Processing: workspace/teams/holy-grail/agents/ai-experts/dependency-manager/src/engine.py
+  ✅ Import order fixed
+
+[498/783] Processing: workspace/src/core/tech_stack/python_bridge.py
+  ✅ Import order fixed
+
+[499/783] Processing: workspace/src/ai/agents/dependency-manager/src/crossplatform/tech_stack_matrix.py
+  ✅ Import order fixed
+
+[500/783] Processing: workspace/src/governance/39-automation/deploy_dimension_engines.py
+  ✅ Import order fixed
+
+[501/783] Processing: workspace/src/services/agents/dependency-manager/src/combination/core_satellite.py
+  ✅ Import order fixed
+
+[502/783] Processing: workspace/src/core/safety/safety_net.py
+  ✅ Import order fixed
+
+[503/783] Processing: workspace/src/ai/agents/dependency-manager/src/future/lowcode_integration.py
+  ✅ Import order fixed
+
+[504/783] Processing: 00-namespaces/namespace_registry/validator.py
+  ✅ Import order fixed
+
+[505/783] Processing: workspace/src/core/virtual_experts/expert_base.py
+  ✅ Import order fixed
+
+[506/783] Processing: 00-namespaces/namespaces-adk/adk/mcp/mcp_client.py
+  ✅ Import order fixed
+
+[507/783] Processing: workspace/src/core/integrations/system_orchestrator.py
+  ✅ Import order fixed
+
+[508/783] Processing: workspace/tools/generate-migration-flow.py
+  ✅ Import order fixed
+
+[509/783] Processing: workspace/teams/holy-grail/legacy-archive/v2-multi-islands/islands/rust_island.py
+  ✅ Import order fixed
+
+[510/783] Processing: 00-namespaces/namespaces-adk/governance_agents/artifact_generation_agent.py
+  ✅ Import order fixed
+
+[511/783] Processing: workspace/src/ai/agents/dependency-manager/src/models/dependency.py
+  ✅ Import order fixed
+
+[512/783] Processing: workspace/src/core/plugins/ai_constitution/guardrails.py
+  ✅ Import order fixed
+
+[513/783] Processing: workspace/archive/legacy/v2-multi-islands/orchestrator/island_orchestrator.py
+  ✅ Import order fixed
+
+[514/783] Processing: 00-namespaces/schema_system/schema_versioning.py
+  ✅ Import order fixed
+
+[515/783] Processing: 00-namespaces/namespaces-adk/adk/governance/drift_detection.py
+  ✅ Import order fixed
+
+[516/783] Processing: workspace/src/developer-tools/team-collaboration-platform/collaboration_hub.py
+  ✅ Import order fixed
+  ✅ Docstrings added
+
+[517/783] Processing: workspace/src/enterprise/events/event_log.py
+  ✅ Import order fixed
+
+[518/783] Processing: workspace/teams/default-team/orchestrator/config.py
+  ✅ Import order fixed
+
+[519/783] Processing: workspace/src/core/instant_generation/agents/deployment_agent.py
+  ✅ Import order fixed
+  ✅ Hardcoded URLs fixed
+
+[520/783] Processing: workspace/src/core/run-debug/adapters/python_adapter.py
+  ✅ Import order fixed
+
+[521/783] Processing: workspace/scripts/verification/run-all-verifications.py
+  ✅ Import order fixed
+
+[522/783] Processing: workspace/src/autonomous/agents/synergymesh_core/autonomous_coordinator.py
+  ✅ Import order fixed
+
+[523/783] Processing: workspace/teams/holy-grail/dissolved-assets/tools/github_project_analyzer_quantum.py
+  ✅ Import order fixed
+  ✅ Hardcoded URLs fixed
+
+[524/783] Processing: workspace/src/core/integrations/service_registry.py
+  ✅ Import order fixed
+
+[525/783] Processing: 00-namespaces/namespaces-adk/adk/observability/metrics.py
+  ✅ Import order fixed
+
+[526/783] Processing: workspace/src/frontend/ui/services/models.py
+  ✅ Import order fixed
+
+[527/783] Processing: workspace/src/autonomous/agents/autopilot-agent.py
+  ✅ Import order fixed
+
+[528/783] Processing: workspace/tools/evidence_generator.py
+  ✅ Import order fixed
+  ✅ Docstrings added
+
+[529/783] Processing: workspace/src/enterprise/integrations/writeback.py
+  ✅ Import order fixed
+  ✅ Hardcoded URLs fixed
+
+[530/783] Processing: workspace/src/core/slsa_provenance/artifact_verifier.py
+  ✅ Import order fixed
+
+[531/783] Processing: workspace/teams/holy-grail/agents/ai-experts/dependency-manager/src/evaluation/weight_config.py
+  ✅ Import order fixed
+
+[532/783] Processing: workspace/src/quantum/repositories/workflow_repository.py
+  ✅ Import order fixed
+
+[533/783] Processing: workspace/scripts/migration/namespace-converter.py
+  ✅ Import order fixed
+
+[534/783] Processing: workspace/tools/module_graph_gate.py
+  ✅ Import order fixed
+  ✅ Docstrings added
+
+[535/783] Processing: workspace/src/core/slsa_provenance/provenance_generator.py
+  ✅ Import order fixed
+
+[536/783] Processing: workspace/src/core/safety/rollback_system.py
+  ✅ Import order fixed
+
+[537/783] Processing: workspace/teams/default-team/orchestrator/main.py
+  ✅ Import order fixed
+
+[538/783] Processing: workspace/src/core/engine/connector_manager.py
+  ✅ Import order fixed
+
+[539/783] Processing: workspace/src/core/integrations/unified_controller.py
+  ✅ Import order fixed
+
+[540/783] Processing: workspace/teams/default-team/orchestrator/services/playbook_runner.py
+  ✅ Import order fixed
+
+[541/783] Processing: workspace/tools/sync_external_repos.py
+  ✅ Import order fixed
+
+[542/783] Processing: workspace/tools/refactor/validate-phase1.py
+  ✅ Import order fixed
+
+[543/783] Processing: workspace/src/ai/agents/dependency-manager/src/evaluation/weight_config.py
+  ✅ Import order fixed
+
+[544/783] Processing: workspace/src/core/plugins/ai_constitution/operational_rules.py
+  ✅ Import order fixed
+
+[545/783] Processing: workspace/tools/generate-hotspot-heatmap.py
+  ✅ Import order fixed
+
+[546/783] Processing: workspace/tools/ai-auto-fix.py
+  ✅ Import order fixed
+
+[547/783] Processing: workspace/tools/validation/validate_pr1023_layers.py
+  ✅ Import order fixed
+
+[548/783] Processing: workspace/teams/default-team/orchestrator/models/messages.py
+  ✅ Import order fixed
+
+[549/783] Processing: workspace/src/ai/metacognition/strategist/meta_strategist.py
+  ✅ Import order fixed
+
+[550/783] Processing: workspace/src/core/plugins/monitoring_system/self_learning.py
+  ✅ Import order fixed
+
+[551/783] Processing: workspace/src/services/agents/dependency-manager/src/strategy/resource_optimizer.py
+  ✅ Import order fixed
+
+[552/783] Processing: workspace/examples/debug-examples/demo.py
+  ✅ Import order fixed
+
+[553/783] Processing: workspace/tools/automation/engines/refactor_automation_engine.py
+  ✅ Import order fixed
+
+[554/783] Processing: workspace/src/automation/architect/core/analysis/static_analyzer.py
+  ✅ Import order fixed
+
+[555/783] Processing: workspace/tools/refactor/validate_structure.py
+  ✅ Import order fixed
+
+[556/783] Processing: workspace/teams/holy-grail/legacy-archive/v1-python-drones/drones/coordinator_drone.py
+  ✅ Import order fixed
+
+[557/783] Processing: workspace/src/core/yaml_module_system/yaml_module_definition.py
+  ✅ Import order fixed
+
+[558/783] Processing: workspace/src/core/safety/partial_rollback.py
+  ✅ Import order fixed
+
+[559/783] Processing: code_quality_analyzer.py
+  ✅ Import order fixed
+  ⚠️  eval() usage marked for review
+
+[560/783] Processing: workspace/archive/legacy/v1-python-drones/drones/deployment_drone.py
+  ✅ Import order fixed
+
+[561/783] Processing: workspace/src/ai/agents/dependency-manager/src/enterprise/analytics.py
+  ✅ Import order fixed
+
+[562/783] Processing: workspace/tools/refactor/auto_refactor.py
+  ✅ Import order fixed
+
+[563/783] Processing: workspace/teams/holy-grail/agents/ai-experts/dependency-manager/src/implementation/action_guide.py
+  ✅ Import order fixed
+
+[564/783] Processing: workspace/tools/automation/master_orchestrator.py
+  ✅ Import order fixed
+
+[565/783] Processing: workspace/teams/holy-grail/agents/ai-experts/dependency-manager/src/combination/core_satellite.py
+  ✅ Import order fixed
+
+[566/783] Processing: workspace/src/core/safety/circuit_breaker.py
+  ✅ Import order fixed
+
+[567/783] Processing: workspace/teams/holy-grail/dissolved-assets/tools/load_unified_pipeline.py
+  ✅ Import order fixed
+
+[568/783] Processing: workspace/src/ci-tools/test-automation/test_framework.py
+  ✅ Import order fixed
+  ✅ Hardcoded URLs fixed
+
+[569/783] Processing: workspace/src/core/instant_generation/agents/architecture_design_agent.py
+  ✅ Import order fixed
+
+[570/783] Processing: workspace/src/core/plugins/training_system/skills_training.py
+  ✅ Import order fixed
+
+[571/783] Processing: workspace/src/enterprise/iam/models.py
+  ✅ Import order fixed
+
+[572/783] Processing: workspace/src/core/ai_constitution/guardrails.py
+  ✅ Import order fixed
+
+[573/783] Processing: workspace/src/services/agents/dependency-manager/src/models/vulnerability.py
+  ✅ Import order fixed
+
+[574/783] Processing: workspace/src/ai/agents/dependency-manager/src/implementation/action_guide.py
+  ✅ Import order fixed
+
+[575/783] Processing: workspace/src/core/project_factory/templates.py
+  ✅ Import order fixed
+
+[576/783] Processing: workspace/src/services/agents/dependency-manager/src/future/development_tracker.py
+  ✅ Import order fixed
+
+[577/783] Processing: workspace/teams/holy-grail/agents/autonomous/synergymesh_core/autonomous_coordinator.py
+  ✅ Import order fixed
+
+[578/783] Processing: 00-namespaces/namespaces-adk/adk/security/auth.py
+  ✅ Import order fixed
+
+[579/783] Processing: 00-namespaces/namespaces-mcp/level1/verification/verification-system.py
+  ✅ Import order fixed
+
+[580/783] Processing: workspace/teams/holy-grail/agents/autonomous/examples/demo.py
+  ✅ Import order fixed
+  ⚠️  eval() usage marked for review
+
+[581/783] Processing: workspace/src/core/plugins/execution_architecture/tool_system.py
+  ✅ Import order fixed
+
+[582/783] Processing: workspace/archive/legacy/v1-python-drones/drones/base_drone.py
+  ✅ Import order fixed
+
+[583/783] Processing: workspace/src/core/plugins/monitoring_system/observability_platform.py
+  ✅ Import order fixed
+
+[584/783] Processing: workspace/src/core/plugins/ci_error_handler/ci_error_analyzer.py
+  ✅ Import order fixed
+
+[585/783] Processing: workspace/src/quantum/monitor/performance.py
+  ✅ Import order fixed
+
+[586/783] Processing: workspace/src/core/cloud_agent_delegation/cloud_provider_adapter.py
+  ✅ Import order fixed
+
+[587/783] Processing: workspace/src/core/phase4/mobile_support/__init__.py
+  ✅ Import order fixed
+
+[588/783] Processing: workspace/src/ai/federated/framework/federation_framework.py
+  ✅ Import order fixed
+
+[589/783] Processing: workspace/tools/docs/scan_repo_generate_index.py
+  ✅ Import order fixed
+
+[590/783] Processing: workspace/teams/holy-grail/automation/architect/core/analysis/architecture_analyzer.py
+  ✅ Import order fixed
+
+[591/783] Processing: workspace/src/core/plugins/execution_engine/action_executor.py
+  ✅ Import order fixed
+
+[592/783] Processing: workspace/src/core/plugins/training_system/example_library.py
+  ✅ Import order fixed
+  ✅ MD5 replaced with SHA256
+
+[593/783] Processing: workspace/src/core/plugins/plugin_system.py
+  ✅ Import order fixed
+
+[594/783] Processing: workspace/src/core/plugins/ci_error_handler/fix_status_tracker.py
+  ✅ Import order fixed
+
+[595/783] Processing: workspace/src/core/cloud_agent_delegation/load_balancer.py
+  ✅ Import order fixed
+
+[596/783] Processing: scripts/test-ci-error-analyzer.py
+  ✅ Import order fixed
+
+[597/783] Processing: workspace/teams/holy-grail/agents/services/dependency-manager/src/strategy/evolution_tracker.py
+  ✅ Import order fixed
+
+[598/783] Processing: workspace/tools/scripts/vulnerability-alert-handler.py
+  ✅ Import order fixed
+  ✅ Hardcoded URLs fixed
+
+[599/783] Processing: workspace/tools/root-validator.py
+  ✅ Import order fixed
+
+[600/783] Processing: workspace/src/core/integrations/mcp_server_manager.py
+  ✅ Import order fixed
+
+[601/783] Processing: workspace/teams/holy-grail/agents/autonomous/autopilot-agent.py
+  ✅ Import order fixed
+
+[602/783] Processing: workspace/teams/holy-grail/agents/ai-experts/dependency-manager/src/crossplatform/iot_integration.py
+  ✅ Import order fixed
+
+[603/783] Processing: workspace/tools/find_duplicate_scripts.py
+  ✅ Import order fixed
+  ✅ MD5 replaced with SHA256
+
+[604/783] Processing: workspace/tools/path_tools/path_fixer.py
+  ✅ Import order fixed
+
+[605/783] Processing: workspace/src/core/engine/agent_orchestration.py
+  ✅ Import order fixed
+
+[606/783] Processing: workspace/src/services/agents/dependency-manager/src/engine.py
+  ✅ Import order fixed
+
+[607/783] Processing: workspace/src/core/plugins/tech_stack/framework_integrations.py
+  ✅ Import order fixed
+
+[608/783] Processing: workspace/src/apps/web-backend/services/api/language_governance.py
+  ✅ Import order fixed
+
+[609/783] Processing: workspace/tools/rootfs_assembler.py
+  ✅ Import order fixed
+  ✅ Docstrings added
+
+[610/783] Processing: 00-namespaces/security_layer/encryption_manager.py
+  ✅ Import order fixed
+
+[611/783] Processing: 00-namespaces/namespaces-adk/adk/mcp/tool_schemas.py
+  ✅ Import order fixed
+
+[612/783] Processing: workspace/src/governance/26-tools/legacy-governance-governance-cli.py
+  ✅ Import order fixed
+  ✅ Hardcoded URLs fixed
+
+[613/783] Processing: workspace/src/core/phase4/saas_platform/__init__.py
+  ✅ Import order fixed
+
+[614/783] Processing: 00-namespaces/namespaces-mcp/level1/instant-system/validator.py
+  ✅ Import order fixed
+
+[615/783] Processing: workspace/archive/legacy/v2-multi-islands/islands/rust_island.py
+  ✅ Import order fixed
+
+[616/783] Processing: workspace/src/core/ai_constitution/operational_rules.py
+  ✅ Import order fixed
+
+[617/783] Processing: workspace/src/governance/35-scripts/logical-consistency-engine.py
+  ✅ Import order fixed
+
+[618/783] Processing: workspace/src/core/instant_generation/main.py
+  ✅ Import order fixed
+
+[619/783] Processing: workspace/tools/generate-language-dashboard.py
+  ✅ Import order fixed
+
+[620/783] Processing: workspace/teams/holy-grail/legacy-archive/v2-multi-islands/islands/go_island.py
+  ✅ Import order fixed
+
+[621/783] Processing: workspace/src/ai/agents/dependency-manager/src/combination/core_satellite.py
+  ✅ Import order fixed
+
+[622/783] Processing: workspace/src/core/main_system/phase_orchestrator.py
+  ✅ Import order fixed
+
+[623/783] Processing: workspace/src/governance/scripts/validate-autonomy.py
+  ✅ Import order fixed
+
+[624/783] Processing: workspace/teams/holy-grail/agents/ai-experts/dependency-manager/src/strategy/resource_optimizer.py
+  ✅ Import order fixed
+
+[625/783] Processing: workspace/teams/holy-grail/integration-layer/templates/contract-engine.py
+  ✅ Import order fixed
+
+[626/783] Processing: workspace/src/core/digital-twin/simulation/simulation_engine.py
+  ✅ Import order fixed
+
+[627/783] Processing: workspace/engine/machinenativenops-auto-monitor/src/machinenativenops_auto_monitor/__main__.py
+  ✅ Import order fixed
+
+[628/783] Processing: workspace/tools/path_tools/path_validator.py
+  ✅ Import order fixed
+
+[629/783] Processing: 00-namespaces/namespaces-adk/adk/security/a2a_auth.py
+  ✅ Import order fixed
+
+[630/783] Processing: workspace/src/services/mesh/service_mesh.py
+  ✅ Import order fixed
+
+[631/783] Processing: workspace/src/governance/35-scripts/extreme-problem-identifier.py
+  ✅ Import order fixed
+
+[632/783] Processing: workspace/teams/holy-grail/agents/autonomous/coordinator-agent.py
+  ✅ Import order fixed
+
+[633/783] Processing: workspace/src/governance/39-automation/integrated_launcher.py
+  ✅ Import order fixed
+
+[634/783] Processing: workspace/src/bridges/language-islands/java-island.py
+  ✅ Import order fixed
+
+[635/783] Processing: 00-namespaces/namespace_registry/registry_manager.py
+  ✅ Import order fixed
+
+[636/783] Processing: workspace/src/core/safety/anomaly_detector.py
+  ✅ Import order fixed
+
+[637/783] Processing: workspace/src/services/agents/dependency-manager/src/future/lowcode_integration.py
+  ✅ Import order fixed
+
+[638/783] Processing: workspace/src/core/integrations/cli_bridge.py
+  ✅ Import order fixed
+
+[639/783] Processing: workspace/src/core/slsa_provenance/attestation_manager.py
+  ✅ Import order fixed
+
+[640/783] Processing: workspace/src/core/plugins/tech_stack/python_bridge.py
+  ✅ Import order fixed
+
+[641/783] Processing: workspace/src/governance/26-tools/language-governance-analyzer.py
+  ✅ Import order fixed
+
+[642/783] Processing: workspace/src/governance/scripts/latency-monitor.py
+  ✅ Import order fixed
+
+[643/783] Processing: workspace/teams/holy-grail/agents/services/dependency-manager/src/future/privacy_framework.py
+  ✅ Import order fixed
+
+[644/783] Processing: workspace/src/bridges/__init__.py
+  ✅ Import order fixed
+
+[645/783] Processing: workspace/teams/holy-grail/agents/ai-experts/dependency-manager/src/combination/combination_templates.py
+  ✅ Import order fixed
+
+[646/783] Processing: workspace/src/quantum/quantum/pennylane_backend.py
+  ✅ Import order fixed
+
+[647/783] Processing: workspace/src/quantum/config.py
+  ✅ Import order fixed
+  ✅ Hardcoded URLs fixed
+
+[648/783] Processing: workspace/src/governance/04-risk/automation_engine.py
+  ✅ Import order fixed
+
+[649/783] Processing: workspace/src/core/main_system/system_bootstrap.py
+  ✅ Import order fixed
+
+[650/783] Processing: workspace/scripts/github/fix-actions-sha.py
+  ✅ Import order fixed
+
+[651/783] Processing: workspace/teams/holy-grail/legacy-archive/v2-multi-islands/islands/base_island.py
+  ✅ Import order fixed
+
+[652/783] Processing: workspace/tools/docs/generate_mndoc_from_readme.py
+  ✅ Import order fixed
+
+[653/783] Processing: workspace/src/core/plugin_system.py
+  ✅ Import order fixed
+
+[654/783] Processing: workspace/tools/ai/governance_engine.py
+  ✅ Import order fixed
+
+[655/783] Processing: 00-namespaces/namespace_registry/schema_validator.py
+  ✅ Import order fixed
+
+[656/783] Processing: workspace/src/core/plugins/drone_system/autopilot.py
+  ✅ Import order fixed
+
+[657/783] Processing: workspace/src/governance/06-security/automation_engine.py
+  ✅ Import order fixed
+
+[658/783] Processing: workspace/src/core/virtual_experts/expert_team.py
+  ✅ Import order fixed
+
+[659/783] Processing: workspace/src/ci-tools/monitoring-alerting/monitoring_system.py
+  ✅ Import order fixed
+  ✅ Docstrings added
+
+[660/783] Processing: workspace/teams/holy-grail/agents/services/dependency-manager/src/crossplatform/arvr_integration.py
+  ✅ Import order fixed
+
+[661/783] Processing: workspace/src/core/engine/langchain_integration.py
+  ✅ Import order fixed
+
+[662/783] Processing: workspace/src/autonomous/agents/deployment-agent.py
+  ✅ Import order fixed
+
+[663/783] Processing: workspace/src/enterprise/data/tracing.py
+  ✅ Import order fixed
+
+[664/783] Processing: workspace/src/core/island_ai_runtime/knowledge_engine.py
+  ✅ Import order fixed
+  ✅ MD5 replaced with SHA256
+
+[665/783] Processing: workspace/src/core/engine/rollback_manager.py
+  ✅ Import order fixed
+
+[666/783] Processing: workspace/src/core/plugins/mcp_servers_enhanced/realtime_connector.py
+  ✅ Import order fixed
+
+[667/783] Processing: workspace/teams/holy-grail/agents/ai-experts/dependency-manager/src/future/sustainable_analyzer.py
+  ✅ Import order fixed
+
+[668/783] Processing: workspace/src/bridges/language-islands/rust-island.py
+  ✅ Import order fixed
+
+[669/783] Processing: workspace/src/bridges/language-islands/config/__init__.py
+  ✅ Import order fixed
+
+[670/783] Processing: workspace/src/ai/agents/dependency-manager/src/strategy/resource_optimizer.py
+  ✅ Import order fixed
+
+[671/783] Processing: workspace/src/governance/26-tools/check-language-policy.py
+  ✅ Import order fixed
+
+[672/783] Processing: workspace/src/business/workflows.py
+  ✅ Import order fixed
+
+[673/783] Processing: workspace/config/dev/validation-system/scripts/emergency_mode_manager.py
+  ✅ Import order fixed
+
+[674/783] Processing: workspace/src/autonomous/agents/synergymesh_core/self_evolution_engine.py
+  ✅ Import order fixed
+
+[675/783] Processing: workspace/tools/validation/quantum_feature_extractor.py
+  ✅ Import order fixed
+
+[676/783] Processing: workspace/teams/holy-grail/agents/services/dependency-manager/src/combination/quarterly_review.py
+  ✅ Import order fixed
+
+[677/783] Processing: workspace/teams/holy-grail/agents/ai-experts/dependency-manager/src/crossplatform/tech_stack_matrix.py
+  ✅ Import order fixed
+
+[678/783] Processing: 00-namespaces/namespace_registry/cache.py
+  ✅ Import order fixed
+
+[679/783] Processing: workspace/src/core/training_system/skills_training.py
+  ✅ Import order fixed
+
+[680/783] Processing: workspace/teams/holy-grail/agents/ai-experts/dependency-manager/src/models/vulnerability.py
+  ✅ Import order fixed
+
+[681/783] Processing: workspace/src/enterprise/iam/tenant_manager.py
+  ✅ Import order fixed
+
+[682/783] Processing: workspace/src/core/plugins/execution_engine/execution_engine.py
+  ✅ Import order fixed
+
+[683/783] Processing: workspace/tools/scan_tech_debt.py
+  ✅ Import order fixed
+
+[684/783] Processing: workspace/teams/holy-grail/agents/ai-experts/dependency-manager/src/future/development_tracker.py
+  ✅ Import order fixed
+
+[685/783] Processing: workspace/docs/architecture/configuration/python/config_validator.py
+  ✅ Import order fixed
+  ✅ Docstrings added
+
+[686/783] Processing: workspace/tools/quantum-alignment-engine/src/core/transformer.py
+  ✅ Import order fixed
+  ✅ MD5 replaced with SHA256
+
+[687/783] Processing: workspace/src/apps/web-backend/services/api.py
+  ✅ Import order fixed
+
+[688/783] Processing: workspace/src/core/integrations/deep_execution_system.py
+  ✅ Import order fixed
+
+[689/783] Processing: workspace/archive/legacy/v1-python-drones/main.py
+  ✅ Import order fixed
+
+[690/783] Processing: workspace/scripts/ops/migration/scripts/v1_to_v2.py
+  ✅ Import order fixed
+
+[691/783] Processing: workspace/src/frontend/ui/services/code_analyzer.py
+  ✅ Import order fixed
+  ✅ MD5 replaced with SHA256
+
+[692/783] Processing: workspace/archive/legacy/v2-multi-islands/islands/typescript_island.py
+  ✅ Import order fixed
+
+[693/783] Processing: workspace/code_assistant.py
+  ✅ Import order fixed
+  ✅ Docstrings added
+
+[694/783] Processing: 00-namespaces/namespaces-mcp/legacy/python-scripts/advanced_converter.py
+  ✅ Import order fixed
+
+[695/783] Processing: workspace/src/ci-tools/config-manager/config_manager.py
+  ✅ Import order fixed
+  ✅ Docstrings added
+
+[696/783] Processing: workspace/archive/legacy/v2-multi-islands/main.py
+  ✅ Import order fixed
+
+[697/783] Processing: workspace/teams/default-team/orchestrator/utils/circuit_breaker.py
+  ✅ Import order fixed
+
+[698/783] Processing: workspace/src/core/ci_error_handler/ci_error_analyzer.py
+  ✅ Import order fixed
+
+[699/783] Processing: workspace/src/core/plugins/yaml_module_system/yaml_module_definition.py
+  ✅ Import order fixed
+
+[700/783] Processing: workspace/archive/legacy/v1-python-drones/drones/autopilot_drone.py
+  ✅ Import order fixed
+
+[701/783] Processing: workspace/src/autonomous/agents/migration/scripts/v1_to_v2.py
+  ✅ Import order fixed
+
+[702/783] Processing: workspace/src/core/training_system/example_library.py
+  ✅ Import order fixed
+  ✅ MD5 replaced with SHA256
+
+[703/783] Processing: workspace/src/core/engine/partial_rollback.py
+  ✅ Import order fixed
+
+[704/783] Processing: 00-namespaces/namespaces-mcp/level1/verification/github-oauth-verifier.py
+  ✅ Import order fixed
+  ✅ Hardcoded URLs fixed
+
+[705/783] Processing: workspace/teams/holy-grail/agents/services/dependency-manager/src/analyzers/pip_analyzer.py
+  ✅ Import order fixed
+
+[706/783] Processing: workspace/teams/holy-grail/agents/pipeline/optimization_agent.py
+  ✅ Import order fixed
+
+[707/783] Processing: workspace/mcp/validation-mcp/tools/github_project_analyzer_v2.py
+  ✅ Import order fixed
+  ✅ Hardcoded URLs fixed
+
+[708/783] Processing: workspace/teams/holy-grail/legacy-archive/v2-multi-islands/islands/java_island.py
+  ✅ Import order fixed
+
+[709/783] Processing: 00-namespaces/namespace_registry/registry_instant.py
+  ✅ Import order fixed
+
+[710/783] Processing: workspace/src/core/validators/security_validator.py
+  ✅ Import order fixed
+
+[711/783] Processing: workspace/teams/holy-grail/agents/pipeline/code_generation_agent.py
+  ✅ Import order fixed
+  ✅ Hardcoded URLs fixed
+
+[712/783] Processing: workspace/src/ci-tools/deployment-rollback/rollback_manager.py
+  ✅ Import order fixed
+  ✅ Docstrings added
+
+[713/783] Processing: workspace/src/governance/39-automation/test_automation_system.py
+  ✅ Import order fixed
+
+[714/783] Processing: workspace/src/core/island_ai_runtime/tool_executor.py
+  ✅ Import order fixed
+
+[715/783] Processing: analyze_duplicate_paths.py
+  ✅ Import order fixed
+
+[716/783] Processing: workspace/src/core/phase4/billing_system/__init__.py
+  ✅ Import order fixed
+
+[717/783] Processing: 00-namespaces/namespaces-adk/adk/governance/conformance_engine.py
+  ✅ Import order fixed
+
+[718/783] Processing: workspace/teams/holy-grail/automation/architect/core/analysis/security_scanner.py
+  ✅ Import order fixed
+  ⚠️  eval() usage marked for review
+
+[719/783] Processing: workspace/src/core/integrations/workflow_orchestrator.py
+  ✅ Import order fixed
+
+[720/783] Processing: workspace/src/governance/02-decision/automation_engine.py
+  ✅ Import order fixed
+
+[721/783] Processing: workspace/src/ai/agents/dependency-manager/src/utils/policy_simulator.py
+  ✅ Import order fixed
+
+[722/783] Processing: workspace/src/governance/07-audit/append_only_log_client.py
+  ✅ Import order fixed
+
+[723/783] Processing: scripts/migration/axiom-namespace-migrator.py
+  ✅ Import order fixed
+
+[724/783] Processing: workspace/tools/map-violations-to-playbooks.py
+  ✅ Import order fixed
+
+[725/783] Processing: workspace/src/services/agents/dependency-manager/src/evaluation/smartv_framework.py
+  ✅ Import order fixed
+
+[726/783] Processing: 00-namespaces/namespaces-mcp/level1/instant-system/deployer.py
+  ✅ Import order fixed
+
+[727/783] Processing: 00-namespaces/namespaces-adk/adk/governance/mi9_runtime.py
+  ✅ Import order fixed
+
+[728/783] Processing: workspace/src/services/agents/dependency-manager/src/strategy/strategy_advisor.py
+  ✅ Import order fixed
+
+[729/783] Processing: workspace/src/core/yaml_module_system/slsa_compliance.py
+  ✅ Import order fixed
+
+[730/783] Processing: workspace/src/core/plugins/cloud_agent_delegation/cloud_provider_adapter.py
+  ✅ Import order fixed
+
+[731/783] Processing: workspace/archive/legacy/v2-multi-islands/islands/go_island.py
+  ✅ Import order fixed
+
+[732/783] Processing: workspace/src/core/instant_generation/agents/testing_agent.py
+  ✅ Import order fixed
+
+[733/783] Processing: workspace/tools/language-history-writer.py
+  ✅ Import order fixed
+
+[734/783] Processing: workspace/tools/refactor/execute_integration.py
+  ✅ Import order fixed
+
+[735/783] Processing: workspace/src/core/tech_stack/architecture_config.py
+  ✅ Import order fixed
+
+[736/783] Processing: workspace/src/services/agents/dependency-manager/src/updaters/auto_updater.py
+  ✅ Import order fixed
+
+[737/783] Processing: workspace/teams/holy-grail/agents/services/dependency-manager/src/crossplatform/risk_assessment.py
+  ✅ Import order fixed
+
+[738/783] Processing: workspace/src/core/safety/checkpoint_manager.py
+  ✅ Import order fixed
+
+[739/783] Processing: workspace/src/core/virtual_experts/domain_experts.py
+  ✅ Import order fixed
+  ⚠️  eval() usage marked for review
+
+[740/783] Processing: 00-namespaces/namespaces-adk/governance_agents/cicd_repair_agent.py
+  ✅ Import order fixed
+
+[741/783] Processing: workspace/src/core/safety/retry_policies.py
+  ✅ Import order fixed
+
+[742/783] Processing: workspace/src/ai/agents/dependency-manager/src/implementation/implementation_plan.py
+  ✅ Import order fixed
+
+[743/783] Processing: workspace/src/core/engine/execution_engine.py
+  ✅ Import order fixed
+
+[744/783] Processing: workspace/src/autonomous/infrastructure/testing-compatibility/test_compatibility.py
+  ✅ Import order fixed
+
+[745/783] Processing: workspace/src/quantum/api/main.py
+  ✅ Import order fixed
+
+[746/783] Processing: workspace/teams/holy-grail/agents/services/dependency-manager/src/enterprise/recommendation.py
+  ✅ Import order fixed
+
+[747/783] Processing: workspace/teams/holy-grail/agents/services/dependency-manager/src/implementation/success_metrics.py
+  ✅ Import order fixed
+
+[748/783] Processing: workspace/teams/holy-grail/agents/ai-experts/dependency-manager/src/future/lowcode_integration.py
+  ✅ Import order fixed
+
+[749/783] Processing: workspace/teams/default-team/orchestrator/models/incidents.py
+  ✅ Import order fixed
+
+[750/783] Processing: workspace/teams/holy-grail/agents/autonomous/synergymesh_core/self_evolution_engine.py
+  ✅ Import order fixed
+
+[751/783] Processing: workspace/src/automation/architect/core/analysis/performance_analyzer.py
+  ✅ Import order fixed
+
+[752/783] Processing: workspace/src/bridges/language-islands/python-island.py
+  ✅ Import order fixed
+
+[753/783] Processing: workspace/docs/examples/configuration/python/config_validator.py
+  ✅ Import order fixed
+  ✅ Docstrings added
+
+[754/783] Processing: workspace/tools/docs/pr_comment_summary.py
+  ✅ Import order fixed
+
+[755/783] Processing: workspace/src/core/monitoring/observability_platform.py
+  ✅ Import order fixed
+
+[756/783] Processing: workspace/src/core/monitoring/smart_anomaly_detector.py
+  ✅ Import order fixed
+
+[757/783] Processing: workspace/tools/cleanup_duplicates.py
+  ✅ Import order fixed
+  ✅ MD5 replaced with SHA256
+
+[758/783] Processing: 00-namespaces/namespaces-adk/adk/core/memory_manager.py
+  ✅ Import order fixed
+
+[759/783] Processing: workspace/teams/holy-grail/agents/pipeline/testing_agent.py
+  ✅ Import order fixed
+
+[760/783] Processing: workspace/src/governance/index/scripts/event-writer.py
+  ✅ Import order fixed
+
+[761/783] Processing: workspace/src/core/engine/mcp_integration.py
+  ✅ Import order fixed
+
+[762/783] Processing: workspace/src/governance/33-common/tools/validate_governance_matrix.py
+  ✅ Import order fixed
+
+[763/783] Processing: workspace/src/services/agents/dependency-manager/src/utils/policy_simulator.py
+  ✅ Import order fixed
+
+[764/783] Processing: workspace/docs/refactor_playbooks/templates/contract-engine.py
+  ✅ Import order fixed
+
+[765/783] Processing: workspace/config/dev/validation-system/scripts/adaptive_decision_engine.py
+  ✅ Import order fixed
+
+[766/783] Processing: workspace/src/governance/07-audit/automation_engine.py
+  ✅ Import order fixed
+
+[767/783] Processing: workspace/src/core/plugins/main_system/phase_orchestrator.py
+  ✅ Import order fixed
+
+[768/783] Processing: workspace/teams/holy-grail/agents/ai-experts/dependency-manager/src/enterprise/analytics.py
+  ✅ Import order fixed
+
+[769/783] Processing: workspace/src/services/agents/dependency-manager/src/evaluation/evaluation_report.py
+  ✅ Import order fixed
+
+[770/783] Processing: workspace/teams/holy-grail/legacy-archive/v1-python-drones/drones/deployment_drone.py
+  ✅ Import order fixed
+
+[771/783] Processing: workspace/src/next_gen/architecture/__init__.py
+  ✅ Import order fixed
+
+[772/783] Processing: workspace/src/core/instant_generation/optimization/__init__.py
+  ✅ Import order fixed
+
+[773/783] Processing: workspace/src/services/agents/dependency-manager/src/enterprise/integration.py
+  ✅ Import order fixed
+
+[774/783] Processing: workspace/archive/legacy/v2-multi-islands/islands/base_island.py
+  ✅ Import order fixed
+
+[775/783] Processing: workspace/tools/governance/language-governance-analyzer.py
+  ✅ Import order fixed
+
+[776/783] Processing: workspace/src/quantum/quantum/cirq_backend.py
+  ✅ Import order fixed
+
+[777/783] Processing: workspace/src/governance/scripts/generate_dimensions.py
+  ✅ Import order fixed
+
+[778/783] Processing: workspace/src/autonomous/agents/agents/task_executor.py
+  ✅ Import order fixed
+  ⚠️  eval() usage marked for review
+
+[779/783] Processing: workspace/teams/holy-grail/automation/architect/core/repair/rule_engine.py
+  ✅ Import order fixed
+
+[780/783] Processing: workspace/tools/refactor/validate-phase3.py
+  ✅ Import order fixed
+
+[781/783] Processing: workspace/src/core/project_factory/cli.py
+  ✅ Import order fixed
+
+[782/783] Processing: workspace/src/enterprise/integrations/webhook.py
+  ✅ Import order fixed
+
+[783/783] Processing: workspace/src/services/agents/dependency-manager/src/analyzers/go_analyzer.py
+  ✅ Import order fixed
+
+============================================================
+DEEP CODE QUALITY FIX SUMMARY
+============================================================
+Total files processed: 783
+Import order fixes: 783
+Hardcoded URL fixes: 25
+Docstrings added: 20
+MD5 replacements: 19
+eval() reviews: 15
+Total fixes applied: 862
+Errors encountered: 0
+============================================================
+
+✅ Fixes applied successfully!
+💡 Run 'git diff' to review changes before committing

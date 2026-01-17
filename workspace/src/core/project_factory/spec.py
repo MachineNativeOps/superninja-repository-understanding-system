@@ -6,12 +6,13 @@ Defines the data structures for project specifications.
 """
 
 from dataclasses import dataclass, field
-from typing import Dict, List, Optional, Any
 from enum import Enum
+from typing import Any, Dict, List, Optional
 
 
 class ProjectType(Enum):
     """專案類型"""
+
     MICROSERVICE = "microservice"
     FRONTEND = "frontend"
     AI_AGENT = "ai-agent"
@@ -23,6 +24,7 @@ class ProjectType(Enum):
 
 class Language(Enum):
     """支持的程式語言"""
+
     PYTHON = "python"
     TYPESCRIPT = "typescript"
     JAVASCRIPT = "javascript"
@@ -33,6 +35,7 @@ class Language(Enum):
 
 class ArchitecturePattern(Enum):
     """架構模式"""
+
     CLEAN_ARCHITECTURE = "clean-architecture"
     HEXAGONAL = "hexagonal"
     DDD = "domain-driven-design"
@@ -44,6 +47,7 @@ class ArchitecturePattern(Enum):
 @dataclass
 class APISpec:
     """API 規格"""
+
     rest: bool = True
     graphql: bool = False
     grpc: bool = False
@@ -54,6 +58,7 @@ class APISpec:
 @dataclass
 class DatabaseSpec:
     """資料庫規格"""
+
     type: str = "postgresql"  # postgresql, mysql, mongodb, redis, etc.
     orm: Optional[str] = None  # sqlalchemy, typeorm, gorm, etc.
     migrations: Optional[str] = None  # alembic, flyway, etc.
@@ -63,6 +68,7 @@ class DatabaseSpec:
 @dataclass
 class CacheSpec:
     """快取規格"""
+
     type: str = "redis"  # redis, memcached, etc.
     serializer: str = "json"  # json, msgpack, pickle
     ttl_default: int = 3600
@@ -71,6 +77,7 @@ class CacheSpec:
 @dataclass
 class MessagingSpec:
     """訊息系統規格"""
+
     type: str = "kafka"  # kafka, rabbitmq, nats, etc.
     topics: List[str] = field(default_factory=list)
     consumer_groups: List[str] = field(default_factory=list)
@@ -79,6 +86,7 @@ class MessagingSpec:
 @dataclass
 class ObservabilitySpec:
     """可觀測性規格"""
+
     logging: str = "structured"  # structured, json, plain
     log_level: str = "INFO"
     metrics: str = "prometheus"  # prometheus, statsd, datadog
@@ -89,6 +97,7 @@ class ObservabilitySpec:
 @dataclass
 class TestSpec:
     """測試規格"""
+
     unit: bool = True
     integration: bool = True
     e2e: bool = False
@@ -99,6 +108,7 @@ class TestSpec:
 @dataclass
 class DockerSpec:
     """Docker 規格"""
+
     multi_stage: bool = True
     base_image: Optional[str] = None
     healthcheck: bool = True
@@ -108,6 +118,7 @@ class DockerSpec:
 @dataclass
 class KubernetesSpec:
     """Kubernetes 規格"""
+
     deployment: bool = True
     service: bool = True
     ingress: bool = False
@@ -121,10 +132,11 @@ class KubernetesSpec:
 @dataclass
 class CICDSpec:
     """CI/CD 規格"""
+
     platform: str = "github-actions"  # github-actions, gitlab-ci, drone, etc.
-    stages: List[str] = field(default_factory=lambda: [
-        "lint", "test", "build", "security-scan", "deploy"
-    ])
+    stages: List[str] = field(
+        default_factory=lambda: ["lint", "test", "build", "security-scan", "deploy"]
+    )
     deployment_strategy: str = "rolling"  # rolling, blue-green, canary
     auto_deploy: bool = False
 
@@ -132,6 +144,7 @@ class CICDSpec:
 @dataclass
 class DocumentationSpec:
     """文檔規格"""
+
     api_docs: str = "openapi"  # openapi, asyncapi, graphql-schema
     architecture: str = "c4-model"  # c4-model, uml, archimate
     readme: str = "comprehensive"  # minimal, standard, comprehensive
@@ -142,6 +155,7 @@ class DocumentationSpec:
 @dataclass
 class FeatureSpec:
     """功能規格"""
+
     api: APISpec = field(default_factory=APISpec)
     database: Optional[DatabaseSpec] = None
     cache: Optional[CacheSpec] = None
@@ -152,6 +166,7 @@ class FeatureSpec:
 @dataclass
 class DeliverableSpec:
     """交付物規格"""
+
     source_code: bool = True
     tests: TestSpec = field(default_factory=TestSpec)
     docker: DockerSpec = field(default_factory=DockerSpec)
@@ -163,6 +178,7 @@ class DeliverableSpec:
 @dataclass
 class GovernanceSpec:
     """治理規格"""
+
     compliance: List[str] = field(default_factory=lambda: ["ISO-42001"])
     security_level: str = "high"  # low, medium, high, critical
     audit_trail: bool = True
@@ -174,10 +190,16 @@ class GovernanceSpec:
 @dataclass
 class ArchitectureSpec:
     """架構規格"""
+
     pattern: ArchitecturePattern = ArchitecturePattern.CLEAN_ARCHITECTURE
-    layers: List[str] = field(default_factory=lambda: [
-        "presentation", "application", "domain", "infrastructure"
-    ])
+    layers: List[str] = field(
+        default_factory=lambda: [
+            "presentation",
+            "application",
+            "domain",
+            "infrastructure",
+        ]
+    )
     bounded_contexts: List[str] = field(default_factory=list)
 
 
@@ -255,7 +277,7 @@ class ProjectSpec:
         }
 
     @classmethod
-    def from_dict(cls, data: Dict[str, Any]) -> 'ProjectSpec':
+    def from_dict(cls, data: Dict[str, Any]) -> "ProjectSpec":
         """
         Create specification from dictionary.
 
@@ -289,17 +311,24 @@ class ProjectSpec:
         errors = []
 
         # Validate name
-        if not self.name or not self.name.replace('-', '').replace('_', '').isalnum():
+        if not self.name or not self.name.replace("-", "").replace("_", "").isalnum():
             errors.append(f"Invalid project name: {self.name}")
 
         # Validate framework compatibility
         if self.language == Language.PYTHON and self.framework not in [
-            "fastapi", "flask", "django", "starlette"
+            "fastapi",
+            "flask",
+            "django",
+            "starlette",
         ]:
-            errors.append(f"Unsupported framework {self.framework} for {self.language.value}")
+            errors.append(
+                f"Unsupported framework {self.framework} for {self.language.value}"
+            )
 
         # Validate coverage threshold
         if not 0 <= self.deliverables.tests.coverage_threshold <= 100:
-            errors.append(f"Invalid coverage threshold: {self.deliverables.tests.coverage_threshold}")
+            errors.append(
+                f"Invalid coverage threshold: {self.deliverables.tests.coverage_threshold}"
+            )
 
         return errors

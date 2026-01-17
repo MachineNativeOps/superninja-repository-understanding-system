@@ -6,7 +6,8 @@ Event logging and safety monitoring demonstration for autonomous systems.
 """
 
 import time
-from observability.event_logger import EventLogger, SafetyMonitor, EventCategory
+
+from observability.event_logger import EventCategory, EventLogger, SafetyMonitor
 
 
 def main() -> None:

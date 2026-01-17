@@ -8,9 +8,4 @@ from .go_analyzer import GoAnalyzer
 from .npm_analyzer import NpmAnalyzer
 from .pip_analyzer import PipAnalyzer
 
-__all__ = [
-    "BaseAnalyzer",
-    "NpmAnalyzer",
-    "PipAnalyzer",
-    "GoAnalyzer"
-]
+__all__ = ["BaseAnalyzer", "NpmAnalyzer", "PipAnalyzer", "GoAnalyzer"]

@@ -4,6 +4,5 @@ Shim to reuse PR #1023 layer validator for PR #1064 context.
 """
 from tools.validation.validate_pr1023_layers import main
 
-
 if __name__ == "__main__":
     raise SystemExit(main())

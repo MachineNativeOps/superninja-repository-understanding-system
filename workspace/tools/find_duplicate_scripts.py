@@ -6,17 +6,26 @@ Finds and analyzes duplicate scripts across the repository
 
 import hashlib
 import os
-from pathlib import Path
 from collections import defaultdict
+from pathlib import Path
 from typing import Dict, List, Set
+
 
 class ScriptDuplicateFinder:
     """腳本重複查找器"""
 
     def __init__(self, repo_root: Path):
         self.repo_root = repo_root
-        self.script_extensions = {'.py', '.sh', '.js', '.ts'}
-        self.skip_dirs = {'node_modules', '.git', '__pycache__', '.venv', 'venv', 'dist', 'build'}
+        self.script_extensions = {".py", ".sh", ".js", ".ts"}
+        self.skip_dirs = {
+            "node_modules",
+            ".git",
+            "__pycache__",
+            ".venv",
+            "venv",
+            "dist",
+            "build",
+        }
 
     def find_duplicates(self) -> Dict[str, List[str]]:
         """查找重複腳本（基於內容哈希）"""
@@ -45,7 +54,9 @@ class ScriptDuplicateFinder:
             name_to_files[name].append(rel_path)
 
         # 過濾出名稱重複
-        similar = {name: files for name, files in name_to_files.items() if len(files) > 1}
+        similar = {
+            name: files for name, files in name_to_files.items() if len(files) > 1
+        }
         return similar
 
     def _iter_scripts(self):
@@ -61,8 +72,8 @@ class ScriptDuplicateFinder:
 
     def _hash_file(self, file_path: Path) -> str:
         """計算文件的哈希值"""
-        hasher = hashlib.md5()
-        with open(file_path, 'rb') as f:
+        hasher = hashlib.sha256()
+        with open(file_path, "rb") as f:
             hasher.update(f.read())
         return hasher.hexdigest()
 
@@ -93,7 +104,9 @@ class ScriptDuplicateFinder:
                     print(f"    - {file}")
 
         # 3. 統計
-        total_duplicate_files = sum(len(files) - 1 for files in content_duplicates.values())
+        total_duplicate_files = sum(
+            len(files) - 1 for files in content_duplicates.values()
+        )
         print(f"\n\n📊 統計:")
         print(f"  可移除的重複文件數: {total_duplicate_files}")
         print(f"  名稱衝突組數: {len(name_similar)}")
@@ -104,6 +117,7 @@ class ScriptDuplicateFinder:
             "name_conflicts": len(name_similar),
         }
 
+
 def main():
     repo_root = Path(__file__).parent.parent
     finder = ScriptDuplicateFinder(repo_root)
@@ -112,6 +126,7 @@ def main():
     print(f"\n✅ 分析完成！")
     if stats["removable_files"] > 0:
         print(f"\n💡 建議: 可以移除 {stats['removable_files']} 個重複文件來清理代碼庫")
+
 
 if __name__ == "__main__":
     main()

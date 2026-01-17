@@ -20,29 +20,32 @@ logger = logging.getLogger(__name__)
 
 class DelegationStatus(Enum):
     """Status of a delegation"""
-    PENDING = 'pending'
-    QUEUED = 'queued'
-    RUNNING = 'running'
-    COMPLETED = 'completed'
-    FAILED = 'failed'
-    CANCELLED = 'cancelled'
-    RETRYING = 'retrying'
+
+    PENDING = "pending"
+    QUEUED = "queued"
+    RUNNING = "running"
+    COMPLETED = "completed"
+    FAILED = "failed"
+    CANCELLED = "cancelled"
+    RETRYING = "retrying"
 
 
 class TaskPriority(Enum):
     """Task priority levels"""
-    CRITICAL = 'critical'
-    HIGH = 'high'
-    MEDIUM = 'medium'
-    LOW = 'low'
+
+    CRITICAL = "critical"
+    HIGH = "high"
+    MEDIUM = "medium"
+    LOW = "low"
 
 
 @dataclass
 class DelegationConfig:
     """Configuration for delegation"""
+
     name: str
     enabled: bool = True
-    environment: str = 'production'
+    environment: str = "production"
     max_concurrent_tasks: int = 100
     default_timeout: int = 300  # seconds
     retry_enabled: bool = True
@@ -55,23 +58,24 @@ class DelegationConfig:
     def to_dict(self) -> dict[str, Any]:
         """Convert to dictionary"""
         return {
-            'name': self.name,
-            'enabled': self.enabled,
-            'environment': self.environment,
-            'maxConcurrentTasks': self.max_concurrent_tasks,
-            'defaultTimeout': self.default_timeout,
-            'retryEnabled': self.retry_enabled,
-            'maxRetries': self.max_retries,
-            'retryDelay': self.retry_delay,
-            'backoffMultiplier': self.backoff_multiplier,
-            'queueConfig': self.queue_config,
-            'monitoringConfig': self.monitoring_config
+            "name": self.name,
+            "enabled": self.enabled,
+            "environment": self.environment,
+            "maxConcurrentTasks": self.max_concurrent_tasks,
+            "defaultTimeout": self.default_timeout,
+            "retryEnabled": self.retry_enabled,
+            "maxRetries": self.max_retries,
+            "retryDelay": self.retry_delay,
+            "backoffMultiplier": self.backoff_multiplier,
+            "queueConfig": self.queue_config,
+            "monitoringConfig": self.monitoring_config,
         }
 
 
 @dataclass
 class Task:
     """Represents a task to be delegated"""
+
     id: str
     name: str
     type: str
@@ -84,20 +88,21 @@ class Task:
     def to_dict(self) -> dict[str, Any]:
         """Convert to dictionary"""
         return {
-            'id': self.id,
-            'name': self.name,
-            'type': self.type,
-            'payload': self.payload,
-            'priority': self.priority.value,
-            'timeout': self.timeout,
-            'metadata': self.metadata,
-            'createdAt': self.created_at.isoformat()
+            "id": self.id,
+            "name": self.name,
+            "type": self.type,
+            "payload": self.payload,
+            "priority": self.priority.value,
+            "timeout": self.timeout,
+            "metadata": self.metadata,
+            "createdAt": self.created_at.isoformat(),
         }
 
 
 @dataclass
 class DelegationResult:
     """Result of a delegation"""
+
     task_id: str
     status: DelegationStatus
     provider: str | None = None
@@ -112,16 +117,16 @@ class DelegationResult:
     def to_dict(self) -> dict[str, Any]:
         """Convert to dictionary"""
         return {
-            'taskId': self.task_id,
-            'status': self.status.value,
-            'provider': self.provider,
-            'result': self.result,
-            'error': self.error,
-            'startedAt': self.started_at.isoformat() if self.started_at else None,
-            'completedAt': self.completed_at.isoformat() if self.completed_at else None,
-            'durationMs': self.duration_ms,
-            'attempts': self.attempts,
-            'metadata': self.metadata
+            "taskId": self.task_id,
+            "status": self.status.value,
+            "provider": self.provider,
+            "result": self.result,
+            "error": self.error,
+            "startedAt": self.started_at.isoformat() if self.started_at else None,
+            "completedAt": self.completed_at.isoformat() if self.completed_at else None,
+            "durationMs": self.duration_ms,
+            "attempts": self.attempts,
+            "metadata": self.metadata,
         }
 
     @property
@@ -133,7 +138,7 @@ class DelegationResult:
 class DelegationManager:
     """
     Central manager for cloud agent delegation
-    
+
     Provides functionality to:
     - Delegate tasks to cloud-based agents
     - Manage task queues and priorities
@@ -145,11 +150,11 @@ class DelegationManager:
         self,
         config: DelegationConfig,
         router: Any | None = None,
-        load_balancer: Any | None = None
+        load_balancer: Any | None = None,
     ):
         """
         Initialize the delegation manager
-        
+
         Args:
             config: Delegation configuration
             router: Optional task router
@@ -174,8 +179,8 @@ class DelegationManager:
         self._is_running = True
         self._task_semaphore = asyncio.Semaphore(self.config.max_concurrent_tasks)
 
-        logger.info(f'DelegationManager started: {self.config.name}')
-        await self._emit_event('manager_started', {'config': self.config.to_dict()})
+        logger.info(f"DelegationManager started: {self.config.name}")
+        await self._emit_event("manager_started", {"config": self.config.to_dict()})
 
     async def stop(self) -> None:
         """Stop the delegation manager"""
@@ -189,19 +194,19 @@ class DelegationManager:
 
         self._running_tasks.clear()
 
-        logger.info('DelegationManager stopped')
-        await self._emit_event('manager_stopped', {})
+        logger.info("DelegationManager stopped")
+        await self._emit_event("manager_stopped", {})
 
     def register_provider(self, name: str, provider: Any) -> None:
         """Register a cloud provider"""
         self._providers[name] = provider
-        logger.info(f'Registered provider: {name}')
+        logger.info(f"Registered provider: {name}")
 
     def unregister_provider(self, name: str) -> bool:
         """Unregister a cloud provider"""
         provider = self._providers.pop(name, None)
         if provider:
-            logger.info(f'Unregistered provider: {name}')
+            logger.info(f"Unregistered provider: {name}")
             return True
         return False
 
@@ -213,11 +218,11 @@ class DelegationManager:
         priority: TaskPriority = TaskPriority.MEDIUM,
         timeout: int | None = None,
         target_provider: str | None = None,
-        metadata: dict[str, Any] | None = None
+        metadata: dict[str, Any] | None = None,
     ) -> DelegationResult:
         """
         Delegate a task to a cloud agent
-        
+
         Args:
             task_name: Name of the task
             task_type: Type of task (e.g., 'analyze', 'fix', 'security')
@@ -226,12 +231,12 @@ class DelegationManager:
             timeout: Optional timeout override
             target_provider: Optional specific provider to use
             metadata: Optional metadata
-            
+
         Returns:
             DelegationResult with execution status
         """
         if not self._is_running:
-            raise RuntimeError('DelegationManager is not running')
+            raise RuntimeError("DelegationManager is not running")
 
         # Create task
         task = Task(
@@ -241,23 +246,20 @@ class DelegationManager:
             payload=payload,
             priority=priority,
             timeout=timeout or self.config.default_timeout,
-            metadata=metadata or {}
+            metadata=metadata or {},
         )
 
         self._tasks[task.id] = task
 
         # Create initial result
-        result = DelegationResult(
-            task_id=task.id,
-            status=DelegationStatus.PENDING
-        )
+        result = DelegationResult(task_id=task.id, status=DelegationStatus.PENDING)
         self._results[task.id] = result
 
         # Select provider
         provider_name = target_provider or await self._select_provider(task)
         if not provider_name:
             result.status = DelegationStatus.FAILED
-            result.error = 'No available provider'
+            result.error = "No available provider"
             return result
 
         result.provider = provider_name
@@ -268,30 +270,28 @@ class DelegationManager:
         return result
 
     async def delegate_batch(
-        self,
-        tasks: list[dict[str, Any]],
-        parallel: bool = True
+        self, tasks: list[dict[str, Any]], parallel: bool = True
     ) -> list[DelegationResult]:
         """
         Delegate multiple tasks
-        
+
         Args:
             tasks: List of task specifications
             parallel: Execute in parallel if True
-            
+
         Returns:
             List of delegation results
         """
         if parallel:
             coroutines = [
                 self.delegate(
-                    task_name=t['name'],
-                    task_type=t['type'],
-                    payload=t.get('payload', {}),
-                    priority=TaskPriority(t.get('priority', 'medium')),
-                    timeout=t.get('timeout'),
-                    target_provider=t.get('provider'),
-                    metadata=t.get('metadata')
+                    task_name=t["name"],
+                    task_type=t["type"],
+                    payload=t.get("payload", {}),
+                    priority=TaskPriority(t.get("priority", "medium")),
+                    timeout=t.get("timeout"),
+                    target_provider=t.get("provider"),
+                    metadata=t.get("metadata"),
                 )
                 for t in tasks
             ]
@@ -300,13 +300,13 @@ class DelegationManager:
             results = []
             for t in tasks:
                 result = await self.delegate(
-                    task_name=t['name'],
-                    task_type=t['type'],
-                    payload=t.get('payload', {}),
-                    priority=TaskPriority(t.get('priority', 'medium')),
-                    timeout=t.get('timeout'),
-                    target_provider=t.get('provider'),
-                    metadata=t.get('metadata')
+                    task_name=t["name"],
+                    task_type=t["type"],
+                    payload=t.get("payload", {}),
+                    priority=TaskPriority(t.get("priority", "medium")),
+                    timeout=t.get("timeout"),
+                    target_provider=t.get("provider"),
+                    metadata=t.get("metadata"),
                 )
                 results.append(result)
             return results
@@ -314,7 +314,7 @@ class DelegationManager:
     async def cancel_task(self, task_id: str) -> bool:
         """
         Cancel a running task
-        
+
         Returns:
             True if cancelled, False if not found
         """
@@ -327,7 +327,7 @@ class DelegationManager:
                 result.status = DelegationStatus.CANCELLED
                 result.completed_at = datetime.now(UTC)
 
-            logger.info(f'Cancelled task: {task_id}')
+            logger.info(f"Cancelled task: {task_id}")
             return True
 
         return False
@@ -341,17 +341,14 @@ class DelegationManager:
         return self._tasks.get(task_id)
 
     def list_tasks(
-        self,
-        status: DelegationStatus | None = None,
-        task_type: str | None = None
+        self, status: DelegationStatus | None = None, task_type: str | None = None
     ) -> list[Task]:
         """List tasks with optional filters"""
         tasks = list(self._tasks.values())
 
         if status:
             task_ids = [
-                tid for tid, result in self._results.items()
-                if result.status == status
+                tid for tid, result in self._results.items() if result.status == status
             ]
             tasks = [t for t in tasks if t.id in task_ids]
 
@@ -370,7 +367,9 @@ class DelegationManager:
         provider_counts = {}
         for result in self._results.values():
             if result.provider:
-                provider_counts[result.provider] = provider_counts.get(result.provider, 0) + 1
+                provider_counts[result.provider] = (
+                    provider_counts.get(result.provider, 0) + 1
+                )
 
         total_duration = sum(r.duration_ms for r in self._results.values())
         avg_duration = total_duration / max(len(self._results), 1)
@@ -379,13 +378,13 @@ class DelegationManager:
         success_rate = success_count / max(len(self._results), 1)
 
         return {
-            'total_tasks': len(self._tasks),
-            'running_tasks': len(self._running_tasks),
-            'status_distribution': status_counts,
-            'provider_distribution': provider_counts,
-            'average_duration_ms': avg_duration,
-            'success_rate': success_rate,
-            'providers_count': len(self._providers)
+            "total_tasks": len(self._tasks),
+            "running_tasks": len(self._running_tasks),
+            "status_distribution": status_counts,
+            "provider_distribution": provider_counts,
+            "average_duration_ms": avg_duration,
+            "success_rate": success_rate,
+            "providers_count": len(self._providers),
         }
 
     def on(self, event: str, handler: Callable) -> None:
@@ -400,18 +399,22 @@ class DelegationManager:
             result.status = DelegationStatus.RUNNING
             result.started_at = datetime.now(UTC)
 
-            await self._emit_event('task_started', {'task': task.to_dict()})
+            await self._emit_event("task_started", {"task": task.to_dict()})
 
             attempts = 0
             last_error = None
 
-            while attempts < (self.config.max_retries if self.config.retry_enabled else 1):
+            while attempts < (
+                self.config.max_retries if self.config.retry_enabled else 1
+            ):
                 attempts += 1
                 result.attempts = attempts
 
                 if attempts > 1:
                     result.status = DelegationStatus.RETRYING
-                    delay = self.config.retry_delay * (self.config.backoff_multiplier ** (attempts - 1))
+                    delay = self.config.retry_delay * (
+                        self.config.backoff_multiplier ** (attempts - 1)
+                    )
                     await asyncio.sleep(delay)
 
                 try:
@@ -423,8 +426,7 @@ class DelegationManager:
 
                     # Wait with timeout
                     execution_result = await asyncio.wait_for(
-                        exec_task,
-                        timeout=task.timeout
+                        exec_task, timeout=task.timeout
                     )
 
                     result.result = execution_result
@@ -434,12 +436,14 @@ class DelegationManager:
                         result.completed_at - result.started_at
                     ).total_seconds() * 1000
 
-                    await self._emit_event('task_completed', {'result': result.to_dict()})
+                    await self._emit_event(
+                        "task_completed", {"result": result.to_dict()}
+                    )
                     break
 
                 except TimeoutError:
-                    last_error = f'Task timed out after {task.timeout}s'
-                    logger.warning(f'Task {task.id} timed out (attempt {attempts})')
+                    last_error = f"Task timed out after {task.timeout}s"
+                    logger.warning(f"Task {task.id} timed out (attempt {attempts})")
 
                 except asyncio.CancelledError:
                     result.status = DelegationStatus.CANCELLED
@@ -448,7 +452,7 @@ class DelegationManager:
 
                 except Exception as e:
                     last_error = str(e)
-                    logger.error(f'Task {task.id} failed (attempt {attempts}): {e}')
+                    logger.error(f"Task {task.id} failed (attempt {attempts}): {e}")
 
                 finally:
                     self._running_tasks.pop(task.id, None)
@@ -461,24 +465,20 @@ class DelegationManager:
                     result.completed_at - result.started_at
                 ).total_seconds() * 1000
 
-                await self._emit_event('task_failed', {'result': result.to_dict()})
+                await self._emit_event("task_failed", {"result": result.to_dict()})
 
-    async def _execute_on_provider(
-        self,
-        task: Task,
-        provider_name: str
-    ) -> Any:
+    async def _execute_on_provider(self, task: Task, provider_name: str) -> Any:
         """
         Execute task on a specific provider
-        
+
         NOTE: This is a simulation for framework demonstration.
         Production implementation should integrate with actual cloud
         provider SDKs (boto3 for AWS, google-cloud for GCP, azure for Azure).
-        
+
         Args:
             task: Task to execute
             provider_name: Name of the provider
-            
+
         Returns:
             Execution result
         """
@@ -488,14 +488,14 @@ class DelegationManager:
             # Simulate execution for testing/demonstration
             await asyncio.sleep(0.1)
             return {
-                'status': 'success',
-                'provider': provider_name,
-                'task_type': task.type,
-                'processed_at': datetime.now(UTC).isoformat()
+                "status": "success",
+                "provider": provider_name,
+                "task_type": task.type,
+                "processed_at": datetime.now(UTC).isoformat(),
             }
 
         # In real implementation, call provider's execute method
-        if hasattr(provider, 'execute'):
+        if hasattr(provider, "execute"):
             return await provider.execute(task)
         else:
             return await provider(task)
@@ -504,7 +504,7 @@ class DelegationManager:
         """Select appropriate provider for task"""
         if not self._providers:
             # Return default provider name for testing
-            return 'default'
+            return "default"
 
         # Use router if available
         if self._router:
@@ -531,30 +531,16 @@ class DelegationManager:
                 else:
                     handler(data)
             except Exception as e:
-                logger.error(f'Event handler error for {event}: {e}')
+                logger.error(f"Event handler error for {event}: {e}")
 
 
 # Factory functions
-def create_delegation_manager(
-    name: str,
-    **kwargs
-) -> DelegationManager:
+def create_delegation_manager(name: str, **kwargs) -> DelegationManager:
     """Create a new DelegationManager instance"""
     config = DelegationConfig(name=name, **kwargs)
     return DelegationManager(config)
 
 
-def create_task(
-    name: str,
-    task_type: str,
-    payload: dict[str, Any],
-    **kwargs
-) -> Task:
+def create_task(name: str, task_type: str, payload: dict[str, Any], **kwargs) -> Task:
     """Create a new Task"""
-    return Task(
-        id=str(uuid4()),
-        name=name,
-        type=task_type,
-        payload=payload,
-        **kwargs
-    )
+    return Task(id=str(uuid4()), name=name, type=task_type, payload=payload, **kwargs)

@@ -24,64 +24,47 @@ logger = logging.getLogger(__name__)
 class TenantRepository(Protocol):
     """Repository interface for tenant data persistence"""
 
-    async def save_organization(self, org: Organization) -> Organization:
-        ...
+    async def save_organization(self, org: Organization) -> Organization: ...
 
-    async def get_organization(self, org_id: UUID) -> Organization | None:
-        ...
+    async def get_organization(self, org_id: UUID) -> Organization | None: ...
 
-    async def get_organization_by_slug(self, slug: str) -> Organization | None:
-        ...
+    async def get_organization_by_slug(self, slug: str) -> Organization | None: ...
 
-    async def update_organization(self, org: Organization) -> Organization:
-        ...
+    async def update_organization(self, org: Organization) -> Organization: ...
 
-    async def delete_organization(self, org_id: UUID) -> bool:
-        ...
+    async def delete_organization(self, org_id: UUID) -> bool: ...
 
     async def list_organizations(
-        self,
-        user_id: UUID | None = None,
-        offset: int = 0,
-        limit: int = 100
-    ) -> list[Organization]:
-        ...
+        self, user_id: UUID | None = None, offset: int = 0, limit: int = 100
+    ) -> list[Organization]: ...
 
-    async def save_project(self, project: Project) -> Project:
-        ...
+    async def save_project(self, project: Project) -> Project: ...
 
-    async def get_project(self, org_id: UUID, project_id: UUID) -> Project | None:
-        ...
+    async def get_project(self, org_id: UUID, project_id: UUID) -> Project | None: ...
 
     async def list_projects(
-        self,
-        org_id: UUID,
-        offset: int = 0,
-        limit: int = 100
-    ) -> list[Project]:
-        ...
+        self, org_id: UUID, offset: int = 0, limit: int = 100
+    ) -> list[Project]: ...
 
-    async def save_repository(self, repo: Repository) -> Repository:
-        ...
+    async def save_repository(self, repo: Repository) -> Repository: ...
 
-    async def get_repository(self, org_id: UUID, repo_id: UUID) -> Repository | None:
-        ...
+    async def get_repository(
+        self, org_id: UUID, repo_id: UUID
+    ) -> Repository | None: ...
 
     async def list_repositories(
         self,
         org_id: UUID,
         project_id: UUID | None = None,
         offset: int = 0,
-        limit: int = 100
-    ) -> list[Repository]:
-        ...
+        limit: int = 100,
+    ) -> list[Repository]: ...
 
 
 class TenantEventPublisher(Protocol):
     """Event publisher for tenant lifecycle events"""
 
-    async def publish(self, event_type: str, payload: dict[str, Any]) -> None:
-        ...
+    async def publish(self, event_type: str, payload: dict[str, Any]) -> None: ...
 
 
 @dataclass
@@ -97,12 +80,27 @@ class TenantManager:
     event_publisher: TenantEventPublisher | None = None
 
     # Validation patterns
-    SLUG_PATTERN = re.compile(r'^[a-z0-9][a-z0-9-]{1,38}[a-z0-9]$')
-    RESERVED_SLUGS = frozenset([
-        'admin', 'api', 'app', 'auth', 'billing', 'console',
-        'dashboard', 'help', 'login', 'logout', 'register',
-        'settings', 'status', 'support', 'system', 'www',
-    ])
+    SLUG_PATTERN = re.compile(r"^[a-z0-9][a-z0-9-]{1,38}[a-z0-9]$")
+    RESERVED_SLUGS = frozenset(
+        [
+            "admin",
+            "api",
+            "app",
+            "auth",
+            "billing",
+            "console",
+            "dashboard",
+            "help",
+            "login",
+            "logout",
+            "register",
+            "settings",
+            "status",
+            "support",
+            "system",
+            "www",
+        ]
+    )
 
     # ------------------------------------------------------------------
     # Organization Operations
@@ -170,7 +168,7 @@ class TenantManager:
                     "org_id": str(org.id),
                     "slug": org.slug,
                     "created_by": str(created_by),
-                }
+                },
             )
 
         logger.info(f"Organization created: {org.slug} (id={org.id})")
@@ -200,7 +198,7 @@ class TenantManager:
             raise ValueError(f"Organization not found: {org_id}")
 
         # Apply allowed updates
-        allowed_fields = {'name', 'display_name', 'billing_email'}
+        allowed_fields = {"name", "display_name", "billing_email"}
         for field, value in updates.items():
             if field in allowed_fields:
                 setattr(org, field, value)
@@ -215,7 +213,7 @@ class TenantManager:
                     "org_id": str(org_id),
                     "updated_by": str(updated_by),
                     "fields": list(updates.keys()),
-                }
+                },
             )
 
         return org
@@ -243,7 +241,7 @@ class TenantManager:
                     "org_id": str(org_id),
                     "reason": reason,
                     "suspended_by": str(suspended_by),
-                }
+                },
             )
 
         logger.warning(f"Organization suspended: {org.slug} - {reason}")
@@ -302,7 +300,7 @@ class TenantManager:
                     "org_id": str(org_id),
                     "project_id": str(project.id),
                     "created_by": str(created_by),
-                }
+                },
             )
 
         return project
@@ -380,7 +378,7 @@ class TenantManager:
                     "repo_id": str(repo.id),
                     "provider": provider,
                     "full_name": full_name,
-                }
+                },
             )
 
         return repo
@@ -397,7 +395,9 @@ class TenantManager:
         limit: int = 100,
     ) -> list[Repository]:
         """List repositories for org/project"""
-        return await self.repository.list_repositories(org_id, project_id, offset, limit)
+        return await self.repository.list_repositories(
+            org_id, project_id, offset, limit
+        )
 
     # ------------------------------------------------------------------
     # Tenant Isolation Utilities

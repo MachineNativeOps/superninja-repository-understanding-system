@@ -15,6 +15,7 @@ from typing import Any
 
 class ServiceLifecycle(Enum):
     """Service lifecycle states"""
+
     REGISTERED = "registered"
     INITIALIZING = "initializing"
     READY = "ready"
@@ -28,6 +29,7 @@ class ServiceLifecycle(Enum):
 @dataclass
 class ServiceDefinition:
     """Service definition for registration"""
+
     name: str
     service_class: type
     dependencies: list[str] = field(default_factory=list)
@@ -39,6 +41,7 @@ class ServiceDefinition:
 @dataclass
 class ServiceInstance:
     """Service instance information"""
+
     definition: ServiceDefinition
     instance: Any | None = None
     lifecycle: ServiceLifecycle = ServiceLifecycle.REGISTERED
@@ -49,6 +52,7 @@ class ServiceInstance:
 @dataclass
 class BootstrapConfig:
     """Bootstrap configuration"""
+
     # Initialization
     parallel_init: bool = False
     init_timeout_seconds: int = 60
@@ -69,7 +73,7 @@ class BootstrapConfig:
 class DependencyInjector:
     """
     Dependency Injector - 依賴注入器
-    
+
     Manages service dependencies and injection
     """
 
@@ -119,9 +123,9 @@ class DependencyInjector:
     def has_binding(self, interface: str) -> bool:
         """Check if a binding exists"""
         return (
-            interface in self._bindings or
-            interface in self._instances or
-            interface in self._factories
+            interface in self._bindings
+            or interface in self._instances
+            or interface in self._factories
         )
 
     def clear(self) -> None:
@@ -134,7 +138,7 @@ class DependencyInjector:
 class ServiceRegistry:
     """
     Service Registry - 服務註冊表
-    
+
     Central registry for all services
     """
 
@@ -222,7 +226,7 @@ class ServiceRegistry:
 class SystemBootstrap:
     """
     System Bootstrap - 系統啟動器
-    
+
     Initialize and configure all subsystems
     """
 
@@ -251,7 +255,7 @@ class SystemBootstrap:
     def initialize(self) -> bool:
         """
         Initialize all services
-        
+
         Returns:
             True if initialization successful
         """
@@ -271,7 +275,9 @@ class SystemBootstrap:
             for service_name in order:
                 if not self._initialize_service(service_name):
                     if self.config.fail_fast:
-                        self.logger.error(f"Failed to initialize {service_name}, failing fast")
+                        self.logger.error(
+                            f"Failed to initialize {service_name}, failing fast"
+                        )
                         return False
 
             self._initialized = True
@@ -304,7 +310,11 @@ class SystemBootstrap:
             if definition.config:
                 instance = definition.service_class(**definition.config, **deps)
             else:
-                instance = definition.service_class(**deps) if deps else definition.service_class()
+                instance = (
+                    definition.service_class(**deps)
+                    if deps
+                    else definition.service_class()
+                )
 
             # Register instance
             self.registry.set_instance(name, instance)
@@ -322,7 +332,7 @@ class SystemBootstrap:
     def shutdown(self) -> bool:
         """
         Shutdown all services
-        
+
         Returns:
             True if shutdown successful
         """
@@ -358,11 +368,11 @@ class SystemBootstrap:
 
         try:
             # Call shutdown method if available
-            if hasattr(service, 'shutdown'):
+            if hasattr(service, "shutdown"):
                 service.shutdown()
-            elif hasattr(service, 'stop'):
+            elif hasattr(service, "stop"):
                 service.stop()
-            elif hasattr(service, 'close'):
+            elif hasattr(service, "close"):
                 service.close()
 
             self.registry.set_lifecycle(name, ServiceLifecycle.STOPPED)
@@ -375,7 +385,7 @@ class SystemBootstrap:
     def health_check(self) -> dict[str, Any]:
         """
         Perform health check on all services
-        
+
         Returns:
             Health check results
         """
@@ -383,19 +393,19 @@ class SystemBootstrap:
             "healthy": True,
             "services": {},
             "checks": {},
-            "timestamp": datetime.now().isoformat()
+            "timestamp": datetime.now().isoformat(),
         }
 
         # Check service states
         for name, service in self.registry.get_all().items():
             is_healthy = service.lifecycle in [
                 ServiceLifecycle.READY,
-                ServiceLifecycle.RUNNING
+                ServiceLifecycle.RUNNING,
             ]
             results["services"][name] = {
                 "healthy": is_healthy,
                 "lifecycle": service.lifecycle.value,
-                "error": service.error_message
+                "error": service.error_message,
             }
             if not is_healthy:
                 results["healthy"] = False

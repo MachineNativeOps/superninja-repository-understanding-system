@@ -4,10 +4,11 @@
 Removes duplicate scripts based on analysis
 """
 
-import os
 import hashlib
-from pathlib import Path
+import os
 from collections import defaultdict
+from pathlib import Path
+
 
 class DuplicatesCleaner:
     """重複文件清理器"""
@@ -44,7 +45,7 @@ class DuplicatesCleaner:
 
         # 收集所有 legacy/ 下的文件
         for file_path in legacy_dir.rglob("*"):
-            if file_path.is_file() and file_path.suffix in {'.py', '.sh', '.js', '.ts'}:
+            if file_path.is_file() and file_path.suffix in {".py", ".sh", ".js", ".ts"}:
                 # 檢查是否在根目錄也存在
                 rel_path = file_path.relative_to(legacy_dir)
                 root_file = self.repo_root / rel_path
@@ -69,7 +70,9 @@ class DuplicatesCleaner:
                 rel_path = agent_file.relative_to(agent_dir)
                 services_file = services_agent_dir / rel_path
 
-                if services_file.exists() and self._files_identical(agent_file, services_file):
+                if services_file.exists() and self._files_identical(
+                    agent_file, services_file
+                ):
                     # 保留 services/agents/ 版本，移除 agent/ 版本
                     self._remove_file(agent_file, f"重複於 services/agents/{rel_path}")
 
@@ -77,7 +80,7 @@ class DuplicatesCleaner:
         """清理空的 __init__.py 文件重複"""
         print("\n3️⃣  清理空 __init__.py 重複...")
 
-        empty_init_hash = hashlib.md5(b'').hexdigest()  # 空文件哈希
+        empty_init_hash = hashlib.sha256(b"").hexdigest()  # 空文件哈希
         init_files = list(self.repo_root.rglob("__init__.py"))
 
         # 按目錄分組
@@ -100,11 +103,11 @@ class DuplicatesCleaner:
     def _hash_file(self, file_path: Path) -> str:
         """計算文件哈希"""
         try:
-            hasher = hashlib.md5()
-            with open(file_path, 'rb') as f:
+            hasher = hashlib.sha256()
+            with open(file_path, "rb") as f:
                 hasher.update(f.read())
             return hasher.hexdigest()
-        except:
+        except BaseException:
             return ""
 
     def _remove_file(self, file_path: Path, reason: str):
@@ -122,8 +125,10 @@ class DuplicatesCleaner:
             except Exception as e:
                 print(f"   ✗ 移除失敗 {rel_path}: {e}")
 
+
 def main():
     import sys
+
     repo_root = Path(__file__).parent.parent
 
     # 檢查是否為實際執行模式
@@ -140,6 +145,7 @@ def main():
 
     if dry_run:
         print("\n💡 提示: 使用 --execute 參數來實際執行清理")
+
 
 if __name__ == "__main__":
     main()

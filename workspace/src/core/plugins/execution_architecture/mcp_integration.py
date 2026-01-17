@@ -15,6 +15,7 @@ from typing import Any
 
 class MCPMessageType(Enum):
     """Types of MCP messages"""
+
     TOOL_LIST = "tool_list"
     TOOL_CALL = "tool_call"
     TOOL_RESULT = "tool_result"
@@ -26,6 +27,7 @@ class MCPMessageType(Enum):
 @dataclass
 class MCPTool:
     """Tool definition in MCP format"""
+
     name: str
     description: str
     input_schema: dict[str, Any] = field(default_factory=dict)
@@ -35,7 +37,7 @@ class MCPTool:
         return {
             "name": self.name,
             "description": self.description,
-            "inputSchema": self.input_schema
+            "inputSchema": self.input_schema,
         }
 
     @classmethod
@@ -44,13 +46,14 @@ class MCPTool:
         return cls(
             name=data.get("name", ""),
             description=data.get("description", ""),
-            input_schema=data.get("inputSchema", {})
+            input_schema=data.get("inputSchema", {}),
         )
 
 
 @dataclass
 class MCPToolCall:
     """A tool call in MCP format"""
+
     name: str
     arguments: dict[str, Any] = field(default_factory=dict)
     call_id: str = field(default_factory=lambda: str(uuid.uuid4()))
@@ -61,13 +64,14 @@ class MCPToolCall:
             "type": MCPMessageType.TOOL_CALL.value,
             "id": self.call_id,
             "name": self.name,
-            "arguments": self.arguments
+            "arguments": self.arguments,
         }
 
 
 @dataclass
 class MCPToolResult:
     """Result of an MCP tool call"""
+
     call_id: str
     success: bool
     result: Any = None
@@ -80,7 +84,7 @@ class MCPToolResult:
             "id": self.call_id,
             "success": self.success,
             "result": self.result,
-            "error": self.error
+            "error": self.error,
         }
 
 
@@ -97,14 +101,10 @@ class MCPToolProvider:
         self._server_info = {
             "name": server_name,
             "version": "1.0.0",
-            "protocol_version": "2024-11-05"
+            "protocol_version": "2024-11-05",
         }
 
-    def register_tool(
-        self,
-        tool: MCPTool,
-        handler: Callable
-    ) -> None:
+    def register_tool(self, tool: MCPTool, handler: Callable) -> None:
         """Register a tool to expose via MCP"""
         self._tools[tool.name] = tool
         self._handlers[tool.name] = handler
@@ -123,7 +123,7 @@ class MCPToolProvider:
             mcp_tool = MCPTool(
                 name=tool.name,
                 description=tool.description,
-                input_schema=tool.input_schema
+                input_schema=tool.input_schema,
             )
             self.register_tool(mcp_tool, tool.execute)
             count += 1
@@ -135,10 +135,7 @@ class MCPToolProvider:
 
     def handle_list_tools(self) -> dict[str, Any]:
         """Handle tools/list request"""
-        return {
-            "type": MCPMessageType.TOOL_LIST.value,
-            "tools": self.get_tool_list()
-        }
+        return {"type": MCPMessageType.TOOL_LIST.value, "tools": self.get_tool_list()}
 
     async def handle_tool_call(self, call: MCPToolCall) -> MCPToolResult:
         """Handle a tool call request"""
@@ -146,7 +143,7 @@ class MCPToolProvider:
             return MCPToolResult(
                 call_id=call.call_id,
                 success=False,
-                error=f"Tool not found: {call.name}"
+                error=f"Tool not found: {call.name}",
             )
 
         handler = self._handlers.get(call.name)
@@ -154,7 +151,7 @@ class MCPToolProvider:
             return MCPToolResult(
                 call_id=call.call_id,
                 success=False,
-                error=f"No handler for tool: {call.name}"
+                error=f"No handler for tool: {call.name}",
             )
 
         try:
@@ -164,34 +161,34 @@ class MCPToolProvider:
                 result = handler(call.arguments)
 
             # Handle ToolResult objects
-            if hasattr(result, 'output'):
+            if hasattr(result, "output"):
                 result = result.output
 
-            return MCPToolResult(
-                call_id=call.call_id,
-                success=True,
-                result=result
-            )
+            return MCPToolResult(call_id=call.call_id, success=True, result=result)
 
         except Exception as e:
-            return MCPToolResult(
-                call_id=call.call_id,
-                success=False,
-                error=str(e)
-            )
+            return MCPToolResult(call_id=call.call_id, success=False, error=str(e))
 
     async def handle_message(self, message: dict[str, Any]) -> dict[str, Any]:
         """Handle an incoming MCP message"""
         msg_type = message.get("type", "")
 
-        if msg_type == MCPMessageType.TOOL_LIST.value or message.get("method") == "tools/list":
+        if (
+            msg_type == MCPMessageType.TOOL_LIST.value
+            or message.get("method") == "tools/list"
+        ):
             return self.handle_list_tools()
 
-        elif msg_type == MCPMessageType.TOOL_CALL.value or message.get("method") == "tools/call":
+        elif (
+            msg_type == MCPMessageType.TOOL_CALL.value
+            or message.get("method") == "tools/call"
+        ):
             call = MCPToolCall(
                 name=message.get("name", message.get("params", {}).get("name", "")),
-                arguments=message.get("arguments", message.get("params", {}).get("arguments", {})),
-                call_id=message.get("id", str(uuid.uuid4()))
+                arguments=message.get(
+                    "arguments", message.get("params", {}).get("arguments", {})
+                ),
+                call_id=message.get("id", str(uuid.uuid4())),
             )
             result = await self.handle_tool_call(call)
             return result.to_mcp_format()
@@ -202,7 +199,7 @@ class MCPToolProvider:
         else:
             return {
                 "type": MCPMessageType.ERROR.value,
-                "error": f"Unknown message type: {msg_type}"
+                "error": f"Unknown message type: {msg_type}",
             }
 
     def get_server_info(self) -> dict[str, Any]:
@@ -213,6 +210,7 @@ class MCPToolProvider:
 @dataclass
 class MCPServerConfig:
     """Configuration for an MCP server connection"""
+
     name: str
     url: str
     protocol: str = "stdio"  # stdio, http, ws
@@ -249,7 +247,8 @@ class MCPToolConsumer:
         if server_name not in self._servers:
             return False
 
-        # Simulated connection - in real implementation would use actual protocol
+        # Simulated connection - in real implementation would use actual
+        # protocol
         self._connected.add(server_name)
         return True
 
@@ -279,8 +278,7 @@ class MCPToolConsumer:
     def get_all_tools(self) -> dict[str, list[MCPTool]]:
         """Get all tools from all servers"""
         return {
-            server: list(tools.values())
-            for server, tools in self._remote_tools.items()
+            server: list(tools.values()) for server, tools in self._remote_tools.items()
         }
 
     def find_tool(self, tool_name: str) -> tuple[str, MCPTool] | None:
@@ -291,17 +289,14 @@ class MCPToolConsumer:
         return None
 
     async def call_tool(
-        self,
-        server_name: str,
-        tool_name: str,
-        arguments: dict[str, Any]
+        self, server_name: str, tool_name: str, arguments: dict[str, Any]
     ) -> MCPToolResult:
         """Call a tool on a remote server"""
         if server_name not in self._connected:
             return MCPToolResult(
                 call_id=str(uuid.uuid4()),
                 success=False,
-                error=f"Not connected to server: {server_name}"
+                error=f"Not connected to server: {server_name}",
             )
 
         tools = self._remote_tools.get(server_name, {})
@@ -309,14 +304,14 @@ class MCPToolConsumer:
             return MCPToolResult(
                 call_id=str(uuid.uuid4()),
                 success=False,
-                error=f"Tool not found on server {server_name}: {tool_name}"
+                error=f"Tool not found on server {server_name}: {tool_name}",
             )
 
         # Simulated call - in real implementation would use actual protocol
         return MCPToolResult(
             call_id=str(uuid.uuid4()),
             success=True,
-            result=f"Called {tool_name} on {server_name} (simulated)"
+            result=f"Called {tool_name} on {server_name} (simulated)",
         )
 
     def list_servers(self) -> list[str]:
@@ -337,23 +332,19 @@ class MCPBridge:
     def __init__(
         self,
         provider: MCPToolProvider | None = None,
-        consumer: MCPToolConsumer | None = None
+        consumer: MCPToolConsumer | None = None,
     ):
         self.provider = provider or MCPToolProvider()
         self.consumer = consumer or MCPToolConsumer()
         self._tool_mappings: dict[str, str] = {}  # MCP name -> internal name
 
-    def expose_tool(
-        self,
-        internal_tool: Any,
-        mcp_name: str | None = None
-    ) -> None:
+    def expose_tool(self, internal_tool: Any, mcp_name: str | None = None) -> None:
         """Expose an internal tool via MCP"""
         name = mcp_name or internal_tool.name
         mcp_tool = MCPTool(
             name=name,
             description=internal_tool.description,
-            input_schema=internal_tool.input_schema
+            input_schema=internal_tool.input_schema,
         )
         self.provider.register_tool(mcp_tool, internal_tool.execute)
         self._tool_mappings[name] = internal_tool.name
@@ -362,21 +353,14 @@ class MCPBridge:
         """Expose all tools from a registry"""
         return self.provider.expose_from_registry(registry)
 
-    async def import_server_tools(
-        self,
-        server_config: MCPServerConfig
-    ) -> int:
+    async def import_server_tools(self, server_config: MCPServerConfig) -> int:
         """Import tools from an external MCP server"""
         self.consumer.add_server(server_config)
         if await self.consumer.connect(server_config.name):
             return await self.consumer.refresh_tools(server_config.name)
         return 0
 
-    async def call_tool(
-        self,
-        tool_name: str,
-        arguments: dict[str, Any]
-    ) -> Any:
+    async def call_tool(self, tool_name: str, arguments: dict[str, Any]) -> Any:
         """Call a tool (local or remote)"""
         # Check local tools first
         if tool_name in self._tool_mappings or tool_name in self.provider._tools:
@@ -392,14 +376,14 @@ class MCPBridge:
         return MCPToolResult(
             call_id=str(uuid.uuid4()),
             success=False,
-            error=f"Tool not found: {tool_name}"
+            error=f"Tool not found: {tool_name}",
         )
 
     def get_all_tools(self) -> dict[str, Any]:
         """Get all available tools (local and remote)"""
         return {
             "local": self.provider.get_tool_list(),
-            "remote": self.consumer.get_all_tools()
+            "remote": self.consumer.get_all_tools(),
         }
 
     def get_provider(self) -> MCPToolProvider:

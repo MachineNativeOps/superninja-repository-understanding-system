@@ -13,6 +13,7 @@ from typing import Any
 
 class RiskCategory(Enum):
     """風險類別"""
+
     HIGH = "high"
     MEDIUM = "medium"
     LOW = "low"
@@ -20,6 +21,7 @@ class RiskCategory(Enum):
 
 class RiskType(Enum):
     """風險類型"""
+
     TECHNOLOGY_DEPENDENCY = "technology_dependency"
     VENDOR_LOCK_IN = "vendor_lock_in"
     TALENT_SCARCITY = "talent_scarcity"
@@ -33,6 +35,7 @@ class RiskType(Enum):
 @dataclass
 class MitigationStrategy:
     """緩解策略"""
+
     risk_type: RiskType
     strategy_name: str
     description: str
@@ -43,19 +46,20 @@ class MitigationStrategy:
 
     def to_dict(self) -> dict[str, Any]:
         return {
-            'risk_type': self.risk_type.value,
-            'strategy_name': self.strategy_name,
-            'description': self.description,
-            'implementation_effort': self.implementation_effort,
-            'effectiveness': self.effectiveness,
-            'cost_impact': self.cost_impact,
-            'timeline': self.timeline
+            "risk_type": self.risk_type.value,
+            "strategy_name": self.strategy_name,
+            "description": self.description,
+            "implementation_effort": self.implementation_effort,
+            "effectiveness": self.effectiveness,
+            "cost_impact": self.cost_impact,
+            "timeline": self.timeline,
         }
 
 
 @dataclass
 class RiskItem:
     """風險項目"""
+
     risk_id: str
     risk_type: RiskType
     category: RiskCategory
@@ -72,17 +76,17 @@ class RiskItem:
 
     def to_dict(self) -> dict[str, Any]:
         return {
-            'risk_id': self.risk_id,
-            'risk_type': self.risk_type.value,
-            'category': self.category.value,
-            'title': self.title,
-            'description': self.description,
-            'probability': self.probability,
-            'impact': self.impact,
-            'risk_score': self.risk_score,
-            'mitigation_strategies': [m.to_dict() for m in self.mitigation_strategies],
-            'status': self.status,
-            'owner': self.owner
+            "risk_id": self.risk_id,
+            "risk_type": self.risk_type.value,
+            "category": self.category.value,
+            "title": self.title,
+            "description": self.description,
+            "probability": self.probability,
+            "impact": self.impact,
+            "risk_score": self.risk_score,
+            "mitigation_strategies": [m.to_dict() for m in self.mitigation_strategies],
+            "status": self.status,
+            "owner": self.owner,
         }
 
 
@@ -99,7 +103,7 @@ class RiskAssessment:
                 implementation_effort="medium",
                 effectiveness=8,
                 cost_impact="medium",
-                timeline="3-6 個月"
+                timeline="3-6 個月",
             ),
             MitigationStrategy(
                 risk_type=RiskType.TECHNOLOGY_DEPENDENCY,
@@ -108,8 +112,8 @@ class RiskAssessment:
                 implementation_effort="high",
                 effectiveness=9,
                 cost_impact="medium",
-                timeline="6-12 個月"
-            )
+                timeline="6-12 個月",
+            ),
         ],
         RiskType.VENDOR_LOCK_IN: [
             MitigationStrategy(
@@ -119,7 +123,7 @@ class RiskAssessment:
                 implementation_effort="medium",
                 effectiveness=7,
                 cost_impact="medium",
-                timeline="3-6 個月"
+                timeline="3-6 個月",
             ),
             MitigationStrategy(
                 risk_type=RiskType.VENDOR_LOCK_IN,
@@ -128,8 +132,8 @@ class RiskAssessment:
                 implementation_effort="high",
                 effectiveness=8,
                 cost_impact="high",
-                timeline="6-12 個月"
-            )
+                timeline="6-12 個月",
+            ),
         ],
         RiskType.TALENT_SCARCITY: [
             MitigationStrategy(
@@ -139,7 +143,7 @@ class RiskAssessment:
                 implementation_effort="medium",
                 effectiveness=7,
                 cost_impact="medium",
-                timeline="6-12 個月"
+                timeline="6-12 個月",
             ),
             MitigationStrategy(
                 risk_type=RiskType.TALENT_SCARCITY,
@@ -148,8 +152,8 @@ class RiskAssessment:
                 implementation_effort="low",
                 effectiveness=6,
                 cost_impact="low",
-                timeline="1-3 個月"
-            )
+                timeline="1-3 個月",
+            ),
         ],
         RiskType.MARKET_ACCEPTANCE: [
             MitigationStrategy(
@@ -159,7 +163,7 @@ class RiskAssessment:
                 implementation_effort="low",
                 effectiveness=8,
                 cost_impact="low",
-                timeline="1-3 個月"
+                timeline="1-3 個月",
             ),
             MitigationStrategy(
                 risk_type=RiskType.MARKET_ACCEPTANCE,
@@ -168,8 +172,8 @@ class RiskAssessment:
                 implementation_effort="low",
                 effectiveness=7,
                 cost_impact="low",
-                timeline="持續進行"
-            )
+                timeline="持續進行",
+            ),
         ],
         RiskType.REGULATORY_CHANGE: [
             MitigationStrategy(
@@ -179,7 +183,7 @@ class RiskAssessment:
                 implementation_effort="low",
                 effectiveness=6,
                 cost_impact="low",
-                timeline="持續進行"
+                timeline="持續進行",
             ),
             MitigationStrategy(
                 risk_type=RiskType.REGULATORY_CHANGE,
@@ -188,8 +192,8 @@ class RiskAssessment:
                 implementation_effort="high",
                 effectiveness=8,
                 cost_impact="medium",
-                timeline="3-6 個月"
-            )
+                timeline="3-6 個月",
+            ),
         ],
         RiskType.SECURITY_VULNERABILITY: [
             MitigationStrategy(
@@ -199,7 +203,7 @@ class RiskAssessment:
                 implementation_effort="medium",
                 effectiveness=9,
                 cost_impact="medium",
-                timeline="持續進行"
+                timeline="持續進行",
             ),
             MitigationStrategy(
                 risk_type=RiskType.SECURITY_VULNERABILITY,
@@ -208,8 +212,8 @@ class RiskAssessment:
                 implementation_effort="high",
                 effectiveness=9,
                 cost_impact="high",
-                timeline="6-12 個月"
-            )
+                timeline="6-12 個月",
+            ),
         ],
         RiskType.TECHNICAL_DEBT: [
             MitigationStrategy(
@@ -219,7 +223,7 @@ class RiskAssessment:
                 implementation_effort="medium",
                 effectiveness=7,
                 cost_impact="medium",
-                timeline="持續進行"
+                timeline="持續進行",
             ),
             MitigationStrategy(
                 risk_type=RiskType.TECHNICAL_DEBT,
@@ -228,8 +232,8 @@ class RiskAssessment:
                 implementation_effort="medium",
                 effectiveness=8,
                 cost_impact="medium",
-                timeline="3-6 個月"
-            )
+                timeline="3-6 個月",
+            ),
         ],
         RiskType.INTEGRATION_COMPLEXITY: [
             MitigationStrategy(
@@ -239,7 +243,7 @@ class RiskAssessment:
                 implementation_effort="medium",
                 effectiveness=8,
                 cost_impact="medium",
-                timeline="3-6 個月"
+                timeline="3-6 個月",
             ),
             MitigationStrategy(
                 risk_type=RiskType.INTEGRATION_COMPLEXITY,
@@ -248,9 +252,9 @@ class RiskAssessment:
                 implementation_effort="medium",
                 effectiveness=7,
                 cost_impact="low",
-                timeline="1-3 個月"
-            )
-        ]
+                timeline="1-3 個月",
+            ),
+        ],
     }
 
     def __init__(self):
@@ -269,7 +273,7 @@ class RiskAssessment:
         description: str,
         probability: int,
         impact: int,
-        owner: str = ""
+        owner: str = "",
     ) -> RiskItem:
         """添加風險"""
         # 計算風險分數
@@ -292,7 +296,7 @@ class RiskAssessment:
             probability=probability,
             impact=impact,
             risk_score=risk_score,
-            owner=owner
+            owner=owner,
         )
 
         # 添加預設緩解策略
@@ -306,7 +310,7 @@ class RiskAssessment:
         technology_stack: list[str],
         team_experience: str,
         market_maturity: str,
-        regulatory_requirements: list[str]
+        regulatory_requirements: list[str],
     ) -> list[RiskItem]:
         """評估項目風險"""
         assessed_risks = []
@@ -317,29 +321,32 @@ class RiskAssessment:
                 RiskType.TECHNOLOGY_DEPENDENCY,
                 "複雜技術棧依賴",
                 f"項目使用 {len(technology_stack)} 種技術，增加維護複雜度",
-                6, 7
+                6,
+                7,
             )
             assessed_risks.append(risk)
 
         # 人才風險
-        experience_risk = {'low': (8, 8), 'medium': (5, 6), 'high': (3, 4)}
+        experience_risk = {"low": (8, 8), "medium": (5, 6), "high": (3, 4)}
         prob, imp = experience_risk.get(team_experience, (5, 5))
         risk = self.add_risk(
             RiskType.TALENT_SCARCITY,
             "團隊經驗風險",
             f"團隊經驗等級: {team_experience}",
-            prob, imp
+            prob,
+            imp,
         )
         assessed_risks.append(risk)
 
         # 市場風險
-        market_risk = {'emerging': (7, 8), 'growing': (5, 6), 'mature': (3, 4)}
+        market_risk = {"emerging": (7, 8), "growing": (5, 6), "mature": (3, 4)}
         prob, imp = market_risk.get(market_maturity, (5, 5))
         risk = self.add_risk(
             RiskType.MARKET_ACCEPTANCE,
             "市場接受度風險",
             f"市場成熟度: {market_maturity}",
-            prob, imp
+            prob,
+            imp,
         )
         assessed_risks.append(risk)
 
@@ -349,7 +356,8 @@ class RiskAssessment:
                 RiskType.REGULATORY_CHANGE,
                 "法規合規風險",
                 f"需符合: {', '.join(regulatory_requirements)}",
-                6, 7
+                6,
+                7,
             )
             assessed_risks.append(risk)
 
@@ -378,14 +386,16 @@ class RiskAssessment:
 
         # 加權平均，高風險權重更高
         weights = {RiskCategory.HIGH: 3, RiskCategory.MEDIUM: 2, RiskCategory.LOW: 1}
-        total_weighted_score = sum(r.risk_score * weights[r.category] for r in self.risks)
+        total_weighted_score = sum(
+            r.risk_score * weights[r.category] for r in self.risks
+        )
         total_weights = sum(weights[r.category] for r in self.risks)
 
         return total_weighted_score / total_weights if total_weights > 0 else 0.0
 
-    def generate_risk_report(self, format: str = 'markdown') -> str:
+    def generate_risk_report(self, format: str = "markdown") -> str:
         """生成風險報告"""
-        if format == 'markdown':
+        if format == "markdown":
             return self._generate_markdown_report()
         else:
             return self._generate_text_report()
@@ -401,21 +411,23 @@ class RiskAssessment:
             f"- 🔴 高風險: {len([r for r in self.risks if r.category == RiskCategory.HIGH])}",
             f"- 🟡 中風險: {len([r for r in self.risks if r.category == RiskCategory.MEDIUM])}",
             f"- 🟢 低風險: {len([r for r in self.risks if r.category == RiskCategory.LOW])}",
-            "\n## 詳細風險列表\n"
+            "\n## 詳細風險列表\n",
         ]
 
         for risk in sorted(self.risks, key=lambda r: r.risk_score, reverse=True):
-            emoji = {'high': '🔴', 'medium': '🟡', 'low': '🟢'}[risk.category.value]
-            lines.extend([
-                f"### {emoji} {risk.title}",
-                f"- **ID**: {risk.risk_id}",
-                f"- **類型**: {risk.risk_type.value}",
-                f"- **風險分數**: {risk.risk_score}",
-                f"- **機率**: {risk.probability}/10 | **影響**: {risk.impact}/10",
-                f"- **描述**: {risk.description}",
-                f"- **狀態**: {risk.status}",
-                "\n**緩解策略**:"
-            ])
+            emoji = {"high": "🔴", "medium": "🟡", "low": "🟢"}[risk.category.value]
+            lines.extend(
+                [
+                    f"### {emoji} {risk.title}",
+                    f"- **ID**: {risk.risk_id}",
+                    f"- **類型**: {risk.risk_type.value}",
+                    f"- **風險分數**: {risk.risk_score}",
+                    f"- **機率**: {risk.probability}/10 | **影響**: {risk.impact}/10",
+                    f"- **描述**: {risk.description}",
+                    f"- **狀態**: {risk.status}",
+                    "\n**緩解策略**:",
+                ]
+            )
             for strat in risk.mitigation_strategies:
                 lines.append(f"- {strat.strategy_name}: {strat.description}")
             lines.append("")
@@ -431,29 +443,33 @@ class RiskAssessment:
             f"生成時間: {datetime.now().strftime('%Y-%m-%d %H:%M')}",
             f"整體風險分數: {self.calculate_overall_risk_score():.1f}/100",
             f"識別風險數量: {len(self.risks)}",
-            "-" * 60
+            "-" * 60,
         ]
 
         for risk in sorted(self.risks, key=lambda r: r.risk_score, reverse=True):
-            lines.extend([
-                f"\n[{risk.category.value.upper()}] {risk.title}",
-                f"  ID: {risk.risk_id}",
-                f"  風險分數: {risk.risk_score}",
-                f"  描述: {risk.description}"
-            ])
+            lines.extend(
+                [
+                    f"\n[{risk.category.value.upper()}] {risk.title}",
+                    f"  ID: {risk.risk_id}",
+                    f"  風險分數: {risk.risk_score}",
+                    f"  描述: {risk.description}",
+                ]
+            )
 
         return "\n".join(lines)
 
     def to_dict(self) -> dict[str, Any]:
         """轉換為字典"""
         return {
-            'generated_at': datetime.now().isoformat(),
-            'overall_risk_score': self.calculate_overall_risk_score(),
-            'risks': [r.to_dict() for r in self.risks],
-            'summary': {
-                'total': len(self.risks),
-                'high': len([r for r in self.risks if r.category == RiskCategory.HIGH]),
-                'medium': len([r for r in self.risks if r.category == RiskCategory.MEDIUM]),
-                'low': len([r for r in self.risks if r.category == RiskCategory.LOW])
-            }
+            "generated_at": datetime.now().isoformat(),
+            "overall_risk_score": self.calculate_overall_risk_score(),
+            "risks": [r.to_dict() for r in self.risks],
+            "summary": {
+                "total": len(self.risks),
+                "high": len([r for r in self.risks if r.category == RiskCategory.HIGH]),
+                "medium": len(
+                    [r for r in self.risks if r.category == RiskCategory.MEDIUM]
+                ),
+                "low": len([r for r in self.risks if r.category == RiskCategory.LOW]),
+            },
         }

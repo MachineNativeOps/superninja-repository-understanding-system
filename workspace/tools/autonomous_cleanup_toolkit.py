@@ -47,10 +47,10 @@ import re
 import subprocess
 import sys
 from collections import defaultdict
-from dataclasses import dataclass, asdict, field
+from dataclasses import asdict, dataclass, field
 from datetime import datetime
 from pathlib import Path
-from typing import Dict, List, Optional, Set, Tuple, Any
+from typing import Any, Dict, List, Optional, Set, Tuple
 
 # =============================================================================
 # Configuration
@@ -60,22 +60,27 @@ BASE_PATH = Path(__file__).parent.parent
 TOOLS_PATH = BASE_PATH / "tools"
 
 # Color codes for terminal output
+
+
 class Colors:
-    GREEN = '\033[92m'
-    YELLOW = '\033[93m'
-    RED = '\033[91m'
-    BLUE = '\033[94m'
-    CYAN = '\033[96m'
-    END = '\033[0m'
-    BOLD = '\033[1m'
+    GREEN = "\033[92m"
+    YELLOW = "\033[93m"
+    RED = "\033[91m"
+    BLUE = "\033[94m"
+    CYAN = "\033[96m"
+    END = "\033[0m"
+    BOLD = "\033[1m"
+
 
 # =============================================================================
 # Data Models
 # =============================================================================
 
+
 @dataclass
 class TodoItem:
     """TODO marker found in code"""
+
     file_path: str
     line_number: int
     todo_type: str  # TODO, FIXME, XXX, HACK, DEPRECATED
@@ -83,25 +88,31 @@ class TodoItem:
     severity: str  # HIGH, MEDIUM, LOW
     context: str  # Surrounding code
 
+
 @dataclass
 class DuplicateGroup:
     """Group of duplicate files"""
+
     md5_hash: str
     files: List[str]
     size_bytes: int
     removable: List[str]  # Files that can be safely removed
 
+
 @dataclass
 class NotImplementedStub:
     """NotImplementedError or stub function"""
+
     file_path: str
     function_name: str
     line_number: int
     class_name: Optional[str]
 
+
 @dataclass
 class CleanupReport:
     """Overall cleanup progress report"""
+
     timestamp: str
     phase: str
     items_found: int
@@ -112,9 +123,11 @@ class CleanupReport:
     lines_removed: int
     details: Dict[str, Any] = field(default_factory=dict)
 
+
 # =============================================================================
 # Core Cleanup Engine
 # =============================================================================
+
 
 class AutonomousCleanupEngine:
     """
@@ -131,7 +144,7 @@ class AutonomousCleanupEngine:
             "scans_performed": 0,
             "items_found": 0,
             "items_fixed": 0,
-            "files_modified": 0
+            "files_modified": 0,
         }
 
     def _setup_logging(self) -> logging.Logger:
@@ -152,7 +165,7 @@ class AutonomousCleanupEngine:
 
         # Formatter
         formatter = logging.Formatter(
-            '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+            "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
         )
         fh.setFormatter(formatter)
         ch.setFormatter(formatter)
@@ -167,8 +180,7 @@ class AutonomousCleanupEngine:
     # =========================================================================
 
     def find_duplicates(
-        self,
-        extensions: List[str] = ['.py', '.sh', '.js', '.ts']
+        self, extensions: List[str] = [".py", ".sh", ".js", ".ts"]
     ) -> List[DuplicateGroup]:
         """
         Find duplicate files using MD5 hashing.
@@ -178,8 +190,14 @@ class AutonomousCleanupEngine:
 
         hash_map = defaultdict(list)
         excluded_dirs = {
-            '.git', 'node_modules', '__pycache__', '.venv',
-            'venv', 'dist', 'build', '.pytest_cache'
+            ".git",
+            "node_modules",
+            "__pycache__",
+            ".venv",
+            "venv",
+            "dist",
+            "build",
+            ".pytest_cache",
         }
 
         # Scan files
@@ -191,8 +209,10 @@ class AutonomousCleanupEngine:
 
                 try:
                     content = file_path.read_bytes()
-                    md5_hash = hashlib.md5(content).hexdigest()
-                    hash_map[md5_hash].append(str(file_path.relative_to(self.repo_path)))
+                    md5_hash = hashlib.sha256(content).hexdigest()
+                    hash_map[md5_hash].append(
+                        str(file_path.relative_to(self.repo_path))
+                    )
                 except Exception as e:
                     self.logger.warning(f"Error reading {file_path}: {e}")
 
@@ -206,12 +226,14 @@ class AutonomousCleanupEngine:
                 # Get file size
                 size_bytes = (self.repo_path / files[0]).stat().st_size
 
-                duplicate_groups.append(DuplicateGroup(
-                    md5_hash=md5_hash,
-                    files=files,
-                    size_bytes=size_bytes,
-                    removable=removable
-                ))
+                duplicate_groups.append(
+                    DuplicateGroup(
+                        md5_hash=md5_hash,
+                        files=files,
+                        size_bytes=size_bytes,
+                        removable=removable,
+                    )
+                )
 
         self.logger.info(f"✅ Found {len(duplicate_groups)} groups of duplicates")
         return duplicate_groups
@@ -222,15 +244,15 @@ class AutonomousCleanupEngine:
 
         for file in files:
             # Rule 1: Prefer non-legacy versions
-            if file.startswith('legacy/'):
+            if file.startswith("legacy/"):
                 removable.append(file)
             # Rule 2: Prefer services/agents/ over agent/
-            elif file.startswith('agent/') and any(
-                f.startswith('services/agents/') for f in files
+            elif file.startswith("agent/") and any(
+                f.startswith("services/agents/") for f in files
             ):
                 removable.append(file)
             # Rule 3: Prefer non-backup versions
-            elif '.backup' in file or '_backup' in file:
+            elif ".backup" in file or "_backup" in file:
                 removable.append(file)
 
         return removable
@@ -247,45 +269,54 @@ class AutonomousCleanupEngine:
         self.logger.info("📝 Scanning for TODO markers...")
 
         patterns = {
-            'TODO': re.compile(r'#\s*TODO[:\s]+(.+)', re.IGNORECASE),
-            'FIXME': re.compile(r'#\s*FIXME[:\s]+(.+)', re.IGNORECASE),
-            'XXX': re.compile(r'#\s*XXX[:\s]+(.+)', re.IGNORECASE),
-            'HACK': re.compile(r'#\s*HACK[:\s]+(.+)', re.IGNORECASE),
-            'DEPRECATED': re.compile(r'@deprecated|#\s*DEPRECATED', re.IGNORECASE),
+            "TODO": re.compile(r"#\s*TODO[:\s]+(.+)", re.IGNORECASE),
+            "FIXME": re.compile(r"#\s*FIXME[:\s]+(.+)", re.IGNORECASE),
+            "XXX": re.compile(r"#\s*XXX[:\s]+(.+)", re.IGNORECASE),
+            "HACK": re.compile(r"#\s*HACK[:\s]+(.+)", re.IGNORECASE),
+            "DEPRECATED": re.compile(r"@deprecated|#\s*DEPRECATED", re.IGNORECASE),
         }
 
         todos = []
 
         for py_file in self.repo_path.rglob("*.py"):
-            if any(excluded in str(py_file) for excluded in ['.venv', '__pycache__', 'node_modules']):
+            if any(
+                excluded in str(py_file)
+                for excluded in [".venv", "__pycache__", "node_modules"]
+            ):
                 continue
 
             try:
-                with open(py_file, 'r', encoding='utf-8') as f:
+                with open(py_file, "r", encoding="utf-8") as f:
                     lines = f.readlines()
 
                 for line_num, line in enumerate(lines, 1):
                     for todo_type, pattern in patterns.items():
                         match = pattern.search(line)
                         if match:
-                            message = match.group(1) if match.lastindex and match.lastindex >= 1 else line.strip()
+                            message = (
+                                match.group(1)
+                                if match.lastindex and match.lastindex >= 1
+                                else line.strip()
+                            )
 
                             # Get context (3 lines before and after)
                             context_start = max(0, line_num - 4)
                             context_end = min(len(lines), line_num + 3)
-                            context = ''.join(lines[context_start:context_end])
+                            context = "".join(lines[context_start:context_end])
 
                             # Determine severity
                             severity = self._determine_todo_severity(todo_type, message)
 
-                            todos.append(TodoItem(
-                                file_path=str(py_file.relative_to(self.repo_path)),
-                                line_number=line_num,
-                                todo_type=todo_type,
-                                message=message,
-                                severity=severity,
-                                context=context
-                            ))
+                            todos.append(
+                                TodoItem(
+                                    file_path=str(py_file.relative_to(self.repo_path)),
+                                    line_number=line_num,
+                                    todo_type=todo_type,
+                                    message=message,
+                                    severity=severity,
+                                    context=context,
+                                )
+                            )
             except Exception as e:
                 self.logger.warning(f"Error scanning {py_file}: {e}")
 
@@ -297,19 +328,26 @@ class AutonomousCleanupEngine:
         message_lower = message.lower()
 
         # FIXME and HACK are generally high priority
-        if todo_type in ['FIXME', 'HACK', 'DEPRECATED']:
-            return 'HIGH'
+        if todo_type in ["FIXME", "HACK", "DEPRECATED"]:
+            return "HIGH"
 
         # Check for urgency keywords
-        high_priority_keywords = ['critical', 'urgent', 'important', 'security', 'bug', 'error']
+        high_priority_keywords = [
+            "critical",
+            "urgent",
+            "important",
+            "security",
+            "bug",
+            "error",
+        ]
         if any(keyword in message_lower for keyword in high_priority_keywords):
-            return 'HIGH'
+            return "HIGH"
 
-        medium_priority_keywords = ['implement', 'add', 'fix', 'update', 'refactor']
+        medium_priority_keywords = ["implement", "add", "fix", "update", "refactor"]
         if any(keyword in message_lower for keyword in medium_priority_keywords):
-            return 'MEDIUM'
+            return "MEDIUM"
 
-        return 'LOW'
+        return "LOW"
 
     # =========================================================================
     # NotImplementedError Detection (Phase 4)
@@ -322,36 +360,40 @@ class AutonomousCleanupEngine:
         stubs = []
 
         for py_file in self.repo_path.rglob("*.py"):
-            if any(excluded in str(py_file) for excluded in ['.venv', '__pycache__']):
+            if any(excluded in str(py_file) for excluded in [".venv", "__pycache__"]):
                 continue
 
             try:
-                with open(py_file, 'r', encoding='utf-8') as f:
+                with open(py_file, "r", encoding="utf-8") as f:
                     content = f.read()
 
                 # Find NotImplementedError raises
                 pattern = re.compile(
-                    r'def\s+(\w+)\([^)]*\)[^:]*:\s*'
+                    r"def\s+(\w+)\([^)]*\)[^:]*:\s*"
                     r'(?:"""[^"]*"""\s*)?'
-                    r'raise\s+NotImplementedError',
-                    re.MULTILINE
+                    r"raise\s+NotImplementedError",
+                    re.MULTILINE,
                 )
 
                 for match in pattern.finditer(content):
                     function_name = match.group(1)
-                    line_number = content[:match.start()].count('\n') + 1
+                    line_number = content[: match.start()].count("\n") + 1
 
                     # Try to find class name
-                    class_pattern = re.compile(r'class\s+(\w+)', re.MULTILINE)
-                    class_matches = list(class_pattern.finditer(content[:match.start()]))
+                    class_pattern = re.compile(r"class\s+(\w+)", re.MULTILINE)
+                    class_matches = list(
+                        class_pattern.finditer(content[: match.start()])
+                    )
                     class_name = class_matches[-1].group(1) if class_matches else None
 
-                    stubs.append(NotImplementedStub(
-                        file_path=str(py_file.relative_to(self.repo_path)),
-                        function_name=function_name,
-                        line_number=line_number,
-                        class_name=class_name
-                    ))
+                    stubs.append(
+                        NotImplementedStub(
+                            file_path=str(py_file.relative_to(self.repo_path)),
+                            function_name=function_name,
+                            line_number=line_number,
+                            class_name=class_name,
+                        )
+                    )
             except Exception as e:
                 self.logger.warning(f"Error scanning {py_file}: {e}")
 
@@ -386,33 +428,36 @@ class AutonomousCleanupEngine:
                     "groups": len(duplicates),
                     "total_files": sum(len(g.files) for g in duplicates),
                     "removable": sum(len(g.removable) for g in duplicates),
-                    "potential_savings_kb": sum(g.size_bytes for g in duplicates) / 1024
+                    "potential_savings_kb": sum(g.size_bytes for g in duplicates)
+                    / 1024,
                 },
                 "todos": {
                     "total": len(todos),
                     "by_severity": {
-                        "HIGH": len([t for t in todos if t.severity == 'HIGH']),
-                        "MEDIUM": len([t for t in todos if t.severity == 'MEDIUM']),
-                        "LOW": len([t for t in todos if t.severity == 'LOW'])
+                        "HIGH": len([t for t in todos if t.severity == "HIGH"]),
+                        "MEDIUM": len([t for t in todos if t.severity == "MEDIUM"]),
+                        "LOW": len([t for t in todos if t.severity == "LOW"]),
                     },
                     "by_type": {
-                        "TODO": len([t for t in todos if t.todo_type == 'TODO']),
-                        "FIXME": len([t for t in todos if t.todo_type == 'FIXME']),
-                        "HACK": len([t for t in todos if t.todo_type == 'HACK']),
-                        "DEPRECATED": len([t for t in todos if t.todo_type == 'DEPRECATED'])
-                    }
+                        "TODO": len([t for t in todos if t.todo_type == "TODO"]),
+                        "FIXME": len([t for t in todos if t.todo_type == "FIXME"]),
+                        "HACK": len([t for t in todos if t.todo_type == "HACK"]),
+                        "DEPRECATED": len(
+                            [t for t in todos if t.todo_type == "DEPRECATED"]
+                        ),
+                    },
                 },
                 "not_implemented": {
                     "total": len(stubs),
-                    "files": len(set(s.file_path for s in stubs))
-                }
-            }
+                    "files": len(set(s.file_path for s in stubs)),
+                },
+            },
         )
 
         # Save to file if requested
         if output_path:
             output_path.parent.mkdir(parents=True, exist_ok=True)
-            with open(output_path, 'w') as f:
+            with open(output_path, "w") as f:
                 json.dump(asdict(report), f, indent=2, ensure_ascii=False)
             self.logger.info(f"📄 Report saved to {output_path}")
 
@@ -435,71 +480,77 @@ class AutonomousCleanupEngine:
 
         # Duplicates
         print(f"\n{Colors.BOLD}📂 Duplicates:{Colors.END}")
-        dup_details = report.details.get('duplicates', {})
+        dup_details = report.details.get("duplicates", {})
         print(f"  Groups: {dup_details.get('groups', 0)}")
         print(f"  Total Files: {dup_details.get('total_files', 0)}")
-        print(f"  Removable: {Colors.GREEN}{dup_details.get('removable', 0)}{Colors.END}")
-        print(f"  Potential Savings: {dup_details.get('potential_savings_kb', 0):.2f} KB")
+        print(
+            f"  Removable: {Colors.GREEN}{dup_details.get('removable', 0)}{Colors.END}"
+        )
+        print(
+            f"  Potential Savings: {dup_details.get('potential_savings_kb', 0):.2f} KB"
+        )
 
         # TODOs
         print(f"\n{Colors.BOLD}📝 TODOs:{Colors.END}")
-        todo_details = report.details.get('todos', {})
+        todo_details = report.details.get("todos", {})
         print(f"  Total: {todo_details.get('total', 0)}")
         print(f"  By Severity:")
-        severity = todo_details.get('by_severity', {})
+        severity = todo_details.get("by_severity", {})
         print(f"    HIGH: {Colors.RED}{severity.get('HIGH', 0)}{Colors.END}")
         print(f"    MEDIUM: {Colors.YELLOW}{severity.get('MEDIUM', 0)}{Colors.END}")
         print(f"    LOW: {Colors.GREEN}{severity.get('LOW', 0)}{Colors.END}")
 
         # NotImplemented
         print(f"\n{Colors.BOLD}🚧 NotImplementedError:{Colors.END}")
-        ni_details = report.details.get('not_implemented', {})
+        ni_details = report.details.get("not_implemented", {})
         print(f"  Total Stubs: {ni_details.get('total', 0)}")
         print(f"  Files Affected: {ni_details.get('files', 0)}")
 
         print("=" * 70 + "\n")
 
+
 # =============================================================================
 # CLI Interface
 # =============================================================================
+
 
 def main():
     parser = argparse.ArgumentParser(
         description="Autonomous Cleanup Toolkit - Claude Code Capabilities"
     )
 
-    subparsers = parser.add_subparsers(dest='command', help='Commands')
+    subparsers = parser.add_subparsers(dest="command", help="Commands")
 
     # Analyze command
-    analyze_parser = subparsers.add_parser('analyze', help='Run full analysis')
+    analyze_parser = subparsers.add_parser("analyze", help="Run full analysis")
     analyze_parser.add_argument(
-        '--output',
+        "--output",
         type=Path,
-        default=Path('CLEANUP_ANALYSIS_REPORT.json'),
-        help='Output file for report'
+        default=Path("CLEANUP_ANALYSIS_REPORT.json"),
+        help="Output file for report",
     )
 
     # Cleanup command
-    cleanup_parser = subparsers.add_parser('cleanup', help='Execute cleanup')
+    cleanup_parser = subparsers.add_parser("cleanup", help="Execute cleanup")
     cleanup_parser.add_argument(
-        '--phase',
-        choices=['duplicates', 'todos', 'stubs', 'all'],
-        default='all',
-        help='Cleanup phase to execute'
+        "--phase",
+        choices=["duplicates", "todos", "stubs", "all"],
+        default="all",
+        help="Cleanup phase to execute",
     )
     cleanup_parser.add_argument(
-        '--dry-run',
-        action='store_true',
-        help='Show what would be cleaned without making changes'
+        "--dry-run",
+        action="store_true",
+        help="Show what would be cleaned without making changes",
     )
 
     # Report command
-    report_parser = subparsers.add_parser('report', help='Generate report only')
+    report_parser = subparsers.add_parser("report", help="Generate report only")
     report_parser.add_argument(
-        '--output',
+        "--output",
         type=Path,
-        default=Path('CLEANUP_REPORT.json'),
-        help='Output file for report'
+        default=Path("CLEANUP_REPORT.json"),
+        help="Output file for report",
     )
 
     args = parser.parse_args()
@@ -509,15 +560,15 @@ def main():
     engine = AutonomousCleanupEngine(repo_path)
 
     # Execute command
-    if args.command == 'analyze':
+    if args.command == "analyze":
         report = engine.generate_report(output_path=args.output)
         print(f"\n✅ Analysis complete. Report saved to {args.output}")
 
-    elif args.command == 'report':
+    elif args.command == "report":
         report = engine.generate_report(output_path=args.output)
         print(f"\n✅ Report generated: {args.output}")
 
-    elif args.command == 'cleanup':
+    elif args.command == "cleanup":
         print(f"🧹 Cleanup phase: {args.phase}")
         if args.dry_run:
             print("🔍 DRY RUN MODE - No changes will be made")
@@ -526,6 +577,7 @@ def main():
 
     else:
         parser.print_help()
+
 
 if __name__ == "__main__":
     main()

@@ -16,7 +16,7 @@ logger = logging.getLogger(__name__)
 class GoAnalyzer(BaseAnalyzer):
     """
     Go 模組依賴分析器
-    
+
     支援分析 go.mod 和 go.sum 文件
     """
 
@@ -32,17 +32,17 @@ class GoAnalyzer(BaseAnalyzer):
     async def parse_manifest(self, manifest_path: Path) -> list[Dependency]:
         """
         解析 go.mod 文件
-        
+
         Args:
             manifest_path: go.mod 文件路徑
-            
+
         Returns:
             依賴項列表
         """
         dependencies = []
 
         try:
-            with open(manifest_path, encoding='utf-8') as f:
+            with open(manifest_path, encoding="utf-8") as f:
                 content = f.read()
 
             # 解析 require 區塊
@@ -63,24 +63,24 @@ class GoAnalyzer(BaseAnalyzer):
     def _parse_require_block(self, content: str) -> list[Dependency]:
         """
         解析 require (...) 區塊
-        
+
         Args:
             content: go.mod 文件內容
-            
+
         Returns:
             依賴項列表
         """
         dependencies = []
 
         # 匹配 require (...) 區塊
-        require_pattern = r'require\s*\(\s*([\s\S]*?)\s*\)'
+        require_pattern = r"require\s*\(\s*([\s\S]*?)\s*\)"
         matches = re.finditer(require_pattern, content)
 
         for match in matches:
             block_content = match.group(1)
 
             # 解析區塊中的每一行
-            for line in block_content.split('\n'):
+            for line in block_content.split("\n"):
                 dep = self._parse_require_line(line)
                 if dep:
                     dependencies.append(dep)
@@ -90,25 +90,25 @@ class GoAnalyzer(BaseAnalyzer):
     def _parse_single_requires(self, content: str) -> list[Dependency]:
         """
         解析單行 require 語句
-        
+
         例如: require github.com/pkg/errors v0.9.1
-        
+
         Args:
             content: go.mod 文件內容
-            
+
         Returns:
             依賴項列表
         """
         dependencies = []
 
         # 匹配單行 require (不在區塊內)
-        single_pattern = r'^require\s+(\S+)\s+(\S+)'
+        single_pattern = r"^require\s+(\S+)\s+(\S+)"
 
-        for line in content.split('\n'):
+        for line in content.split("\n"):
             line = line.strip()
 
             # 跳過區塊開始
-            if 'require (' in line:
+            if "require (" in line:
                 continue
 
             match = re.match(single_pattern, line)
@@ -120,7 +120,7 @@ class GoAnalyzer(BaseAnalyzer):
                     name=module_path,
                     current_version=self._clean_version(version),
                     ecosystem=Ecosystem.GO,
-                    dep_type=DependencyType.DIRECT
+                    dep_type=DependencyType.DIRECT,
                 )
                 dependencies.append(dep)
 
@@ -129,25 +129,25 @@ class GoAnalyzer(BaseAnalyzer):
     def _parse_require_line(self, line: str) -> Dependency | None:
         """
         解析 require 區塊中的單行
-        
+
         格式: module/path v1.2.3 [// indirect]
-        
+
         Args:
             line: 依賴規範行
-            
+
         Returns:
             依賴項對象
         """
         line = line.strip()
 
         # 跳過空行和註釋
-        if not line or line.startswith('//'):
+        if not line or line.startswith("//"):
             return None
 
         # 移除行內註釋
-        is_indirect = '// indirect' in line
-        if '//' in line:
-            line = line.split('//')[0].strip()
+        is_indirect = "// indirect" in line
+        if "//" in line:
+            line = line.split("//")[0].strip()
 
         # 解析模組路徑和版本
         parts = line.split()
@@ -164,23 +164,23 @@ class GoAnalyzer(BaseAnalyzer):
             name=module_path,
             current_version=self._clean_version(version),
             ecosystem=Ecosystem.GO,
-            dep_type=dep_type
+            dep_type=dep_type,
         )
 
     def _clean_version(self, version: str) -> str:
         """
         清理版本號
-        
+
         Go 版本格式: v1.2.3, v0.0.0-timestamp-commit
-        
+
         Args:
             version: 版本字符串
-            
+
         Returns:
             清理後的版本號
         """
         # 移除前導 v
-        if version.startswith('v'):
+        if version.startswith("v"):
             version = version[1:]
 
         return version.strip()
@@ -188,10 +188,10 @@ class GoAnalyzer(BaseAnalyzer):
     async def get_latest_version(self, package_name: str) -> str | None:
         """
         從 Go Proxy 獲取模組最新版本
-        
+
         Args:
             package_name: 模組路徑
-            
+
         Returns:
             最新版本號
         """
@@ -204,12 +204,12 @@ class GoAnalyzer(BaseAnalyzer):
     async def parse_go_sum(self, sum_path: Path) -> list[Dependency]:
         """
         解析 go.sum 文件獲取完整依賴樹
-        
+
         go.sum 包含所有依賴的校驗和，包括傳遞依賴
-        
+
         Args:
             sum_path: go.sum 文件路徑
-            
+
         Returns:
             依賴項列表
         """
@@ -217,7 +217,7 @@ class GoAnalyzer(BaseAnalyzer):
         seen_modules = set()
 
         try:
-            with open(sum_path, encoding='utf-8') as f:
+            with open(sum_path, encoding="utf-8") as f:
                 lines = f.readlines()
 
             for line in lines:
@@ -235,8 +235,8 @@ class GoAnalyzer(BaseAnalyzer):
                 version = parts[1]
 
                 # 跳過 go.mod 校驗行
-                if version.endswith('/go.mod'):
-                    version = version.replace('/go.mod', '')
+                if version.endswith("/go.mod"):
+                    version = version.replace("/go.mod", "")
 
                 # 去重
                 module_key = f"{module_path}@{version}"
@@ -248,7 +248,7 @@ class GoAnalyzer(BaseAnalyzer):
                     name=module_path,
                     current_version=self._clean_version(version),
                     ecosystem=Ecosystem.GO,
-                    dep_type=DependencyType.TRANSITIVE  # go.sum 中的都視為傳遞依賴
+                    dep_type=DependencyType.TRANSITIVE,  # go.sum 中的都視為傳遞依賴
                 )
                 dependencies.append(dep)
 
@@ -262,19 +262,19 @@ class GoAnalyzer(BaseAnalyzer):
     def get_module_name(self, mod_path: Path) -> str | None:
         """
         從 go.mod 獲取模組名稱
-        
+
         Args:
             mod_path: go.mod 文件路徑
-            
+
         Returns:
             模組名稱
         """
         try:
-            with open(mod_path, encoding='utf-8') as f:
+            with open(mod_path, encoding="utf-8") as f:
                 content = f.read()
 
             # 匹配 module 聲明
-            match = re.search(r'^module\s+(\S+)', content, re.MULTILINE)
+            match = re.search(r"^module\s+(\S+)", content, re.MULTILINE)
             if match:
                 return match.group(1)
         except Exception as e:
@@ -285,19 +285,19 @@ class GoAnalyzer(BaseAnalyzer):
     def get_go_version(self, mod_path: Path) -> str | None:
         """
         從 go.mod 獲取 Go 版本要求
-        
+
         Args:
             mod_path: go.mod 文件路徑
-            
+
         Returns:
             Go 版本
         """
         try:
-            with open(mod_path, encoding='utf-8') as f:
+            with open(mod_path, encoding="utf-8") as f:
                 content = f.read()
 
             # 匹配 go 版本聲明
-            match = re.search(r'^go\s+(\S+)', content, re.MULTILINE)
+            match = re.search(r"^go\s+(\S+)", content, re.MULTILINE)
             if match:
                 return match.group(1)
         except Exception as e:

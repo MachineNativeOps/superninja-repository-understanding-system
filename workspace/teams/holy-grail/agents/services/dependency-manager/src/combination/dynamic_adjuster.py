@@ -54,7 +54,7 @@ class DynamicAdjuster:
     def __init__(self):
         self._kpis: dict[str, KPIMetric] = {}
         self._current_allocation: dict[str, float] = {}
-        self._thresholds = {'kpi_deviation': 20.0, 'market_change': 30.0}
+        self._thresholds = {"kpi_deviation": 20.0, "market_change": 30.0}
 
     def set_allocation(self, allocation: dict[str, float]):
         self._current_allocation = allocation.copy()
@@ -64,40 +64,67 @@ class DynamicAdjuster:
 
     def analyze_kpis(self) -> dict:
         if not self._kpis:
-            return {'status': 'no_kpis'}
+            return {"status": "no_kpis"}
 
-        metrics = [{'name': k.name, 'deviation': k.deviation, 'on_track': k.is_on_track} for k in self._kpis.values()]
-        avg_dev = sum(abs(m['deviation']) for m in metrics) / len(metrics)
+        metrics = [
+            {"name": k.name, "deviation": k.deviation, "on_track": k.is_on_track}
+            for k in self._kpis.values()
+        ]
+        avg_dev = sum(abs(m["deviation"]) for m in metrics) / len(metrics)
 
         return {
-            'metrics': metrics,
-            'overall_deviation': avg_dev,
-            'trigger_adjustment': avg_dev > self._thresholds['kpi_deviation'],
-            'on_track_ratio': sum(1 for m in metrics if m['on_track']) / len(metrics),
+            "metrics": metrics,
+            "overall_deviation": avg_dev,
+            "trigger_adjustment": avg_dev > self._thresholds["kpi_deviation"],
+            "on_track_ratio": sum(1 for m in metrics if m["on_track"]) / len(metrics),
         }
 
-    def evaluate_market(self, satisfaction: float, competitor_moves: list[str], trends: list[str]) -> dict:
+    def evaluate_market(
+        self, satisfaction: float, competitor_moves: list[str], trends: list[str]
+    ) -> dict:
         severity = (60 - satisfaction) / 2 if satisfaction < 60 else 0
         severity += len(competitor_moves) * 5 + len(trends) * 8
 
         return {
-            'satisfaction': satisfaction,
-            'severity_score': min(severity, 100),
-            'trigger_adjustment': severity >= self._thresholds['market_change'],
+            "satisfaction": satisfaction,
+            "severity_score": min(severity, 100),
+            "trigger_adjustment": severity >= self._thresholds["market_change"],
         }
 
-    def generate_recommendations(self, kpi: dict, market: dict, financial: dict) -> list[AdjustmentRecommendation]:
+    def generate_recommendations(
+        self, kpi: dict, market: dict, financial: dict
+    ) -> list[AdjustmentRecommendation]:
         recs = []
-        if kpi.get('trigger_adjustment'):
-            recs.append(AdjustmentRecommendation(
-                AdjustmentTrigger.KPI_DEVIATION, 'core',
-                AdjustmentDirection.INCREASE if kpi['overall_deviation'] < 0 else AdjustmentDirection.DECREASE,
-                10.0, f"KPI偏差 {kpi['overall_deviation']:.1f}%", 1, 0.85
-            ))
-        if market.get('trigger_adjustment'):
-            recs.append(AdjustmentRecommendation(
-                AdjustmentTrigger.MARKET_CHANGE, 'satellite',
-                AdjustmentDirection.PIVOT if market['severity_score'] > 50 else AdjustmentDirection.INCREASE,
-                10.0, f"市場變化 {market['severity_score']:.1f}", 2, 0.75
-            ))
+        if kpi.get("trigger_adjustment"):
+            recs.append(
+                AdjustmentRecommendation(
+                    AdjustmentTrigger.KPI_DEVIATION,
+                    "core",
+                    (
+                        AdjustmentDirection.INCREASE
+                        if kpi["overall_deviation"] < 0
+                        else AdjustmentDirection.DECREASE
+                    ),
+                    10.0,
+                    f"KPI偏差 {kpi['overall_deviation']:.1f}%",
+                    1,
+                    0.85,
+                )
+            )
+        if market.get("trigger_adjustment"):
+            recs.append(
+                AdjustmentRecommendation(
+                    AdjustmentTrigger.MARKET_CHANGE,
+                    "satellite",
+                    (
+                        AdjustmentDirection.PIVOT
+                        if market["severity_score"] > 50
+                        else AdjustmentDirection.INCREASE
+                    ),
+                    10.0,
+                    f"市場變化 {market['severity_score']:.1f}",
+                    2,
+                    0.75,
+                )
+            )
         return sorted(recs, key=lambda x: x.priority)

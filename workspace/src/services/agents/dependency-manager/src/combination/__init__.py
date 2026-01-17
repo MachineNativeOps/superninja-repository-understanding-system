@@ -11,8 +11,8 @@ from .dynamic_adjuster import DynamicAdjuster
 from .quarterly_review import QuarterlyReviewEngine
 
 __all__ = [
-    'CoreSatelliteArchitecture',
-    'CombinationTemplateManager',
-    'DynamicAdjuster',
-    'QuarterlyReviewEngine',
+    "CoreSatelliteArchitecture",
+    "CombinationTemplateManager",
+    "DynamicAdjuster",
+    "QuarterlyReviewEngine",
 ]

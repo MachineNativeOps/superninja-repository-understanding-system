@@ -1,25 +1,25 @@
 """SuperAgent Data Models Package."""
 
-from .messages import (
-    MessageType,
-    Urgency,
-    MessageMetadata,
-    MessageContext,
-    MessageEnvelope,
-    MessageResponse,
-)
-from .incidents import (
-    IncidentState,
-    Incident,
-    IncidentTransition,
-    IncidentHistory,
-)
 from .consensus import (
-    VoteType,
-    Vote,
     ConsensusRequest,
     ConsensusResult,
     ConsensusState,
+    Vote,
+    VoteType,
+)
+from .incidents import (
+    Incident,
+    IncidentHistory,
+    IncidentState,
+    IncidentTransition,
+)
+from .messages import (
+    MessageContext,
+    MessageEnvelope,
+    MessageMetadata,
+    MessageResponse,
+    MessageType,
+    Urgency,
 )
 
 __all__ = [

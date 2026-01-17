@@ -6,6 +6,7 @@ according to SemVer 2.0.0 specification.
 """
 
 import unittest
+
 from src.enterprise.reliability.versioning import SemanticVersion
 
 
@@ -89,8 +90,11 @@ class TestSemanticVersionComparison(unittest.TestCase):
 
         # Verify each version is less than the next
         for i in range(len(versions) - 1):
-            self.assertLess(versions[i], versions[i + 1],
-                f"{versions[i]} should be < {versions[i + 1]}")
+            self.assertLess(
+                versions[i],
+                versions[i + 1],
+                f"{versions[i]} should be < {versions[i + 1]}",
+            )
 
     def test_equality_with_prerelease(self):
         """Test equality comparison with prereleases"""
@@ -112,7 +116,11 @@ class TestSemanticVersionComparison(unittest.TestCase):
         self.assertGreater(v_normal, v_pre)
         self.assertGreaterEqual(v_normal, v_pre)
         self.assertLessEqual(v_pre, v_normal)
-        self.assertLessEqual(v_pre, v_normal, "Prerelease version should not be greater than normal version")
+        self.assertLessEqual(
+            v_pre,
+            v_normal,
+            "Prerelease version should not be greater than normal version",
+        )
         self.assertLess(v_pre, v_normal)
         self.assertGreater(v_normal, v_pre)
 

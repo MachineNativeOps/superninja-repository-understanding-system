@@ -4,17 +4,17 @@ Governance Layer - INSTANT 執行標準
 整合所有 Governance 系統組件
 """
 
-from .policy_engine import PolicyEngine, Policy, PolicyAction
+from .auth_manager import AuthManager, AuthResult, AuthToken
 from .compliance_checker import ComplianceChecker, ComplianceStatus
-from .auth_manager import AuthManager, AuthToken, AuthResult
+from .policy_engine import Policy, PolicyAction, PolicyEngine
 
 __all__ = [
-    'PolicyEngine',
-    'Policy',
-    'PolicyAction',
-    'ComplianceChecker',
-    'ComplianceStatus',
-    'AuthManager',
-    'AuthToken',
-    'AuthResult'
+    "PolicyEngine",
+    "Policy",
+    "PolicyAction",
+    "ComplianceChecker",
+    "ComplianceStatus",
+    "AuthManager",
+    "AuthToken",
+    "AuthResult",
 ]

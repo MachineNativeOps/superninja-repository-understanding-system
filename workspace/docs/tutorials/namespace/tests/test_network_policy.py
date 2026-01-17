@@ -144,8 +144,6 @@ def two_namespaces():
 class TestNetworkPolicyCreation:
     """網路策略創建測試"""
 
-    
-
     def test_create_deny_all_ingress_policy(self, test_namespace):
         """測試創建拒絕所有入站流量的策略"""
         policy = {
@@ -163,8 +161,6 @@ class TestNetworkPolicyCreation:
         assert policies[0]["metadata"]["name"] == "deny-all-ingress"
         assert policies[0]["spec"]["policyTypes"] == ["Ingress"]
 
-    
-
     def test_create_deny_all_egress_policy(self, test_namespace):
         """測試創建拒絕所有出站流量的策略"""
         policy = {
@@ -179,8 +175,6 @@ class TestNetworkPolicyCreation:
         policies = get_network_policies(test_namespace)
         policy_names = [p["metadata"]["name"] for p in policies]
         assert "deny-all-egress" in policy_names
-
-    
 
     def test_create_allow_same_namespace_policy(self, test_namespace):
         """測試創建允許同命名空間通訊的策略"""
@@ -219,8 +213,6 @@ class TestNetworkPolicyCreation:
 class TestNetworkPolicyRules:
     """網路策略規則測試"""
 
-    
-
     def test_pod_selector_policy(self, test_namespace):
         """測試 Pod 選擇器策略"""
         policy = {
@@ -249,8 +241,6 @@ class TestNetworkPolicyRules:
         assert backend_policy is not None
         assert backend_policy["spec"]["podSelector"]["matchLabels"]["app"] == "backend"
         assert backend_policy["spec"]["ingress"][0]["ports"][0]["port"] == 8080
-
-    
 
     def test_namespace_selector_policy(self, two_namespaces):
         """測試命名空間選擇器策略"""
@@ -282,8 +272,6 @@ class TestNetworkPolicyRules:
             (p for p in policies if p["metadata"]["name"] == "allow-from-source"), None
         )
         assert allow_policy is not None
-
-    
 
     def test_port_specific_policy(self, test_namespace):
         """測試端口特定策略"""
@@ -321,8 +309,6 @@ class TestNetworkPolicyRules:
 class TestNetworkPolicyValidation:
     """網路策略驗證測試"""
 
-    
-
     def test_policy_with_cidr_block(self, test_namespace):
         """測試 CIDR 區塊策略"""
         policy = {
@@ -334,7 +320,14 @@ class TestNetworkPolicyValidation:
                 "policyTypes": ["Egress"],
                 "egress": [
                     {
-                        "to": [{"ipBlock": {"cidr": "10.0.0.0/8", "except": ["10.0.0.0/24"]}}],
+                        "to": [
+                            {
+                                "ipBlock": {
+                                    "cidr": "10.0.0.0/8",
+                                    "except": ["10.0.0.0/24"],
+                                }
+                            }
+                        ],
                         "ports": [{"protocol": "TCP", "port": 443}],
                     }
                 ],
@@ -352,8 +345,6 @@ class TestNetworkPolicyValidation:
         ip_block = cidr_policy["spec"]["egress"][0]["to"][0]["ipBlock"]
         assert ip_block["cidr"] == "10.0.0.0/8"
         assert "10.0.0.0/24" in ip_block["except"]
-
-    
 
     def test_multiple_policies_same_namespace(self, test_namespace):
         """測試同一命名空間多個策略"""
@@ -380,8 +371,6 @@ class TestNetworkPolicyValidation:
 
 class TestDNSPolicy:
     """DNS 策略測試"""
-
-    
 
     def test_allow_dns_egress(self, test_namespace):
         """測試允許 DNS 出站流量"""

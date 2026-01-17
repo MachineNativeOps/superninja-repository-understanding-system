@@ -15,6 +15,7 @@ from typing import Any
 
 class PhaseStatus(Enum):
     """Phase status enumeration"""
+
     NOT_INITIALIZED = "not_initialized"
     INITIALIZING = "initializing"
     READY = "ready"
@@ -27,6 +28,7 @@ class PhaseStatus(Enum):
 @dataclass
 class PhaseInfo:
     """Information about a phase"""
+
     id: str
     name: str
     description: str
@@ -40,6 +42,7 @@ class PhaseInfo:
 @dataclass
 class SystemHealth:
     """System health status"""
+
     overall_status: str  # healthy, degraded, unhealthy
     phases_healthy: int = 0
     phases_degraded: int = 0
@@ -52,6 +55,7 @@ class SystemHealth:
 @dataclass
 class SystemConfig:
     """System configuration"""
+
     # General
     name: str = "SynergyMesh"
     version: str = "1.0.0"
@@ -82,7 +86,7 @@ class SystemConfig:
 class SynergyMeshCore:
     """
     SynergyMesh Core - 主系統核心
-    
+
     Central entry point that integrates all 13 phases:
     - Phase 1-2: Natural Language Interaction
     - Phase 3: AI Decision Engine, Bridges, Deployment
@@ -139,15 +143,13 @@ class SynergyMeshCore:
 
         for phase_id, name, description in phase_definitions:
             self._phases[phase_id] = PhaseInfo(
-                id=phase_id,
-                name=name,
-                description=description
+                id=phase_id, name=name, description=description
             )
 
     def initialize(self) -> bool:
         """
         Initialize the system
-        
+
         Returns:
             True if initialization successful
         """
@@ -294,7 +296,7 @@ class SynergyMeshCore:
             phases_degraded=degraded,
             phases_unhealthy=unhealthy,
             last_check=datetime.now(),
-            issues=issues
+            issues=issues,
         )
 
         return self._health
@@ -334,10 +336,10 @@ class SynergyMeshCore:
     def process_task(self, task: dict[str, Any]) -> dict[str, Any]:
         """
         Process a task through the appropriate phases
-        
+
         Args:
             task: Task definition with type and parameters
-            
+
         Returns:
             Task result
         """
@@ -352,7 +354,7 @@ class SynergyMeshCore:
             "task_id": task.get("id", "unknown"),
             "task_type": task_type,
             "processed_by": [],
-            "results": {}
+            "results": {},
         }
 
         # Natural language tasks go through Phase 1-2
@@ -371,7 +373,11 @@ class SynergyMeshCore:
             result["processed_by"].append("phase_6")
 
         # Training and expert consultation tasks go through Phase 7
-        elif task_type == "training" or task_type == "expert_consultation" or task_type == "knowledge_query":
+        elif (
+            task_type == "training"
+            or task_type == "expert_consultation"
+            or task_type == "knowledge_query"
+        ):
             result["processed_by"].append("phase_7")
 
         # Execution tasks go through Phase 8-9
@@ -380,7 +386,11 @@ class SynergyMeshCore:
             result["processed_by"].append("phase_9")
 
         # Safety tasks go through Phase 10
-        elif task_type == "safety_check" or task_type == "circuit_breaker" or task_type == "emergency_stop":
+        elif (
+            task_type == "safety_check"
+            or task_type == "circuit_breaker"
+            or task_type == "emergency_stop"
+        ):
             result["processed_by"].append("phase_10")
 
         # Monitoring tasks go through Phase 11
@@ -392,7 +402,11 @@ class SynergyMeshCore:
             result["processed_by"].append("phase_12")
 
         # YAML validation goes through Phase 13
-        elif task_type == "yaml_validation" or task_type == "policy_check" or task_type == "slsa_compliance":
+        elif (
+            task_type == "yaml_validation"
+            or task_type == "policy_check"
+            or task_type == "slsa_compliance"
+        ):
             result["processed_by"].append("phase_13")
 
         # Update phase activity

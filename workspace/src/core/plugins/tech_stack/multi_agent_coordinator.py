@@ -20,32 +20,34 @@ from typing import Any
 
 class AgentRole(Enum):
     """Predefined agent roles in the system
-    
+
     系統中預定義的代理角色
     """
+
     # Core roles
-    ORCHESTRATOR = "orchestrator"       # 編排者：協調其他代理
-    PLANNER = "planner"                 # 規劃者：制定執行計劃
-    EXECUTOR = "executor"               # 執行者：執行具體任務
-    VALIDATOR = "validator"             # 驗證者：驗證結果
-    CRITIC = "critic"                   # 評論者：提供反饋
+    ORCHESTRATOR = "orchestrator"  # 編排者：協調其他代理
+    PLANNER = "planner"  # 規劃者：制定執行計劃
+    EXECUTOR = "executor"  # 執行者：執行具體任務
+    VALIDATOR = "validator"  # 驗證者：驗證結果
+    CRITIC = "critic"  # 評論者：提供反饋
 
     # Specialized roles
-    RESEARCHER = "researcher"           # 研究員：收集信息
-    CODER = "coder"                     # 編碼者：編寫代碼
-    REVIEWER = "reviewer"               # 審查者：代碼審查
-    ANALYST = "analyst"                 # 分析師：數據分析
-    ARCHITECT = "architect"             # 架構師：系統設計
-    SECURITY_EXPERT = "security_expert" # 安全專家：安全審計
-    DBA = "dba"                         # 數據庫管理員
-    DEVOPS = "devops"                   # DevOps 工程師
+    RESEARCHER = "researcher"  # 研究員：收集信息
+    CODER = "coder"  # 編碼者：編寫代碼
+    REVIEWER = "reviewer"  # 審查者：代碼審查
+    ANALYST = "analyst"  # 分析師：數據分析
+    ARCHITECT = "architect"  # 架構師：系統設計
+    SECURITY_EXPERT = "security_expert"  # 安全專家：安全審計
+    DBA = "dba"  # 數據庫管理員
+    DEVOPS = "devops"  # DevOps 工程師
 
 
 class AgentCapability(Enum):
     """Capabilities that agents can have
-    
+
     代理可以擁有的能力
     """
+
     # Code capabilities
     CODE_GENERATION = "code_generation"
     CODE_REVIEW = "code_review"
@@ -72,6 +74,7 @@ class AgentCapability(Enum):
 
 class MessageType(Enum):
     """Types of messages between agents"""
+
     TASK_ASSIGNMENT = "task_assignment"
     TASK_RESULT = "task_result"
     QUERY = "query"
@@ -83,6 +86,7 @@ class MessageType(Enum):
 
 class TaskPriority(Enum):
     """Task priority levels"""
+
     CRITICAL = 0
     HIGH = 1
     MEDIUM = 2
@@ -92,9 +96,10 @@ class TaskPriority(Enum):
 @dataclass
 class AgentMessage:
     """Message passed between agents
-    
+
     代理之間傳遞的消息
     """
+
     id: str = field(default_factory=lambda: str(uuid.uuid4()))
     message_type: MessageType = MessageType.NOTIFICATION
     sender_id: str = ""
@@ -109,9 +114,10 @@ class AgentMessage:
 @dataclass
 class AgentDefinition:
     """Definition of an agent in the multi-agent system
-    
+
     多代理系統中的代理定義
     """
+
     id: str = field(default_factory=lambda: str(uuid.uuid4()))
     name: str = ""
     role: AgentRole = AgentRole.EXECUTOR
@@ -136,9 +142,10 @@ class AgentDefinition:
 @dataclass
 class TeamTask:
     """A task to be executed by the agent team
-    
+
     由代理團隊執行的任務
     """
+
     id: str = field(default_factory=lambda: str(uuid.uuid4()))
     title: str = ""
     description: str = ""
@@ -157,9 +164,9 @@ class TeamTask:
 
 class AgentCommunicationBus:
     """Communication bus for agent-to-agent messaging
-    
+
     代理間通信總線
-    
+
     Provides publish/subscribe messaging and direct messaging
     between agents in the multi-agent system.
     """
@@ -182,7 +189,7 @@ class AgentCommunicationBus:
 
     def subscribe(self, topic: str, callback: Callable) -> None:
         """Subscribe to a topic
-        
+
         訂閱主題
         """
         self.subscribers[topic].append(callback)
@@ -194,19 +201,17 @@ class AgentCommunicationBus:
 
     async def publish(self, topic: str, message: AgentMessage) -> None:
         """Publish a message to a topic
-        
+
         發布消息到主題
         """
         await self.message_queue.put((topic, message))
         self.message_history.append(message)
 
     async def send_direct(
-        self,
-        message: AgentMessage,
-        wait_for_response: bool = False
+        self, message: AgentMessage, wait_for_response: bool = False
     ) -> AgentMessage | None:
         """Send a direct message to an agent
-        
+
         直接發送消息給代理
         """
         topic = f"agent:{message.receiver_id}"
@@ -216,10 +221,7 @@ class AgentCommunicationBus:
             future = asyncio.Future()
             self.pending_responses[message.id] = future
             try:
-                return await asyncio.wait_for(
-                    future,
-                    timeout=message.response_timeout
-                )
+                return await asyncio.wait_for(future, timeout=message.response_timeout)
             except TimeoutError:
                 del self.pending_responses[message.id]
                 return None
@@ -228,15 +230,17 @@ class AgentCommunicationBus:
 
     async def broadcast(self, message: AgentMessage) -> None:
         """Broadcast a message to all agents
-        
+
         廣播消息給所有代理
         """
         message.message_type = MessageType.BROADCAST
         await self.publish("broadcast", message)
 
-    async def respond_to(self, original_message_id: str, response: AgentMessage) -> None:
+    async def respond_to(
+        self, original_message_id: str, response: AgentMessage
+    ) -> None:
         """Respond to a message
-        
+
         回覆消息
         """
         if original_message_id in self.pending_responses:
@@ -248,8 +252,7 @@ class AgentCommunicationBus:
         while self._running:
             try:
                 topic, message = await asyncio.wait_for(
-                    self.message_queue.get(),
-                    timeout=1.0
+                    self.message_queue.get(), timeout=1.0
                 )
 
                 for callback in self.subscribers.get(topic, []):
@@ -269,9 +272,9 @@ class AgentCommunicationBus:
 
 class TaskRouter:
     """Routes tasks to appropriate agents based on capabilities
-    
+
     任務路由器：根據能力將任務路由到合適的代理
-    
+
     Implements intelligent task assignment based on:
     - Agent capabilities
     - Agent availability
@@ -286,7 +289,7 @@ class TaskRouter:
 
     def register_agent(self, agent: AgentDefinition) -> None:
         """Register an agent for routing
-        
+
         註冊代理以進行路由
         """
         self.agents[agent.id] = agent
@@ -303,27 +306,27 @@ class TaskRouter:
         name: str,
         condition: Callable[[TeamTask], bool],
         target_roles: list[AgentRole],
-        priority: int = 0
+        priority: int = 0,
     ) -> None:
         """Add a custom routing rule
-        
+
         添加自定義路由規則
         """
-        self.routing_rules.append({
-            "name": name,
-            "condition": condition,
-            "target_roles": target_roles,
-            "priority": priority
-        })
+        self.routing_rules.append(
+            {
+                "name": name,
+                "condition": condition,
+                "target_roles": target_roles,
+                "priority": priority,
+            }
+        )
         self.routing_rules.sort(key=lambda x: x["priority"])
 
     def find_suitable_agents(
-        self,
-        task: TeamTask,
-        max_agents: int = 1
+        self, task: TeamTask, max_agents: int = 1
     ) -> list[AgentDefinition]:
         """Find agents suitable for a task
-        
+
         找到適合任務的代理
         """
         suitable_agents = []
@@ -332,9 +335,11 @@ class TaskRouter:
         for rule in self.routing_rules:
             if rule["condition"](task):
                 for agent in self.agents.values():
-                    if (agent.is_active and
-                        agent.role in rule["target_roles"] and
-                        self.agent_load[agent.id] < agent.max_concurrent_tasks):
+                    if (
+                        agent.is_active
+                        and agent.role in rule["target_roles"]
+                        and self.agent_load[agent.id] < agent.max_concurrent_tasks
+                    ):
                         suitable_agents.append(agent)
                 if suitable_agents:
                     break
@@ -342,21 +347,21 @@ class TaskRouter:
         # Fallback to capability-based routing
         if not suitable_agents:
             for agent in self.agents.values():
-                if (agent.is_active and
-                    agent.can_handle_task(task.required_capabilities) and
-                    self.agent_load[agent.id] < agent.max_concurrent_tasks):
+                if (
+                    agent.is_active
+                    and agent.can_handle_task(task.required_capabilities)
+                    and self.agent_load[agent.id] < agent.max_concurrent_tasks
+                ):
                     suitable_agents.append(agent)
 
         # Sort by priority and load
-        suitable_agents.sort(
-            key=lambda a: (a.priority, self.agent_load[a.id])
-        )
+        suitable_agents.sort(key=lambda a: (a.priority, self.agent_load[a.id]))
 
         return suitable_agents[:max_agents]
 
     def route_task(self, task: TeamTask) -> AgentDefinition | None:
         """Route a task to the best available agent
-        
+
         將任務路由到最佳可用代理
         """
         agents = self.find_suitable_agents(task, max_agents=1)
@@ -378,8 +383,12 @@ class TaskRouter:
                 "name": self.agents[agent_id].name,
                 "current_load": self.agent_load[agent_id],
                 "max_load": self.agents[agent_id].max_concurrent_tasks,
-                "utilization": self.agent_load[agent_id] / self.agents[agent_id].max_concurrent_tasks
-                if self.agents[agent_id].max_concurrent_tasks > 0 else 0
+                "utilization": (
+                    self.agent_load[agent_id]
+                    / self.agents[agent_id].max_concurrent_tasks
+                    if self.agents[agent_id].max_concurrent_tasks > 0
+                    else 0
+                ),
             }
             for agent_id in self.agents
         }
@@ -388,9 +397,10 @@ class TaskRouter:
 @dataclass
 class AgentTeam:
     """A team of agents working together
-    
+
     一起工作的代理團隊
     """
+
     id: str = field(default_factory=lambda: str(uuid.uuid4()))
     name: str = ""
     description: str = ""
@@ -421,19 +431,21 @@ class AgentTeam:
         """Get all agents with a specific role"""
         return [a for a in self.agents.values() if a.role == role]
 
-    def get_agents_with_capability(self, capability: AgentCapability) -> list[AgentDefinition]:
+    def get_agents_with_capability(
+        self, capability: AgentCapability
+    ) -> list[AgentDefinition]:
         """Get all agents with a specific capability"""
         return [a for a in self.agents.values() if a.has_capability(capability)]
 
 
 class MultiAgentCoordinator:
     """Coordinator for multi-agent systems
-    
+
     多代理系統協調器
-    
+
     This class manages multiple AI agents, coordinating their work,
     routing tasks, and managing communication between them.
-    
+
     核心功能：
     1. 代理管理：註冊、配置、監控代理
     2. 任務路由：智能分配任務給合適的代理
@@ -451,7 +463,7 @@ class MultiAgentCoordinator:
 
     async def start(self) -> None:
         """Start the coordinator
-        
+
         啟動協調器
         """
         await self.communication_bus.start()
@@ -459,7 +471,7 @@ class MultiAgentCoordinator:
 
     async def stop(self) -> None:
         """Stop the coordinator
-        
+
         停止協調器
         """
         await self.communication_bus.stop()
@@ -467,7 +479,7 @@ class MultiAgentCoordinator:
 
     def register_agent(self, agent: AgentDefinition) -> str:
         """Register a new agent
-        
+
         註冊新代理
         """
         self.agents[agent.id] = agent
@@ -475,15 +487,14 @@ class MultiAgentCoordinator:
 
         # Subscribe agent to its own channel
         self.communication_bus.subscribe(
-            f"agent:{agent.id}",
-            lambda msg: self._handle_agent_message(agent.id, msg)
+            f"agent:{agent.id}", lambda msg: self._handle_agent_message(agent.id, msg)
         )
 
         return agent.id
 
     def unregister_agent(self, agent_id: str) -> bool:
         """Unregister an agent
-        
+
         取消註冊代理
         """
         if agent_id in self.agents:
@@ -493,13 +504,10 @@ class MultiAgentCoordinator:
         return False
 
     def create_team(
-        self,
-        name: str,
-        agent_ids: list[str],
-        leader_id: str | None = None
+        self, name: str, agent_ids: list[str], leader_id: str | None = None
     ) -> AgentTeam:
         """Create a team of agents
-        
+
         創建代理團隊
         """
         team = AgentTeam(name=name, description=f"Team: {name}")
@@ -516,7 +524,7 @@ class MultiAgentCoordinator:
 
     async def submit_task(self, task: TeamTask) -> str:
         """Submit a task for execution
-        
+
         提交任務以執行
         """
         self.tasks[task.id] = task
@@ -534,7 +542,7 @@ class MultiAgentCoordinator:
                     sender_id="coordinator",
                     receiver_id=agent.id,
                     content=task,
-                    requires_response=True
+                    requires_response=True,
                 )
             )
         else:
@@ -544,7 +552,7 @@ class MultiAgentCoordinator:
 
     async def execute_task(self, task_id: str) -> TeamTask | None:
         """Execute a task
-        
+
         執行任務
         """
         if task_id not in self.tasks:
@@ -574,12 +582,10 @@ class MultiAgentCoordinator:
         return task
 
     async def execute_workflow(
-        self,
-        tasks: list[TeamTask],
-        parallel: bool = False
+        self, tasks: list[TeamTask], parallel: bool = False
     ) -> list[TeamTask]:
         """Execute a workflow of tasks
-        
+
         執行任務工作流
         """
         # Submit all tasks
@@ -618,15 +624,16 @@ class MultiAgentCoordinator:
             "is_active": agent.is_active,
             "capabilities": [c.value for c in agent.capabilities],
             "current_tasks": [
-                t.id for t in self.tasks.values()
+                t.id
+                for t in self.tasks.values()
                 if agent_id in t.assigned_agents and t.status == "running"
             ],
-            "load": self.task_router.agent_load.get(agent_id, 0)
+            "load": self.task_router.agent_load.get(agent_id, 0),
         }
 
     def get_all_status(self) -> dict[str, Any]:
         """Get status of the entire coordinator
-        
+
         獲取整個協調器的狀態
         """
         return {
@@ -635,19 +642,25 @@ class MultiAgentCoordinator:
             "teams_count": len(self.teams),
             "tasks": {
                 "total": len(self.tasks),
-                "pending": len([t for t in self.tasks.values() if t.status == "pending"]),
-                "running": len([t for t in self.tasks.values() if t.status == "running"]),
-                "completed": len([t for t in self.tasks.values() if t.status == "completed"]),
-                "failed": len([t for t in self.tasks.values() if t.status == "failed"])
+                "pending": len(
+                    [t for t in self.tasks.values() if t.status == "pending"]
+                ),
+                "running": len(
+                    [t for t in self.tasks.values() if t.status == "running"]
+                ),
+                "completed": len(
+                    [t for t in self.tasks.values() if t.status == "completed"]
+                ),
+                "failed": len([t for t in self.tasks.values() if t.status == "failed"]),
             },
-            "agent_load": self.task_router.get_load_status()
+            "agent_load": self.task_router.get_load_status(),
         }
 
 
 # Factory functions for creating common agent configurations
 def create_code_review_agent(name: str = "CodeReviewer") -> AgentDefinition:
     """Create a code review agent
-    
+
     創建代碼審查代理
     """
     return AgentDefinition(
@@ -656,15 +669,15 @@ def create_code_review_agent(name: str = "CodeReviewer") -> AgentDefinition:
         capabilities=[
             AgentCapability.CODE_REVIEW,
             AgentCapability.SECURITY_ANALYSIS,
-            AgentCapability.DOCUMENTATION
+            AgentCapability.DOCUMENTATION,
         ],
-        system_prompt="You are an expert code reviewer focused on quality, security, and best practices."
+        system_prompt="You are an expert code reviewer focused on quality, security, and best practices.",
     )
 
 
 def create_architect_agent(name: str = "Architect") -> AgentDefinition:
     """Create an architect agent
-    
+
     創建架構師代理
     """
     return AgentDefinition(
@@ -673,15 +686,15 @@ def create_architect_agent(name: str = "Architect") -> AgentDefinition:
         capabilities=[
             AgentCapability.ARCHITECTURE_ANALYSIS,
             AgentCapability.CODE_GENERATION,
-            AgentCapability.DOCUMENTATION
+            AgentCapability.DOCUMENTATION,
         ],
-        system_prompt="You are a system architect expert in designing scalable and maintainable systems."
+        system_prompt="You are a system architect expert in designing scalable and maintainable systems.",
     )
 
 
 def create_security_agent(name: str = "SecurityExpert") -> AgentDefinition:
     """Create a security expert agent
-    
+
     創建安全專家代理
     """
     return AgentDefinition(
@@ -690,15 +703,15 @@ def create_security_agent(name: str = "SecurityExpert") -> AgentDefinition:
         capabilities=[
             AgentCapability.SECURITY_ANALYSIS,
             AgentCapability.CODE_REVIEW,
-            AgentCapability.REPORTING
+            AgentCapability.REPORTING,
         ],
-        system_prompt="You are a security expert focused on identifying and mitigating security vulnerabilities."
+        system_prompt="You are a security expert focused on identifying and mitigating security vulnerabilities.",
     )
 
 
 def create_devops_agent(name: str = "DevOpsEngineer") -> AgentDefinition:
     """Create a DevOps agent
-    
+
     創建 DevOps 代理
     """
     return AgentDefinition(
@@ -707,7 +720,7 @@ def create_devops_agent(name: str = "DevOpsEngineer") -> AgentDefinition:
         capabilities=[
             AgentCapability.DEPLOYMENT,
             AgentCapability.API_INTEGRATION,
-            AgentCapability.PERFORMANCE_ANALYSIS
+            AgentCapability.PERFORMANCE_ANALYSIS,
         ],
-        system_prompt="You are a DevOps engineer expert in CI/CD, deployment, and infrastructure."
+        system_prompt="You are a DevOps engineer expert in CI/CD, deployment, and infrastructure.",
     )

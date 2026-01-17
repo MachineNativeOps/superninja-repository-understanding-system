@@ -15,8 +15,8 @@ import asyncio
 import sys
 from pathlib import Path
 
-from governance_automation_launcher import GovernanceAutomationLauncher
 from coordinator import EngineCoordinator
+from governance_automation_launcher import GovernanceAutomationLauncher
 from integrated_launcher import IntegratedGovernanceAutomationLauncher
 
 
@@ -98,7 +98,7 @@ async def test_inter_engine_communication():
         source_engine="engine_1",
         target_engine="engine_2",
         message_type="test_message",
-        payload={"test": "data"}
+        payload={"test": "data"},
     )
 
     # Process messages
@@ -143,10 +143,18 @@ async def test_integrated_launcher():
 
 async def main():
     """Run all tests."""
-    print("\n╔════════════════════════════════════════════════════════════════════════════╗")
-    print("║  GOVERNANCE AUTOMATION SYSTEM - COMPREHENSIVE TEST SUITE                  ║")
-    print("║  治理自動化系統 - 綜合測試套件                                              ║")
-    print("╚════════════════════════════════════════════════════════════════════════════╝")
+    print(
+        "\n╔════════════════════════════════════════════════════════════════════════════╗"
+    )
+    print(
+        "║  GOVERNANCE AUTOMATION SYSTEM - COMPREHENSIVE TEST SUITE                  ║"
+    )
+    print(
+        "║  治理自動化系統 - 綜合測試套件                                              ║"
+    )
+    print(
+        "╚════════════════════════════════════════════════════════════════════════════╝"
+    )
 
     tests = [
         ("Main Launcher", test_main_launcher),
@@ -164,6 +172,7 @@ async def main():
         except Exception as e:
             print(f"\n❌ Test '{test_name}' failed with error: {e}")
             import traceback
+
             traceback.print_exc()
             results.append((test_name, False))
 
