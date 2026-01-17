@@ -351,8 +351,8 @@
 ## 團隊貢獻
 
 - **架構設計**: MCP Level 3 Architecture Team
-- **核心實現**: SuperNinja AI Agent
-- **文檔編寫**: SuperNinja AI Agent
+- **核心實現**: MNO AI Agent
+- **文檔編寫**: MNO AI Agent
 - **質量保證**: MCP QA Team
 
 ## 結論

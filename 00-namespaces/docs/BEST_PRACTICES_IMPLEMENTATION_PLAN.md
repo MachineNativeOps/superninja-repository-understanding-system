@@ -1253,6 +1253,6 @@ async function tracedOperation<T>(
 
 ---
 
-**報告生成**: SuperNinja AI Agent  
+**報告生成**: MNO AI Agent  
 **基於**: 50+ 行業最佳實踐來源  
 **最後更新**: 2024-01-09

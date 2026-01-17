@@ -457,7 +457,7 @@ metadata:
   updated_at: "2025-01-11T04:45:00Z"
   version: "2.0.0"
   status: "active"
-  author: "SuperNinja AI Agent"
+  author: "MNO AI Agent"
   dependencies:
     - "data-management.schema.yaml"
     - "protocol.spec.yaml"

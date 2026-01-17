@@ -37,7 +37,7 @@ metadata:
   updated_at: "{updated_at}"
   version: "2.0.0"
   status: "active"
-  author: "SuperNinja AI Agent"
+  author: "MNO AI Agent"
 """
 
 # Template for bundles
@@ -63,7 +63,7 @@ metadata:
   updated_at: "{updated_at}"
   version: "2.0.0"
   status: "active"
-  author: "SuperNinja AI Agent"
+  author: "MNO AI Agent"
 """
 
 # Template for graphs
@@ -89,7 +89,7 @@ metadata:
   updated_at: "{updated_at}"
   version: "2.0.0"
   status: "active"
-  author: "SuperNinja AI Agent"
+  author: "MNO AI Agent"
 """
 
 # Template for flows
@@ -116,7 +116,7 @@ metadata:
   updated_at: "{updated_at}"
   version: "2.0.0"
   status: "active"
-  author: "SuperNinja AI Agent"
+  author: "MNO AI Agent"
 """
 
 

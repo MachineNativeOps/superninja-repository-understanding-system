@@ -59,7 +59,7 @@ spec:
     
     # User assignments
     users:
-      superninja:
+      mno-admin:
         roles: ["system-admin"]
         groups: ["admin-team"]
       
