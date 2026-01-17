@@ -14,33 +14,32 @@ from datetime import datetime
 from uuid import uuid4
 
 import pytest
-
-sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-
-from models.messages import (
-    MessageEnvelope,
-    MessageType,
-    MessageMetadata,
-    MessageContext,
-    MessageResponse,
-    Urgency,
-)
-from models.incidents import (
-    Incident,
-    IncidentState,
-    IncidentTransition,
-    IncidentHistory,
-    VALID_TRANSITIONS,
-)
 from models.consensus import (
-    Vote,
-    VoteType,
+    DEFAULT_AGENT_WEIGHTS,
+    AgentWeight,
     ConsensusRequest,
     ConsensusResult,
     ConsensusState,
-    AgentWeight,
-    DEFAULT_AGENT_WEIGHTS,
+    Vote,
+    VoteType,
 )
+from models.incidents import (
+    VALID_TRANSITIONS,
+    Incident,
+    IncidentHistory,
+    IncidentState,
+    IncidentTransition,
+)
+from models.messages import (
+    MessageContext,
+    MessageEnvelope,
+    MessageMetadata,
+    MessageResponse,
+    MessageType,
+    Urgency,
+)
+
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 
 class TestMessageModels:
@@ -119,7 +118,8 @@ class TestIncidentModels:
         """Test that valid transitions are properly defined."""
         assert IncidentState.TRIAGE in VALID_TRANSITIONS[IncidentState.OPEN]
         assert IncidentState.RCA in VALID_TRANSITIONS[IncidentState.TRIAGE]
-        assert len(VALID_TRANSITIONS[IncidentState.LEARN]) == 0  # terminal state
+        # terminal state
+        assert len(VALID_TRANSITIONS[IncidentState.LEARN]) == 0
 
     def test_incident_creation(self):
         """Test Incident model creation."""

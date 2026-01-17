@@ -22,6 +22,7 @@ logger = logging.getLogger(__name__)
 
 class WebhookEventType(Enum):
     """Standard webhook event types across providers"""
+
     # Pull Request events
     PULL_REQUEST_OPENED = "pull_request.opened"
     PULL_REQUEST_SYNCHRONIZE = "pull_request.synchronize"
@@ -54,6 +55,7 @@ class WebhookEventType(Enum):
 
 class WebhookValidationError(Exception):
     """Raised when webhook validation fails"""
+
     pass
 
 
@@ -64,6 +66,7 @@ class WebhookEvent:
 
     Normalized representation across different Git providers.
     """
+
     id: UUID = field(default_factory=uuid4)
 
     # Event metadata
@@ -125,10 +128,7 @@ class RateLimiter(Protocol):
     """Interface for rate limiting"""
 
     async def check_rate_limit(
-        self,
-        key: str,
-        limit: int,
-        window_seconds: int
+        self, key: str, limit: int, window_seconds: int
     ) -> tuple[bool, int]:
         """
         Check rate limit for a key.
@@ -202,9 +202,7 @@ class WebhookReceiver:
         """
         # Size check
         if len(body) > self.max_payload_size:
-            raise WebhookValidationError(
-                f"Payload too large: {len(body)} bytes"
-            )
+            raise WebhookValidationError(f"Payload too large: {len(body)} bytes")
 
         # Verify signature
         if provider == "github":
@@ -233,9 +231,7 @@ class WebhookReceiver:
                 60,
             )
             if not allowed:
-                raise WebhookValidationError(
-                    f"Rate limit exceeded for {rate_key}"
-                )
+                raise WebhookValidationError(f"Rate limit exceeded for {rate_key}")
 
         # Parse and normalize
         event = await self._parse_event(provider, headers, body)
@@ -271,11 +267,15 @@ class WebhookReceiver:
         GitHub uses HMAC-SHA256 with the format:
         X-Hub-Signature-256: sha256=<signature>
         """
-        signature_header = headers.get("X-Hub-Signature-256") or headers.get("x-hub-signature-256")
+        signature_header = headers.get("X-Hub-Signature-256") or headers.get(
+            "x-hub-signature-256"
+        )
 
         if not signature_header:
             # Also check old SHA1 signature
-            signature_header = headers.get("X-Hub-Signature") or headers.get("x-hub-signature")
+            signature_header = headers.get("X-Hub-Signature") or headers.get(
+                "x-hub-signature"
+            )
             if signature_header:
                 await self._verify_hmac(body, secret, signature_header, "sha1")
                 return
@@ -317,7 +317,9 @@ class WebhookReceiver:
 
         Bitbucket uses HMAC-SHA256 with X-Hub-Signature header.
         """
-        signature_header = headers.get("X-Hub-Signature") or headers.get("x-hub-signature")
+        signature_header = headers.get("X-Hub-Signature") or headers.get(
+            "x-hub-signature"
+        )
 
         if not signature_header:
             raise WebhookValidationError("Missing Bitbucket signature header")
@@ -382,7 +384,8 @@ class WebhookReceiver:
 
         # Clean old nonces
         expired = [
-            n for n, ts in self._nonce_timestamps.items()
+            n
+            for n, ts in self._nonce_timestamps.items()
             if now - ts > self.replay_window_seconds
         ]
         for n in expired:
@@ -402,7 +405,9 @@ class WebhookReceiver:
         if provider == "github":
             return headers.get("X-GitHub-Delivery") or headers.get("x-github-delivery")
         elif provider == "gitlab":
-            return headers.get("X-Gitlab-Event-UUID") or headers.get("x-gitlab-event-uuid")
+            return headers.get("X-Gitlab-Event-UUID") or headers.get(
+                "x-gitlab-event-uuid"
+            )
         elif provider == "bitbucket":
             return headers.get("X-Request-UUID") or headers.get("x-request-uuid")
         return None

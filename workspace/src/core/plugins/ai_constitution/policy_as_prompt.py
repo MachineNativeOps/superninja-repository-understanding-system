@@ -26,6 +26,7 @@ from typing import Any
 
 class PolicyType(Enum):
     """政策類型"""
+
     SECURITY = "security"
     COMPLIANCE = "compliance"
     ETHICS = "ethics"
@@ -36,6 +37,7 @@ class PolicyType(Enum):
 
 class EnforcementAction(Enum):
     """執行動作"""
+
     ALLOW = "allow"
     DENY = "deny"
     WARN = "warn"
@@ -49,9 +51,10 @@ class PolicyPrompt:
     """
     政策提示
     Policy Prompt
-    
+
     將政策文檔轉換為可執行的提示格式
     """
+
     prompt_id: str
     policy_name: str
     policy_type: PolicyType
@@ -92,18 +95,22 @@ class PolicyPrompt:
         for i, rule in enumerate(self.rules, 1):
             prompt_parts.append(f"  {i}. {rule}")
 
-        prompt_parts.extend([
-            "",
-            "條件:",
-        ])
+        prompt_parts.extend(
+            [
+                "",
+                "條件:",
+            ]
+        )
 
         for key, value in self.conditions.items():
             prompt_parts.append(f"  - {key}: {value}")
 
-        prompt_parts.extend([
-            "",
-            f"違規處理: {self.enforcement_action.value}",
-        ])
+        prompt_parts.extend(
+            [
+                "",
+                f"違規處理: {self.enforcement_action.value}",
+            ]
+        )
 
         return "\n".join(prompt_parts)
 
@@ -113,9 +120,10 @@ class PromptGuardrail:
     """
     提示護欄
     Prompt Guardrail
-    
+
     基於政策提示實現的實時護欄
     """
+
     guardrail_id: str
     policy_prompt: PolicyPrompt
 
@@ -168,7 +176,7 @@ class PolicyEnforcer:
     """
     政策執行器
     Policy Enforcer
-    
+
     負責執行所有政策提示和護欄
     """
 
@@ -180,11 +188,7 @@ class PolicyEnforcer:
         """註冊護欄"""
         self._guardrails[guardrail.guardrail_id] = guardrail
 
-    def enforce(
-        self,
-        content: str,
-        context: dict[str, Any] = None
-    ) -> dict[str, Any]:
+    def enforce(self, content: str, context: dict[str, Any] = None) -> dict[str, Any]:
         """執行所有護欄檢查"""
         results = {
             "passed": True,
@@ -198,7 +202,7 @@ class PolicyEnforcer:
         sorted_guardrails = sorted(
             self._guardrails.values(),
             key=lambda g: g.policy_prompt.priority,
-            reverse=True
+            reverse=True,
         )
 
         for guardrail in sorted_guardrails:
@@ -215,7 +219,9 @@ class PolicyEnforcer:
                 # 根據執行動作決定處理
                 action = guardrail.policy_prompt.enforcement_action
                 if action == EnforcementAction.DENY:
-                    results["actions_taken"].append(f"拒絕: {guardrail.policy_prompt.policy_name}")
+                    results["actions_taken"].append(
+                        f"拒絕: {guardrail.policy_prompt.policy_name}"
+                    )
                     break  # 立即停止
                 elif action == EnforcementAction.WARN:
                     results["warnings"].extend(check_result["violations"])
@@ -231,20 +237,24 @@ class PolicyEnforcer:
 
     def _log_enforcement(self, guardrail: PromptGuardrail, result: dict[str, Any]):
         """記錄執行"""
-        self._enforcement_log.append({
-            "guardrail_id": guardrail.guardrail_id,
-            "result": result,
-            "timestamp": datetime.utcnow().isoformat(),
-        })
+        self._enforcement_log.append(
+            {
+                "guardrail_id": guardrail.guardrail_id,
+                "result": result,
+                "timestamp": datetime.utcnow().isoformat(),
+            }
+        )
 
     def _log_enforcement_result(self, result: dict[str, Any]):
         """記錄執行結果"""
-        self._enforcement_log.append({
-            "type": "enforcement_result",
-            "passed": result["passed"],
-            "violation_count": len(result["violations"]),
-            "timestamp": datetime.utcnow().isoformat(),
-        })
+        self._enforcement_log.append(
+            {
+                "type": "enforcement_result",
+                "passed": result["passed"],
+                "violation_count": len(result["violations"]),
+                "timestamp": datetime.utcnow().isoformat(),
+            }
+        )
 
     def get_enforcement_log(self, limit: int = 100) -> list[dict[str, Any]]:
         """獲取執行記錄"""
@@ -255,17 +265,17 @@ class PolicyEnforcer:
         stats = {
             "total_guardrails": len(self._guardrails),
             "active_guardrails": sum(
-                1 for g in self._guardrails.values()
-                if g.policy_prompt.enabled
+                1 for g in self._guardrails.values() if g.policy_prompt.enabled
             ),
             "total_checks": sum(g.check_count for g in self._guardrails.values()),
-            "total_violations": sum(g.violation_count for g in self._guardrails.values()),
+            "total_violations": sum(
+                g.violation_count for g in self._guardrails.values()
+            ),
         }
 
         if stats["total_checks"] > 0:
             stats["violation_rate"] = round(
-                stats["total_violations"] / stats["total_checks"] * 100,
-                2
+                stats["total_violations"] / stats["total_checks"] * 100, 2
             )
         else:
             stats["violation_rate"] = 0
@@ -277,17 +287,17 @@ class PolicyAsPrompt:
     """
     政策即提示系統
     Policy as Prompt System
-    
+
     核心類別，負責：
     1. 將政策文檔轉換為可執行提示
     2. 生成對應的護欄
     3. 管理政策的生命週期
-    
+
     This is the core class responsible for:
     1. Converting policy documents to executable prompts
     2. Generating corresponding guardrails
     3. Managing policy lifecycle
-    
+
     自成閉環：完整的政策管理生命週期
     """
 
@@ -446,7 +456,7 @@ class PolicyAsPrompt:
         """
         解析政策文檔並轉換為政策提示
         Parse policy document and convert to policy prompt
-        
+
         這是 Policy as Prompt 的核心功能
         """
         # 提取政策名稱
@@ -505,17 +515,12 @@ class PolicyAsPrompt:
         patterns = []
 
         # 查找明確的禁止詞
-        prohibit_matches = re.findall(
-            r"禁止[^，。\n]*[「『]([^」』]+)[」』]",
-            document
-        )
+        prohibit_matches = re.findall(r"禁止[^，。\n]*[「『]([^」』]+)[」』]", document)
         patterns.extend(prohibit_matches)
 
         # 查找英文關鍵詞
         english_matches = re.findall(
-            r"prohibit[ed]?\s+([a-zA-Z_]+)",
-            document,
-            re.IGNORECASE
+            r"prohibit[ed]?\s+([a-zA-Z_]+)", document, re.IGNORECASE
         )
         patterns.extend(english_matches)
 
@@ -535,9 +540,7 @@ class PolicyAsPrompt:
             return EnforcementAction.WARN
 
     def enforce_policies(
-        self,
-        content: str,
-        context: dict[str, Any] = None
+        self, content: str, context: dict[str, Any] = None
     ) -> dict[str, Any]:
         """執行所有政策"""
         return self.enforcer.enforce(content, context)
@@ -564,7 +567,7 @@ class PolicyAsPrompt:
         """
         生成給 AI 的政策提示
         Generate policy prompt for AI
-        
+
         這是 Policy as Prompt 的核心輸出
         """
         prompts = []
@@ -591,21 +594,25 @@ class PolicyAsPrompt:
         """獲取統計數據"""
         base_stats = self.enforcer.get_statistics()
 
-        base_stats.update({
-            "total_policies": len(self._policies),
-            "policies_by_type": {},
-            "policies_by_enforcement": {},
-        })
+        base_stats.update(
+            {
+                "total_policies": len(self._policies),
+                "policies_by_type": {},
+                "policies_by_enforcement": {},
+            }
+        )
 
         for policy in self._policies.values():
             # 按類型統計
             type_key = policy.policy_type.value
-            base_stats["policies_by_type"][type_key] = \
+            base_stats["policies_by_type"][type_key] = (
                 base_stats["policies_by_type"].get(type_key, 0) + 1
+            )
 
             # 按執行動作統計
             action_key = policy.enforcement_action.value
-            base_stats["policies_by_enforcement"][action_key] = \
+            base_stats["policies_by_enforcement"][action_key] = (
                 base_stats["policies_by_enforcement"].get(action_key, 0) + 1
+            )
 
         return base_stats

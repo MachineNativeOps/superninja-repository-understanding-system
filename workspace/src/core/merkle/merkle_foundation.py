@@ -9,18 +9,19 @@ Responsibilities:
 - Tamper-evident logging
 """
 
-from typing import Dict, List, Optional, Any
-from dataclasses import dataclass
 import hashlib
 import json
+from dataclasses import dataclass
+from typing import Any, Dict, List, Optional
 
 
 @dataclass
 class MerkleNode:
     """Merkle tree node."""
+
     hash: str
-    left: Optional['MerkleNode'] = None
-    right: Optional['MerkleNode'] = None
+    left: Optional["MerkleNode"] = None
+    right: Optional["MerkleNode"] = None
     data: Optional[Any] = None
 
 
@@ -83,8 +84,9 @@ class MerkleTree:
         # Full implementation would traverse tree
         return proof
 
-    def verify_proof(self, leaf_hash: str, proof: List[Dict[str, str]],
-                     root_hash: str) -> bool:
+    def verify_proof(
+        self, leaf_hash: str, proof: List[Dict[str, str]], root_hash: str
+    ) -> bool:
         """Verify a Merkle proof."""
         current = leaf_hash
         for step in proof:
@@ -128,6 +130,7 @@ class StateVerifier:
     def _get_timestamp(self) -> str:
         """Get current timestamp."""
         from datetime import datetime, timezone
+
         return datetime.now(timezone.utc).isoformat()
 
 

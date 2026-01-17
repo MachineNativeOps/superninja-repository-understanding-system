@@ -9,14 +9,16 @@ Responsibilities:
 - Embedding model management
 """
 
-from typing import Dict, List, Optional
 from dataclasses import dataclass
 from enum import Enum
+from typing import Dict, List, Optional
+
 import numpy as np
 
 
 class EmbeddingModel(Enum):
     """Supported embedding models."""
+
     OPENAI_ADA = "text-embedding-ada-002"
     OPENAI_3_SMALL = "text-embedding-3-small"
     OPENAI_3_LARGE = "text-embedding-3-large"
@@ -27,6 +29,7 @@ class EmbeddingModel(Enum):
 @dataclass
 class EmbeddingConfig:
     """Embedding engine configuration."""
+
     model: EmbeddingModel = EmbeddingModel.OPENAI_3_SMALL
     dimension: int = 1536
     batch_size: int = 100
@@ -36,6 +39,7 @@ class EmbeddingConfig:
 @dataclass
 class EmbeddingResult:
     """Embedding computation result."""
+
     text: str
     vector: np.ndarray
     model: str
@@ -94,7 +98,7 @@ class EmbeddingEngine:
         """Generate embeddings for multiple texts."""
         results = []
         for i in range(0, len(texts), self.config.batch_size):
-            batch = texts[i:i + self.config.batch_size]
+            batch = texts[i: i + self.config.batch_size]
             for text in batch:
                 result = await self.embed(text)
                 results.append(result)
@@ -109,13 +113,12 @@ class EmbeddingEngine:
             return 0.0
         return float(dot_product / (norm1 * norm2))
 
-    def find_similar(self, query_vec: np.ndarray,
-                     candidates: List[np.ndarray],
-                     top_k: int = 10) -> List[tuple]:
+    def find_similar(
+        self, query_vec: np.ndarray, candidates: List[np.ndarray], top_k: int = 10
+    ) -> List[tuple]:
         """Find most similar vectors."""
         similarities = [
-            (i, self.similarity(query_vec, vec))
-            for i, vec in enumerate(candidates)
+            (i, self.similarity(query_vec, vec)) for i, vec in enumerate(candidates)
         ]
         similarities.sort(key=lambda x: x[1], reverse=True)
         return similarities[:top_k]
@@ -124,9 +127,10 @@ class EmbeddingEngine:
         """Generate embedding vector (placeholder)."""
         # Placeholder: hash-based pseudo-embedding
         import hashlib
+
         hash_bytes = hashlib.sha256(text.encode()).digest()
         # Expand to config dimension
-        np.random.seed(int.from_bytes(hash_bytes[:4], 'big'))
+        np.random.seed(int.from_bytes(hash_bytes[:4], "big"))
         return np.random.randn(self.config.dimension).astype(np.float32)
 
     def _normalize(self, vector: np.ndarray) -> np.ndarray:

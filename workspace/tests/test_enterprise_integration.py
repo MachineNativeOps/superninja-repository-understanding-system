@@ -12,26 +12,27 @@
 """
 
 import asyncio
-import pytest
 import sys
 from pathlib import Path
 
+import pytest
+from core.orchestrators import (
+    ComponentType,
+    DependencyResolver,
+    EnterpriseSynergyMeshOrchestrator,
+    ExecutionStatus,
+    TenantTier,
+)
+
 # 添加 src 到路徑
 project_root = Path(__file__).parent.parent
-sys.path.insert(0, str(project_root / 'src'))
-
-from core.orchestrators import (
-    EnterpriseSynergyMeshOrchestrator,
-    DependencyResolver,
-    TenantTier,
-    ExecutionStatus,
-    ComponentType
-)
+sys.path.insert(0, str(project_root / "src"))
 
 
 # ============================================================================
 # 多租戶隔離測試
 # ============================================================================
+
 
 class TestMultiTenantIsolation:
     """多租戶隔離和數據保護測試"""
@@ -74,11 +75,20 @@ class TestMultiTenantIsolation:
         ent_config = orch.get_tenant(enterprise)
 
         # Basic < Pro < Enterprise
-        assert basic_config.quota.max_concurrent_tasks < pro_config.quota.max_concurrent_tasks
-        assert pro_config.quota.max_concurrent_tasks < ent_config.quota.max_concurrent_tasks
+        assert (
+            basic_config.quota.max_concurrent_tasks
+            < pro_config.quota.max_concurrent_tasks
+        )
+        assert (
+            pro_config.quota.max_concurrent_tasks
+            < ent_config.quota.max_concurrent_tasks
+        )
 
         assert basic_config.quota.max_memory_mb < ent_config.quota.max_memory_mb
-        assert basic_config.quota.rate_limit_per_second < ent_config.quota.rate_limit_per_second
+        assert (
+            basic_config.quota.rate_limit_per_second
+            < ent_config.quota.rate_limit_per_second
+        )
 
     def test_tenant_feature_isolation(self):
         """測試租戶功能隔離"""
@@ -113,6 +123,7 @@ class TestMultiTenantIsolation:
 # 依賴解析端到端測試
 # ============================================================================
 
+
 class TestDependencyResolutionE2E:
     """依賴解析和執行順序的端到端測試"""
 
@@ -129,7 +140,7 @@ class TestDependencyResolutionE2E:
             "user_service": "service",
             "product_service": "service",
             "order_service": "service",
-            "notification_service": "service"
+            "notification_service": "service",
         }
 
         for service_id, service_type in services.items():
@@ -151,7 +162,7 @@ class TestDependencyResolutionE2E:
             ("api_gateway", "auth"),
             ("api_gateway", "user_service"),
             ("api_gateway", "product_service"),
-            ("api_gateway", "order_service")
+            ("api_gateway", "order_service"),
         ]
 
         for from_svc, to_svc in dependencies:
@@ -226,6 +237,7 @@ class TestDependencyResolutionE2E:
 # 容錯重試完整流程測試
 # ============================================================================
 
+
 class TestFaultToleranceE2E:
     """容錯機制的端到端集成測試"""
 
@@ -244,10 +256,7 @@ class TestFaultToleranceE2E:
             return {"success": True}
 
         result = await orch.execute_with_retry(
-            flaky_service,
-            "test_service",
-            tenant_id,
-            max_retries=3
+            flaky_service, "test_service", tenant_id, max_retries=3
         )
 
         assert result.status.value == "success"
@@ -269,10 +278,7 @@ class TestFaultToleranceE2E:
 
         # 多次重試都失敗
         result = await orch.execute_with_retry(
-            always_fails,
-            "failing_service",
-            tenant_id,
-            max_retries=2
+            always_fails, "failing_service", tenant_id, max_retries=2
         )
 
         assert result.status.value == "failed"
@@ -293,10 +299,7 @@ class TestFaultToleranceE2E:
             return {"recovered": True}
 
         result = await orch.execute_with_retry(
-            recovering_service,
-            "recovering_service",
-            tenant_id,
-            max_retries=3
+            recovering_service, "recovering_service", tenant_id, max_retries=3
         )
 
         assert result.status.value == "success"
@@ -307,6 +310,7 @@ class TestFaultToleranceE2E:
 # ============================================================================
 # 資源配額聯合測試
 # ============================================================================
+
 
 class TestResourceQuotaIntegration:
     """資源配額的集成測試"""
@@ -359,12 +363,15 @@ class TestResourceQuotaIntegration:
         ent_config = orch.get_tenant(enterprise)
 
         # Basic 應該有更低的小時配額
-        assert basic_config.quota.max_tasks_per_hour < ent_config.quota.max_tasks_per_hour
+        assert (
+            basic_config.quota.max_tasks_per_hour < ent_config.quota.max_tasks_per_hour
+        )
 
 
 # ============================================================================
 # 審計日誌完整性測試
 # ============================================================================
+
 
 class TestAuditLogIntegrity:
     """審計日誌的完整性和可靠性測試"""
@@ -430,6 +437,7 @@ class TestAuditLogIntegrity:
 # 端到端工作流測試
 # ============================================================================
 
+
 class TestEnd2EndWorkflows:
     """端到端的業務工作流測試"""
 
@@ -478,10 +486,7 @@ class TestEnd2EndWorkflows:
 
         # 執行帶重試的任務
         result = await orch.execute_with_retry(
-            unreliable_task,
-            "unreliable_component",
-            tenant_id,
-            max_retries=3
+            unreliable_task, "unreliable_component", tenant_id, max_retries=3
         )
 
         assert result.status.value == "success"
@@ -508,6 +513,7 @@ class TestEnd2EndWorkflows:
 # ============================================================================
 # 可擴展性和性能測試
 # ============================================================================
+
 
 class TestScalabilityAndPerformance:
     """可擴展性和性能集成測試"""

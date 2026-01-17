@@ -14,10 +14,6 @@ from datetime import datetime
 from pathlib import Path
 
 import pytest
-
-# Add parent directory to path for imports
-sys.path.insert(0, str(Path(__file__).parent.parent))
-
 from services.code_analyzer import (
     AnalysisResult,
     AnalysisStrategy,
@@ -31,9 +27,14 @@ from services.code_analyzer import (
     StaticAnalyzer,
 )
 
+# Add parent directory to path for imports
+sys.path.insert(0, str(Path(__file__).parent.parent))
+
+
 # ============================================================================
 # 測試數據模型
 # ============================================================================
+
 
 class TestDataModels:
     """測試數據模型"""
@@ -69,7 +70,7 @@ class TestDataModels:
             technical_debt_ratio=0.1,
             test_coverage=80.0,
             duplication_ratio=0.05,
-            documentation_ratio=0.9
+            documentation_ratio=0.9,
         )
 
         assert metrics.lines_of_code == 100
@@ -83,7 +84,7 @@ class TestDataModels:
             severity=SeverityLevel.HIGH,
             file="test.py",
             line=10,
-            message="Test issue"
+            message="Test issue",
         )
 
         assert issue.type == IssueType.SECURITY
@@ -107,9 +108,7 @@ class TestDataModels:
     def test_analysis_result_creation(self):
         """測試分析結果創建"""
         result = AnalysisResult(
-            repository="test-repo",
-            commit_hash="abc123",
-            branch="main"
+            repository="test-repo", commit_hash="abc123", branch="main"
         )
 
         assert result.repository == "test-repo"
@@ -127,10 +126,7 @@ class TestDataModels:
             CodeIssue(severity=SeverityLevel.MEDIUM, confidence=1.0),
         ]
 
-        result = AnalysisResult(
-            repository="test-repo",
-            issues=issues
-        )
+        result = AnalysisResult(repository="test-repo", issues=issues)
 
         assert result.total_issues == 3
         assert result.critical_issues == 1
@@ -152,9 +148,7 @@ class TestDataModels:
         assert medium_risk_result.risk_level == "HIGH"
 
         # 低風險 - no critical issues
-        low_risk_result = AnalysisResult(
-            issues=[CodeIssue(severity=SeverityLevel.LOW)]
-        )
+        low_risk_result = AnalysisResult(issues=[CodeIssue(severity=SeverityLevel.LOW)])
         assert low_risk_result.risk_level == "LOW"
 
 
@@ -162,34 +156,38 @@ class TestDataModels:
 # 測試靜態分析器
 # ============================================================================
 
+
 class TestStaticAnalyzer:
     """測試靜態分析器"""
 
     @pytest.fixture
     def analyzer(self):
         """創建分析器實例"""
-        config = {'max_workers': 2}
+        config = {"max_workers": 2}
         return StaticAnalyzer(config, cache_client=None)
 
     @pytest.mark.asyncio
     async def test_detect_hardcoded_secrets(self, analyzer):
         """測試硬編碼密鑰檢測"""
-        code = '''
+        code = """
         password = "secret123"
         api_key = "12345-abcde"
-        '''
+        """
 
         issues = analyzer._detect_hardcoded_secrets(code, "test.py")
         assert len(issues) >= 1
         assert any(issue.type == IssueType.SECURITY for issue in issues)
-        assert any("password" in issue.message.lower() or "api" in issue.message.lower() for issue in issues)
+        assert any(
+            "password" in issue.message.lower() or "api" in issue.message.lower()
+            for issue in issues
+        )
 
     @pytest.mark.asyncio
     async def test_detect_sql_injection(self, analyzer):
         """測試 SQL 注入檢測"""
-        code = '''
+        code = """
         query = "SELECT * FROM users WHERE id = " + user_id
-        '''
+        """
 
         issues = analyzer._detect_sql_injection(code, "test.py")
         assert len(issues) >= 1
@@ -199,9 +197,9 @@ class TestStaticAnalyzer:
     @pytest.mark.asyncio
     async def test_detect_xss_vulnerabilities(self, analyzer):
         """測試 XSS 漏洞檢測"""
-        code = '''
+        code = """
         element.innerHTML = userInput;
-        '''
+        """
 
         issues = analyzer._detect_xss_vulnerabilities(code, "test.js")
         assert len(issues) >= 1
@@ -215,7 +213,7 @@ class TestStaticAnalyzer:
         complexity_simple = analyzer._calculate_cyclomatic_complexity(simple_code)
         assert complexity_simple >= 1
 
-        complex_code = '''
+        complex_code = """
         def complex(x):
             if x > 0:
                 if x > 10:
@@ -226,7 +224,7 @@ class TestStaticAnalyzer:
                     return "low"
             else:
                 return "negative"
-        '''
+        """
         complexity_complex = analyzer._calculate_cyclomatic_complexity(complex_code)
         assert complexity_complex > complexity_simple
 
@@ -257,6 +255,7 @@ class TestStaticAnalyzer:
 # 測試語言特定分析器
 # ============================================================================
 
+
 class TestLanguageAnalyzers:
     """測試語言特定分析器"""
 
@@ -267,7 +266,9 @@ class TestLanguageAnalyzers:
         analyzer = PythonAnalyzer(config)
 
         code_without_hints = "def test(): pass"
-        issues = await analyzer._perform_analysis(code_without_hints, "test.py", AnalysisStrategy.STANDARD)
+        issues = await analyzer._perform_analysis(
+            code_without_hints, "test.py", AnalysisStrategy.STANDARD
+        )
 
         assert len(issues) >= 0
         # May detect missing type hints
@@ -279,15 +280,20 @@ class TestLanguageAnalyzers:
         analyzer = JavaScriptAnalyzer(config)
 
         code_with_var = "var x = 10;"
-        issues = await analyzer._perform_analysis(code_with_var, "test.js", AnalysisStrategy.STANDARD)
+        issues = await analyzer._perform_analysis(
+            code_with_var, "test.js", AnalysisStrategy.STANDARD
+        )
 
         # Should detect use of 'var'
-        assert any("var" in issue.message.lower() for issue in issues) or len(issues) >= 0
+        assert (
+            any("var" in issue.message.lower() for issue in issues) or len(issues) >= 0
+        )
 
 
 # ============================================================================
 # 測試代碼分析引擎
 # ============================================================================
+
 
 class TestCodeAnalysisEngine:
     """測試代碼分析引擎"""
@@ -295,7 +301,7 @@ class TestCodeAnalysisEngine:
     @pytest.fixture
     def engine(self):
         """創建引擎實例"""
-        config = {'max_workers': 2}
+        config = {"max_workers": 2}
         return CodeAnalysisEngine(config, cache_client=None)
 
     @pytest.mark.asyncio
@@ -303,7 +309,7 @@ class TestCodeAnalysisEngine:
         """測試引擎初始化"""
         assert engine is not None
         assert len(engine.analyzers) > 0
-        assert engine.config['max_workers'] == 2
+        assert engine.config["max_workers"] == 2
 
     @pytest.mark.asyncio
     async def test_analyze_repository(self, engine):
@@ -311,7 +317,7 @@ class TestCodeAnalysisEngine:
         result = await engine.analyze_repository(
             repo_path="/tmp/test-repo",
             commit_hash="abc123",
-            strategy=AnalysisStrategy.STANDARD
+            strategy=AnalysisStrategy.STANDARD,
         )
 
         assert isinstance(result, AnalysisResult)
@@ -324,15 +330,16 @@ class TestCodeAnalysisEngine:
         metrics = engine.get_metrics()
 
         assert isinstance(metrics, dict)
-        assert 'analyses_completed' in metrics
-        assert 'issues_found' in metrics
-        assert 'cache_hits' in metrics
-        assert 'cache_misses' in metrics
+        assert "analyses_completed" in metrics
+        assert "issues_found" in metrics
+        assert "cache_hits" in metrics
+        assert "cache_misses" in metrics
 
 
 # ============================================================================
 # 集成測試
 # ============================================================================
+
 
 class TestIntegration:
     """集成測試"""
@@ -340,15 +347,15 @@ class TestIntegration:
     @pytest.mark.asyncio
     async def test_full_analysis_workflow(self):
         """測試完整分析流程"""
-        config = {'max_workers': 2}
+        config = {"max_workers": 2}
 
         # 創建測試代碼
-        test_code = '''
+        test_code = """
 def test_function():
     password = "hardcoded"
     query = "SELECT * FROM users WHERE id = " + user_id
     return query
-'''
+"""
 
         # 模擬文件分析
         analyzer = StaticAnalyzer(config)
@@ -380,6 +387,7 @@ def test_function():
 # 性能測試
 # ============================================================================
 
+
 class TestPerformance:
     """性能測試"""
 
@@ -388,7 +396,7 @@ class TestPerformance:
         """測試分析性能"""
         import time
 
-        config = {'max_workers': 4}
+        config = {"max_workers": 4}
 
         # 生成大量測試代碼
         large_code = "\n".join([f"def func_{i}(): pass" for i in range(100)])
@@ -404,5 +412,5 @@ class TestPerformance:
         assert duration < 5.0
 
 
-if __name__ == '__main__':
-    pytest.main([__file__, '-v', '--tb=short'])
+if __name__ == "__main__":
+    pytest.main([__file__, "-v", "--tb=short"])

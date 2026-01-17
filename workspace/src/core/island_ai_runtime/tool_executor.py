@@ -12,10 +12,10 @@ import os
 import re
 import subprocess
 import tempfile
-from pathlib import Path
 from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
 from enum import Enum
+from pathlib import Path
 from typing import Any
 
 
@@ -108,7 +108,9 @@ class CodeRunner(Tool):
     }
 
     def __init__(self, config: ToolConfig | None = None):
-        super().__init__(config or ToolConfig(name="code_runner", tool_type=ToolType.CODE_RUNNER))
+        super().__init__(
+            config or ToolConfig(name="code_runner", tool_type=ToolType.CODE_RUNNER)
+        )
 
     def _resolve_working_dir(self, working_dir: str | None) -> str | None:
         """Normalize and validate working directory against allowed paths."""
@@ -138,7 +140,9 @@ class CodeRunner(Tool):
             f"Working directory '{normalized}' is not allowed; allowed roots: {[str(r) for r in allowed_roots]}"
         )
 
-    def _build_execution_command(self, lang_config: dict[str, str], temp_file: str) -> list[str]:
+    def _build_execution_command(
+        self, lang_config: dict[str, str], temp_file: str
+    ) -> list[str]:
         """
         Build a two-element subprocess command array from a validated language configuration.
         `lang_config` must include a `cmd` entry sourced from SUPPORTED_LANGUAGES.
@@ -160,7 +164,8 @@ class CodeRunner(Tool):
 
         if not lang_config:
             return ExecutionResult(
-                status=ExecutionStatus.FAILURE, error=f"Unsupported language: {language}"
+                status=ExecutionStatus.FAILURE,
+                error=f"Unsupported language: {language}",
             )
 
         try:
@@ -188,7 +193,9 @@ class CodeRunner(Tool):
 
             return ExecutionResult(
                 status=(
-                    ExecutionStatus.SUCCESS if result.returncode == 0 else ExecutionStatus.FAILURE
+                    ExecutionStatus.SUCCESS
+                    if result.returncode == 0
+                    else ExecutionStatus.FAILURE
                 ),
                 output=result.stdout,
                 error=result.stderr,
@@ -363,9 +370,12 @@ class FilesystemSandbox(Tool):
     安全地進行文件操作。
     """
 
-    def __init__(self, config: ToolConfig | None = None, sandbox_root: str | None = None):
+    def __init__(
+        self, config: ToolConfig | None = None, sandbox_root: str | None = None
+    ):
         super().__init__(
-            config or ToolConfig(name="filesystem_sandbox", tool_type=ToolType.FILE_SYSTEM)
+            config
+            or ToolConfig(name="filesystem_sandbox", tool_type=ToolType.FILE_SYSTEM)
         )
         self.sandbox_root = sandbox_root or tempfile.mkdtemp(prefix="island_sandbox_")
 
@@ -391,21 +401,28 @@ class FilesystemSandbox(Tool):
                 os.makedirs(os.path.dirname(path), exist_ok=True)
                 with open(path, "w") as f:
                     f.write(content)
-                return ExecutionResult(status=ExecutionStatus.SUCCESS, output=f"Written to {path}")
+                return ExecutionResult(
+                    status=ExecutionStatus.SUCCESS, output=f"Written to {path}"
+                )
 
             elif operation == "list":
                 path = self._safe_path(args[0] if args else "")
                 files = os.listdir(path)
-                return ExecutionResult(status=ExecutionStatus.SUCCESS, output=json.dumps(files))
+                return ExecutionResult(
+                    status=ExecutionStatus.SUCCESS, output=json.dumps(files)
+                )
 
             elif operation == "delete":
                 path = self._safe_path(args[0])
                 os.remove(path)
-                return ExecutionResult(status=ExecutionStatus.SUCCESS, output=f"Deleted {path}")
+                return ExecutionResult(
+                    status=ExecutionStatus.SUCCESS, output=f"Deleted {path}"
+                )
 
             else:
                 return ExecutionResult(
-                    status=ExecutionStatus.FAILURE, error=f"Unknown operation: {operation}"
+                    status=ExecutionStatus.FAILURE,
+                    error=f"Unknown operation: {operation}",
                 )
 
         except Exception as e:
@@ -498,7 +515,9 @@ class ToolExecutor:
 
         return result
 
-    async def execute_file_operation(self, operation: str, *args: str) -> ExecutionResult:
+    async def execute_file_operation(
+        self, operation: str, *args: str
+    ) -> ExecutionResult:
         """執行文件操作"""
         request = ExecutionRequest(
             tool_type=ToolType.FILE_SYSTEM, command=operation, args=list(args)
@@ -509,7 +528,9 @@ class ToolExecutor:
 
         return result
 
-    async def call_mcp_tool(self, tool_name: str, args: dict[str, Any]) -> dict[str, Any]:
+    async def call_mcp_tool(
+        self, tool_name: str, args: dict[str, Any]
+    ) -> dict[str, Any]:
         """調用 MCP 工具"""
         result = await self.mcp_client.call_tool(tool_name, args)
 

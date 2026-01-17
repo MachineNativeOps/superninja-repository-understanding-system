@@ -23,6 +23,7 @@ from typing import Any
 
 class RollbackStatus(Enum):
     """回滾狀態"""
+
     PENDING = "pending"
     IN_PROGRESS = "in_progress"
     COMPLETED = "completed"
@@ -32,6 +33,7 @@ class RollbackStatus(Enum):
 
 class RollbackStrategy(Enum):
     """回滾策略"""
+
     FULL = "full"  # 完全回滾到檢查點
     INCREMENTAL = "incremental"  # 逐步回滾
     SELECTIVE = "selective"  # 選擇性回滾
@@ -122,7 +124,7 @@ class RollbackPlan:
 class RollbackManager:
     """
     回滾管理器 - 管理操作回滾和系統恢復
-    
+
     核心職責：
     1. 創建檢查點保存系統狀態
     2. 在失敗時執行回滾
@@ -171,11 +173,11 @@ class RollbackManager:
         execution_id: str = "",
         step_id: str = "",
         rollback_handler: Callable | None = None,
-        rollback_params: dict[str, Any] | None = None
+        rollback_params: dict[str, Any] | None = None,
     ) -> Checkpoint:
         """
         創建檢查點
-        
+
         Args:
             name: 檢查點名稱
             state: 狀態快照
@@ -183,7 +185,7 @@ class RollbackManager:
             step_id: 關聯的步驟 ID
             rollback_handler: 回滾處理器
             rollback_params: 回滾參數
-            
+
         Returns:
             創建的檢查點
         """
@@ -215,10 +217,7 @@ class RollbackManager:
         """獲取檢查點"""
         return self._checkpoints.get(checkpoint_id)
 
-    def get_checkpoints_for_execution(
-        self,
-        execution_id: str
-    ) -> list[Checkpoint]:
+    def get_checkpoints_for_execution(self, execution_id: str) -> list[Checkpoint]:
         """獲取執行相關的所有檢查點"""
 
         checkpoint_ids = self._execution_checkpoints.get(execution_id, [])
@@ -247,17 +246,15 @@ class RollbackManager:
         return True
 
     def cleanup_old_checkpoints(
-        self,
-        max_age_hours: int = 24,
-        max_count: int = 1000
+        self, max_age_hours: int = 24, max_count: int = 1000
     ) -> int:
         """
         清理舊檢查點
-        
+
         Args:
             max_age_hours: 最大保留時間（小時）
             max_count: 最大保留數量
-            
+
         Returns:
             清理的數量
         """
@@ -267,8 +264,7 @@ class RollbackManager:
 
         # 按時間排序
         sorted_checkpoints = sorted(
-            self._checkpoints.values(),
-            key=lambda c: c.created_at
+            self._checkpoints.values(), key=lambda c: c.created_at
         )
 
         for checkpoint in sorted_checkpoints:
@@ -282,17 +278,15 @@ class RollbackManager:
         return deleted
 
     async def rollback_to_checkpoint(
-        self,
-        checkpoint_id: str,
-        strategy: RollbackStrategy = RollbackStrategy.FULL
+        self, checkpoint_id: str, strategy: RollbackStrategy = RollbackStrategy.FULL
     ) -> RollbackPlan:
         """
         回滾到指定檢查點
-        
+
         Args:
             checkpoint_id: 檢查點 ID
             strategy: 回滾策略
-            
+
         Returns:
             回滾計劃
         """
@@ -335,15 +329,15 @@ class RollbackManager:
     async def rollback_execution(
         self,
         execution_id: str,
-        strategy: RollbackStrategy = RollbackStrategy.INCREMENTAL
+        strategy: RollbackStrategy = RollbackStrategy.INCREMENTAL,
     ) -> RollbackPlan:
         """
         回滾整個執行
-        
+
         Args:
             execution_id: 執行 ID
             strategy: 回滾策略
-            
+
         Returns:
             回滾計劃
         """
@@ -368,9 +362,7 @@ class RollbackManager:
 
         # 按時間逆序處理檢查點
         sorted_checkpoints = sorted(
-            checkpoints,
-            key=lambda c: c.created_at,
-            reverse=True
+            checkpoints, key=lambda c: c.created_at, reverse=True
         )
 
         # 構建回滾步驟
@@ -394,9 +386,7 @@ class RollbackManager:
         return plan
 
     def _build_rollback_steps(
-        self,
-        checkpoint: Checkpoint,
-        strategy: RollbackStrategy
+        self, checkpoint: Checkpoint, strategy: RollbackStrategy
     ) -> list[RollbackStep]:
         """構建回滾步驟"""
 
@@ -495,16 +485,16 @@ class RollbackManager:
         self,
         name: str,
         steps: list[dict[str, Any]],
-        strategy: RollbackStrategy = RollbackStrategy.FULL
+        strategy: RollbackStrategy = RollbackStrategy.FULL,
     ) -> RollbackPlan:
         """
         創建自定義回滾計劃
-        
+
         Args:
             name: 計劃名稱
             steps: 步驟定義列表
             strategy: 回滾策略
-            
+
         Returns:
             回滾計劃
         """

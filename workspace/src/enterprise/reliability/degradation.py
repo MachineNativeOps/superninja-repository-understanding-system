@@ -27,13 +27,15 @@ logger = logging.getLogger(__name__)
 
 class DegradationMode(Enum):
     """Gate degradation modes"""
-    FAIL_CLOSED = "fail_closed"     # Block on any failure (strictest)
-    FAIL_NEUTRAL = "fail_neutral"   # Mark neutral + alert
-    FAIL_OPEN = "fail_open"         # Allow + alert (least strict)
+
+    FAIL_CLOSED = "fail_closed"  # Block on any failure (strictest)
+    FAIL_NEUTRAL = "fail_neutral"  # Mark neutral + alert
+    FAIL_OPEN = "fail_open"  # Allow + alert (least strict)
 
 
 class ServiceHealth(Enum):
     """Service health states"""
+
     HEALTHY = "healthy"
     DEGRADED = "degraded"
     UNHEALTHY = "unhealthy"
@@ -42,14 +44,16 @@ class ServiceHealth(Enum):
 
 class CircuitState(Enum):
     """Circuit breaker states"""
-    CLOSED = "closed"       # Normal operation
-    OPEN = "open"           # Failing fast
-    HALF_OPEN = "half_open" # Testing recovery
+
+    CLOSED = "closed"  # Normal operation
+    OPEN = "open"  # Failing fast
+    HALF_OPEN = "half_open"  # Testing recovery
 
 
 @dataclass
 class FallbackResult:
     """Result of a fallback operation"""
+
     success: bool
     used_fallback: bool = False
     fallback_reason: str | None = None
@@ -61,6 +65,7 @@ class FallbackResult:
 @dataclass
 class HealthCheckResult:
     """Result of a health check"""
+
     service_name: str
     status: ServiceHealth
     latency_ms: float = 0.0
@@ -78,8 +83,7 @@ class AlertPublisher(Protocol):
         title: str,
         message: str,
         details: dict[str, Any],
-    ) -> None:
-        ...
+    ) -> None: ...
 
 
 @dataclass
@@ -89,11 +93,12 @@ class CircuitBreaker:
 
     Prevents cascading failures by failing fast when a service is unhealthy.
     """
+
     name: str
-    failure_threshold: int = 5          # Failures before opening
-    success_threshold: int = 3          # Successes to close
-    timeout_seconds: float = 30.0       # Timeout for calls
-    reset_timeout_seconds: float = 60.0 # Time before half-open
+    failure_threshold: int = 5  # Failures before opening
+    success_threshold: int = 3  # Successes to close
+    timeout_seconds: float = 30.0  # Timeout for calls
+    reset_timeout_seconds: float = 60.0  # Time before half-open
 
     # State
     state: CircuitState = CircuitState.CLOSED
@@ -227,7 +232,10 @@ class CircuitBreaker:
         self.last_failure_time = datetime.utcnow()
         self.success_count = 0
 
-        if self.state == CircuitState.HALF_OPEN or self.failure_count >= self.failure_threshold:
+        if (
+            self.state == CircuitState.HALF_OPEN
+            or self.failure_count >= self.failure_threshold
+        ):
             self._transition_to(CircuitState.OPEN)
 
     def _should_attempt_reset(self) -> bool:
@@ -263,6 +271,7 @@ class HealthCheck:
 
     Monitors the health of dependent services.
     """
+
     name: str
     check_fn: Callable[[], Awaitable[bool]]
     interval_seconds: float = 30.0
@@ -345,6 +354,7 @@ class DegradationStrategy:
 
     Manages graceful degradation for the gate system.
     """
+
     # Default mode
     default_mode: DegradationMode = DegradationMode.FAIL_NEUTRAL
 
@@ -361,7 +371,7 @@ class DegradationStrategy:
     alert_publisher: AlertPublisher | None = None
 
     # Configuration
-    gate_timeout_seconds: float = 300.0      # 5 minute gate timeout
+    gate_timeout_seconds: float = 300.0  # 5 minute gate timeout
     degradation_cooldown_seconds: float = 300.0  # Cooldown after degradation
 
     # State
@@ -558,14 +568,11 @@ class DegradationStrategy:
 
         # Check for degradation
         unhealthy_count = sum(
-            1 for r in results.values()
-            if r.status == ServiceHealth.UNHEALTHY
+            1 for r in results.values() if r.status == ServiceHealth.UNHEALTHY
         )
 
         if unhealthy_count > 0 and not self.is_degraded:
-            self._enter_degraded_mode(
-                f"{unhealthy_count} services unhealthy"
-            )
+            self._enter_degraded_mode(f"{unhealthy_count} services unhealthy")
         elif unhealthy_count == 0 and self.is_degraded:
             self._exit_degraded_mode()
 
@@ -618,7 +625,9 @@ class DegradationStrategy:
         """Get current degradation status"""
         return {
             "is_degraded": self.is_degraded,
-            "degraded_since": self.degraded_since.isoformat() if self.degraded_since else None,
+            "degraded_since": (
+                self.degraded_since.isoformat() if self.degraded_since else None
+            ),
             "degradation_reason": self.degradation_reason,
             "overall_health": self.get_overall_health().value,
             "circuit_breakers": {
@@ -629,7 +638,6 @@ class DegradationStrategy:
                 for name, cb in self.circuit_breakers.items()
             },
             "health_checks": {
-                name: hc.status.value
-                for name, hc in self.health_checks.items()
+                name: hc.status.value for name, hc in self.health_checks.items()
             },
         }

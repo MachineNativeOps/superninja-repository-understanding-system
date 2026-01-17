@@ -16,6 +16,7 @@ from typing import Any
 
 class TaskPriority(Enum):
     """Task priority levels"""
+
     LOW = 1
     MEDIUM = 2
     HIGH = 3
@@ -24,6 +25,7 @@ class TaskPriority(Enum):
 
 class TaskStatus(Enum):
     """Task status"""
+
     PENDING = "pending"
     QUEUED = "queued"
     RUNNING = "running"
@@ -36,6 +38,7 @@ class TaskStatus(Enum):
 @dataclass
 class PipelineTask:
     """Task definition for pipeline"""
+
     id: str = field(default_factory=lambda: str(uuid.uuid4()))
     name: str = ""
     description: str = ""
@@ -52,6 +55,7 @@ class PipelineTask:
 @dataclass
 class TaskResult:
     """Task execution result"""
+
     task_id: str
     status: TaskStatus
     started_at: datetime
@@ -67,6 +71,7 @@ class TaskResult:
 @dataclass
 class PipelineConfig:
     """Pipeline configuration"""
+
     # Execution
     max_concurrent_tasks: int = 5
     default_timeout_seconds: int = 300
@@ -92,7 +97,7 @@ class PipelineConfig:
 class AutomationPipeline:
     """
     Automation Pipeline - 自動化管道
-    
+
     End-to-end automation workflow that:
     - Routes tasks to appropriate phases
     - Manages task execution
@@ -121,7 +126,7 @@ class AutomationPipeline:
             "tasks_submitted": 0,
             "tasks_completed": 0,
             "tasks_failed": 0,
-            "total_duration_seconds": 0.0
+            "total_duration_seconds": 0.0,
         }
 
         # Learning
@@ -160,10 +165,10 @@ class AutomationPipeline:
     def submit_task(self, task: PipelineTask) -> str:
         """
         Submit a task to the pipeline
-        
+
         Args:
             task: Task to submit
-            
+
         Returns:
             Task ID
         """
@@ -197,8 +202,7 @@ class AutomationPipeline:
         # Check dependencies
         for i, task in enumerate(self._queue):
             deps_satisfied = all(
-                dep_id in self._completed
-                for dep_id in task.dependencies
+                dep_id in self._completed for dep_id in task.dependencies
             )
             if deps_satisfied:
                 return self._queue.pop(i)
@@ -208,10 +212,10 @@ class AutomationPipeline:
     def route_task(self, task: PipelineTask) -> list[str]:
         """
         Route a task to appropriate phases
-        
+
         Args:
             task: Task to route
-            
+
         Returns:
             List of phase IDs
         """
@@ -249,14 +253,16 @@ class AutomationPipeline:
 
         return phases
 
-    def execute_task(self, task: PipelineTask, handler: Callable | None = None) -> TaskResult:
+    def execute_task(
+        self, task: PipelineTask, handler: Callable | None = None
+    ) -> TaskResult:
         """
         Execute a task
-        
+
         Args:
             task: Task to execute
             handler: Optional handler function
-            
+
         Returns:
             Task result
         """
@@ -264,9 +270,7 @@ class AutomationPipeline:
 
         started_at = datetime.now()
         result = TaskResult(
-            task_id=task.id,
-            status=TaskStatus.RUNNING,
-            started_at=started_at
+            task_id=task.id, status=TaskStatus.RUNNING, started_at=started_at
         )
 
         # Track running task
@@ -310,7 +314,10 @@ class AutomationPipeline:
             self.logger.error(f"Task failed: {task.id} - {e}")
 
             # Retry if enabled
-            if self.config.enable_retries and result.retry_count < self.config.max_retries:
+            if (
+                self.config.enable_retries
+                and result.retry_count < self.config.max_retries
+            ):
                 result.retry_count += 1
                 result.status = TaskStatus.RETRYING
                 self.submit_task(task)
@@ -340,7 +347,7 @@ class AutomationPipeline:
             if keyword in task_str:
                 return {
                     "safe": False,
-                    "reason": f"Task contains dangerous keyword: {keyword}"
+                    "reason": f"Task contains dangerous keyword: {keyword}",
                 }
 
         return {"safe": True, "reason": None}
@@ -352,7 +359,7 @@ class AutomationPipeline:
             "task_type": task.task_type,
             "parameters": task.parameters,
             "processed": True,
-            "phases": self.route_task(task)
+            "phases": self.route_task(task),
         }
 
     def _learn_from_execution(self, task: PipelineTask, result: TaskResult) -> None:
@@ -364,7 +371,7 @@ class AutomationPipeline:
                 "count": 0,
                 "success_count": 0,
                 "avg_duration": 0.0,
-                "common_phases": {}
+                "common_phases": {},
             }
 
         pattern = self._patterns[pattern_key]
@@ -375,9 +382,8 @@ class AutomationPipeline:
 
         # Update average duration
         pattern["avg_duration"] = (
-            (pattern["avg_duration"] * (pattern["count"] - 1) + result.duration_seconds)
-            / pattern["count"]
-        )
+            pattern["avg_duration"] * (pattern["count"] - 1) + result.duration_seconds
+        ) / pattern["count"]
 
         # Track common phases
         for phase in result.phases_used:
@@ -405,7 +411,11 @@ class AutomationPipeline:
             "running": len(self._running),
             "completed": len(self._completed),
             "queue_capacity": self.config.queue_size,
-            "utilization": len(self._queue) / self.config.queue_size if self.config.queue_size > 0 else 0
+            "utilization": (
+                len(self._queue) / self.config.queue_size
+                if self.config.queue_size > 0
+                else 0
+            ),
         }
 
     def get_metrics(self) -> dict[str, Any]:
@@ -442,7 +452,7 @@ class AutomationPipeline:
                     task_id=task_id,
                     status=TaskStatus.CANCELLED,
                     started_at=datetime.now(),
-                    completed_at=datetime.now()
+                    completed_at=datetime.now(),
                 )
                 self._completed[task_id] = result
                 return True

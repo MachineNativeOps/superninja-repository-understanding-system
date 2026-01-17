@@ -10,13 +10,14 @@ Defines the foundation for virtual expert personas including:
 """
 
 from dataclasses import dataclass, field
-from enum import Enum
-from typing import Dict, List, Optional, Any, Callable
 from datetime import datetime
+from enum import Enum
+from typing import Any, Callable, Dict, List, Optional
 
 
 class ExpertiseLevel(Enum):
     """Expertise level for domain knowledge."""
+
     NOVICE = "novice"
     COMPETENT = "competent"
     PROFICIENT = "proficient"
@@ -28,21 +29,22 @@ class ExpertiseLevel(Enum):
 class ExpertPersonality:
     """
     Personality traits of a virtual expert.
-    
+
     虛擬專家的性格特徵
     """
+
     traits: List[str] = field(default_factory=list)
     # e.g., ["analytical", "methodical", "patient", "detail-oriented"]
-    
+
     motto: str = ""
     # Personal philosophy or catchphrase
-    
+
     approach: str = ""
     # How they typically approach problems
-    
+
     strengths: List[str] = field(default_factory=list)
     # What they excel at
-    
+
     working_preferences: List[str] = field(default_factory=list)
     # How they prefer to work
 
@@ -51,24 +53,25 @@ class ExpertPersonality:
 class WorkStyle:
     """
     Work style characteristics.
-    
+
     工作風格特徵
     """
+
     methodology: str = ""
     # e.g., "data-driven", "intuition-based", "collaborative"
-    
+
     pace: str = "balanced"
     # "fast", "methodical", "balanced"
-    
+
     attention_to_detail: str = "high"
     # "low", "medium", "high"
-    
+
     risk_tolerance: str = "medium"
     # "low", "medium", "high"
-    
+
     collaboration_style: str = "team-oriented"
     # "independent", "team-oriented", "mentoring"
-    
+
     decision_making: str = "analytical"
     # "intuitive", "analytical", "consensus-based"
 
@@ -77,24 +80,25 @@ class WorkStyle:
 class CommunicationStyle:
     """
     Communication style preferences.
-    
+
     溝通風格偏好
     """
+
     tone: str = "professional"
     # "formal", "professional", "casual", "friendly"
-    
+
     verbosity: str = "balanced"
     # "concise", "balanced", "detailed"
-    
+
     explanation_style: str = "example-based"
     # "technical", "example-based", "analogy-based"
-    
+
     feedback_style: str = "constructive"
     # "direct", "constructive", "encouraging"
-    
+
     preferred_format: str = "structured"
     # "freeform", "structured", "visual"
-    
+
     languages: List[str] = field(default_factory=lambda: ["english", "chinese"])
 
 
@@ -102,33 +106,34 @@ class CommunicationStyle:
 class ExpertKnowledge:
     """
     Domain knowledge of a virtual expert.
-    
+
     虛擬專家的領域知識
     """
+
     primary_domains: List[str] = field(default_factory=list)
     # Main areas of expertise
-    
+
     secondary_domains: List[str] = field(default_factory=list)
     # Supporting areas of knowledge
-    
+
     specializations: List[str] = field(default_factory=list)
     # Specific specializations within domains
-    
+
     certifications: List[str] = field(default_factory=list)
     # Professional certifications
-    
+
     years_of_experience: int = 10
     # Years of experience in the field
-    
+
     notable_achievements: List[str] = field(default_factory=list)
     # Notable accomplishments
-    
+
     publications: List[str] = field(default_factory=list)
     # Papers or articles published
-    
+
     tools_expertise: Dict[str, ExpertiseLevel] = field(default_factory=dict)
     # Tools and their proficiency levels
-    
+
     methodologies: List[str] = field(default_factory=list)
     # Methodologies they're proficient in
 
@@ -137,44 +142,45 @@ class ExpertKnowledge:
 class VirtualExpert:
     """
     Virtual Expert base class.
-    
+
     虛擬專家基礎類
-    
+
     每個虛擬專家代表一個特定領域的專業角色，
     提供專業知識、指導和最佳實踐建議。
     """
+
     # Identity
     id: str
     name: str
     title: str
     avatar: str  # Emoji or icon
-    
+
     # Role
     role: str
     department: str
-    
+
     # Characteristics
     personality: ExpertPersonality = field(default_factory=ExpertPersonality)
     knowledge: ExpertKnowledge = field(default_factory=ExpertKnowledge)
     work_style: WorkStyle = field(default_factory=WorkStyle)
     communication_style: CommunicationStyle = field(default_factory=CommunicationStyle)
-    
+
     # Availability
     availability: str = "available"  # "available", "busy", "offline"
-    
+
     # Stats
     consultations_completed: int = 0
     satisfaction_rating: float = 0.0
-    
+
     def can_handle(self, query_domains: List[str]) -> bool:
         """Check if expert can handle queries in given domains."""
         all_domains = (
-            self.knowledge.primary_domains + 
-            self.knowledge.secondary_domains +
-            self.knowledge.specializations
+            self.knowledge.primary_domains
+            + self.knowledge.secondary_domains
+            + self.knowledge.specializations
         )
         return any(domain in all_domains for domain in query_domains)
-    
+
     def get_expertise_level(self, domain: str) -> ExpertiseLevel:
         """Get expertise level for a specific domain."""
         if domain in self.knowledge.primary_domains:
@@ -184,7 +190,7 @@ class VirtualExpert:
         elif domain in self.knowledge.secondary_domains:
             return ExpertiseLevel.PROFICIENT
         return ExpertiseLevel.NOVICE
-    
+
     def introduce(self) -> str:
         """Expert self-introduction."""
         intro = f"""
@@ -210,20 +216,20 @@ class VirtualExpert:
 {self.personality.approach}
 """
         return intro.strip()
-    
+
     def format_response(self, content: str, include_signature: bool = True) -> str:
         """Format a response in the expert's communication style."""
         formatted = content
-        
+
         if include_signature:
             formatted += f"\n\n---\n{self.avatar} *{self.name} | {self.title}*"
-        
+
         return formatted
-    
+
     def provide_guidance(self, topic: str, context: Dict[str, Any]) -> Dict[str, Any]:
         """
         Provide expert guidance on a topic.
-        
+
         This is the base implementation. Specialized experts should override.
         """
         return {
@@ -234,11 +240,11 @@ class VirtualExpert:
             "best_practices": [],
             "warnings": [],
         }
-    
+
     def review_code(self, code: str, language: str) -> Dict[str, Any]:
         """
         Review code from expert's perspective.
-        
+
         This is the base implementation. Specialized experts should override.
         """
         return {
@@ -248,11 +254,13 @@ class VirtualExpert:
             "suggestions": [],
             "quality_score": 0.0,
         }
-    
-    def answer_question(self, question: str, context: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
+
+    def answer_question(
+        self, question: str, context: Optional[Dict[str, Any]] = None
+    ) -> Dict[str, Any]:
         """
         Answer a question from expert's perspective.
-        
+
         This is the base implementation. Specialized experts should override.
         """
         return {

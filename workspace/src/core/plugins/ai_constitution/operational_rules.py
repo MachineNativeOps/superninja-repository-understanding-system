@@ -23,6 +23,7 @@ from typing import Any
 
 class RuleCategory(Enum):
     """規則類別"""
+
     DATA_HANDLING = "data_handling"
     SYSTEM_ACCESS = "system_access"
     RESOURCE_USAGE = "resource_usage"
@@ -33,15 +34,17 @@ class RuleCategory(Enum):
 
 class RuleSeverity(Enum):
     """規則嚴重性"""
-    CRITICAL = "critical"       # 違反會導致立即停止
-    HIGH = "high"              # 違反會導致警告並可能阻止
-    MEDIUM = "medium"          # 違反會記錄並建議修正
-    LOW = "low"                # 違反會記錄供審查
+
+    CRITICAL = "critical"  # 違反會導致立即停止
+    HIGH = "high"  # 違反會導致警告並可能阻止
+    MEDIUM = "medium"  # 違反會記錄並建議修正
+    LOW = "low"  # 違反會記錄供審查
 
 
 @dataclass
 class RuleViolation:
     """規則違反記錄"""
+
     rule_id: str
     rule_name: str
     severity: RuleSeverity
@@ -55,6 +58,7 @@ class RuleViolation:
 @dataclass
 class RuleCheckResult:
     """規則檢查結果"""
+
     rule_id: str
     passed: bool
     violations: list[RuleViolation] = field(default_factory=list)
@@ -67,7 +71,7 @@ class DataHandlingRule:
     """
     數據處理規則
     Data Handling Rules
-    
+
     定義 AI 如何正確處理各類數據
     """
 
@@ -126,43 +130,53 @@ class DataHandlingRule:
         if sensitive_category:
             # 檢查加密
             if not operation.get("encrypted", False):
-                violations.append(RuleViolation(
-                    rule_id=f"{self.RULE_ID}_encryption",
-                    rule_name="加密要求",
-                    severity=RuleSeverity.CRITICAL,
-                    description=f"敏感數據 {data_type} 必須加密",
-                    context={"data_type": data_type, "category": sensitive_category}
-                ))
+                violations.append(
+                    RuleViolation(
+                        rule_id=f"{self.RULE_ID}_encryption",
+                        rule_name="加密要求",
+                        severity=RuleSeverity.CRITICAL,
+                        description=f"敏感數據 {data_type} 必須加密",
+                        context={
+                            "data_type": data_type,
+                            "category": sensitive_category,
+                        },
+                    )
+                )
                 auto_corrections.append("auto_encrypt_data")
 
             # 檢查存取記錄
             if not operation.get("access_logged", False):
-                violations.append(RuleViolation(
-                    rule_id=f"{self.RULE_ID}_logging",
-                    rule_name="存取記錄",
-                    severity=RuleSeverity.HIGH,
-                    description="敏感數據存取未記錄",
-                    context={"operation": operation_type}
-                ))
+                violations.append(
+                    RuleViolation(
+                        rule_id=f"{self.RULE_ID}_logging",
+                        rule_name="存取記錄",
+                        severity=RuleSeverity.HIGH,
+                        description="敏感數據存取未記錄",
+                        context={"operation": operation_type},
+                    )
+                )
                 auto_corrections.append("enable_access_logging")
 
         # 檢查數據洩漏風險
         if operation_type in ["export", "share", "transfer"]:
             if not operation.get("authorization_verified", False):
-                violations.append(RuleViolation(
-                    rule_id=f"{self.RULE_ID}_auth",
-                    rule_name="授權驗證",
-                    severity=RuleSeverity.CRITICAL,
-                    description="數據外傳前必須驗證授權",
-                    context={"operation": operation_type}
-                ))
+                violations.append(
+                    RuleViolation(
+                        rule_id=f"{self.RULE_ID}_auth",
+                        rule_name="授權驗證",
+                        severity=RuleSeverity.CRITICAL,
+                        description="數據外傳前必須驗證授權",
+                        context={"operation": operation_type},
+                    )
+                )
 
         result = RuleCheckResult(
             rule_id=self.RULE_ID,
-            passed=len([v for v in violations if v.severity == RuleSeverity.CRITICAL]) == 0,
+            passed=len([v for v in violations if v.severity == RuleSeverity.CRITICAL])
+            == 0,
             violations=violations,
             warnings=warnings,
-            auto_corrections=auto_corrections
+            auto_corrections=auto_corrections,
         )
 
         self._check_history.append(result)
@@ -178,7 +192,9 @@ class DataHandlingRule:
                 return category
         return None
 
-    def apply_auto_correction(self, correction: str, data: dict[str, Any]) -> dict[str, Any]:
+    def apply_auto_correction(
+        self, correction: str, data: dict[str, Any]
+    ) -> dict[str, Any]:
         """應用自動修正"""
         if correction == "auto_encrypt_data":
             # 模擬加密
@@ -197,7 +213,7 @@ class SystemAccessRule:
     """
     系統存取規則
     System Access Rules
-    
+
     定義 AI 如何安全地存取系統資源
     """
 
@@ -216,11 +232,11 @@ class SystemAccessRule:
 
     # 資源類別及其最大允許存取級別
     RESOURCE_ACCESS_LIMITS = {
-        "public_data": 1,      # 只讀
-        "user_data": 2,        # 讀寫
-        "system_config": 3,    # 讀寫執行
+        "public_data": 1,  # 只讀
+        "user_data": 2,  # 讀寫
+        "system_config": 3,  # 讀寫執行
         "security_config": 4,  # 需要管理員權限
-        "core_system": 5,      # 需要 root 權限
+        "core_system": 5,  # 需要 root 權限
     }
 
     # 禁止存取的資源
@@ -250,13 +266,15 @@ class SystemAccessRule:
 
         # 檢查是否為禁止資源
         if self._is_prohibited_resource(resource):
-            violations.append(RuleViolation(
-                rule_id=f"{self.RULE_ID}_prohibited",
-                rule_name="禁止存取",
-                severity=RuleSeverity.CRITICAL,
-                description=f"資源 {resource} 被禁止存取",
-                context={"resource": resource, "requestor": requestor}
-            ))
+            violations.append(
+                RuleViolation(
+                    rule_id=f"{self.RULE_ID}_prohibited",
+                    rule_name="禁止存取",
+                    severity=RuleSeverity.CRITICAL,
+                    description=f"資源 {resource} 被禁止存取",
+                    context={"resource": resource, "requestor": requestor},
+                )
+            )
 
         # 檢查存取級別
         requested_level = self.ACCESS_LEVELS.get(access_type, 1)
@@ -264,17 +282,18 @@ class SystemAccessRule:
         max_allowed = self.RESOURCE_ACCESS_LIMITS.get(resource_category, 1)
 
         if requested_level > max_allowed:
-            violations.append(RuleViolation(
-                rule_id=f"{self.RULE_ID}_level",
-                rule_name="存取級別超限",
-                severity=RuleSeverity.HIGH,
-                description=f"請求的存取級別 {access_type} 超過資源 {resource_category} 允許的最大級別",
-                context={
-                    "requested": access_type,
-                    "max_allowed": max_allowed,
-                    "resource_category": resource_category
-                }
-            ))
+            violations.append(
+                RuleViolation(
+                    rule_id=f"{self.RULE_ID}_level",
+                    rule_name="存取級別超限",
+                    severity=RuleSeverity.HIGH,
+                    description=f"請求的存取級別 {access_type} 超過資源 {resource_category} 允許的最大級別",
+                    context={
+                        "requested": access_type,
+                        "max_allowed": max_allowed,
+                        "resource_category": resource_category,
+                    },
+                ))
             # 建議降級存取
             auto_corrections.append(f"downgrade_to_level_{max_allowed}")
 
@@ -283,10 +302,11 @@ class SystemAccessRule:
 
         result = RuleCheckResult(
             rule_id=self.RULE_ID,
-            passed=len([v for v in violations if v.severity == RuleSeverity.CRITICAL]) == 0,
+            passed=len([v for v in violations if v.severity == RuleSeverity.CRITICAL])
+            == 0,
             violations=violations,
             warnings=warnings,
-            auto_corrections=auto_corrections
+            auto_corrections=auto_corrections,
         )
 
         self._violation_history.extend(violations)
@@ -320,13 +340,15 @@ class SystemAccessRule:
 
     def _log_access(self, access_request: dict[str, Any]):
         """記錄存取請求"""
-        self._access_history.append({
-            **access_request,
-            "timestamp": datetime.utcnow().isoformat(),
-            "log_id": hashlib.sha256(
-                f"{access_request}{datetime.utcnow()}".encode()
-            ).hexdigest()[:16]
-        })
+        self._access_history.append(
+            {
+                **access_request,
+                "timestamp": datetime.utcnow().isoformat(),
+                "log_id": hashlib.sha256(
+                    f"{access_request}{datetime.utcnow()}".encode()
+                ).hexdigest()[:16],
+            }
+        )
 
     def get_access_history(self) -> list[dict[str, Any]]:
         """獲取存取歷史"""
@@ -337,7 +359,7 @@ class ResourceUsageRule:
     """
     資源使用規則
     Resource Usage Rules
-    
+
     定義 AI 如何合理使用系統資源
     """
 
@@ -347,20 +369,20 @@ class ResourceUsageRule:
 
     # 資源限制
     LIMITS = {
-        "cpu_percent": 80.0,        # CPU 使用上限 80%
-        "memory_percent": 75.0,     # 記憶體使用上限 75%
-        "disk_percent": 90.0,       # 磁碟使用上限 90%
-        "network_mbps": 100.0,      # 網路頻寬上限 100 Mbps
-        "concurrent_tasks": 50,     # 並發任務上限
+        "cpu_percent": 80.0,  # CPU 使用上限 80%
+        "memory_percent": 75.0,  # 記憶體使用上限 75%
+        "disk_percent": 90.0,  # 磁碟使用上限 90%
+        "network_mbps": 100.0,  # 網路頻寬上限 100 Mbps
+        "concurrent_tasks": 50,  # 並發任務上限
         "api_calls_per_minute": 1000,  # API 呼叫上限
     }
 
     # 資源優先級
     PRIORITY_MULTIPLIERS = {
-        "critical": 1.5,    # 關鍵任務可使用 150% 資源
-        "high": 1.2,        # 高優先級可使用 120% 資源
-        "normal": 1.0,      # 正常優先級
-        "low": 0.8,         # 低優先級限制 80% 資源
+        "critical": 1.5,  # 關鍵任務可使用 150% 資源
+        "high": 1.2,  # 高優先級可使用 120% 資源
+        "normal": 1.0,  # 正常優先級
+        "low": 0.8,  # 低優先級限制 80% 資源
         "background": 0.5,  # 背景任務限制 50% 資源
     }
 
@@ -388,8 +410,12 @@ class ResourceUsageRule:
 
         # 計算實際限制（考慮優先級）
         multiplier = self.PRIORITY_MULTIPLIERS.get(priority, 1.0)
-        limit_key = f"{resource_type}_percent" if resource_type in ["cpu", "memory", "disk"] else resource_type
-        base_limit = self.LIMITS.get(limit_key, float('inf'))
+        limit_key = (
+            f"{resource_type}_percent"
+            if resource_type in ["cpu", "memory", "disk"]
+            else resource_type
+        )
+        base_limit = self.LIMITS.get(limit_key, float("inf"))
         adjusted_limit = base_limit * multiplier
 
         # 計算總使用量
@@ -397,19 +423,24 @@ class ResourceUsageRule:
         total_after_request = current + requested_amount
 
         if total_after_request > adjusted_limit:
-            severity = RuleSeverity.CRITICAL if total_after_request > base_limit * 1.5 else RuleSeverity.HIGH
-            violations.append(RuleViolation(
-                rule_id=f"{self.RULE_ID}_{resource_type}",
-                rule_name=f"{resource_type} 使用超限",
-                severity=severity,
-                description=f"請求的 {resource_type} 使用量 ({requested_amount}) 將導致總使用量 ({total_after_request}) 超過限制 ({adjusted_limit})",
-                context={
-                    "resource_type": resource_type,
-                    "requested": requested_amount,
-                    "current": current,
-                    "limit": adjusted_limit
-                }
-            ))
+            severity = (
+                RuleSeverity.CRITICAL
+                if total_after_request > base_limit * 1.5
+                else RuleSeverity.HIGH
+            )
+            violations.append(
+                RuleViolation(
+                    rule_id=f"{self.RULE_ID}_{resource_type}",
+                    rule_name=f"{resource_type} 使用超限",
+                    severity=severity,
+                    description=f"請求的 {resource_type} 使用量 ({requested_amount}) 將導致總使用量 ({total_after_request}) 超過限制 ({adjusted_limit})",
+                    context={
+                        "resource_type": resource_type,
+                        "requested": requested_amount,
+                        "current": current,
+                        "limit": adjusted_limit,
+                    },
+                ))
             # 建議減少資源使用
             safe_amount = max(0, adjusted_limit - current)
             auto_corrections.append(f"reduce_to_{safe_amount}")
@@ -420,10 +451,11 @@ class ResourceUsageRule:
 
         result = RuleCheckResult(
             rule_id=self.RULE_ID,
-            passed=len([v for v in violations if v.severity == RuleSeverity.CRITICAL]) == 0,
+            passed=len([v for v in violations if v.severity == RuleSeverity.CRITICAL])
+            == 0,
             violations=violations,
             warnings=warnings,
-            auto_corrections=auto_corrections
+            auto_corrections=auto_corrections,
         )
 
         self._violation_history.extend(violations)
@@ -432,14 +464,20 @@ class ResourceUsageRule:
 
     def update_usage(self, resource_type: str, amount: float):
         """更新資源使用量"""
-        limit_key = f"{resource_type}_percent" if resource_type in ["cpu", "memory", "disk"] else resource_type
+        limit_key = (
+            f"{resource_type}_percent"
+            if resource_type in ["cpu", "memory", "disk"]
+            else resource_type
+        )
         if limit_key in self._current_usage:
             self._current_usage[limit_key] = amount
-            self._usage_history.append({
-                "resource_type": resource_type,
-                "amount": amount,
-                "timestamp": datetime.utcnow().isoformat()
-            })
+            self._usage_history.append(
+                {
+                    "resource_type": resource_type,
+                    "amount": amount,
+                    "timestamp": datetime.utcnow().isoformat(),
+                }
+            )
 
     def get_current_usage(self) -> dict[str, float]:
         """獲取當前資源使用情況"""
@@ -450,7 +488,7 @@ class CommunicationRule:
     """
     通訊規則
     Communication Rules
-    
+
     定義 AI 如何與人類和其他系統通訊
     """
 
@@ -470,9 +508,9 @@ class CommunicationRule:
 
     # 通訊限制
     LIMITS = {
-        "max_message_size_kb": 1024,     # 最大訊息大小 1MB
-        "max_recipients": 100,            # 最大收件人數
-        "rate_limit_per_minute": 60,      # 每分鐘發送上限
+        "max_message_size_kb": 1024,  # 最大訊息大小 1MB
+        "max_recipients": 100,  # 最大收件人數
+        "rate_limit_per_minute": 60,  # 每分鐘發送上限
     }
 
     # 必須記錄的通訊類型
@@ -502,36 +540,42 @@ class CommunicationRule:
         content_lower = content.lower()
         for prohibited in self.PROHIBITED_CONTENT:
             if prohibited in content_lower:
-                violations.append(RuleViolation(
-                    rule_id=f"{self.RULE_ID}_content",
-                    rule_name="禁止內容",
-                    severity=RuleSeverity.CRITICAL,
-                    description=f"通訊內容包含禁止的敏感資訊: {prohibited}",
-                    context={"prohibited_type": prohibited}
-                ))
+                violations.append(
+                    RuleViolation(
+                        rule_id=f"{self.RULE_ID}_content",
+                        rule_name="禁止內容",
+                        severity=RuleSeverity.CRITICAL,
+                        description=f"通訊內容包含禁止的敏感資訊: {prohibited}",
+                        context={"prohibited_type": prohibited},
+                    )
+                )
                 auto_corrections.append(f"redact_{prohibited}")
 
         # 檢查訊息大小
-        content_size_kb = len(content.encode('utf-8')) / 1024
+        content_size_kb = len(content.encode("utf-8")) / 1024
         if content_size_kb > self.LIMITS["max_message_size_kb"]:
-            violations.append(RuleViolation(
-                rule_id=f"{self.RULE_ID}_size",
-                rule_name="訊息過大",
-                severity=RuleSeverity.MEDIUM,
-                description=f"訊息大小 {content_size_kb:.1f}KB 超過限制 {self.LIMITS['max_message_size_kb']}KB",
-                context={"size_kb": content_size_kb}
-            ))
+            violations.append(
+                RuleViolation(
+                    rule_id=f"{self.RULE_ID}_size",
+                    rule_name="訊息過大",
+                    severity=RuleSeverity.MEDIUM,
+                    description=f"訊息大小 {content_size_kb:.1f}KB 超過限制 {self.LIMITS['max_message_size_kb']}KB",
+                    context={
+                        "size_kb": content_size_kb},
+                ))
             auto_corrections.append("compress_or_split_message")
 
         # 檢查收件人數量
         if len(recipients) > self.LIMITS["max_recipients"]:
-            violations.append(RuleViolation(
-                rule_id=f"{self.RULE_ID}_recipients",
-                rule_name="收件人過多",
-                severity=RuleSeverity.MEDIUM,
-                description=f"收件人數量 {len(recipients)} 超過限制 {self.LIMITS['max_recipients']}",
-                context={"count": len(recipients)}
-            ))
+            violations.append(
+                RuleViolation(
+                    rule_id=f"{self.RULE_ID}_recipients",
+                    rule_name="收件人過多",
+                    severity=RuleSeverity.MEDIUM,
+                    description=f"收件人數量 {len(recipients)} 超過限制 {self.LIMITS['max_recipients']}",
+                    context={
+                        "count": len(recipients)},
+                ))
             auto_corrections.append("batch_recipients")
 
         # 記錄通訊
@@ -540,10 +584,11 @@ class CommunicationRule:
 
         result = RuleCheckResult(
             rule_id=self.RULE_ID,
-            passed=len([v for v in violations if v.severity == RuleSeverity.CRITICAL]) == 0,
+            passed=len([v for v in violations if v.severity == RuleSeverity.CRITICAL])
+            == 0,
             violations=violations,
             warnings=warnings,
-            auto_corrections=auto_corrections
+            auto_corrections=auto_corrections,
         )
 
         self._violation_history.extend(violations)
@@ -560,7 +605,7 @@ class CommunicationRule:
             "timestamp": datetime.utcnow().isoformat(),
             "log_id": hashlib.sha256(
                 f"{communication}{datetime.utcnow()}".encode()
-            ).hexdigest()[:16]
+            ).hexdigest()[:16],
         }
         self._communication_log.append(safe_comm)
 
@@ -582,7 +627,7 @@ class OperationalRuleEngine:
     """
     操作規則引擎 - 整合所有操作規則
     Operational Rule Engine - Integrates all operational rules
-    
+
     自成閉環：獨立管理所有操作規則的檢查和執行
     """
 
@@ -600,9 +645,7 @@ class OperationalRuleEngine:
         }
 
     def check_operation(
-        self,
-        category: RuleCategory,
-        operation: dict[str, Any]
+        self, category: RuleCategory, operation: dict[str, Any]
     ) -> RuleCheckResult:
         """檢查特定類別的操作"""
         rule = self._all_rules.get(category)
@@ -611,17 +654,18 @@ class OperationalRuleEngine:
         return RuleCheckResult(
             rule_id="UNKNOWN",
             passed=False,
-            violations=[RuleViolation(
-                rule_id="UNKNOWN",
-                rule_name="未知類別",
-                severity=RuleSeverity.HIGH,
-                description=f"未知的規則類別: {category}"
-            )]
+            violations=[
+                RuleViolation(
+                    rule_id="UNKNOWN",
+                    rule_name="未知類別",
+                    severity=RuleSeverity.HIGH,
+                    description=f"未知的規則類別: {category}",
+                )
+            ],
         )
 
     def check_all_applicable(
-        self,
-        operation: dict[str, Any]
+        self, operation: dict[str, Any]
     ) -> dict[RuleCategory, RuleCheckResult]:
         """檢查所有適用的規則"""
         results = {}

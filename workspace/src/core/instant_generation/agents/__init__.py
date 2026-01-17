@@ -8,12 +8,21 @@ AI Agents Network for Instant Generation
 import asyncio
 import logging
 from abc import ABC, abstractmethod
-from typing import Dict, List, Any, Optional
 from dataclasses import dataclass
 from enum import Enum
+from typing import Any, Dict, List, Optional
+
+from .architecture_design_agent import ArchitectureDesignAgent
+from .code_generation_agent import CodeGenerationAgent
+from .deployment_agent import DeploymentAgent
+from .input_analysis_agent import InputAnalysisAgent
+from .optimization_agent import OptimizationAgent
+from .testing_agent import TestingAgent
+
 
 class AgentType(Enum):
     """代理類型枚舉"""
+
     INPUT_ANALYSIS = "input_analysis"
     CODE_GENERATION = "code_generation"
     ARCHITECTURE_DESIGN = "architecture_design"
@@ -21,9 +30,11 @@ class AgentType(Enum):
     DEPLOYMENT = "deployment"
     OPTIMIZATION = "optimization"
 
+
 @dataclass
 class AgentTask:
     """代理任務數據結構"""
+
     task_id: str
     agent_type: AgentType
     input_data: Dict[str, Any]
@@ -31,9 +42,11 @@ class AgentTask:
     timeout: int = 300  # 5分鐘超時
     dependencies: List[str] = None
 
+
 @dataclass
 class AgentResult:
     """代理執行結果"""
+
     task_id: str
     agent_type: AgentType
     success: bool
@@ -41,30 +54,30 @@ class AgentResult:
     execution_time: float
     error_message: Optional[str] = None
 
+
 class BaseAgent(ABC):
     """基礎代理抽象類"""
-    
+
     def __init__(self, agent_type: AgentType, config: Dict[str, Any] = None):
         self.agent_type = agent_type
         self.config = config or {}
         self.logger = logging.getLogger(f"{__name__}.{agent_type.value}")
-        
+
     @abstractmethod
     async def process_task(self, task: AgentTask) -> AgentResult:
         """處理任務的抽象方法"""
         pass
-    
+
     @abstractmethod
     def validate_input(self, input_data: Dict[str, Any]) -> bool:
         """驗證輸入數據"""
         pass
-    
+
     async def execute_with_timeout(self, task: AgentTask) -> AgentResult:
         """帶超時控制的任務執行"""
         try:
             result = await asyncio.wait_for(
-                self.process_task(task),
-                timeout=task.timeout
+                self.process_task(task), timeout=task.timeout
             )
             return result
         except asyncio.TimeoutError:
@@ -75,7 +88,7 @@ class BaseAgent(ABC):
                 success=False,
                 output_data={},
                 execution_time=task.timeout,
-                error_message="Task execution timeout"
+                error_message="Task execution timeout",
             )
         except Exception as e:
             self.logger.error(f"Task {task.task_id} failed: {str(e)}")
@@ -85,17 +98,11 @@ class BaseAgent(ABC):
                 success=False,
                 output_data={},
                 execution_time=0,
-                error_message=str(e)
+                error_message=str(e),
             )
 
-# Import specific agent implementations
-from .input_analysis_agent import InputAnalysisAgent
-from .code_generation_agent import CodeGenerationAgent
-from .architecture_design_agent import ArchitectureDesignAgent
-from .testing_agent import TestingAgent
-from .deployment_agent import DeploymentAgent
-from .optimization_agent import OptimizationAgent
 
+# Import specific agent implementations
 # Agent registry for dynamic loading
 AGENT_REGISTRY = {
     AgentType.INPUT_ANALYSIS: InputAnalysisAgent,
@@ -103,8 +110,9 @@ AGENT_REGISTRY = {
     AgentType.ARCHITECTURE_DESIGN: ArchitectureDesignAgent,
     AgentType.TESTING: TestingAgent,
     AgentType.DEPLOYMENT: DeploymentAgent,
-    AgentType.OPTIMIZATION: OptimizationAgent
+    AgentType.OPTIMIZATION: OptimizationAgent,
 }
+
 
 def create_agent(agent_type: AgentType, config: Dict[str, Any] = None) -> BaseAgent:
     """工廠方法：創建指定類型的代理"""
@@ -112,6 +120,7 @@ def create_agent(agent_type: AgentType, config: Dict[str, Any] = None) -> BaseAg
     if not agent_class:
         raise ValueError(f"Unknown agent type: {agent_type}")
     return agent_class(agent_type, config)
+
 
 __all__ = [
     "BaseAgent",
@@ -125,5 +134,5 @@ __all__ = [
     "ArchitectureDesignAgent",
     "TestingAgent",
     "DeploymentAgent",
-    "OptimizationAgent"
+    "OptimizationAgent",
 ]

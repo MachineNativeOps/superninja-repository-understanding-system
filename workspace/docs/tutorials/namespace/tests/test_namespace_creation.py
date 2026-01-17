@@ -234,9 +234,7 @@ class TestNamespaceLabelsAndAnnotations:
             cleanup_namespaces.append(name)
 
         # 使用標籤選擇器查詢
-        output = run_kubectl(
-            ["get", "namespaces", "-l", "team=a", "-o", "json"]
-        )
+        output = run_kubectl(["get", "namespaces", "-l", "team=a", "-o", "json"])
         result = json.loads(output)
 
         # 驗證結果包含 team=a 的命名空間

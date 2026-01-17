@@ -8,19 +8,22 @@
 """
 
 import enum
+from contextlib import contextmanager
 from datetime import datetime
 from typing import Any
 
-from sqlalchemy import JSON, Column, DateTime, Float, ForeignKey, Index, Integer, String, Text
+from sqlalchemy import JSON, Column, DateTime
 from sqlalchemy import Enum as SQLEnum
+from sqlalchemy import Float, ForeignKey, Index, Integer, String, Text, create_engine
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import relationship
+from sqlalchemy.orm import Session, relationship, sessionmaker
 
 Base = declarative_base()
 
 
 class AnalysisStatus(str, enum.Enum):
     """分析狀態"""
+
     PENDING = "pending"
     RUNNING = "running"
     COMPLETED = "completed"
@@ -30,6 +33,7 @@ class AnalysisStatus(str, enum.Enum):
 
 class SeverityLevel(str, enum.Enum):
     """嚴重程度"""
+
     CRITICAL = "CRITICAL"
     HIGH = "HIGH"
     MEDIUM = "MEDIUM"
@@ -39,6 +43,7 @@ class SeverityLevel(str, enum.Enum):
 
 class IssueType(str, enum.Enum):
     """問題類型"""
+
     SECURITY = "SECURITY"
     PERFORMANCE = "PERFORMANCE"
     CODE_QUALITY = "CODE_QUALITY"
@@ -50,6 +55,7 @@ class IssueType(str, enum.Enum):
 
 class AnalysisRecord(Base):
     """分析記錄"""
+
     __tablename__ = "analysis_records"
 
     # 主鍵
@@ -92,12 +98,14 @@ class AnalysisRecord(Base):
     error_message = Column(Text, nullable=True)
 
     # 關聯
-    issues = relationship("IssueRecord", back_populates="analysis", cascade="all, delete-orphan")
+    issues = relationship(
+        "IssueRecord", back_populates="analysis", cascade="all, delete-orphan"
+    )
 
     # 索引
     __table_args__ = (
-        Index('idx_repo_commit', 'repository', 'commit_hash'),
-        Index('idx_status_created', 'status', 'created_at'),
+        Index("idx_repo_commit", "repository", "commit_hash"),
+        Index("idx_status_created", "status", "created_at"),
     )
 
     def to_dict(self) -> dict[str, Any]:
@@ -111,7 +119,9 @@ class AnalysisRecord(Base):
             "strategy": self.strategy,
             "created_at": self.created_at.isoformat() if self.created_at else None,
             "started_at": self.started_at.isoformat() if self.started_at else None,
-            "completed_at": self.completed_at.isoformat() if self.completed_at else None,
+            "completed_at": (
+                self.completed_at.isoformat() if self.completed_at else None
+            ),
             "duration": self.duration,
             "total_issues": self.total_issues,
             "critical_issues": self.critical_issues,
@@ -125,13 +135,16 @@ class AnalysisRecord(Base):
 
 class IssueRecord(Base):
     """問題記錄"""
+
     __tablename__ = "issue_records"
 
     # 主鍵
     id = Column(String(36), primary_key=True)
 
     # 外鍵
-    analysis_id = Column(String(36), ForeignKey("analysis_records.id"), nullable=False, index=True)
+    analysis_id = Column(
+        String(36), ForeignKey("analysis_records.id"), nullable=False, index=True
+    )
 
     # 問題分類
     type = Column(SQLEnum(IssueType), nullable=False, index=True)
@@ -162,8 +175,8 @@ class IssueRecord(Base):
 
     # 索引
     __table_args__ = (
-        Index('idx_analysis_severity', 'analysis_id', 'severity'),
-        Index('idx_type_severity', 'type', 'severity'),
+        Index("idx_analysis_severity", "analysis_id", "severity"),
+        Index("idx_type_severity", "type", "severity"),
     )
 
     def to_dict(self) -> dict[str, Any]:
@@ -192,11 +205,6 @@ class IssueRecord(Base):
 # 數據庫會話管理
 # ============================================================================
 
-from contextlib import contextmanager
-
-from sqlalchemy import create_engine
-from sqlalchemy.orm import Session, sessionmaker
-
 
 class DatabaseManager:
     """數據庫管理器"""
@@ -208,9 +216,7 @@ class DatabaseManager:
             pool_pre_ping=True,
         )
         self.SessionLocal = sessionmaker(
-            autocommit=False,
-            autoflush=False,
-            bind=self.engine
+            autocommit=False, autoflush=False, bind=self.engine
         )
 
     def create_tables(self):
@@ -238,6 +244,7 @@ class DatabaseManager:
 # ============================================================================
 # 數據訪問層 (DAO)
 # ============================================================================
+
 
 class AnalysisDAO:
     """分析數據訪問對象"""
@@ -269,10 +276,7 @@ class AnalysisDAO:
             session.query(AnalysisRecord).filter_by(id=analysis_id).delete()
 
     def list_analyses(
-        self,
-        limit: int = 10,
-        offset: int = 0,
-        status: AnalysisStatus | None = None
+        self, limit: int = 10, offset: int = 0, status: AnalysisStatus | None = None
     ) -> list[AnalysisRecord]:
         """列出分析記錄"""
         with self.db_manager.get_session() as session:

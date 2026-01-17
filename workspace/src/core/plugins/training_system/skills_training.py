@@ -1,4 +1,9 @@
 """
+# SECURITY WARNING: This file contains example code with SQL injection vulnerabilities.
+# These are for educational purposes only and should NEVER be used in production.
+# Always use parameterized queries and proper password hashing in production code.
+
+
 Skills Training System (技能訓練系統)
 
 Provides structured training and skill development for AI agents including:
@@ -20,15 +25,17 @@ from typing import Any
 
 class SkillLevel(Enum):
     """Skill proficiency levels."""
-    NOVICE = "novice"           # 新手 - Basic awareness
-    BEGINNER = "beginner"       # 初學者 - Can perform with guidance
+
+    NOVICE = "novice"  # 新手 - Basic awareness
+    BEGINNER = "beginner"  # 初學者 - Can perform with guidance
     INTERMEDIATE = "intermediate"  # 中級 - Can perform independently
-    ADVANCED = "advanced"       # 高級 - Can handle complex scenarios
-    EXPERT = "expert"           # 專家 - Can teach others and innovate
+    ADVANCED = "advanced"  # 高級 - Can handle complex scenarios
+    EXPERT = "expert"  # 專家 - Can teach others and innovate
 
 
 class SkillCategory(Enum):
     """Skill categories for organization."""
+
     TECHNICAL = "technical"
     PROBLEM_SOLVING = "problem_solving"
     DECISION_MAKING = "decision_making"
@@ -40,9 +47,10 @@ class SkillCategory(Enum):
 class Skill:
     """
     Defines a learnable skill with progression criteria.
-    
+
     技能定義：可學習的技能及其進階標準
     """
+
     id: str
     name: str
     category: SkillCategory
@@ -68,9 +76,10 @@ class Skill:
 class TrainingModule:
     """
     A training module containing learning content and exercises.
-    
+
     訓練模組：包含學習內容和練習的模組
     """
+
     id: str
     name: str
     skill_id: str
@@ -97,9 +106,10 @@ class TrainingModule:
 class TrainingSession:
     """
     A training session instance for an AI agent.
-    
+
     訓練課程：AI 智能體的訓練課程實例
     """
+
     id: str
     agent_id: str
     module_id: str
@@ -125,9 +135,10 @@ class TrainingSession:
 class SkillAssessment:
     """
     Assessment result for a skill.
-    
+
     技能評估：技能評估結果
     """
+
     id: str
     agent_id: str
     skill_id: str
@@ -154,9 +165,10 @@ class SkillAssessment:
 class LearningPath:
     """
     A structured learning path for skill development.
-    
+
     學習路徑：技能發展的結構化學習路徑
     """
+
     id: str
     name: str
     description: str
@@ -178,16 +190,16 @@ class LearningPath:
 class SkillsTrainingSystem:
     """
     Comprehensive Skills Training System for AI Agents.
-    
+
     AI 技能訓練系統：教導 AI 如何執行任務和做決策
-    
+
     核心功能：
     1. 技能定義與管理 - Skill definition and management
     2. 訓練模組執行 - Training module execution
     3. 技能評估 - Skill assessment
     4. 學習路徑規劃 - Learning path planning
     5. 進度追蹤 - Progress tracking
-    
+
     參考：AI 代理需要根本不同的訓練數據 - 不是教模式識別，而是教如何執行任務 [3]
     """
 
@@ -197,7 +209,8 @@ class SkillsTrainingSystem:
         self.sessions: dict[str, TrainingSession] = {}
         self.assessments: dict[str, list[SkillAssessment]] = {}
         self.learning_paths: dict[str, LearningPath] = {}
-        self.agent_skills: dict[str, dict[str, SkillLevel]] = {}  # agent_id -> skill_id -> level
+        # agent_id -> skill_id -> level
+        self.agent_skills: dict[str, dict[str, SkillLevel]] = {}
 
         # Exercise handlers
         self._exercise_handlers: dict[str, Callable] = {}
@@ -564,6 +577,7 @@ db.users.create({'password': hashed})
                     "question": """
 修復這段代碼的安全漏洞：
 def login(email, password):
+# ❌ VULNERABLE CODE - SQL Injection Example
     query = f"SELECT * FROM users WHERE email = '{email}' AND password = '{password}'"
     user = db.execute(query)
     return user
@@ -651,7 +665,7 @@ def login(email, password):
     def start_training_session(self, agent_id: str, module_id: str) -> TrainingSession:
         """
         Start a new training session for an agent.
-        
+
         開始訓練課程
         """
         if module_id not in self.modules:
@@ -679,21 +693,20 @@ def login(email, password):
     def _has_completed_module(self, agent_id: str, module_id: str) -> bool:
         """Check if an agent has completed a module."""
         for session in self.sessions.values():
-            if (session.agent_id == agent_id and
-                session.module_id == module_id and
-                session.status == "completed"):
+            if (
+                session.agent_id == agent_id
+                and session.module_id == module_id
+                and session.status == "completed"
+            ):
                 return True
         return False
 
     async def submit_exercise_answer(
-        self,
-        session_id: str,
-        exercise_id: str,
-        answer: str
+        self, session_id: str, exercise_id: str, answer: str
     ) -> dict[str, Any]:
         """
         Submit an answer for an exercise.
-        
+
         提交練習答案
         """
         if session_id not in self.sessions:
@@ -715,12 +728,14 @@ def login(email, password):
         # Evaluate the answer
         result = self._evaluate_answer(answer, exercise)
 
-        session.exercise_results.append({
-            "exercise_id": exercise_id,
-            "answer": answer,
-            "result": result,
-            "timestamp": datetime.now().isoformat(),
-        })
+        session.exercise_results.append(
+            {
+                "exercise_id": exercise_id,
+                "answer": answer,
+                "result": result,
+                "timestamp": datetime.now().isoformat(),
+            }
+        )
 
         # Update progress
         total_exercises = len(module.exercises)
@@ -766,16 +781,27 @@ def login(email, password):
         """Extract key concepts from expected answer."""
         # Simple keyword extraction
         keywords = [
-            "index", "索引", "join", "eager", "loading", "預加載",
-            "transaction", "事務", "bcrypt", "hash", "哈希",
-            "parameterized", "參數化", "n+1",
+            "index",
+            "索引",
+            "join",
+            "eager",
+            "loading",
+            "預加載",
+            "transaction",
+            "事務",
+            "bcrypt",
+            "hash",
+            "哈希",
+            "parameterized",
+            "參數化",
+            "n+1",
         ]
         return [k for k in keywords if k in text]
 
     def complete_session(self, session_id: str) -> SkillAssessment:
         """
         Complete a training session and assess skill level.
-        
+
         完成訓練課程並評估技能等級
         """
         if session_id not in self.sessions:
@@ -789,7 +815,11 @@ def login(email, password):
         for result in session.exercise_results:
             total_score += result["result"]["score"]
 
-        avg_score = total_score / len(session.exercise_results) if session.exercise_results else 0.0
+        avg_score = (
+            total_score / len(session.exercise_results)
+            if session.exercise_results
+            else 0.0
+        )
         session.assessment_score = avg_score
 
         # Determine if passed
@@ -810,7 +840,11 @@ def login(email, password):
             id=f"assess_{uuid.uuid4().hex[:8]}",
             agent_id=session.agent_id,
             skill_id=module.skill_id,
-            assessed_level=module.target_level if session.status == "completed" else SkillLevel.NOVICE,
+            assessed_level=(
+                module.target_level
+                if session.status == "completed"
+                else SkillLevel.NOVICE
+            ),
             score=avg_score,
             confidence=0.8 if len(session.exercise_results) >= 3 else 0.5,
             evidence=[f"完成練習 {len(session.exercise_results)} 個"],
@@ -830,7 +864,8 @@ def login(email, password):
         areas = []
         for result in session.exercise_results:
             if not result["result"]["is_correct"]:
-                areas.extend(result["result"]["feedback"][1:])  # Skip the first "needs improvement" message
+                # Skip the first "needs improvement" message
+                areas.extend(result["result"]["feedback"][1:])
         return areas[:5]  # Limit to top 5
 
     def get_agent_skill_level(self, agent_id: str, skill_id: str) -> SkillLevel:
@@ -839,7 +874,9 @@ def login(email, password):
             return self.agent_skills[agent_id].get(skill_id, SkillLevel.NOVICE)
         return SkillLevel.NOVICE
 
-    def get_recommended_modules(self, agent_id: str, skill_id: str) -> list[TrainingModule]:
+    def get_recommended_modules(
+        self, agent_id: str, skill_id: str
+    ) -> list[TrainingModule]:
         """Get recommended training modules for an agent."""
         current_level = self.get_agent_skill_level(agent_id, skill_id)
 
@@ -869,7 +906,9 @@ def login(email, password):
             if self._has_completed_module(agent_id, module_id):
                 completed_modules.append(module_id)
 
-        progress = len(completed_modules) / len(path.modules) * 100 if path.modules else 0
+        progress = (
+            len(completed_modules) / len(path.modules) * 100 if path.modules else 0
+        )
 
         return {
             "path_id": path_id,

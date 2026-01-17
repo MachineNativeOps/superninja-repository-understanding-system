@@ -66,39 +66,75 @@ class CoreSatelliteArchitecture:
         presets = {}
 
         # 穩健成長型
-        presets['steady_growth'] = CoreSatelliteConfiguration(
+        presets["steady_growth"] = CoreSatelliteConfiguration(
             name="穩健成長型",
             description="適合追求穩定發展的企業",
-            core_allocation=PromptAllocation(PromptCategory.ENTERPRISE, AllocationRole.CORE, 70.0, "企業級應用開發"),
+            core_allocation=PromptAllocation(
+                PromptCategory.ENTERPRISE, AllocationRole.CORE, 70.0, "企業級應用開發"
+            ),
             satellite_allocations=[
-                PromptAllocation(PromptCategory.PROFESSIONAL, AllocationRole.SATELLITE, 15.0, "專業級開發"),
-                PromptAllocation(PromptCategory.HIGH_VALUE, AllocationRole.SATELLITE, 10.0, "高價值應用"),
+                PromptAllocation(
+                    PromptCategory.PROFESSIONAL,
+                    AllocationRole.SATELLITE,
+                    15.0,
+                    "專業級開發",
+                ),
+                PromptAllocation(
+                    PromptCategory.HIGH_VALUE,
+                    AllocationRole.SATELLITE,
+                    10.0,
+                    "高價值應用",
+                ),
             ],
-            exploration_allocation=PromptAllocation(PromptCategory.INTELLIGENT, AllocationRole.EXPLORATION, 5.0, "智能化探索")
+            exploration_allocation=PromptAllocation(
+                PromptCategory.INTELLIGENT,
+                AllocationRole.EXPLORATION,
+                5.0,
+                "智能化探索",
+            ),
         )
 
         # 快速變現型
-        presets['rapid_monetization'] = CoreSatelliteConfiguration(
+        presets["rapid_monetization"] = CoreSatelliteConfiguration(
             name="快速變現型",
             description="適合需要快速獲得市場回報的企業",
-            core_allocation=PromptAllocation(PromptCategory.MARKET_RETURN, AllocationRole.CORE, 70.0, "高市場回報"),
+            core_allocation=PromptAllocation(
+                PromptCategory.MARKET_RETURN, AllocationRole.CORE, 70.0, "高市場回報"
+            ),
             satellite_allocations=[
-                PromptAllocation(PromptCategory.BUSINESS_ORIENTED, AllocationRole.SATELLITE, 20.0, "商業導向"),
-                PromptAllocation(PromptCategory.ENTERPRISE, AllocationRole.SATELLITE, 5.0, "企業基礎"),
+                PromptAllocation(
+                    PromptCategory.BUSINESS_ORIENTED,
+                    AllocationRole.SATELLITE,
+                    20.0,
+                    "商業導向",
+                ),
+                PromptAllocation(
+                    PromptCategory.ENTERPRISE, AllocationRole.SATELLITE, 5.0, "企業基礎"
+                ),
             ],
-            exploration_allocation=PromptAllocation(PromptCategory.NEXT_GEN, AllocationRole.EXPLORATION, 5.0, "下世代探索")
+            exploration_allocation=PromptAllocation(
+                PromptCategory.NEXT_GEN, AllocationRole.EXPLORATION, 5.0, "下世代探索"
+            ),
         )
 
         # 技術領先型
-        presets['tech_leadership'] = CoreSatelliteConfiguration(
+        presets["tech_leadership"] = CoreSatelliteConfiguration(
             name="技術領先型",
             description="適合追求技術競爭優勢的企業",
-            core_allocation=PromptAllocation(PromptCategory.ADVANCED, AllocationRole.CORE, 70.0, "高階開發"),
+            core_allocation=PromptAllocation(
+                PromptCategory.ADVANCED, AllocationRole.CORE, 70.0, "高階開發"
+            ),
             satellite_allocations=[
-                PromptAllocation(PromptCategory.INTELLIGENT, AllocationRole.SATELLITE, 15.0, "智能化"),
-                PromptAllocation(PromptCategory.NEXT_GEN, AllocationRole.SATELLITE, 10.0, "下世代"),
+                PromptAllocation(
+                    PromptCategory.INTELLIGENT, AllocationRole.SATELLITE, 15.0, "智能化"
+                ),
+                PromptAllocation(
+                    PromptCategory.NEXT_GEN, AllocationRole.SATELLITE, 10.0, "下世代"
+                ),
             ],
-            exploration_allocation=PromptAllocation(PromptCategory.HIGH_VALUE, AllocationRole.EXPLORATION, 5.0, "新興研究")
+            exploration_allocation=PromptAllocation(
+                PromptCategory.HIGH_VALUE, AllocationRole.EXPLORATION, 5.0, "新興研究"
+            ),
         )
 
         return presets
@@ -109,19 +145,21 @@ class CoreSatelliteArchitecture:
     def list_presets(self) -> list[str]:
         return list(self._presets.keys())
 
-    def recommend_configuration(self, company_stage: str, market_urgency: str, tech_focus: str) -> CoreSatelliteConfiguration:
-        if company_stage == 'startup' and market_urgency == 'high':
-            return self._presets['rapid_monetization']
-        elif tech_focus == 'high':
-            return self._presets['tech_leadership']
-        return self._presets['steady_growth']
+    def recommend_configuration(
+        self, company_stage: str, market_urgency: str, tech_focus: str
+    ) -> CoreSatelliteConfiguration:
+        if company_stage == "startup" and market_urgency == "high":
+            return self._presets["rapid_monetization"]
+        elif tech_focus == "high":
+            return self._presets["tech_leadership"]
+        return self._presets["steady_growth"]
 
     def analyze_configuration(self, config: CoreSatelliteConfiguration) -> dict:
         return {
-            'name': config.name,
-            'total_allocation': config.get_total_allocation(),
-            'is_valid': config.is_valid(),
-            'core_percentage': config.core_allocation.allocation_percentage,
-            'satellite_count': len(config.satellite_allocations),
-            'has_exploration': config.exploration_allocation is not None,
+            "name": config.name,
+            "total_allocation": config.get_total_allocation(),
+            "is_valid": config.is_valid(),
+            "core_percentage": config.core_allocation.allocation_percentage,
+            "satellite_count": len(config.satellite_allocations),
+            "has_exploration": config.exploration_allocation is not None,
         }

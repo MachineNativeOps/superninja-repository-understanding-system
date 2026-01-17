@@ -7,10 +7,6 @@ import sys
 from pathlib import Path
 
 import pytest
-
-# 添加 src 目錄到路徑
-sys.path.insert(0, str(Path(__file__).parent.parent / 'src'))
-
 from models.dependency import Dependency, DependencyAnalysis, DependencyType, Ecosystem
 from models.update import UpdatePolicy
 from utils.language_boundary import (
@@ -27,6 +23,9 @@ from utils.policy_simulator import (
     SimulationResult,
     SimulationScenario,
 )
+
+# 添加 src 目錄到路徑
+sys.path.insert(0, str(Path(__file__).parent.parent / "src"))
 
 
 class TestSimulationScenario:
@@ -77,9 +76,7 @@ class TestPolicySimulator:
 
         # 創建測試用分析結果
         self.analysis = DependencyAnalysis(
-            analysis_id="test-123",
-            project="test-project",
-            ecosystem=Ecosystem.NPM
+            analysis_id="test-123", project="test-project", ecosystem=Ecosystem.NPM
         )
 
         # 添加測試依賴
@@ -89,14 +86,14 @@ class TestPolicySimulator:
                 current_version="4.18.0",
                 latest_version="4.21.2",
                 ecosystem=Ecosystem.NPM,
-                dep_type=DependencyType.DIRECT
+                dep_type=DependencyType.DIRECT,
             ),
             Dependency(
                 name="lodash",
                 current_version="4.17.0",
                 latest_version="4.17.21",
                 ecosystem=Ecosystem.NPM,
-                dep_type=DependencyType.DIRECT
+                dep_type=DependencyType.DIRECT,
             ),
             Dependency(
                 name="vulnerable-pkg",
@@ -104,7 +101,7 @@ class TestPolicySimulator:
                 latest_version="2.0.0",
                 ecosystem=Ecosystem.NPM,
                 has_vulnerability=True,
-                vulnerability_count=2
+                vulnerability_count=2,
             ),
         ]
 
@@ -169,8 +166,8 @@ class TestPolicySimulator:
             update_policy={
                 "patch": UpdatePolicy.AUTO,
                 "minor": UpdatePolicy.AUTO,
-                "major": UpdatePolicy.MANUAL
-            }
+                "major": UpdatePolicy.MANUAL,
+            },
         )
 
         self.simulator.add_custom_scenario(custom)
@@ -244,19 +241,14 @@ class TestLanguageBoundary:
 
     def test_format_message(self):
         """測試消息格式化"""
-        result = self.lb.msg(
-            "analysis_started",
-            project="test-project"
-        )
+        result = self.lb.msg("analysis_started", project="test-project")
         assert "test-project" in result
         assert "分析" in result
 
     def test_format_message_with_language(self):
         """測試指定語言消息"""
         result = self.lb.msg(
-            "analysis_started",
-            lang=OutputLanguage.EN,
-            project="test-project"
+            "analysis_started", lang=OutputLanguage.EN, project="test-project"
         )
         assert "test-project" in result
         assert "Starting" in result
@@ -344,7 +336,7 @@ class TestSimulationResultSerialization:
             manual_updates=1,
             skipped_updates=0,
             risk_score=25.5,
-            estimated_time_hours=1.5
+            estimated_time_hours=1.5,
         )
 
         data = result.to_dict()

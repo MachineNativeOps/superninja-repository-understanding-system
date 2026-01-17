@@ -5,12 +5,12 @@ Go 島嶼 - 雲原生服務
 負責 API 網關、微服務網格、容器管理等雲原生任務。
 """
 
+import importlib
 import subprocess
 from datetime import datetime
 from typing import Any
 
-import importlib
-base_island_module = importlib.import_module('bridges.language-islands.base-island')
+base_island_module = importlib.import_module("bridges.language-islands.base-island")
 BaseIsland = base_island_module.BaseIsland
 IslandStatus = base_island_module.IslandStatus
 
@@ -32,16 +32,12 @@ class GoIsland(BaseIsland):
     """
 
     def __init__(self) -> None:
-        super().__init__(
-            name="🌊 Go 雲原生服務島",
-            island_id="go",
-            language="go"
-        )
+        super().__init__(name="🌊 Go 雲原生服務島", island_id="go", language="go")
         self.capabilities = [
             "api_gateway",
             "microservice_mesh",
             "container_manager",
-            "distributed_cache"
+            "distributed_cache",
         ]
 
     def _get_language_check_command(self) -> tuple[str, str]:
@@ -80,32 +76,28 @@ class GoIsland(BaseIsland):
         self.log_info("🔍 執行雲原生服務檢查...")
 
         result = {
-            'island': self.island_id,
-            'task': 'cloud_native_check',
-            'timestamp': datetime.now().isoformat(),
-            'services': self._check_services(),
+            "island": self.island_id,
+            "task": "cloud_native_check",
+            "timestamp": datetime.now().isoformat(),
+            "services": self._check_services(),
         }
 
-        self._display_services(result['services'])
+        self._display_services(result["services"])
         return result
 
     def _check_cloud_native_tools(self) -> dict[str, bool]:
         """檢查雲原生工具"""
         tools = {
-            'docker': self._check_tool('docker', '--version'),
-            'kubectl': self._check_tool('kubectl', 'version', '--client'),
-            'helm': self._check_tool('helm', 'version', '--short'),
+            "docker": self._check_tool("docker", "--version"),
+            "kubectl": self._check_tool("kubectl", "version", "--client"),
+            "helm": self._check_tool("helm", "version", "--short"),
         }
         return tools
 
     def _check_tool(self, *args: str) -> bool:
         """檢查工具是否可用"""
         try:
-            result = subprocess.run(
-                list(args),
-                capture_output=True,
-                timeout=5
-            )
+            result = subprocess.run(list(args), capture_output=True, timeout=5)
             return result.returncode == 0
         except (FileNotFoundError, subprocess.TimeoutExpired):
             return False
@@ -115,17 +107,17 @@ class GoIsland(BaseIsland):
         tools = self._check_cloud_native_tools()
 
         return {
-            'docker': {
-                'available': tools.get('docker', False),
-                'status': 'running' if tools.get('docker') else 'not_installed',
+            "docker": {
+                "available": tools.get("docker", False),
+                "status": "running" if tools.get("docker") else "not_installed",
             },
-            'kubernetes': {
-                'available': tools.get('kubectl', False),
-                'status': 'available' if tools.get('kubectl') else 'not_installed',
+            "kubernetes": {
+                "available": tools.get("kubectl", False),
+                "status": "available" if tools.get("kubectl") else "not_installed",
             },
-            'helm': {
-                'available': tools.get('helm', False),
-                'status': 'available' if tools.get('helm') else 'not_installed',
+            "helm": {
+                "available": tools.get("helm", False),
+                "status": "available" if tools.get("helm") else "not_installed",
             },
         }
 
@@ -133,5 +125,5 @@ class GoIsland(BaseIsland):
         """顯示服務狀態"""
         self.log_info("📊 雲原生服務狀態:")
         for service, info in services.items():
-            status = '✅' if info['available'] else '❌'
+            status = "✅" if info["available"] else "❌"
             print(f"  {status} {service}: {info['status']}")

@@ -1,12 +1,14 @@
 #!/usr/bin/env python3
 """Unit tests for contract engine"""
 import pytest
-from core.contract_engine import ContractRegistry, ContractDefinition
+from core.contract_engine import ContractDefinition, ContractRegistry
+
 
 def test_contract_registry_init():
     """Test contract registry initialization"""
     registry = ContractRegistry()
     assert registry is not None
+
 
 def test_contract_registration():
     """Test contract registration"""
@@ -24,11 +26,12 @@ def test_contract_registration():
         "author": "test-suite",
         "created_at": datetime.utcnow().isoformat(),
         "tags": ["test", "unit"],
-        "dependencies": []
+        "dependencies": [],
     }
 
     # Create contract definition
     from core.contract_engine import ContractMetadata, ContractType
+
     contract_metadata = ContractMetadata(
         name=metadata["name"],
         version=metadata["version"],
@@ -36,7 +39,7 @@ def test_contract_registration():
         description=metadata["description"],
         author=metadata["author"],
         tags=metadata["tags"],
-        dependencies=metadata["dependencies"]
+        dependencies=metadata["dependencies"],
     )
 
     contract = ContractDefinition(
@@ -44,7 +47,7 @@ def test_contract_registration():
         schema={"type": "object", "properties": {}},
         validation_rules=[{"rule": "required", "fields": []}],
         execution_config={"timeout": 30},
-        lifecycle_config={"retention_days": 90}
+        lifecycle_config={"retention_days": 90},
     )
 
     # Register the contract

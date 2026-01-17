@@ -6,6 +6,7 @@ Aligns with:
 - JSON Schema:   workspace/config/validation/schemas/world-class-validation.schema.json
 - TS types:      workspace/config/validation/worldClassValidation.ts
 """
+
 from __future__ import annotations
 
 import json
@@ -15,9 +16,10 @@ from typing import List, Optional
 
 import yaml
 
-
 MANIFEST_PATH = Path("workspace/config/validation/world-class-validation.yaml")
-SCHEMA_PATH = Path("workspace/config/validation/schemas/world-class-validation.schema.json")
+SCHEMA_PATH = Path(
+    "workspace/config/validation/schemas/world-class-validation.schema.json"
+)
 
 
 @dataclass
@@ -70,7 +72,8 @@ def load_manifest(path: Path = MANIFEST_PATH) -> WorldClassValidationManifest:
     data = yaml.safe_load(path.read_text(encoding="utf-8"))
     spec = data["spec"]
     dims = [
-        EnhancedValidationDimension(**item) for item in spec.get("enhancedValidationDimensions", [])
+        EnhancedValidationDimension(**item)
+        for item in spec.get("enhancedValidationDimensions", [])
     ]
     perf = PerformanceTargets(**spec["performanceTargets"])
     impl = ImplementationRequirements(**spec["implementationRequirements"])

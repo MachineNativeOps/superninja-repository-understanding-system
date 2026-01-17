@@ -36,6 +36,7 @@ except ImportError:
 
 class ValidationLevel(Enum):
     """驗證級別"""
+
     ERROR = "error"
     WARNING = "warning"
     INFO = "info"
@@ -43,6 +44,7 @@ class ValidationLevel(Enum):
 
 class ValidationCategory(Enum):
     """驗證類別"""
+
     SECURITY = "security"
     STRUCTURE = "structure"
     REFERENCE = "reference"
@@ -53,6 +55,7 @@ class ValidationCategory(Enum):
 @dataclass
 class ValidationIssue:
     """驗證問題"""
+
     id: str
     category: str
     level: str
@@ -65,6 +68,7 @@ class ValidationIssue:
 @dataclass
 class ValidationResult:
     """驗證結果"""
+
     timestamp: str
     target_path: str
     is_valid: bool
@@ -150,122 +154,142 @@ class PathValidator:
             warnings=len(warnings),
             info=len(info),
             issues=self.issues,
-            summary=self._generate_summary(errors, warnings, info)
+            summary=self._generate_summary(errors, warnings, info),
         )
 
     def _validate_structure(self):
         """驗證結構完整性"""
-        required_files = ['README.md']
+        required_files = ["README.md"]
 
         for file_name in required_files:
             if not (self.target_path / file_name).exists():
-                self.issues.append(ValidationIssue(
-                    id=f"struct_missing_{file_name}",
-                    category=ValidationCategory.STRUCTURE.value,
-                    level=ValidationLevel.WARNING.value,
-                    message=f"缺少建議檔案: {file_name}",
-                    suggestion=f"建立 {file_name} 檔案"
-                ))
+                self.issues.append(
+                    ValidationIssue(
+                        id=f"struct_missing_{file_name}",
+                        category=ValidationCategory.STRUCTURE.value,
+                        level=ValidationLevel.WARNING.value,
+                        message=f"缺少建議檔案: {file_name}",
+                        suggestion=f"建立 {file_name} 檔案",
+                    )
+                )
 
         empty_dirs = []
-        for dir_path in self.target_path.rglob('*'):
+        for dir_path in self.target_path.rglob("*"):
             if dir_path.is_dir():
                 if not any(dir_path.iterdir()):
-                    if not dir_path.name.startswith(('.', '_')):
+                    if not dir_path.name.startswith((".", "_")):
                         empty_dirs.append(str(dir_path.relative_to(self.target_path)))
 
         for empty_dir in empty_dirs[:5]:
-            self.issues.append(ValidationIssue(
-                id=f"struct_empty_dir",
-                category=ValidationCategory.STRUCTURE.value,
-                level=ValidationLevel.INFO.value,
-                message=f"空目錄: {empty_dir}",
-                file_path=empty_dir,
-                suggestion="添加內容或刪除目錄"
-            ))
+            self.issues.append(
+                ValidationIssue(
+                    id=f"struct_empty_dir",
+                    category=ValidationCategory.STRUCTURE.value,
+                    level=ValidationLevel.INFO.value,
+                    message=f"空目錄: {empty_dir}",
+                    file_path=empty_dir,
+                    suggestion="添加內容或刪除目錄",
+                )
+            )
 
     def _validate_references(self):
         """驗證引用有效性"""
-        for md_file in self.target_path.rglob('*.md'):
+        for md_file in self.target_path.rglob("*.md"):
             self._validate_markdown_links(md_file)
 
         if yaml:
-            for yaml_file in self.target_path.rglob('*.yaml'):
+            for yaml_file in self.target_path.rglob("*.yaml"):
                 self._validate_yaml_refs(yaml_file)
-            for yml_file in self.target_path.rglob('*.yml'):
+            for yml_file in self.target_path.rglob("*.yml"):
                 self._validate_yaml_refs(yml_file)
 
     def _validate_markdown_links(self, md_file: Path):
         """驗證 Markdown 連結"""
         try:
-            content = md_file.read_text(encoding='utf-8')
+            content = md_file.read_text(encoding="utf-8")
             rel_path = str(md_file.relative_to(self.target_path))
 
-            for match in re.finditer(r'\[([^\]]+)\]\(([^)]+)\)', content):
+            for match in re.finditer(r"\[([^\]]+)\]\(([^)]+)\)", content):
                 link_text = match.group(1)
-                link_href = match.group(2).split('#')[0]
-                line_num = content[:match.start()].count('\n') + 1
+                link_href = match.group(2).split("#")[0]
+                line_num = content[: match.start()].count("\n") + 1
 
-                if link_href.startswith(('http://', 'https://', 'mailto:', '#')):
+                if link_href.startswith(("http://", "https://", "mailto:", "#")):
                     continue
 
                 if link_href:
                     resolved = (md_file.parent / link_href).resolve()
                     if not resolved.exists():
-                        self.issues.append(ValidationIssue(
-                            id=f"ref_broken_link_{md_file.stem}",
-                            category=ValidationCategory.REFERENCE.value,
-                            level=ValidationLevel.ERROR.value,
-                            message=f"斷開的連結: [{link_text}]({link_href})",
-                            file_path=rel_path,
-                            line_number=line_num,
-                            suggestion="更新連結或建立目標檔案"
-                        ))
+                        self.issues.append(
+                            ValidationIssue(
+                                id=f"ref_broken_link_{md_file.stem}",
+                                category=ValidationCategory.REFERENCE.value,
+                                level=ValidationLevel.ERROR.value,
+                                message=f"斷開的連結: [{link_text}]({link_href})",
+                                file_path=rel_path,
+                                line_number=line_num,
+                                suggestion="更新連結或建立目標檔案",
+                            )
+                        )
 
         except Exception as e:
-            self.issues.append(ValidationIssue(
-                id=f"ref_read_error_{md_file.stem}",
-                category=ValidationCategory.REFERENCE.value,
-                level=ValidationLevel.WARNING.value,
-                message=f"無法讀取檔案: {str(e)[:100]}",
-                file_path=str(md_file.relative_to(self.target_path))
-            ))
+            self.issues.append(
+                ValidationIssue(
+                    id=f"ref_read_error_{md_file.stem}",
+                    category=ValidationCategory.REFERENCE.value,
+                    level=ValidationLevel.WARNING.value,
+                    message=f"無法讀取檔案: {str(e)[:100]}",
+                    file_path=str(md_file.relative_to(self.target_path)),
+                )
+            )
 
     def _validate_yaml_refs(self, yaml_file: Path):
         """驗證 YAML 引用"""
         try:
-            content = yaml_file.read_text(encoding='utf-8')
+            content = yaml_file.read_text(encoding="utf-8")
             data = yaml.safe_load(content)
             self._check_yaml_paths(data, yaml_file)
         except yaml.YAMLError as e:
-            self.issues.append(ValidationIssue(
-                id=f"ref_yaml_error_{yaml_file.stem}",
-                category=ValidationCategory.CONTENT.value,
-                level=ValidationLevel.ERROR.value,
-                message=f"YAML 語法錯誤: {str(e)[:100]}",
-                file_path=str(yaml_file.relative_to(self.target_path))
-            ))
+            self.issues.append(
+                ValidationIssue(
+                    id=f"ref_yaml_error_{yaml_file.stem}",
+                    category=ValidationCategory.CONTENT.value,
+                    level=ValidationLevel.ERROR.value,
+                    message=f"YAML 語法錯誤: {str(e)[:100]}",
+                    file_path=str(yaml_file.relative_to(self.target_path)),
+                )
+            )
         except Exception:
             pass
 
-    def _check_yaml_paths(self, data: Any, yaml_file: Path, key_path: str = ''):
+    def _check_yaml_paths(self, data: Any, yaml_file: Path, key_path: str = ""):
         """遞迴檢查 YAML 中的路徑"""
         if isinstance(data, dict):
             for key, value in data.items():
                 new_path = f"{key_path}.{key}" if key_path else key
 
-                if key.endswith(('_path', '_file', 'path', 'file')) and isinstance(value, str):
-                    if value and value != "_pending" and not value.startswith(('http://', 'https://')):
+                if key.endswith(("_path", "_file", "path", "file")) and isinstance(
+                    value, str
+                ):
+                    if (
+                        value
+                        and value != "_pending"
+                        and not value.startswith(("http://", "https://"))
+                    ):
                         full_path = self.target_path / value
                         if not full_path.exists():
-                            self.issues.append(ValidationIssue(
-                                id=f"ref_yaml_path_{yaml_file.stem}",
-                                category=ValidationCategory.REFERENCE.value,
-                                level=ValidationLevel.ERROR.value,
-                                message=f"YAML 引用的路徑不存在: {value}",
-                                file_path=str(yaml_file.relative_to(self.target_path)),
-                                suggestion=f"檢查路徑 {new_path}"
-                            ))
+                            self.issues.append(
+                                ValidationIssue(
+                                    id=f"ref_yaml_path_{yaml_file.stem}",
+                                    category=ValidationCategory.REFERENCE.value,
+                                    level=ValidationLevel.ERROR.value,
+                                    message=f"YAML 引用的路徑不存在: {value}",
+                                    file_path=str(
+                                        yaml_file.relative_to(self.target_path)
+                                    ),
+                                    suggestion=f"檢查路徑 {new_path}",
+                                )
+                            )
 
                 self._check_yaml_paths(value, yaml_file, new_path)
 
@@ -275,52 +299,57 @@ class PathValidator:
 
     def _validate_naming(self):
         """驗證命名規範"""
-        snake_case_pattern = re.compile(r'^[a-z][a-z0-9]*(_[a-z0-9]+)*$')
-        exceptions = {'README', 'LICENSE', 'CHANGELOG', 'TODO', 'INDEX'}
+        snake_case_pattern = re.compile(r"^[a-z][a-z0-9]*(_[a-z0-9]+)*$")
+        exceptions = {"README", "LICENSE", "CHANGELOG", "TODO", "INDEX"}
 
-        for file_path in self.target_path.rglob('*'):
-            if file_path.is_file() and not file_path.name.startswith('.'):
+        for file_path in self.target_path.rglob("*"):
+            if file_path.is_file() and not file_path.name.startswith("."):
                 stem = file_path.stem
                 if stem.upper() in exceptions:
                     continue
 
                 if not snake_case_pattern.match(stem):
-                    if re.search(r'[A-Z]', stem) or '-' in stem:
+                    if re.search(r"[A-Z]", stem) or "-" in stem:
                         rel_path = str(file_path.relative_to(self.target_path))
                         suggested = self._suggest_snake_case(stem, file_path.suffix)
-                        self.issues.append(ValidationIssue(
-                            id=f"naming_{stem}",
-                            category=ValidationCategory.NAMING.value,
-                            level=ValidationLevel.INFO.value,
-                            message=f"命名不符合 snake_case 規範: {file_path.name}",
-                            file_path=rel_path,
-                            suggestion=f"建議: {suggested}"
-                        ))
+                        self.issues.append(
+                            ValidationIssue(
+                                id=f"naming_{stem}",
+                                category=ValidationCategory.NAMING.value,
+                                level=ValidationLevel.INFO.value,
+                                message=f"命名不符合 snake_case 規範: {file_path.name}",
+                                file_path=rel_path,
+                                suggestion=f"建議: {suggested}",
+                            )
+                        )
 
     def _suggest_snake_case(self, name: str, suffix: str) -> str:
         """建議 snake_case 名稱"""
-        new_name = re.sub(r'([A-Z]+)([A-Z][a-z])', r'\1_\2', name)
-        new_name = re.sub(r'([a-z\d])([A-Z])', r'\1_\2', new_name)
-        new_name = new_name.replace('-', '_')
-        new_name = re.sub(r'_+', '_', new_name)
+        new_name = re.sub(r"([A-Z]+)([A-Z][a-z])", r"\1_\2", name)
+        new_name = re.sub(r"([a-z\d])([A-Z])", r"\1_\2", new_name)
+        new_name = new_name.replace("-", "_")
+        new_name = re.sub(r"_+", "_", new_name)
         return new_name.lower() + suffix
 
     def _validate_security(self):
         """驗證安全性問題"""
-        for file_path in self.target_path.rglob('*'):
+        for file_path in self.target_path.rglob("*"):
             if file_path.is_symlink():
                 try:
                     resolved = file_path.resolve()
                     resolved.relative_to(self.target_path)
                 except ValueError:
-                    self.issues.append(ValidationIssue(
-                        id=f"security_symlink_escape",
-                        category=ValidationCategory.SECURITY.value,
-                        level=ValidationLevel.ERROR.value,
-                        message=f"符號連結指向外部: {file_path.relative_to(self.target_path)}",
-                        file_path=str(file_path.relative_to(self.target_path)),
-                        suggestion="移除或修正符號連結"
-                    ))
+                    self.issues.append(
+                        ValidationIssue(
+                            id=f"security_symlink_escape",
+                            category=ValidationCategory.SECURITY.value,
+                            level=ValidationLevel.ERROR.value,
+                            message=f"符號連結指向外部: {file_path.relative_to(self.target_path)}",
+                            file_path=str(
+                                file_path.relative_to(
+                                    self.target_path)),
+                            suggestion="移除或修正符號連結",
+                        ))
 
     def _generate_summary(self, errors: list, warnings: list, info: list) -> str:
         """生成摘要"""
@@ -333,11 +362,11 @@ class PathValidator:
 
 
 def main():
-    parser = argparse.ArgumentParser(description='路徑驗證器 - 驗證路徑有效性')
-    parser.add_argument('--target', '-t', default='.', help='目標目錄')
-    parser.add_argument('--full', action='store_true', help='完整驗證')
-    parser.add_argument('--report', '-r', help='輸出報告檔案')
-    parser.add_argument('--quiet', '-q', action='store_true', help='只顯示錯誤')
+    parser = argparse.ArgumentParser(description="路徑驗證器 - 驗證路徑有效性")
+    parser.add_argument("--target", "-t", default=".", help="目標目錄")
+    parser.add_argument("--full", action="store_true", help="完整驗證")
+    parser.add_argument("--report", "-r", help="輸出報告檔案")
+    parser.add_argument("--quiet", "-q", action="store_true", help="只顯示錯誤")
     args = parser.parse_args()
 
     try:
@@ -364,32 +393,37 @@ def main():
         if result.issues:
             print(f"\n📋 問題列表:")
             for issue in result.issues:
-                level_icon = {'error': '❌', 'warning': '⚠️', 'info': 'ℹ️'}.get(issue.level, '•')
+                level_icon = {"error": "❌", "warning": "⚠️", "info": "ℹ️"}.get(
+                    issue.level, "•"
+                )
                 print(f"   {level_icon} [{issue.category}] {issue.message}")
                 if issue.file_path:
-                    print(f"      檔案: {issue.file_path}" + (f":{issue.line_number}" if issue.line_number else ""))
+                    print(
+                        f"      檔案: {issue.file_path}"
+                        + (f":{issue.line_number}" if issue.line_number else "")
+                    )
                 if issue.suggestion:
                     print(f"      建議: {issue.suggestion}")
 
     if args.report:
         output_data = {
-            'timestamp': result.timestamp,
-            'target_path': result.target_path,
-            'is_valid': result.is_valid,
-            'total_issues': result.total_issues,
-            'errors': result.errors,
-            'warnings': result.warnings,
-            'info': result.info,
-            'summary': result.summary,
-            'issues': [asdict(i) for i in result.issues]
+            "timestamp": result.timestamp,
+            "target_path": result.target_path,
+            "is_valid": result.is_valid,
+            "total_issues": result.total_issues,
+            "errors": result.errors,
+            "warnings": result.warnings,
+            "info": result.info,
+            "summary": result.summary,
+            "issues": [asdict(i) for i in result.issues],
         }
 
-        with open(args.report, 'w', encoding='utf-8') as f:
+        with open(args.report, "w", encoding="utf-8") as f:
             json.dump(output_data, f, indent=2, ensure_ascii=False)
         print(f"\n💾 報告已儲存至: {args.report}")
 
     sys.exit(0 if result.is_valid else 1)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

@@ -14,18 +14,13 @@ for AI agents, providing specialized knowledge and guidance.
 參考：AI 代理需要專業化和明確的角色定位 [1]
 """
 
+from .domain_experts import DrAlexChen  # AI 架構師
+from .domain_experts import EmmaThompson  # DevOps 專家
+from .domain_experts import JamesMiller  # 系統架構師
+from .domain_experts import LiWei  # 數據庫專家
+from .domain_experts import MarcusJohnson  # 安全架構師
 from .domain_experts import (
-    # Core AI Team
-    DrAlexChen,  # AI 架構師
-    # DevOps Team
-    EmmaThompson,  # DevOps 專家
-    # Architecture Team
-    JamesMiller,  # 系統架構師
-    # Database Team
-    LiWei,  # 數據庫專家
-    # Security Team
-    MarcusJohnson,  # 安全架構師
-    SarahWong,  # 自然語言處理專家
+    SarahWong,  # Core AI Team; DevOps Team; Architecture Team; Database Team; Security Team; 自然語言處理專家
 )
 from .expert_base import (
     CommunicationStyle,
@@ -43,23 +38,23 @@ from .expert_team import (
 
 __all__ = [
     # Base classes
-    'VirtualExpert',
-    'ExpertPersonality',
-    'ExpertKnowledge',
-    'WorkStyle',
-    'CommunicationStyle',
-    'ExpertiseLevel',
+    "VirtualExpert",
+    "ExpertPersonality",
+    "ExpertKnowledge",
+    "WorkStyle",
+    "CommunicationStyle",
+    "ExpertiseLevel",
     # Team
-    'VirtualExpertTeam',
-    'ExpertConsultation',
-    'ConsultationResult',
+    "VirtualExpertTeam",
+    "ExpertConsultation",
+    "ConsultationResult",
     # Domain Experts
-    'DrAlexChen',
-    'SarahWong',
-    'MarcusJohnson',
-    'LiWei',
-    'EmmaThompson',
-    'JamesMiller',
+    "DrAlexChen",
+    "SarahWong",
+    "MarcusJohnson",
+    "LiWei",
+    "EmmaThompson",
+    "JamesMiller",
 ]
 
-__version__ = '1.0.0'
+__version__ = "1.0.0"

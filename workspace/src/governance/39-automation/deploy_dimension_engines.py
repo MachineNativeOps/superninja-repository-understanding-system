@@ -29,7 +29,11 @@ DIMENSIONS = [
     ("governance_tools", "Governance Tools and Systems", "governance-tools"),
     ("governance_culture", "Governance Culture and Capability", "governance-culture"),
     ("governance_metrics", "Governance Metrics and Reporting", "governance-metrics"),
-    ("governance_improvement", "Governance Continuous Improvement", "governance-improvement"),
+    (
+        "governance_improvement",
+        "Governance Continuous Improvement",
+        "governance-improvement",
+    ),
 ]
 
 
@@ -191,7 +195,9 @@ def deploy_dimension_engines(governance_root: Path) -> int:
 
             # Create README for the engine
             engine_readme = dimension_path / "AUTOMATION_ENGINE_README.md"
-            engine_readme_content = generate_readme_for_engine(dimension_id, dimension_name)
+            engine_readme_content = generate_readme_for_engine(
+                dimension_id, dimension_name
+            )
             engine_readme.write_text(engine_readme_content)
             print(f"   Created AUTOMATION_ENGINE_README.md")
 

@@ -3,10 +3,11 @@ MachineNativeOps Naming Governance - Test Configuration
 Pytest configuration and fixtures for all test suites
 """
 
-import pytest
 import os
 import sys
 from pathlib import Path
+
+import pytest
 
 # Add project root to Python path
 project_root = Path(__file__).parent.parent
@@ -46,7 +47,7 @@ def sample_resource_names():
             "prod-app-service-",  # trailing dash
             "-prod-app-service",  # leading dash
             "prod..app",  # double dots
-        ]
+        ],
     }
 
 
@@ -59,36 +60,40 @@ def quantum_config():
         "coherence_threshold": 0.9999,
         "error_correction": "surface_code_v5",
         "qubits": 256,
-        "shots": 1024
+        "shots": 1024,
     }
 
 
 @pytest.fixture
 def mock_naming_generator():
     """Mock naming generator for testing"""
+
     class MockNamingGenerator:
         def generate(self, env, app, resource, version):
             return f"{env}-{app}-{resource}-{version}"
-        
+
         def validate_pattern(self, name):
             import re
+
             pattern = r"^[a-z0-9]+(-[a-z0-9]+)*$"
             return bool(re.match(pattern, name))
-    
+
     return MockNamingGenerator()
 
 
 @pytest.fixture
 def mock_naming_validator():
     """Mock naming validator for testing"""
+
     class MockNamingValidator:
         def validate(self, name):
             import re
+
             pattern = r"^[a-z0-9]+(-[a-z0-9]+)*$"
             if not re.match(pattern, name):
                 return {"valid": False, "errors": ["Invalid pattern"]}
             return {"valid": True, "errors": []}
-    
+
     return MockNamingValidator()
 
 
@@ -99,36 +104,26 @@ def performance_metrics():
         "baseline": {
             "processing_time": 48 * 3600,  # 48 hours in seconds
             "coverage": 0.72,
-            "violation_detection": 0.72
+            "violation_detection": 0.72,
         },
         "extended": {
             "processing_time": 2 * 3600,  # 2 hours in seconds
             "coverage": 0.95,
-            "violation_detection": 0.95
+            "violation_detection": 0.95,
         },
         "quantum": {
             "processing_time": 11,  # 11 seconds
             "coverage": 0.998,
-            "violation_detection": 0.998
-        }
+            "violation_detection": 0.998,
+        },
     }
 
 
 # Pytest configuration
 def pytest_configure(config):
     """Pytest configuration hook"""
-    config.addinivalue_line(
-        "markers", "unit: Unit tests"
-    )
-    config.addinivalue_line(
-        "markers", "e2e: End-to-end tests"
-    )
-    config.addinivalue_line(
-        "markers", "performance: Performance tests"
-    )
-    config.addinivalue_line(
-        "markers", "quantum: Quantum-specific tests"
-    )
-    config.addinivalue_line(
-        "markers", "slow: Slow running tests"
-    )
+    config.addinivalue_line("markers", "unit: Unit tests")
+    config.addinivalue_line("markers", "e2e: End-to-end tests")
+    config.addinivalue_line("markers", "performance: Performance tests")
+    config.addinivalue_line("markers", "quantum: Quantum-specific tests")
+    config.addinivalue_line("markers", "slow: Slow running tests")

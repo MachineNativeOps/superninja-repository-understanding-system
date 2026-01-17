@@ -32,23 +32,23 @@ from .system_bootstrap import (
 
 __all__ = [
     # Core
-    'SynergyMeshCore',
-    'SystemConfig',
-    'PhaseStatus',
-    'SystemHealth',
+    "SynergyMeshCore",
+    "SystemConfig",
+    "PhaseStatus",
+    "SystemHealth",
     # Bootstrap
-    'SystemBootstrap',
-    'BootstrapConfig',
-    'ServiceRegistry',
-    'DependencyInjector',
+    "SystemBootstrap",
+    "BootstrapConfig",
+    "ServiceRegistry",
+    "DependencyInjector",
     # Orchestrator
-    'PhaseOrchestrator',
-    'PhaseDefinition',
-    'PhaseTransition',
-    'ExecutionMode',
+    "PhaseOrchestrator",
+    "PhaseDefinition",
+    "PhaseTransition",
+    "ExecutionMode",
     # Pipeline
-    'AutomationPipeline',
-    'PipelineTask',
-    'TaskResult',
-    'PipelineConfig',
+    "AutomationPipeline",
+    "PipelineTask",
+    "TaskResult",
+    "PipelineConfig",
 ]

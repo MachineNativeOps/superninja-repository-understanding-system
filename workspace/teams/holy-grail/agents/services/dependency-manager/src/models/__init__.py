@@ -14,5 +14,5 @@ __all__ = [
     "VulnerabilitySeverity",
     "Update",
     "UpdateResult",
-    "UpdateType"
+    "UpdateType",
 ]

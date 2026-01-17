@@ -50,7 +50,8 @@ class BaselineValidationEngine:
     @staticmethod
     def validate_namespace_name(namespace: str) -> bool:
         """Validate namespace name matches RFC 1123 label"""
-        # Kubernetes namespace must match RFC 1123 label: lowercase alphanumerics and '-', 1-63 chars
+        # Kubernetes namespace must match RFC 1123 label: lowercase
+        # alphanumerics and '-', 1-63 chars
         return bool(re.fullmatch(r"[a-z0-9]([-a-z0-9]{0,61}[a-z0-9])?", namespace))
 
     def __init__(self, namespace: str = "machinenativenops-system"):
@@ -69,7 +70,10 @@ class BaselineValidationEngine:
             with open(self.log_file, "a", encoding="utf-8") as f:
                 f.write(log_entry + "\n")
         except IOError as e:
-            print(f"[{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] [ERROR] Failed to write log: {e}", file=sys.stderr)
+            print(
+                f"[{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] [ERROR] Failed to write log: {e}",
+                file=sys.stderr,
+            )
 
     def add_result(
         self,
@@ -99,16 +103,45 @@ class BaselineValidationEngine:
         """Execute kubectl command after validating subcommand"""
         # Allowlist of safe kubectl subcommands
         allowed_subcommands = {
-            "get", "describe", "apply", "delete", "logs", "exec", "create", "edit", "replace", "patch", "scale", "cordon",
-            "uncordon", "drain", "rollout", "top", "expose", "run", "explain", "version", "cluster-info", "api-resources",
-            "api-versions", "config", "label", "annotate", "attach", "port-forward", "cp", "auth"
+            "get",
+            "describe",
+            "apply",
+            "delete",
+            "logs",
+            "exec",
+            "create",
+            "edit",
+            "replace",
+            "patch",
+            "scale",
+            "cordon",
+            "uncordon",
+            "drain",
+            "rollout",
+            "top",
+            "expose",
+            "run",
+            "explain",
+            "version",
+            "cluster-info",
+            "api-resources",
+            "api-versions",
+            "config",
+            "label",
+            "annotate",
+            "attach",
+            "port-forward",
+            "cp",
+            "auth",
         }
         if not args or args[0] not in allowed_subcommands:
             error_msg = f"Disallowed or missing kubectl subcommand: {args[0] if args else '(none)'}"
             self.log(error_msg, level="FAIL")
             return False, error_msg
         try:
-            result = subprocess.run(["kubectl"] + args, capture_output=True, text=True, timeout=30)
+            result = subprocess.run(
+                ["kubectl"] + args, capture_output=True, text=True, timeout=30
+            )
             return result.returncode == 0, result.stdout
         except subprocess.TimeoutExpired as e:
             return False, f"Timeout: {str(e)}"
@@ -164,7 +197,9 @@ class BaselineValidationEngine:
             )
             return False
 
-        self.add_result("namespace_exists", Status.PASS, f"Namespace exists: {self.namespace}")
+        self.add_result(
+            "namespace_exists", Status.PASS, f"Namespace exists: {self.namespace}"
+        )
 
         # Check namespace labels
         success, output = self.run_kubectl(
@@ -175,7 +210,9 @@ class BaselineValidationEngine:
             try:
                 labels = json.loads(output) if output else {}
                 required_labels = ["app.kubernetes.io/name"]
-                missing_labels = [label for label in required_labels if label not in labels]
+                missing_labels = [
+                    label for label in required_labels if label not in labels
+                ]
 
                 if missing_labels:
                     self.add_result(
@@ -187,9 +224,13 @@ class BaselineValidationEngine:
                         remediation_command=f"kubectl label namespace {self.namespace} app.kubernetes.io/name={self.namespace}",
                     )
                 else:
-                    self.add_result("namespace_labels", Status.PASS, "All required labels present")
+                    self.add_result(
+                        "namespace_labels", Status.PASS, "All required labels present"
+                    )
             except json.JSONDecodeError:
-                self.add_result("namespace_labels", Status.WARN, "Could not parse namespace labels")
+                self.add_result(
+                    "namespace_labels", Status.WARN, "Could not parse namespace labels"
+                )
 
         return True
 
@@ -197,7 +238,9 @@ class BaselineValidationEngine:
         """Validate ConfigMaps in namespace"""
         self.log("Validating ConfigMaps...")
 
-        success, output = self.run_kubectl(["get", "configmap", "-n", self.namespace, "-o", "json"])
+        success, output = self.run_kubectl(
+            ["get", "configmap", "-n", self.namespace, "-o", "json"]
+        )
 
         if not success:
             self.add_result("configmaps", Status.FAIL, "Could not retrieve ConfigMaps")
@@ -231,7 +274,9 @@ class BaselineValidationEngine:
         )
 
         if not success:
-            self.add_result("deployments", Status.WARN, "Could not retrieve Deployments")
+            self.add_result(
+                "deployments", Status.WARN, "Could not retrieve Deployments"
+            )
             return True
 
         try:
@@ -253,7 +298,9 @@ class BaselineValidationEngine:
 
             if ready_deployments == len(deployments):
                 self.add_result(
-                    "deployments", Status.PASS, f"All {len(deployments)} Deployments are ready"
+                    "deployments",
+                    Status.PASS,
+                    f"All {len(deployments)} Deployments are ready",
                 )
             else:
                 self.add_result(
@@ -264,14 +311,18 @@ class BaselineValidationEngine:
 
             return True
         except json.JSONDecodeError:
-            self.add_result("deployments", Status.FAIL, "Could not parse Deployment data")
+            self.add_result(
+                "deployments", Status.FAIL, "Could not parse Deployment data"
+            )
             return False
 
     def validate_services(self) -> bool:
         """Validate Services in namespace"""
         self.log("Validating Services...")
 
-        success, output = self.run_kubectl(["get", "service", "-n", self.namespace, "-o", "json"])
+        success, output = self.run_kubectl(
+            ["get", "service", "-n", self.namespace, "-o", "json"]
+        )
 
         if not success:
             self.add_result("services", Status.WARN, "Could not retrieve Services")
@@ -305,7 +356,9 @@ class BaselineValidationEngine:
         )
 
         if not success:
-            self.add_result("network_policies", Status.WARN, "Could not retrieve NetworkPolicies")
+            self.add_result(
+                "network_policies", Status.WARN, "Could not retrieve NetworkPolicies"
+            )
             return True
 
         try:
@@ -313,23 +366,35 @@ class BaselineValidationEngine:
             policies = data.get("items", [])
 
             if len(policies) == 0:
-                self.add_result("network_policies", Status.WARN, "No NetworkPolicies found")
+                self.add_result(
+                    "network_policies", Status.WARN, "No NetworkPolicies found"
+                )
             else:
                 self.add_result(
-                    "network_policies", Status.PASS, f"Found {len(policies)} NetworkPolicies"
+                    "network_policies",
+                    Status.PASS,
+                    f"Found {len(policies)} NetworkPolicies",
                 )
 
             return True
         except json.JSONDecodeError:
-            self.add_result("network_policies", Status.FAIL, "Could not parse NetworkPolicy data")
+            self.add_result(
+                "network_policies", Status.FAIL, "Could not parse NetworkPolicy data"
+            )
             return False
 
     def generate_report(self) -> dict:
         """Generate validation report with auto-evolution insights"""
         total_checks = len(self.validation_results)
-        passed_checks = sum(1 for r in self.validation_results if r.status == Status.PASS)
-        failed_checks = sum(1 for r in self.validation_results if r.status == Status.FAIL)
-        warned_checks = sum(1 for r in self.validation_results if r.status == Status.WARN)
+        passed_checks = sum(
+            1 for r in self.validation_results if r.status == Status.PASS
+        )
+        failed_checks = sum(
+            1 for r in self.validation_results if r.status == Status.FAIL
+        )
+        warned_checks = sum(
+            1 for r in self.validation_results if r.status == Status.WARN
+        )
 
         # Collect auto-remediation suggestions
         remediation_plan = [
@@ -415,7 +480,9 @@ class BaselineValidationEngine:
                 f"💡 {report['auto_evolution']['remediations_available']} auto-fix suggestion(s) available:"
             )
             self.log("")
-            for idx, remediation in enumerate(report["auto_evolution"]["remediation_plan"], 1):
+            for idx, remediation in enumerate(
+                report["auto_evolution"]["remediation_plan"], 1
+            ):
                 self.log(f"{idx}. {remediation['check']}")
                 self.log(f"   Issue: {remediation['issue']}")
                 self.log(f"   💡 Suggestion: {remediation['suggestion']}")
@@ -449,7 +516,9 @@ def main():
         description="SynergyMesh Baseline Validation Engine with Auto-Evolution"
     )
     parser.add_argument(
-        "--namespace", default="machinenativenops-system", help="Kubernetes namespace to validate"
+        "--namespace",
+        default="machinenativenops-system",
+        help="Kubernetes namespace to validate",
     )
     parser.add_argument(
         "--auto-evolve",
