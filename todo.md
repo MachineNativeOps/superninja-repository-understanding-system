@@ -132,3 +132,62 @@ All 30 artifact schemas have been successfully created and committed!
 **Commit:** 5e00addd
 **Files Changed:** 13 files, 8,682 insertions
 **Status:** Ready for push (requires valid GitHub token)
+
+---
+
+# AI自動集成系統升級工作計劃
+
+## 階段1：分析現有工作流配置
+- [x] 檢查現有的auto-integration工作流配置
+- [x] 分析當前觸發機制
+- [x] 評估需要修改的部分
+
+**階段1分析結果**：
+- ✅ `pr-quality-check.yml` 已符合現代標準（PR和push觸發）
+- ❌ `fhs-integration-auto-init.yml` 的 `auto-integration` job 被限制僅在定時/手動觸發執行
+- ❌ 缺乏AI驅動的智能分析和自動化合併決策
+
+## 階段2：升級觸發機制
+- [x] 修改auto-integration工作流，增加PR觸發
+- [x] 增加push觸發機制
+- [x] 配置paths過濾器
+- [x] 保留定時和手動觸發作為備用
+
+**階段2完成內容**：
+- ✅ 移除了auto-integration job的觸發限制
+- ✅ 現在支持PR、push、定時、手動四種觸發方式
+- ✅ 增加了PR評論功能，自動顯示集成計劃
+- ✅ 評估報告和集成計劃會在所有觸發條件下生成
+
+## 階段3：集成AI驅動的智能分析
+- [x] 研究可用的AI代碼審查工具
+- [x] 選擇適合的AI工具並配置
+- [x] 集成自動化質量檢查
+
+**階段3完成內容**：
+- ✅ 創建了新的AI驅動集成分析器工作流（ai-integration-analyzer.yml）
+- ✅ 實現了AI代碼審查和變更分析
+- ✅ 自動風險評估（低/中/高）
+- ✅ 智能建議生成
+- ✅ 自動化PR評論和標籤管理
+
+## 階段4：實現自動化合併決策
+- [x] 配置自動合併條件
+- [x] 實現基於CI檢查的自動合併
+- [x] 添加風險評估機制
+
+**階段4完成內容**：
+- ✅ 實現了自動化合併決策機制
+- ✅ 基於AI風險評估和CI檢查結果
+- ✅ 低風險變更自動批准並合併
+- ✅ 支持"auto-merge-ready"和"do-not-merge"標籤控制
+
+## 階段5：測試和驗證
+- [ ] 測試新的觸發機制
+- [ ] 驗證AI工具集成
+- [ ] 測試自動合併流程
+
+## 階段6：文檔和報告
+- [ ] 更新工作流文檔
+- [ ] 創建升級完成報告
+- [ ] 記錄配置變更

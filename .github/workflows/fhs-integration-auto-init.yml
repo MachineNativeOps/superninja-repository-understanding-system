@@ -48,12 +48,12 @@ jobs:
           python3 scripts/fhs-integration/operational_test.py
       
       - name: Generate assessment report
-        if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
+        if: always()
         run: |
-          python3 workspace/tools/fhs-integration/fhs_automation_master.py --assess-all --save-report
+          python3 workspace/tools/fhs-integration/fhs_automation_master.py --assess-all --save-report || echo "Assessment report generation failed, continuing..."
       
       - name: Upload assessment report
-        if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
+        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: fhs-assessment-report
@@ -70,7 +70,6 @@ jobs:
     runs-on: ubuntu-latest
     needs: auto-initialize
     if: |
-      (github.event_name == 'schedule' || github.event_name == 'workflow_dispatch') &&
       needs.auto-initialize.result == 'success'
     
     steps:
@@ -116,3 +115,33 @@ jobs:
           name: fhs-integration-plan
           path: /tmp/integration-plan.txt
           retention-days: 30
+      
+      - name: Create PR comment with integration plan
+        if: |
+          steps.check-ready.outputs.ready == 'true' &&
+          github.event_name == 'pull_request'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            let comment = '## 🤖 AI自動集成分析\n\n';
+            comment += '檢測到組件已準備好集成到FHS系統！\n\n';
+            comment += '### 集成計劃摘要\n\n';
+            try {
+              const plan = fs.readFileSync('/tmp/integration-plan.txt', 'utf8');
+              comment += plan;
+            } catch (error) {
+              comment += '無法讀取集成計劃\n';
+            }
+            comment += '\n---\n\n';
+            comment += '💡 **下一步操作**:\n';
+            comment += '- 審查集成計劃\n';
+            comment += '- 確認無問題後，可以手動合併此PR\n';
+            comment += '- 或等待自動合併機制處理\n';
+            
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: comment
+            });
