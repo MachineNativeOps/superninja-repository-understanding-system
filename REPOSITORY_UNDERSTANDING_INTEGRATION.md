@@ -37,7 +37,7 @@ Successfully reviewed and integrated additional improvements from the `feature/r
 
 ## 🎯 Integration Summary
 
-Successfully integrated all designs and components from the [superninja-repository-understanding-system](https://github.com/MachineNativeOps/superninja-repository-understanding-system) repository into the machine-native-ops repository.
+Successfully integrated all designs and components from the [mno-repository-understanding-system](https://github.com/MachineNativeOps/mno-repository-understanding-system) repository into the machine-native-ops repository.
 
 ## 📦 Integrated Components
 
@@ -333,7 +333,7 @@ All paths are relative and portable. The system can be:
 ## 🔗 Related Resources
 
 ### Original Repository
-- https://github.com/MachineNativeOps/superninja-repository-understanding-system
+- https://github.com/MachineNativeOps/mno-repository-understanding-system
 
 ### Integration Locations
 - Tools: `workspace/tools/repository-understanding/`

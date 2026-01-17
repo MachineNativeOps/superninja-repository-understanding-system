@@ -2,7 +2,7 @@
 
 ## 🎯 概述
 
-此目錄包含從 [superninja-repository-understanding-system](https://github.com/MachineNativeOps/superninja-repository-understanding-system) 整合的完整儲存庫理解系統。
+此目錄包含從 [mno-repository-understanding-system](https://github.com/MachineNativeOps/mno-repository-understanding-system) 整合的完整儲存庫理解系統。
 
 該系統提供：
 - **4階段儲存庫掃描和分析** - 自動掃描、操作檢查、視覺化和持續學習
@@ -296,7 +296,7 @@ if maintenance.check_if_maintenance_needed():
 ## 📝 更新日誌
 
 ### v1.0.0 (2025-01-16)
-- ✅ 從 superninja-repository-understanding-system 整合
+- ✅ 從 mno-repository-understanding-system 整合
 - ✅ 完成所有四個階段的開發
 - ✅ 建立完整的知識庫系統
 - ✅ 實施操作檢查機制
@@ -307,7 +307,7 @@ if maintenance.check_if_maintenance_needed():
 ## 📄 原始儲存庫
 
 此系統整合自：
-https://github.com/MachineNativeOps/superninja-repository-understanding-system
+https://github.com/MachineNativeOps/mno-repository-understanding-system
 
 ## 👥 貢獻
 
