@@ -294,10 +294,13 @@ exec python3 "$LIB_DIR/{source_script}" "$@"
             f"fhs-migration-{component_name}.md"
         )
         
+        from datetime import datetime
+        current_date = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        
         doc_content = f"""# FHS Migration: {component_name}
 
 ## Migration Date
-{subprocess.check_output(['date'], text=True).strip()}
+{current_date}
 
 ## Component Information
 - **Name**: {component_name}

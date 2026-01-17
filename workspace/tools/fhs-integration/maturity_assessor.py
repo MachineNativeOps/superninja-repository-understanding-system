@@ -210,8 +210,12 @@ class MaturityAssessor:
             cmd = f"git log --since='{six_months_ago}' --oneline -- {path}"
             result = subprocess.run(cmd, shell=True, capture_output=True, text=True, cwd=self.repo_root)
             
-            commits = result.stdout.strip().split('\n')
-            commit_count = len([c for c in commits if c])
+            output = result.stdout.strip()
+            if not output:
+                commit_count = 0
+            else:
+                commits = output.split('\n')
+                commit_count = len([c for c in commits if c])
             
             # 較少的提交可能意味著更穩定
             if commit_count < 10:
@@ -230,10 +234,14 @@ class MaturityAssessor:
         # 實際應用中可以整合 issue tracker
         # 這裡用 git log 中的 "fix", "bug" 關鍵字
         try:
-            cmd = f"git log --since='1 month ago' --oneline --grep='fix\\|bug\\|patch' -- workspace/tools/{component_name}"
+            cmd = f"git log --since='1 month ago' --oneline --grep='fix' --grep='bug' --grep='patch' -E -- workspace/tools/{component_name}"
             result = subprocess.run(cmd, shell=True, capture_output=True, text=True, cwd=self.repo_root)
             
-            fix_commits = len(result.stdout.strip().split('\n'))
+            output = result.stdout.strip()
+            if not output:
+                fix_commits = 0
+            else:
+                fix_commits = len(output.split('\n'))
             
             if fix_commits <= 1:
                 return 8  # 低 bug 率

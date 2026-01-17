@@ -34,7 +34,7 @@ class FHSAutomationMaster:
     def _find_repo_root(self) -> str:
         """尋找 git 倉庫根目錄"""
         current = os.path.abspath(os.path.dirname(__file__))
-        while current != '/':
+        while os.path.dirname(current) != current:  # Cross-platform check for root
             if os.path.exists(os.path.join(current, '.git')):
                 return current
             current = os.path.dirname(current)
