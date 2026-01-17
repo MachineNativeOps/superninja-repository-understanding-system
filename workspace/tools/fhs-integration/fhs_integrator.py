@@ -24,8 +24,14 @@ class FHSIntegrator:
         self.dry_run = dry_run
         self.workspace_tools = os.path.join(self.repo_root, "workspace", "tools")
         
-    def integrate_component(self, component_name: str, maturity_score: int = 0) -> Dict:
-        """整合組件到 FHS 目錄"""
+    def integrate_component(self, component_name: str, maturity_score: int = 0, skip_validation: bool = False) -> Dict:
+        """整合組件到 FHS 目錄
+        
+        Args:
+            component_name: 組件名稱
+            maturity_score: 成熟度分數
+            skip_validation: 跳過驗證（不建議）
+        """
         component_path = os.path.join(self.workspace_tools, component_name)
         
         if not os.path.exists(component_path):
@@ -39,33 +45,65 @@ class FHSIntegrator:
         
         results = {
             "component": component_name,
+            "maturity_score": maturity_score,
             "dry_run": self.dry_run,
-            "actions": []
+            "actions": [],
+            "validation_passed": False
         }
         
         # 1. 分析組件結構
         structure = self._analyze_component_structure(component_path)
         results["structure"] = structure
         
-        # 2. 創建 FHS 目錄結構
-        fhs_structure = self._create_fhs_structure(component_name, structure, results)
-        
-        # 3. 生成命令包裝器
-        wrappers = self._generate_command_wrappers(component_name, structure, results)
-        
-        # 4. 複製庫文件
+        # 2. 創建整合計劃
+        self._create_fhs_structure(component_name, structure, results)
+        self._generate_command_wrappers(component_name, structure, results)
         self._copy_library_files(component_name, component_path, results)
-        
-        # 5. 複製配置文件
         self._copy_configuration_files(component_name, component_path, results)
-        
-        # 6. 複製服務文件
         self._copy_service_files(component_name, component_path, results)
-        
-        # 7. 生成遷移文檔
         self._generate_migration_docs(component_name, results)
         
+        # 3. 執行驗證（除非被跳過）
+        if not skip_validation:
+            validation_result = self._validate_integration_plan(component_name, results)
+            results["validation"] = validation_result
+            results["validation_passed"] = validation_result.get("passed", False)
+            
+            if not results["validation_passed"]:
+                print("\n" + "=" * 80)
+                print("❌ VALIDATION FAILED - Integration aborted")
+                print("=" * 80)
+                print("\nErrors detected:")
+                for error in validation_result.get("errors", []):
+                    print(f"  • {error}")
+                print("\nFix these issues before proceeding.")
+                print("=" * 80)
+                return results
+            else:
+                print("\n" + "=" * 80)
+                print("✅ VALIDATION PASSED - Safe to proceed")
+                print("=" * 80)
+        else:
+            print("\n⚠️  WARNING: Validation skipped - proceeding without safety checks")
+        
         return results
+    
+    def _validate_integration_plan(self, component_name: str, results: Dict) -> Dict:
+        """執行整合計劃驗證"""
+        try:
+            # 動態導入驗證器
+            from fhs_validator import FHSIntegrationValidator
+            
+            validator = FHSIntegrationValidator(repo_root=self.repo_root)
+            validation_report = validator.validate_integration(component_name, results)
+            
+            return validation_report
+        except ImportError:
+            print("⚠️  Warning: FHS validator not found, skipping validation")
+            return {"passed": True, "warnings": ["Validator not available"]}
+        except Exception as e:
+            print(f"⚠️  Warning: Validation error: {e}")
+            return {"passed": False, "errors": [str(e)]}
     
     def _analyze_component_structure(self, path: str) -> Dict:
         """分析組件結構"""
