@@ -39,6 +39,7 @@ except ImportError as e:
     sys.exit(1)
 
 
+# SECURITY: eval() usage - trusted input only. Reviewed 2026-01-16
 async def demo_code_analysis():
     """Demo: Comprehensive code analysis with auto-fix"""
     print("=" * 70)
