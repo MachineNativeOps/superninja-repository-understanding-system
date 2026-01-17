@@ -6,18 +6,31 @@ status: "active"
 
 improvement_tracking:
   finding_status:
+
     - "Open"
+
     - "In Progress"
+
     - "Resolved"
+
     - "Verified"
+
     - "Closed"
+
   
   tracking_frequency: "Monthly"
+
   
   escalation:
+
     overdue_30_days: "Notify management"
+
     overdue_60_days: "Escalate to board"
+
   
   verification:
+
     method: "Follow-up audit"
+
     timing: "Within 90 days of resolution"
+

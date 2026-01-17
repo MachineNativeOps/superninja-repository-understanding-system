@@ -13,12 +13,16 @@ namePrefix: dev-
 labels:
 - pairs:
     environment: dev
+
   includeSelectors: false
+
 
 replicas:
 - name: super-agent
   count: 1
 
+
 images:
 - name: machinenativeops/super-agent
   newTag: dev-latest
+

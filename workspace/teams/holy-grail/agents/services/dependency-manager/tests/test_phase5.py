@@ -58,7 +58,7 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "src"))
 class TestCaseStudyEngine(unittest.TestCase):
     """案例學習引擎測試"""
 
-    def setUp(self):
+    def set_up(self):
         """設置測試"""
         self.engine = CaseStudyEngine()
 
@@ -204,7 +204,7 @@ class TestCaseStudyEngine(unittest.TestCase):
 class TestStrategyAdvisor(unittest.TestCase):
     """策略顧問測試"""
 
-    def setUp(self):
+    def set_up(self):
         """設置測試"""
         self.advisor = StrategyAdvisor()
 
@@ -341,7 +341,7 @@ class TestStrategyAdvisor(unittest.TestCase):
 class TestResourceOptimizer(unittest.TestCase):
     """資源優化器測試"""
 
-    def setUp(self):
+    def set_up(self):
         """設置測試"""
         self.optimizer = ResourceOptimizer()
 
@@ -473,7 +473,7 @@ class TestResourceOptimizer(unittest.TestCase):
 class TestEvolutionTracker(unittest.TestCase):
     """演進追蹤器測試"""
 
-    def setUp(self):
+    def set_up(self):
         """設置測試"""
         self.tracker = EvolutionTracker()
 

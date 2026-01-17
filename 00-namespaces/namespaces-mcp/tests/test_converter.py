@@ -20,7 +20,7 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "src"))
 class TestMachineNativeConverter(unittest.TestCase):
     """MachineNativeConverter 測試類"""
 
-    def setUp(self):
+    def set_up(self):
         """測試前準備"""
         self.converter = MachineNativeConverter()
         self.temp_dir = tempfile.mkdtemp()
@@ -29,7 +29,7 @@ class TestMachineNativeConverter(unittest.TestCase):
         self.source_dir.mkdir()
         self.target_dir.mkdir()
 
-    def tearDown(self):
+    def tear_down(self):
         """測試後清理"""
         shutil.rmtree(self.temp_dir)
 
@@ -196,7 +196,7 @@ class TestConversionRule(unittest.TestCase):
 class TestIntegration(unittest.TestCase):
     """集成測試"""
 
-    def setUp(self):
+    def set_up(self):
         """測試前準備"""
         self.converter = MachineNativeConverter()
         self.temp_dir = tempfile.mkdtemp()
@@ -205,7 +205,7 @@ class TestIntegration(unittest.TestCase):
         self.source_dir.mkdir()
         self.target_dir.mkdir()
 
-    def tearDown(self):
+    def tear_down(self):
         """測試後清理"""
         shutil.rmtree(self.temp_dir)
 

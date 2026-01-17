@@ -45,7 +45,7 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "src"))
 class TestEnterpriseIntegration(unittest.TestCase):
     """企業整合模組測試"""
 
-    def setUp(self):
+    def set_up(self):
         self.integration = EnterpriseIntegration()
 
     def test_register_integration(self):
@@ -160,7 +160,7 @@ class TestEnterpriseIntegration(unittest.TestCase):
 class TestCommercialAnalytics(unittest.TestCase):
     """商業分析模組測試"""
 
-    def setUp(self):
+    def set_up(self):
         self.analytics = CommercialAnalytics(hourly_rate=100.0)
 
     def test_calculate_roi(self):
@@ -281,7 +281,7 @@ class TestCommercialAnalytics(unittest.TestCase):
 class TestIntelligentRecommendation(unittest.TestCase):
     """智能推薦引擎測試"""
 
-    def setUp(self):
+    def set_up(self):
         self.engine = IntelligentRecommendation()
 
     def test_calculate_health_score(self):
@@ -402,7 +402,7 @@ class TestIntelligentRecommendation(unittest.TestCase):
 class TestNextGenSecurity(unittest.TestCase):
     """下世代安全模組測試"""
 
-    def setUp(self):
+    def set_up(self):
         self.security = NextGenSecurity()
 
     def test_generate_sbom(self):

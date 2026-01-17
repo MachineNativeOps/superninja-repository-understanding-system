@@ -28,7 +28,7 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "src"))
 class TestScalabilityEvaluator(unittest.TestCase):
     """可擴展性評估器測試"""
 
-    def setUp(self):
+    def set_up(self):
         self.evaluator = ScalabilityEvaluator()
 
     def test_high_scalability(self):
@@ -66,7 +66,7 @@ class TestScalabilityEvaluator(unittest.TestCase):
 class TestMarketFitEvaluator(unittest.TestCase):
     """市場適配度評估器測試"""
 
-    def setUp(self):
+    def set_up(self):
         self.evaluator = MarketFitEvaluator()
 
     def test_growing_market(self):
@@ -97,7 +97,7 @@ class TestMarketFitEvaluator(unittest.TestCase):
 class TestAchievabilityEvaluator(unittest.TestCase):
     """可實現性評估器測試"""
 
-    def setUp(self):
+    def set_up(self):
         self.evaluator = AchievabilityEvaluator()
 
     def test_high_achievability(self):
@@ -119,7 +119,7 @@ class TestAchievabilityEvaluator(unittest.TestCase):
 class TestROIEvaluator(unittest.TestCase):
     """ROI 評估器測試"""
 
-    def setUp(self):
+    def set_up(self):
         self.evaluator = ROIEvaluator()
 
     def test_high_roi(self):
@@ -139,7 +139,7 @@ class TestROIEvaluator(unittest.TestCase):
 class TestTechnologyMaturityEvaluator(unittest.TestCase):
     """技術成熟度評估器測試"""
 
-    def setUp(self):
+    def set_up(self):
         self.evaluator = TechnologyMaturityEvaluator()
 
     def test_mature_technology(self):
@@ -160,7 +160,7 @@ class TestTechnologyMaturityEvaluator(unittest.TestCase):
 class TestValueCreationEvaluator(unittest.TestCase):
     """價值創造評估器測試"""
 
-    def setUp(self):
+    def set_up(self):
         self.evaluator = ValueCreationEvaluator()
 
     def test_high_value_creation(self):
@@ -183,7 +183,7 @@ class TestValueCreationEvaluator(unittest.TestCase):
 class TestSMARTVFramework(unittest.TestCase):
     """SMART-V 框架整合測試"""
 
-    def setUp(self):
+    def set_up(self):
         self.framework = SMARTVFramework()
 
     def test_full_evaluation(self):
@@ -244,7 +244,7 @@ class TestSMARTVFramework(unittest.TestCase):
 class TestWeightConfigManager(unittest.TestCase):
     """權重配置管理器測試"""
 
-    def setUp(self):
+    def set_up(self):
         self.manager = WeightConfigManager()
 
     def test_preset_weights(self):
@@ -296,7 +296,7 @@ class TestWeightConfigManager(unittest.TestCase):
 class TestEvaluationReportGenerator(unittest.TestCase):
     """報告生成器測試"""
 
-    def setUp(self):
+    def set_up(self):
         self.framework = SMARTVFramework()
         self.generator = EvaluationReportGenerator()
 
@@ -348,7 +348,7 @@ class TestEvaluationReportGenerator(unittest.TestCase):
 class TestGradeCalculation(unittest.TestCase):
     """等級計算測試"""
 
-    def setUp(self):
+    def set_up(self):
         self.framework = SMARTVFramework()
 
     def test_grade_a_plus(self):

@@ -21,7 +21,7 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "src"))
 class TestSustainableAnalyzer(unittest.TestCase):
     """永續發展分析器測試"""
 
-    def setUp(self):
+    def set_up(self):
         """測試前準備"""
         from future.sustainable_analyzer import (
             CarbonFootprint,
@@ -153,7 +153,7 @@ class TestSustainableAnalyzer(unittest.TestCase):
 class TestLowCodeIntegration(unittest.TestCase):
     """低代碼整合測試"""
 
-    def setUp(self):
+    def set_up(self):
         """測試前準備"""
         from future.lowcode_integration import (
             AutoGenerator,
@@ -285,7 +285,7 @@ class TestLowCodeIntegration(unittest.TestCase):
 class TestPrivacyFramework(unittest.TestCase):
     """隱私優先框架測試"""
 
-    def setUp(self):
+    def set_up(self):
         """測試前準備"""
         from future.privacy_framework import (
             ComplianceFramework,
@@ -488,7 +488,7 @@ class TestPrivacyFramework(unittest.TestCase):
 class TestDevelopmentTracker(unittest.TestCase):
     """發展追蹤器測試"""
 
-    def setUp(self):
+    def set_up(self):
         """測試前準備"""
         from future.development_tracker import (
             ContinuousOptimization,

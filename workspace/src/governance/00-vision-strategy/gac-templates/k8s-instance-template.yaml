@@ -4,9 +4,15 @@ apiVersion: {{ CRD_GROUP }}/v1
 kind: {{ CRD_KIND }}
 metadata:
   name: {{ INSTANCE_NAME }}
+
   namespace: {{ NAMESPACE }}
+
   annotations:
+
     governance.kai/strategic-doc: "{{ STRATEGIC_DOC_PATH }}"
+
     governance.kai/version: "{{ VERSION }}"
+
 spec:
   {{ SPEC_CONTENT }}
+

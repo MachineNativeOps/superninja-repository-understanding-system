@@ -14,15 +14,25 @@ apiVersion: v1
 kind: Namespace
 metadata:
   name: team-frontend-prod
+
   annotations:
+
     machinenativeops.io/canonical-urn: "urn:machinenativeops:team:frontend:env:prod:v1"
+
     machinenativeops.io/naming-mode: "team-domain-env"
+
     machinenativeops.io/description: "Frontend team production namespace"
+
   labels:
+
     environment: "prod"
+
     tenant: "platform-team"
+
     team: "frontend-team"
+
     domain: "frontend"
+
 
 ---
 # 更多 team-domain-env 示例
@@ -31,28 +41,46 @@ apiVersion: v1
 kind: Namespace
 metadata:
   name: team-backend-staging
+
   annotations:
+
     machinenativeops.io/canonical-urn: "urn:machinenativeops:team:backend:env:staging:v1"
+
     machinenativeops.io/naming-mode: "team-domain-env"
+
   labels:
+
     environment: "staging"
+
     tenant: "platform-team"
+
     team: "backend-team"
+
     domain: "backend"
+
 
 ---
 apiVersion: v1
 kind: Namespace
 metadata:
   name: team-mobile-dev
+
   annotations:
+
     machinenativeops.io/canonical-urn: "urn:machinenativeops:team:mobile:env:dev:v1"
+
     machinenativeops.io/naming-mode: "team-domain-env"
+
   labels:
+
     environment: "dev"
+
     tenant: "platform-team"
+
     team: "mobile-team"
+
     domain: "mobile"
+
 
 ---
 ##############################################
@@ -67,18 +95,31 @@ apiVersion: v1
 kind: Namespace
 metadata:
   name: tenant-payment-prod-uswest
+
   annotations:
+
     machinenativeops.io/canonical-urn: "urn:machinenativeops:tenant:payment:env:prod:region:uswest"
+
     machinenativeops.io/naming-mode: "tenant-workload-env-region"
+
     machinenativeops.io/description: "Payment workload for tenant in US West region"
+
     machinenativeops.io/region: "us-west-2"
+
     machinenativeops.io/data-residency: "us"
+
   labels:
+
     environment: "prod"
+
     tenant: "enterprise-customer-a"
+
     workload: "payment"
+
     region: "us-west-2"
+
     multi-tenant: "true"
+
 
 ---
 # 更多 tenant-workload-env-region 示例
@@ -87,32 +128,54 @@ apiVersion: v1
 kind: Namespace
 metadata:
   name: tenant-analytics-staging-eucentral
+
   annotations:
+
     machinenativeops.io/canonical-urn: "urn:machinenativeops:tenant:analytics:env:staging:region:eucentral"
+
     machinenativeops.io/naming-mode: "tenant-workload-env-region"
+
     machinenativeops.io/region: "eu-central-1"
+
   labels:
+
     environment: "staging"
+
     tenant: "enterprise-customer-b"
+
     workload: "analytics"
+
     region: "eu-central-1"
+
     multi-tenant: "true"
+
 
 ---
 apiVersion: v1
 kind: Namespace
 metadata:
   name: tenant-auth-prod-apsouth
+
   annotations:
+
     machinenativeops.io/canonical-urn: "urn:machinenativeops:tenant:auth:env:prod:region:apsouth"
+
     machinenativeops.io/naming-mode: "tenant-workload-env-region"
+
     machinenativeops.io/region: "ap-south-1"
+
   labels:
+
     environment: "prod"
+
     tenant: "enterprise-customer-c"
+
     workload: "auth"
+
     region: "ap-south-1"
+
     multi-tenant: "true"
+
 
 ---
 ##############################################
@@ -127,18 +190,31 @@ apiVersion: v1
 kind: Namespace
 metadata:
   name: prod-api-v2
+
   annotations:
+
     machinenativeops.io/canonical-urn: "urn:machinenativeops:env:prod:app:api:version:v2"
+
     machinenativeops.io/naming-mode: "env-app-version"
+
     machinenativeops.io/description: "API version 2 in production"
+
     machinenativeops.io/app-version: "v2"
+
     machinenativeops.io/deployment-strategy: "blue-green"
+
   labels:
+
     environment: "prod"
+
     tenant: "platform-team"
+
     app: "api"
+
     version: "v2"
+
     deployment-strategy: "blue-green"
+
 
 ---
 # 更多 env-app-version 示例
@@ -147,35 +223,60 @@ apiVersion: v1
 kind: Namespace
 metadata:
   name: staging-frontend-v3
+
   annotations:
+
     machinenativeops.io/canonical-urn: "urn:machinenativeops:env:staging:app:frontend:version:v3"
+
     machinenativeops.io/naming-mode: "env-app-version"
+
     machinenativeops.io/app-version: "v3"
+
     machinenativeops.io/deployment-strategy: "canary"
+
     machinenativeops.io/traffic-split: "10"
+
   labels:
+
     environment: "staging"
+
     tenant: "platform-team"
+
     app: "frontend"
+
     version: "v3"
+
     deployment-strategy: "canary"
+
 
 ---
 apiVersion: v1
 kind: Namespace
 metadata:
   name: prod-backend-v1
+
   annotations:
+
     machinenativeops.io/canonical-urn: "urn:machinenativeops:env:prod:app:backend:version:v1"
+
     machinenativeops.io/naming-mode: "env-app-version"
+
     machinenativeops.io/app-version: "v1"
+
     machinenativeops.io/deployment-strategy: "rolling"
+
   labels:
+
     environment: "prod"
+
     tenant: "platform-team"
+
     app: "backend"
+
     version: "v1"
+
     deployment-strategy: "rolling"
+
 
 ---
 ##############################################

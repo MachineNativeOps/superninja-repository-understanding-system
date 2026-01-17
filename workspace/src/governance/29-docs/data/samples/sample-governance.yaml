@@ -5,7 +5,12 @@ status: "active"
 
 framework:
   type: "hybrid"
+
   levels:
+
     - strategic
+
     - tactical
+
     - operational
+

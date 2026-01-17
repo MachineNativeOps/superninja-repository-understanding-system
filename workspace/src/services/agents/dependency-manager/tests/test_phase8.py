@@ -30,7 +30,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 class TestCoreSatelliteArchitecture(unittest.TestCase):
     """核心-衛星架構測試"""
 
-    def setUp(self):
+    def set_up(self):
         self.architecture = CoreSatelliteArchitecture()
 
     def test_list_presets(self):
@@ -77,7 +77,7 @@ class TestCoreSatelliteArchitecture(unittest.TestCase):
 class TestCombinationTemplateManager(unittest.TestCase):
     """組合範本管理器測試"""
 
-    def setUp(self):
+    def set_up(self):
         self.manager = CombinationTemplateManager()
 
     def test_list_templates(self):
@@ -108,7 +108,7 @@ class TestCombinationTemplateManager(unittest.TestCase):
 class TestDynamicAdjuster(unittest.TestCase):
     """動態調整器測試"""
 
-    def setUp(self):
+    def set_up(self):
         self.adjuster = DynamicAdjuster()
 
     def test_register_kpi(self):
@@ -156,7 +156,7 @@ class TestDynamicAdjuster(unittest.TestCase):
 class TestQuarterlyReviewEngine(unittest.TestCase):
     """季度審查引擎測試"""
 
-    def setUp(self):
+    def set_up(self):
         self.engine = QuarterlyReviewEngine()
 
     def test_create_review(self):

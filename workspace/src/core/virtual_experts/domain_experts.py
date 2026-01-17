@@ -31,7 +31,7 @@ except ImportError:
 # ============ Factory Functions for Domain Experts ============
 
 
-def DrAlexChen() -> VirtualExpert:
+def dr_alex_chen() -> VirtualExpert:
     """
     Create Dr. Alex Chen - AI 架構師
 
@@ -228,7 +228,7 @@ def DrAlexChen() -> VirtualExpert:
     return expert
 
 
-def SarahWong() -> VirtualExpert:
+def sarah_wong() -> VirtualExpert:
     """
     Create Sarah Wong - 自然語言處理專家
 
@@ -331,7 +331,7 @@ def SarahWong() -> VirtualExpert:
     return expert
 
 
-def MarcusJohnson() -> VirtualExpert:
+def marcus_johnson() -> VirtualExpert:
     """
     Create Marcus Johnson - 安全架構師
 
@@ -526,7 +526,7 @@ def verify_password(password: str, hashed: str) -> bool:
     return expert
 
 
-def LiWei() -> VirtualExpert:
+def li_wei() -> VirtualExpert:
     """
     Create Li Wei - 數據庫專家
 
@@ -660,7 +660,7 @@ LEFT JOIN orders o ON u.id = o.user_id
     return expert
 
 
-def EmmaThompson() -> VirtualExpert:
+def emma_thompson() -> VirtualExpert:
     """
     Create Emma Thompson - DevOps 專家
 
@@ -759,7 +759,7 @@ def EmmaThompson() -> VirtualExpert:
     return expert
 
 
-def JamesMiller() -> VirtualExpert:
+def james_miller() -> VirtualExpert:
     """
     Create James Miller - 系統架構師
 

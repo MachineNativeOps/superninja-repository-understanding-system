@@ -25,7 +25,7 @@ class CompatibilityTestSuite(unittest.TestCase):
     """兼容性測試套件"""
 
     @classmethod
-    def setUpClass(cls):
+    def set_up_class(cls):
         """初始化測試環境"""
         cls.test_config = cls.load_test_config()
 

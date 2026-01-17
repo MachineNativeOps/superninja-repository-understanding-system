@@ -10,11 +10,16 @@ resources:
 labels:
 - pairs:
     app.kubernetes.io/name: super-agent
+
     app.kubernetes.io/part-of: machinenativeops
+
     app.kubernetes.io/managed-by: kustomize
+
   includeSelectors: false
+
 
 # Image configuration - can be overridden by overlays
 images:
 - name: machinenativeops/super-agent
   newTag: v1.0.0
+

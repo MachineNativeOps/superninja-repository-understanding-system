@@ -6,28 +6,46 @@ kind: Kustomization
 
 metadata:
   name: governance-instances
+
   annotations:
+
     gac-phase: "3-gitops"
+
 
 namespace: governance
 
 resources:
   - ../k8s/vision-instance.yaml
+
   - ../k8s/objectives-2025-q4.yaml
+
   - ../k8s/charter-v1.yaml
+
   - ../k8s/alignment-matrix-v1.yaml
+
   - ../k8s/risks-2025.yaml
+
   - ../k8s/roadmap-2025-2030.yaml
+
   - ../k8s/comms-plan-v1.yaml
+
   - ../k8s/metrics-dashboard-v1.yaml
+
   - ../k8s/change-mgmt-v1.yaml
+
 
 commonLabels:
   app.kubernetes.io/name: governance-instances
+
   app.kubernetes.io/part-of: machinenativeops-gac
+
   gac-phase: "3-gitops"
+
 
 commonAnnotations:
   gac-managed: "true"
+
   gac-phase: "3-gitops"
+
   auto-sync: "enabled"
+

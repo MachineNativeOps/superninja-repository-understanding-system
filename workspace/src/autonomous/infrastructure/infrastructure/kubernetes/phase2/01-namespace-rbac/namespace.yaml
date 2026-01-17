@@ -6,14 +6,23 @@ apiVersion: v1
 kind: Namespace
 metadata:
   name: autofix
+
   labels:
+
     name: autofix
+
     environment: production
+
     monitoring: enabled
+
   annotations:
+
     description: "AutoFix Production Environment"
+
     owner: "platform-team"
+
     cost-center: "engineering"
+
 
 ---
 # 開發命名空間
@@ -21,10 +30,15 @@ apiVersion: v1
 kind: Namespace
 metadata:
   name: autofix-dev
+
   labels:
+
     name: autofix-dev
+
     environment: development
+
     monitoring: enabled
+
 
 ---
 # 預發布命名空間
@@ -32,10 +46,15 @@ apiVersion: v1
 kind: Namespace
 metadata:
   name: autofix-staging
+
   labels:
+
     name: autofix-staging
+
     environment: staging
+
     monitoring: enabled
+
 
 ---
 # 監控命名空間
@@ -43,9 +62,13 @@ apiVersion: v1
 kind: Namespace
 metadata:
   name: monitoring
+
   labels:
+
     name: monitoring
+
     monitoring: enabled
+
 
 ---
 # 日誌命名空間
@@ -53,9 +76,13 @@ apiVersion: v1
 kind: Namespace
 metadata:
   name: logging
+
   labels:
+
     name: logging
+
     monitoring: enabled
+
 
 ---
 # Ingress 命名空間
@@ -63,5 +90,8 @@ apiVersion: v1
 kind: Namespace
 metadata:
   name: ingress-nginx
+
   labels:
+
     name: ingress-nginx
+

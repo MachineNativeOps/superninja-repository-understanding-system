@@ -7,15 +7,25 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: prod-payment-deploy-v1.3.0
+
   namespace: production
+
   labels:
+
     app: payment
+
     version: v1.3.0
+
     environment: prod
+
     data-classification: confidential
+
     owner: backend-team
+
   annotations:
+
     description: "Payment service production deployment"
+
 
 ---
 # ❌ 坏的示例 - Kubernetes Deployment
@@ -24,7 +34,9 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: production_Payment_Service_1.3.0
+
   namespace: production
+
 
 ---
 # ✅ 好的示例 - Service
@@ -32,10 +44,15 @@ apiVersion: v1
 kind: Service
 metadata:
   name: prod-payment-svc-v1.3.0
+
   namespace: production
+
   labels:
+
     app: payment
+
     version: v1.3.0
+
 
 ---
 # ❌ 坏的示例 - Service
@@ -44,7 +61,9 @@ apiVersion: v1
 kind: Service
 metadata:
   name: PaymentService
+
   namespace: production
+
 
 ---
 # ✅ 好的示例 - ConfigMap
@@ -52,10 +71,15 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: staging-user-api-cm-v2.0.0
+
   namespace: staging
+
   labels:
+
     app: user-api
+
     environment: staging
+
 
 ---
 # ❌ 坏的示例 - ConfigMap
@@ -64,7 +88,9 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: config
+
   namespace: staging
+
 
 ---
 # ✅ 好的示例 - Secret
@@ -72,10 +98,15 @@ apiVersion: v1
 kind: Secret
 metadata:
   name: prod-database-secret-v1.0.0
+
   namespace: production
+
   labels:
+
     app: database
+
     data-classification: restricted
+
 
 ---
 # ❌ 坏的示例 - Secret
@@ -84,6 +115,7 @@ apiVersion: v1
 kind: Secret
 metadata:
   name: db-password-abc123
+
 
 ---
 # 命名规范总结

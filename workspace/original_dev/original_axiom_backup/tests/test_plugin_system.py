@@ -25,10 +25,10 @@ sys.path.insert(0, str(project_root))
 class TestPluginInterface(unittest.TestCase):
     """Test plugin interface compliance and validation"""
 
-    def setUp(self):
+    def set_up(self):
         self.temp_dir = Path(tempfile.mkdtemp())
 
-    def tearDown(self):
+    def tear_down(self):
         shutil.rmtree(self.temp_dir)
 
     def test_plugin_interface_specification(self):
@@ -75,11 +75,11 @@ class TestPluginInterface(unittest.TestCase):
 class TestPluginManager(unittest.TestCase):
     """Test plugin manager core functionality"""
 
-    def setUp(self):
+    def set_up(self):
         self.temp_dir = Path(tempfile.mkdtemp())
         self.plugin_manager = plugin_manager.__class__()
 
-    def tearDown(self):
+    def tear_down(self):
         shutil.rmtree(self.temp_dir)
 
     def test_plugin_loading_validation(self):
@@ -131,11 +131,11 @@ class TestPluginManager(unittest.TestCase):
 class TestConfigurationManager(unittest.TestCase):
     """Test configuration management system"""
 
-    def setUp(self):
+    def set_up(self):
         self.temp_dir = Path(tempfile.mkdtemp())
         self.config_manager = config_manager.__class__(str(self.temp_dir))
 
-    def tearDown(self):
+    def tear_down(self):
         shutil.rmtree(self.temp_dir)
 
     def test_configuration_loading(self):
@@ -223,7 +223,7 @@ class TestConfigurationManager(unittest.TestCase):
 class TestPluginOrchestrator(unittest.TestCase):
     """Test plugin orchestration system"""
 
-    def setUp(self):
+    def set_up(self):
         self.orchestrator = orchestrator.__class__()
 
     def test_workflow_loading(self):

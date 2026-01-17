@@ -62,7 +62,7 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "src"))
 class TestWeb3Integration(unittest.TestCase):
     """Web3 整合測試"""
 
-    def setUp(self):
+    def set_up(self):
         self.integration = Web3Integration()
 
     def test_dapp_assessment(self):
@@ -140,7 +140,7 @@ class TestWeb3Integration(unittest.TestCase):
 class TestIoTIntegration(unittest.TestCase):
     """IoT 整合測試"""
 
-    def setUp(self):
+    def set_up(self):
         self.integration = IoTIntegration()
 
     def test_edge_computing_assessment(self):
@@ -210,7 +210,7 @@ class TestIoTIntegration(unittest.TestCase):
 class TestARVRIntegration(unittest.TestCase):
     """AR/VR 整合測試"""
 
-    def setUp(self):
+    def set_up(self):
         self.integration = ARVRIntegration()
 
     def test_immersive_experience(self):
@@ -286,7 +286,7 @@ class TestARVRIntegration(unittest.TestCase):
 class TestTechStackMatrix(unittest.TestCase):
     """技術棧矩陣測試"""
 
-    def setUp(self):
+    def set_up(self):
         self.matrix = TechStackMatrix()
 
     def test_stack_evaluation(self):
@@ -341,7 +341,7 @@ class TestTechStackMatrix(unittest.TestCase):
 class TestRiskAssessment(unittest.TestCase):
     """風險評估測試"""
 
-    def setUp(self):
+    def set_up(self):
         self.assessment = RiskAssessment()
 
     def test_add_risk(self):
@@ -404,7 +404,7 @@ class TestRiskAssessment(unittest.TestCase):
 class TestEmergencyResponse(unittest.TestCase):
     """應急響應測試"""
 
-    def setUp(self):
+    def set_up(self):
         self.response = EmergencyResponse()
 
     def test_default_plans_initialized(self):

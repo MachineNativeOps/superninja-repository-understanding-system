@@ -23,19 +23,19 @@ except ImportError:
     # Fallback for development
     class Taxonomy:
         @staticmethod
-        def getInstance():
+        def get_instance():
             return None
 
     class TaxonomyMapper:
         @staticmethod
-        def mapToAllFormats(entity):
+        def map_to_all_formats(entity):
             return {
                 "canonical": f"{entity['domain']}-{entity['name']}-{entity['type']}-{entity['version']}"}
 
     class UnifiedNamingLogic:
         @staticmethod
         def resolve(entity):
-            return TaxonomyMapper.mapToAllFormats(entity)
+            return TaxonomyMapper.map_to_all_formats(entity)
 
 
 class PlatformRegistryManager:
@@ -53,7 +53,7 @@ class PlatformRegistryManager:
     def __init__(self, registry_path: str = "namespace_registry/registry.yaml"):
         """Initialize registry manager"""
         self.registry_path = Path(registry_path)
-        self.taxonomy = Taxonomy.getInstance()
+        self.taxonomy = Taxonomy.get_instance()
         self.cache = {}
         self.lock = asyncio.Lock()
 
@@ -97,7 +97,7 @@ class PlatformRegistryManager:
                 "version": metadata.get("version", "v1"),
             }
 
-            names = TaxonomyMapper.mapToAllFormats(entity)
+            names = TaxonomyMapper.map_to_all_formats(entity)
 
             # Create namespace entry
             namespace_entry = {
