@@ -7,7 +7,7 @@
 - [x] 提交所有修復 (已提交 6d7639b5, 254de7b5, 30e28a1f)
 - [x] 推送到遠程倉庫 (已推送)
 - [x] 創建 Pull Request (PR #2 已創建)
-- [x] 生成 PR URL (https://github.com/MachineNativeOps/superninja-repository-understanding-system/pull/2)
+- [x] 生成 PR URL (https://github.com/MachineNativeOps/mno-repository-understanding-system/pull/2)
 
 ## 技術檢查清單
 - [x] 驗證 GitHub Actions 工作流 YAML 語法
@@ -31,4 +31,4 @@ Pull Request #2 已成功創建並包含：
 - 預期效果說明
 - 測試建議
 
-PR URL: https://github.com/MachineNativeOps/superninja-repository-understanding-system/pull/2
+PR URL: https://github.com/MachineNativeOps/mno-repository-understanding-system/pull/2

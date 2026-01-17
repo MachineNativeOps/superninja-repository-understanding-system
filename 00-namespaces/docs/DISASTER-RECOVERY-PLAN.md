@@ -572,7 +572,7 @@ After any incident:
 ### Version History
 | Version | Date | Changes | Author |
 |---------|------|---------|--------|
-| 1.0.0 | 2024-01-10 | Initial version | SuperNinja AI |
+| 1.0.0 | 2024-01-10 | Initial version | MNO AI |
 
 ---
 

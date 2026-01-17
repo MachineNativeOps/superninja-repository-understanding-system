@@ -288,7 +288,7 @@ const [files, setFiles] = useState([
 
 ### 集成建議
 
-1.  與 SuperNinja Mode System 集成
+1.  與 MNO Mode System 集成
 2.  連接後端 API
 3.  實現用戶認證
 4.  添加項目管理

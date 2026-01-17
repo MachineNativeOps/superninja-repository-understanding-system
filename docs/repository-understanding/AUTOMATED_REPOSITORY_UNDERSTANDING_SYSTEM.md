@@ -464,5 +464,5 @@ find . -name "knowledge_base_backup_*.json" -mtime +7 -delete
 
 **系統版本**: v1.0.0  
 **最後更新**: 2025-01-18  
-**維護者**: SuperNinja Team  
+**維護者**: MNO Team  
 **狀態**: ✅ 生產就緒

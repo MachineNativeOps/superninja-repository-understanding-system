@@ -5,7 +5,7 @@ MachineNativeOps Project Restructuring Implementation Script
 This script implements the unified namespace and directory structure standardization
 according to the PROJECT_RESTRUCTURING_PLAN.md specifications.
 
-Author: SuperNinja AI Agent
+Author: MNO AI Agent
 Date: 2025-02-20
 """
 

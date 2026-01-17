@@ -437,5 +437,5 @@ gh workflow run pr-quality-check.yml
 
 **文檔版本**: 1.0  
 **最後更新**: 2025-01-16  
-**維護者**: SuperNinja AI Agent  
+**維護者**: MNO AI Agent  
 **狀態**: ✅ 準備實施

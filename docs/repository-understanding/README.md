@@ -2,7 +2,7 @@
 
 ## 📚 概述
 
-本目錄包含 Repository Understanding System 的完整文檔，該系統從 [superninja-repository-understanding-system](https://github.com/MachineNativeOps/superninja-repository-understanding-system) 整合而來。
+本目錄包含 Repository Understanding System 的完整文檔，該系統從 [mno-repository-understanding-system](https://github.com/MachineNativeOps/mno-repository-understanding-system) 整合而來。
 
 ## 📖 文檔索引
 
@@ -231,7 +231,7 @@ bash ../../scripts/repository-understanding/status_event_driven.sh
 ## 🔗 相關資源
 
 ### 原始儲存庫
-- https://github.com/MachineNativeOps/superninja-repository-understanding-system
+- https://github.com/MachineNativeOps/mno-repository-understanding-system
 
 ### 相關工具
 - `workspace/tools/repository-understanding/` - Python 腳本
@@ -241,7 +241,7 @@ bash ../../scripts/repository-understanding/status_event_driven.sh
 ## 📝 版本歷史
 
 ### v1.0.0 (2025-01-16)
-- ✅ 從 superninja-repository-understanding-system 整合完成
+- ✅ 從 mno-repository-understanding-system 整合完成
 - ✅ 更新所有路徑以適應新的目錄結構
 - ✅ 完善文檔和使用指南
 - ✅ 系統測試和驗證

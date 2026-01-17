@@ -965,6 +965,6 @@ export class CachedSchemaValidator {
 
 ---
 
-**計劃維護者**: SuperNinja AI Agent  
+**計劃維護者**: MNO AI Agent  
 **審批狀態**: ✅ APPROVED  
 **下次審查**: Week 2 End

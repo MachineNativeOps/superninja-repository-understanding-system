@@ -206,7 +206,7 @@ metadata:
   updated_at: "{timestamp}"
   version: "2.0.0"
   status: "active"
-  author: "SuperNinja AI Agent"
+  author: "MNO AI Agent"
   dependencies:
     - "naming-registry.yaml"
     - "protocol.schema.yaml"
@@ -455,7 +455,7 @@ metadata:
   updated_at: "{timestamp}"
   version: "2.0.0"
   status: "active"
-  author: "SuperNinja AI Agent"
+  author: "MNO AI Agent"
 """
 
     specs_path = BASE_DIR / "specs" / "monitoring-observability.spec.yaml"

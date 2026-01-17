@@ -175,7 +175,7 @@ github.rest.issues.createComment({
 - `c760344a` - docs: 添加AI自動整合系統完整架構規劃
 - `c9d1e01c` - feat: 升級AI自動整合系統，實現真正的AI驅動自動整合
 
-**Repository**: `MachineNativeOps/superninja-repository-understanding-system`
+**Repository**: `MachineNativeOps/mno-repository-understanding-system`
 
 ### Remote Status
 - ✅ All commits pushed to remote

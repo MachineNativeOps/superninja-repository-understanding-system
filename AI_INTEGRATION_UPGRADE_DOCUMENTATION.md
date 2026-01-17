@@ -486,4 +486,4 @@ inputs:
 
 **文檔版本**: 1.0
 **最後更新**: 2025年1月17日
-**維護者**: SuperNinja AI Agent
+**維護者**: MNO AI Agent
