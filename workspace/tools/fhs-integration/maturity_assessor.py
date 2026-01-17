@@ -234,14 +234,14 @@ class MaturityAssessor:
         # 實際應用中可以整合 issue tracker
         # 這裡用 git log 中的 "fix", "bug" 關鍵字
         try:
-            cmd = f"git log --since='1 month ago' --oneline --grep='fix' --grep='bug' --grep='patch' -E -- workspace/tools/{component_name}"
+            cmd = f"git log --since='1 month ago' --oneline --grep='fix' --grep='bug' --grep='patch' -- workspace/tools/{component_name}"
             result = subprocess.run(cmd, shell=True, capture_output=True, text=True, cwd=self.repo_root)
             
             output = result.stdout.strip()
             if not output:
                 fix_commits = 0
             else:
-                fix_commits = len(output.split('\n'))
+                fix_commits = len([line for line in output.split('\n') if line])
             
             if fix_commits <= 1:
                 return 8  # 低 bug 率
@@ -412,7 +412,11 @@ class MaturityAssessor:
             cmd = f"git log --since='1 month ago' --oneline -- workspace/tools/{component_name}"
             result = subprocess.run(cmd, shell=True, capture_output=True, text=True, cwd=self.repo_root)
             
-            recent_commits = len([c for c in result.stdout.strip().split('\n') if c])
+            output = result.stdout.strip()
+            if not output:
+                recent_commits = 0
+            else:
+                recent_commits = len([line for line in output.split('\n') if line])
             
             if recent_commits >= 4:
                 return 10  # 每週都有提交
@@ -422,7 +426,12 @@ class MaturityAssessor:
                 # 檢查最近 3 個月
                 cmd_3m = f"git log --since='3 months ago' --oneline -- workspace/tools/{component_name}"
                 result_3m = subprocess.run(cmd_3m, shell=True, capture_output=True, text=True, cwd=self.repo_root)
-                commits_3m = len([c for c in result_3m.stdout.strip().split('\n') if c])
+                output_3m = result_3m.stdout.strip()
+                
+                if not output_3m:
+                    commits_3m = 0
+                else:
+                    commits_3m = len([line for line in output_3m.split('\n') if line])
                 
                 if commits_3m >= 1:
                     return 5  # 每季度有提交
