@@ -9,8 +9,8 @@ from .governance_engine import (
     AIGovernanceEngine,
     AnalysisResult,
     CodebaseMetrics,
-    DecisionType,
     RiskLevel,
+    DecisionType,
 )
 
 __all__ = [

@@ -263,9 +263,7 @@ class AIConstitution:
 
         return result
 
-    def _violates_principle(
-        self, action: dict[str, Any], principle: dict[str, Any]
-    ) -> bool:
+    def _violates_principle(self, action: dict[str, Any], principle: dict[str, Any]) -> bool:
         """檢查行動是否違反特定準則"""
         # 簡化的違規檢測邏輯
         action_type = action.get("type", "")

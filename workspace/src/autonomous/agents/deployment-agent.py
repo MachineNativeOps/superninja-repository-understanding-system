@@ -15,8 +15,8 @@ from pathlib import Path
 from typing import Any
 
 # Import from kebab-case filename base-agent.py
-_base_agent_path = Path(__file__).parent / "base-agent.py"
-_spec = importlib.util.spec_from_file_location("base_agent", _base_agent_path)
+_base_agent_path = Path(__file__).parent / 'base-agent.py'
+_spec = importlib.util.spec_from_file_location('base_agent', _base_agent_path)
 if _spec and _spec.loader:
     _base_agent_module = importlib.util.module_from_spec(_spec)
     _spec.loader.exec_module(_base_agent_module)
@@ -39,8 +39,8 @@ class DeploymentAgent(BaseAgent):
 
     def __init__(self) -> None:
         super().__init__(name="部署代理", agent_id="deployment_agent")
-        self.deploy_env = os.environ.get("DEPLOY_ENV", "development")
-        self.deploy_tag = os.environ.get("DEPLOY_TAG", "latest")
+        self.deploy_env = os.environ.get('DEPLOY_ENV', 'development')
+        self.deploy_tag = os.environ.get('DEPLOY_TAG', 'latest')
         self.health_check_retries = 5
         self.health_check_interval = 10
 
@@ -69,43 +69,37 @@ class DeploymentAgent(BaseAgent):
         self.log_info(f"🚀 執行部署到 {self.deploy_env} 環境...")
 
         result = {
-            "timestamp": datetime.now().isoformat(),
-            "environment": self.deploy_env,
-            "tag": self.deploy_tag,
-            "steps": [],
-            "success": True,
+            'timestamp': datetime.now().isoformat(),
+            'environment': self.deploy_env,
+            'tag': self.deploy_tag,
+            'steps': [],
+            'success': True,
         }
 
         # 步驟 1: 檢查先決條件
         prereq_result = self.check_prerequisites()
-        result["steps"].append(
-            {
-                "name": "檢查先決條件",
-                "success": prereq_result,
-            }
-        )
+        result['steps'].append({
+            'name': '檢查先決條件',
+            'success': prereq_result,
+        })
 
         if not prereq_result:
-            result["success"] = False
+            result['success'] = False
             return result
 
         # 步驟 2: 準備環境
         prep_result = self.prepare_environment()
-        result["steps"].append(
-            {
-                "name": "準備環境",
-                "success": prep_result,
-            }
-        )
+        result['steps'].append({
+            'name': '準備環境',
+            'success': prep_result,
+        })
 
         # 步驟 3: 建置應用
         build_result = self.build_application()
-        result["steps"].append(
-            {
-                "name": "建置應用",
-                "success": build_result,
-            }
-        )
+        result['steps'].append({
+            'name': '建置應用',
+            'success': build_result,
+        })
 
         # 顯示結果
         self._display_result(result)
@@ -123,7 +117,11 @@ class DeploymentAgent(BaseAgent):
 
         # 檢查 Docker
         try:
-            subprocess.run(["docker", "--version"], capture_output=True, check=True)
+            subprocess.run(
+                ['docker', '--version'],
+                capture_output=True,
+                check=True
+            )
             self.log_success("  Docker ✓")
         except (FileNotFoundError, subprocess.CalledProcessError):
             self.log_error("  Docker 未安裝")
@@ -133,12 +131,15 @@ class DeploymentAgent(BaseAgent):
         try:
             # 嘗試新版 docker compose
             result = subprocess.run(
-                ["docker", "compose", "version"], capture_output=True
+                ['docker', 'compose', 'version'],
+                capture_output=True
             )
             if result.returncode != 0:
                 # 嘗試舊版 docker-compose
                 subprocess.run(
-                    ["docker-compose", "--version"], capture_output=True, check=True
+                    ['docker-compose', '--version'],
+                    capture_output=True,
+                    check=True
                 )
             self.log_success("  Docker Compose ✓")
         except (FileNotFoundError, subprocess.CalledProcessError):
@@ -158,9 +159,7 @@ class DeploymentAgent(BaseAgent):
         self.log_info(f"🔧 準備部署環境: {self.deploy_env}")
 
         # 載入環境配置
-        env_file = (
-            self.project_root / "config/dev" / "environments" / f"{self.deploy_env}.env"
-        )
+        env_file = self.project_root / 'config/dev' / 'environments' / f'{self.deploy_env}.env'
 
         if env_file.exists():
             self.log_info(f"  載入環境配置: {env_file}")
@@ -171,8 +170,8 @@ class DeploymentAgent(BaseAgent):
             self.log_info("  使用預設配置")
 
         # 創建必要目錄
-        generated_dir = self.project_root / "generated"
-        logs_dir = self.project_root / "logs"
+        generated_dir = self.project_root / 'generated'
+        logs_dir = self.project_root / 'logs'
 
         generated_dir.mkdir(exist_ok=True)
         logs_dir.mkdir(exist_ok=True)
@@ -182,11 +181,11 @@ class DeploymentAgent(BaseAgent):
     def _load_env_file(self, env_file: Path) -> None:
         """載入環境變數檔案"""
         try:
-            with open(env_file, encoding="utf-8") as f:
+            with open(env_file, encoding='utf-8') as f:
                 for line in f:
                     line = line.strip()
-                    if line and not line.startswith("#") and "=" in line:
-                        key, value = line.split("=", 1)
+                    if line and not line.startswith('#') and '=' in line:
+                        key, value = line.split('=', 1)
                         os.environ[key.strip()] = value.strip()
         except Exception as e:
             self.log_warn(f"載入環境變數失敗: {e}")
@@ -201,7 +200,7 @@ class DeploymentAgent(BaseAgent):
         self.log_info("🔨 建置應用...")
 
         # 檢查 package.json 是否存在
-        package_json = self.project_root / "package.json"
+        package_json = self.project_root / 'package.json'
         if not package_json.exists():
             self.log_warn("package.json 不存在，跳過建置")
             return True
@@ -210,15 +209,17 @@ class DeploymentAgent(BaseAgent):
         self.log_info("  安裝依賴...")
         try:
             subprocess.run(
-                ["npm", "ci", "--prefer-offline", "--no-audit"],
+                ['npm', 'ci', '--prefer-offline', '--no-audit'],
                 cwd=self.project_root,
                 capture_output=True,
-                timeout=300,
+                timeout=300
             )
         except subprocess.TimeoutExpired:
             self.log_warn("  安裝超時，嘗試 npm install")
             subprocess.run(
-                ["npm", "install"], cwd=self.project_root, capture_output=True
+                ['npm', 'install'],
+                cwd=self.project_root,
+                capture_output=True
             )
         except Exception:
             pass
@@ -227,10 +228,10 @@ class DeploymentAgent(BaseAgent):
         self.log_info("  執行建置...")
         try:
             result = subprocess.run(
-                ["npm", "run", "build", "--if-present"],
+                ['npm', 'run', 'build', '--if-present'],
                 cwd=self.project_root,
                 capture_output=True,
-                timeout=300,
+                timeout=300
             )
             if result.returncode == 0:
                 self.log_success("應用建置完成")
@@ -250,15 +251,15 @@ class DeploymentAgent(BaseAgent):
         """
         self.log_info(f"🚀 部署服務到 {self.deploy_env} 環境...")
 
-        devcontainer_dir = self.project_root / "config/dev"
+        devcontainer_dir = self.project_root / 'config/dev'
 
         # 停止現有服務
         self.log_info("  停止現有服務...")
-        self._run_docker_compose(["down", "--remove-orphans"], devcontainer_dir)
+        self._run_docker_compose(['down', '--remove-orphans'], devcontainer_dir)
 
         # 啟動服務
         self.log_info("  啟動新服務...")
-        result = self._run_docker_compose(["up", "-d"], devcontainer_dir)
+        result = self._run_docker_compose(['up', '-d'], devcontainer_dir)
 
         if result:
             self.log_success("服務部署完成")
@@ -272,14 +273,18 @@ class DeploymentAgent(BaseAgent):
         try:
             # 嘗試新版 docker compose
             result = subprocess.run(
-                ["docker", "compose"] + args, cwd=cwd, capture_output=True
+                ['docker', 'compose'] + args,
+                cwd=cwd,
+                capture_output=True
             )
             if result.returncode == 0:
                 return True
 
             # 嘗試舊版 docker-compose
             result = subprocess.run(
-                ["docker-compose"] + args, cwd=cwd, capture_output=True
+                ['docker-compose'] + args,
+                cwd=cwd,
+                capture_output=True
             )
             return result.returncode == 0
         except Exception:
@@ -298,18 +303,18 @@ class DeploymentAgent(BaseAgent):
             self.log_info(f"  健康檢查 ({i}/{self.health_check_retries})...")
 
             # 檢查容器狀態
-            devcontainer_dir = self.project_root / "config/dev"
+            devcontainer_dir = self.project_root / 'config/dev'
 
             try:
                 result = subprocess.run(
-                    ["docker", "compose", "ps"],
+                    ['docker', 'compose', 'ps'],
                     cwd=devcontainer_dir,
                     capture_output=True,
-                    text=True,
+                    text=True
                 )
 
                 output = result.stdout
-                if "unhealthy" not in output and "Exit" not in output:
+                if 'unhealthy' not in output and 'Exit' not in output:
                     self.log_success("所有服務健康檢查通過")
                     return True
 
@@ -317,11 +322,8 @@ class DeploymentAgent(BaseAgent):
                 pass
 
             if i < self.health_check_retries:
-                self.log_warn(
-                    f"  部分服務尚未就緒，等待 {self.health_check_interval}s..."
-                )
+                self.log_warn(f"  部分服務尚未就緒，等待 {self.health_check_interval}s...")
                 import time
-
                 time.sleep(self.health_check_interval)
 
         self.log_error("健康檢查失敗")
@@ -337,12 +339,12 @@ class DeploymentAgent(BaseAgent):
         print()
 
         print("  步驟:")
-        for step in result["steps"]:
-            icon = "✅" if step["success"] else "❌"
+        for step in result['steps']:
+            icon = '✅' if step['success'] else '❌'
             print(f"    {icon} {step['name']}")
 
         print()
-        if result["success"]:
+        if result['success']:
             self.log_success("部署完成")
         else:
             self.log_error("部署失敗")
@@ -354,9 +356,7 @@ class DeploymentAgent(BaseAgent):
         Returns:
             執行結果代碼
         """
-        core_script = (
-            self.project_root / "config/dev" / "automation" / "deployment-drone.sh"
-        )
+        core_script = self.project_root / 'config/dev' / 'automation' / 'deployment-drone.sh'
 
         if not core_script.exists():
             self.log_error(f"核心部署腳本不存在: {core_script}")
@@ -366,7 +366,8 @@ class DeploymentAgent(BaseAgent):
 
         try:
             result = subprocess.run(
-                ["bash", str(core_script), "status"], cwd=self.project_root
+                ['bash', str(core_script), 'status'],
+                cwd=self.project_root
             )
             return result.returncode
         except Exception as e:

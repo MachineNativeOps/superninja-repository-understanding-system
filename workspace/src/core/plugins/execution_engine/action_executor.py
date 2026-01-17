@@ -22,7 +22,6 @@ from typing import Any
 
 class StepStatus(Enum):
     """步驟狀態"""
-
     PENDING = "pending"
     RUNNING = "running"
     COMPLETED = "completed"
@@ -122,7 +121,7 @@ class ActionPlan:
 class ActionExecutor:
     """
     行動執行器 - 將計劃轉換為實際執行
-
+    
     核心職責：
     1. 解析執行計劃中的步驟
     2. 按照依賴順序執行
@@ -172,10 +171,10 @@ class ActionExecutor:
     async def execute_plan(self, plan: ActionPlan) -> ActionPlan:
         """
         執行行動計劃
-
+        
         Args:
             plan: 行動計劃
-
+            
         Returns:
             執行後的計劃（包含結果）
         """
@@ -292,16 +291,14 @@ class ActionExecutor:
 
             # 檢查是否有失敗
             if plan.stop_on_failure:
-                failed = any(
-                    r.status == StepStatus.FAILED
-                    for r in results
-                    if isinstance(r, StepResult)
-                )
+                failed = any(r.status == StepStatus.FAILED for r in results
+                            if isinstance(r, StepResult))
                 if failed:
                     break
 
     def _build_execution_layers(
-        self, steps: list[ActionStep]
+        self,
+        steps: list[ActionStep]
     ) -> list[list[ActionStep]]:
         """構建執行層次（按依賴關係）"""
 
@@ -322,7 +319,10 @@ class ActionExecutor:
             layer = []
             for step_id in list(remaining):
                 step = step_map[step_id]
-                deps_satisfied = all(dep not in remaining for dep in step.depends_on)
+                deps_satisfied = all(
+                    dep not in remaining
+                    for dep in step.depends_on
+                )
                 if deps_satisfied:
                     layer.append(step)
 
@@ -338,7 +338,9 @@ class ActionExecutor:
         return layers
 
     async def _execute_step(
-        self, step: ActionStep, completed_steps: dict[str, StepResult]
+        self,
+        step: ActionStep,
+        completed_steps: dict[str, StepResult]
     ) -> StepResult:
         """執行單個步驟"""
 
@@ -393,7 +395,9 @@ class ActionExecutor:
         return result
 
     def _check_dependencies(
-        self, step: ActionStep, completed_steps: dict[str, StepResult]
+        self,
+        step: ActionStep,
+        completed_steps: dict[str, StepResult]
     ) -> bool:
         """檢查步驟依賴是否滿足"""
 
@@ -410,10 +414,10 @@ class ActionExecutor:
     async def rollback_plan(self, plan: ActionPlan) -> dict[str, Any]:
         """
         回滾行動計劃
-
+        
         Args:
             plan: 行動計劃
-
+            
         Returns:
             回滾結果
         """
@@ -437,22 +441,20 @@ class ActionExecutor:
                 step.rollback_completed = True
                 rollback_results["steps_rolled_back"] += 1
             except Exception as e:
-                rollback_results["errors"].append(
-                    {
-                        "step": step.name,
-                        "error": str(e),
-                    }
-                )
+                rollback_results["errors"].append({
+                    "step": step.name,
+                    "error": str(e),
+                })
 
         return rollback_results
 
     def cancel_plan(self, plan_id: str) -> bool:
         """
         取消執行中的計劃
-
+        
         Args:
             plan_id: 計劃 ID
-
+            
         Returns:
             是否成功
         """
@@ -471,16 +473,19 @@ class ActionExecutor:
         return True
 
     def create_plan(
-        self, name: str, steps: list[dict[str, Any]], **kwargs
+        self,
+        name: str,
+        steps: list[dict[str, Any]],
+        **kwargs
     ) -> ActionPlan:
         """
         創建行動計劃
-
+        
         Args:
             name: 計劃名稱
             steps: 步驟定義列表
             **kwargs: 其他配置
-
+            
         Returns:
             行動計劃
         """
@@ -549,14 +554,18 @@ class ActionExecutor:
     # ============ 默認處理器實現 ============
 
     async def _default_handler(
-        self, params: dict[str, Any], completed_steps: dict[str, StepResult]
+        self,
+        params: dict[str, Any],
+        completed_steps: dict[str, StepResult]
     ) -> Any:
         """默認處理器"""
         await asyncio.sleep(0.01)
         return {"status": "completed", "params": params}
 
     async def _connect_handler(
-        self, params: dict[str, Any], completed_steps: dict[str, StepResult]
+        self,
+        params: dict[str, Any],
+        completed_steps: dict[str, StepResult]
     ) -> Any:
         """連接處理器"""
         await asyncio.sleep(0.05)
@@ -566,7 +575,9 @@ class ActionExecutor:
         }
 
     async def _backup_handler(
-        self, params: dict[str, Any], completed_steps: dict[str, StepResult]
+        self,
+        params: dict[str, Any],
+        completed_steps: dict[str, StepResult]
     ) -> Any:
         """備份處理器"""
         await asyncio.sleep(0.1)
@@ -576,7 +587,9 @@ class ActionExecutor:
         }
 
     async def _execute_sql_handler(
-        self, params: dict[str, Any], completed_steps: dict[str, StepResult]
+        self,
+        params: dict[str, Any],
+        completed_steps: dict[str, StepResult]
     ) -> Any:
         """SQL 執行處理器"""
         await asyncio.sleep(0.05)
@@ -586,7 +599,9 @@ class ActionExecutor:
         }
 
     async def _verify_handler(
-        self, params: dict[str, Any], completed_steps: dict[str, StepResult]
+        self,
+        params: dict[str, Any],
+        completed_steps: dict[str, StepResult]
     ) -> Any:
         """驗證處理器"""
         await asyncio.sleep(0.02)
@@ -596,7 +611,9 @@ class ActionExecutor:
         }
 
     async def _deploy_handler(
-        self, params: dict[str, Any], completed_steps: dict[str, StepResult]
+        self,
+        params: dict[str, Any],
+        completed_steps: dict[str, StepResult]
     ) -> Any:
         """部署處理器"""
         await asyncio.sleep(0.2)
@@ -607,7 +624,9 @@ class ActionExecutor:
         }
 
     async def _health_check_handler(
-        self, params: dict[str, Any], completed_steps: dict[str, StepResult]
+        self,
+        params: dict[str, Any],
+        completed_steps: dict[str, StepResult]
     ) -> Any:
         """健康檢查處理器"""
         await asyncio.sleep(0.05)
@@ -617,7 +636,9 @@ class ActionExecutor:
         }
 
     async def _prepare_handler(
-        self, params: dict[str, Any], completed_steps: dict[str, StepResult]
+        self,
+        params: dict[str, Any],
+        completed_steps: dict[str, StepResult]
     ) -> Any:
         """準備處理器"""
         await asyncio.sleep(0.05)
@@ -627,7 +648,9 @@ class ActionExecutor:
         }
 
     async def _build_handler(
-        self, params: dict[str, Any], completed_steps: dict[str, StepResult]
+        self,
+        params: dict[str, Any],
+        completed_steps: dict[str, StepResult]
     ) -> Any:
         """構建處理器"""
         await asyncio.sleep(0.1)
@@ -637,7 +660,9 @@ class ActionExecutor:
         }
 
     async def _test_handler(
-        self, params: dict[str, Any], completed_steps: dict[str, StepResult]
+        self,
+        params: dict[str, Any],
+        completed_steps: dict[str, StepResult]
     ) -> Any:
         """測試處理器"""
         await asyncio.sleep(0.1)

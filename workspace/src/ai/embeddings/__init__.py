@@ -5,8 +5,8 @@ AXIOM Layer 1 Components
 """
 
 from .embedding_engine import (
-    EmbeddingConfig,
     EmbeddingEngine,
+    EmbeddingConfig,
     EmbeddingModel,
     EmbeddingResult,
 )

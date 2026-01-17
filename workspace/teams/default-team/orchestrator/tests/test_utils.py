@@ -15,22 +15,23 @@ import sys
 import time
 
 import pytest
-from utils.circuit_breaker import (
-    CircuitBreaker,
-    CircuitBreakerRegistry,
-    CircuitOpenError,
-    CircuitState,
-)
-from utils.metrics import Counter, Gauge, Histogram, MetricsCollector
-from utils.retry import (
-    BackpressureController,
-    RateLimiter,
-    RetryConfig,
-    RetryExhaustedError,
-    retry_async,
-)
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
+from utils.metrics import Counter, Gauge, Histogram, MetricsCollector
+from utils.circuit_breaker import (
+    CircuitBreaker,
+    CircuitState,
+    CircuitOpenError,
+    CircuitBreakerRegistry,
+)
+from utils.retry import (
+    RetryConfig,
+    retry_async,
+    RetryExhaustedError,
+    BackpressureController,
+    RateLimiter,
+)
 
 
 class TestCounter:
@@ -145,8 +146,8 @@ class TestHistogram:
     async def test_buckets(self, histogram):
         """Test histogram buckets."""
         await histogram.observe(0.05, endpoint="/api")  # <= 0.1
-        await histogram.observe(0.3, endpoint="/api")  # <= 0.5
-        await histogram.observe(2.0, endpoint="/api")  # <= 5.0
+        await histogram.observe(0.3, endpoint="/api")   # <= 0.5
+        await histogram.observe(2.0, endpoint="/api")   # <= 5.0
 
         metrics = histogram.collect()
         buckets = metrics[0]["buckets"]
@@ -171,17 +172,13 @@ class TestMetricsCollector:
         await collector.record_request("GET", "/api/health", "200", 0.05)
 
         all_metrics = collector.collect_all()
-        request_metrics = [
-            m for m in all_metrics if m["name"] == "superagent_requests_total"
-        ]
+        request_metrics = [m for m in all_metrics if m["name"] == "superagent_requests_total"]
         assert len(request_metrics) > 0
 
     @pytest.mark.asyncio
     async def test_record_message(self, collector):
         """Test recording a message."""
-        await collector.record_message(
-            "incident.create", "monitoring-agent", "success", 0.1
-        )
+        await collector.record_message("incident.create", "monitoring-agent", "success", 0.1)
 
         all_metrics = collector.collect_all()
         msg_metrics = [m for m in all_metrics if "messages" in m["name"]]
@@ -343,7 +340,6 @@ class TestRetryMechanism:
     @pytest.mark.asyncio
     async def test_successful_first_attempt(self):
         """Test successful execution on first attempt."""
-
         async def successful_func():
             return "success"
 
@@ -371,7 +367,6 @@ class TestRetryMechanism:
     @pytest.mark.asyncio
     async def test_exhausted_retries(self):
         """Test RetryExhaustedError when all retries fail."""
-
         async def always_fails():
             raise ValueError("Permanent error")
 
@@ -404,9 +399,7 @@ class TestRetryMechanism:
 
     def test_retry_config_delay_calculation(self):
         """Test delay calculation with exponential backoff."""
-        config = RetryConfig(
-            base_delay=1.0, exponential_base=2.0, max_delay=60.0, jitter=False
-        )
+        config = RetryConfig(base_delay=1.0, exponential_base=2.0, max_delay=60.0, jitter=False)
 
         assert config.calculate_delay(0) == 1.0
         assert config.calculate_delay(1) == 2.0

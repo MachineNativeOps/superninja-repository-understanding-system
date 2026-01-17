@@ -5,8 +5,8 @@ Intelligent Agents Module
 Contains all specialized agents for autonomous code analysis and fixing.
 """
 
+from .task_executor import task_executor, TaskExecutor
 from .recognition_server import RecognitionServer
-from .task_executor import TaskExecutor, task_executor
 from .visualization_agent import VisualizationAgent
 
 __all__ = [

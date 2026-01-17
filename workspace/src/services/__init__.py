@@ -56,11 +56,7 @@ SERVICE_REGISTRY: dict[str, dict[str, Any]] = {
 def list_services(service_type: str | None = None) -> list[str]:
     """列出所有服務或指定類型的服務"""
     if service_type:
-        return [
-            name
-            for name, info in SERVICE_REGISTRY.items()
-            if info.get("type") == service_type
-        ]
+        return [name for name, info in SERVICE_REGISTRY.items() if info.get("type") == service_type]
     return list(SERVICE_REGISTRY.keys())
 
 

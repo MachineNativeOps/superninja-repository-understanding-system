@@ -9,28 +9,26 @@ Responsibilities:
 - Signature and verification
 """
 
-import base64
-import hashlib
-import secrets
+from typing import Dict, Optional
 from dataclasses import dataclass
 from enum import Enum
-from typing import Dict, Optional
+import hashlib
+import secrets
+import base64
 
 
 class CryptoAlgorithm(Enum):
     """Supported cryptographic algorithms."""
-
-    SPHINCS_PLUS = "sphincs+"  # Post-quantum signatures
-    KYBER = "kyber"  # Post-quantum KEM
-    DILITHIUM = "dilithium"  # Post-quantum signatures
-    BLAKE3 = "blake3"  # Hash function
-    SHA3_256 = "sha3-256"  # Hash function
+    SPHINCS_PLUS = "sphincs+"      # Post-quantum signatures
+    KYBER = "kyber"                 # Post-quantum KEM
+    DILITHIUM = "dilithium"         # Post-quantum signatures
+    BLAKE3 = "blake3"               # Hash function
+    SHA3_256 = "sha3-256"           # Hash function
 
 
 @dataclass
 class KeyPair:
     """Cryptographic key pair."""
-
     public_key: bytes
     private_key: bytes
     algorithm: CryptoAlgorithm
@@ -40,7 +38,6 @@ class KeyPair:
 @dataclass
 class CryptoConfig:
     """Cryptography configuration."""
-
     default_algorithm: CryptoAlgorithm = CryptoAlgorithm.DILITHIUM
     key_rotation_interval: int = 86400  # seconds
     quantum_safe_only: bool = True
@@ -117,9 +114,7 @@ class QuantumSafeCrypto:
         # Placeholder decryption
         return base64.b64decode(ciphertext)
 
-    def hash(
-        self, data: bytes, algorithm: CryptoAlgorithm = CryptoAlgorithm.SHA3_256
-    ) -> str:
+    def hash(self, data: bytes, algorithm: CryptoAlgorithm = CryptoAlgorithm.SHA3_256) -> str:
         """Compute cryptographic hash."""
         if algorithm == CryptoAlgorithm.SHA3_256:
             return hashlib.sha3_256(data).hexdigest()
@@ -155,7 +150,6 @@ class QuantumSafeCrypto:
 
 class CryptoError(Exception):
     """Cryptography error exception."""
-
     pass
 
 

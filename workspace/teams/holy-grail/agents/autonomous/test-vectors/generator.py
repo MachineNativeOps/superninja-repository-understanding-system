@@ -15,16 +15,6 @@ This approach:
 4. Keeps security scanners happy (no vulnerable .py code)
 """
 
-# ============================================================================
-# SECURITY NOTICE: eval() Usage in This File
-# ============================================================================
-# This demo file contains eval() function usage.
-# eval() can execute arbitrary code and poses security risks.
-# All eval() usage in this file has been reviewed and documented.
-# DO NOT use this code pattern in production without proper input validation.
-# ============================================================================
-
-
 from __future__ import annotations
 
 import json
@@ -83,10 +73,7 @@ class TestVectorGenerator:
         },
         "sql_injection": {
             "pattern": 'query = "{prefix}" + {user_input} + "{suffix}"',
-            "prefixes": [
-                "SELECT * FROM users WHERE id = ",
-                "DELETE FROM logs WHERE user = ",
-            ],
+            "prefixes": ["SELECT * FROM users WHERE id = ", "DELETE FROM logs WHERE user = "],
             "suffixes": ["", " AND 1=1"],
             "cwe": "CWE-89",
         },
@@ -228,7 +215,6 @@ class TestVectorGenerator:
             "    # Multiple security issues for comprehensive testing",
             "    ",
             "    # Issue 1: Eval injection",
-            # SECURITY: eval() usage - trusted input only. Reviewed 2026-01-16
             "    result = eval(user_input)",
             "    ",
             "    # Issue 2: Hardcoded credential",
@@ -255,9 +241,7 @@ class TestVectorGenerator:
             metadata={"combined": True, "issue_count": 3},
         )
 
-    def generate_all_variations(
-        self, count_per_type: int = 3
-    ) -> list[GeneratedTestCase]:
+    def generate_all_variations(self, count_per_type: int = 3) -> list[GeneratedTestCase]:
         """Generate all test case variations.
 
         Args:

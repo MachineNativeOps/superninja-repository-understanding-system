@@ -8,6 +8,7 @@ Tests for verifying the AI Decision Engine core functionality.
 from __future__ import annotations
 
 import pytest  # type: ignore[import-not-found]
+
 from core.ai_decision_engine import (
     AIDecisionEngine,
     ConfidenceLevel,
@@ -209,9 +210,7 @@ class TestAIDecisionEngine:
         sample_options: list[DecisionOption],
     ) -> None:
         """Test that recording outcomes updates learning patterns."""
-        decision = await engine.make_decision(
-            context=sample_context, options=sample_options
-        )
+        decision = await engine.make_decision(context=sample_context, options=sample_options)
 
         engine.record_outcome(
             decision_id=decision.decision_id,
@@ -230,9 +229,7 @@ class TestAIDecisionEngine:
     ) -> None:
         """Test statistics retrieval."""
         await engine.make_decision(context=sample_context, options=sample_options)
-        await engine.predict_outcome(
-            current_state={"load": 0.5}, prediction_type="capacity"
-        )
+        await engine.predict_outcome(current_state={"load": 0.5}, prediction_type="capacity")
 
         stats = engine.get_statistics()
 
@@ -255,9 +252,7 @@ class TestAIDecisionEngine:
             decision_type=DecisionType.STRATEGIC,
         )
 
-        history = engine.get_decision_history(
-            limit=5, decision_type=DecisionType.STRATEGIC
-        )
+        history = engine.get_decision_history(limit=5, decision_type=DecisionType.STRATEGIC)
 
         assert len(history) >= 1
         assert history[0]["type"] == "strategic"
@@ -271,9 +266,7 @@ class TestAIDecisionEngine:
     ) -> None:
         """Test that prerequisites affect option scoring."""
         # Canary option requires 'canary_infra' which is not in constraints
-        decision = await engine.make_decision(
-            context=sample_context, options=sample_options
-        )
+        decision = await engine.make_decision(context=sample_context, options=sample_options)
 
         # Canary should be penalized for unmet prerequisites
         canary_option = next(

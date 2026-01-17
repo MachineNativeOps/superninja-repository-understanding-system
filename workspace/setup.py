@@ -7,15 +7,12 @@ Production-ready workflow orchestration platform with AI governance,
 multi-layer validation, and automated deployment capabilities.
 """
 
+from setuptools import setup, find_packages
 from pathlib import Path
-
-from setuptools import find_packages, setup
 
 # Read README for long description
 readme_path = Path(__file__).parent / "README.md"
-long_description = (
-    readme_path.read_text(encoding="utf-8") if readme_path.exists() else ""
-)
+long_description = readme_path.read_text(encoding="utf-8") if readme_path.exists() else ""
 
 # Read requirements
 requirements_path = Path(__file__).parent / "requirements-workflow.txt"
@@ -41,18 +38,7 @@ setup(
         "Source": "https://github.com/MachineNativeOps/MachineNativeOps",
         "Documentation": "https://github.com/MachineNativeOps/MachineNativeOps/tree/main/docs",
     },
-    packages=find_packages(
-        include=[
-            "core",
-            "core.*",
-            "automation",
-            "automation.*",
-            "tools",
-            "tools.*",
-            "enterprise",
-            "enterprise.*",
-        ]
-    ),
+    packages=find_packages(include=["core", "core.*", "automation", "automation.*", "tools", "tools.*", "enterprise", "enterprise.*"]),
     classifiers=[
         "Development Status :: 4 - Beta",
         "Intended Audience :: Developers",

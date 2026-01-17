@@ -9,9 +9,13 @@ dimension. It handles dimension-specific tasks and integrates with the main
 governance automation launcher.
 """
 
-import sys
 from pathlib import Path
-from typing import Any, Dict
+from typing import Dict, Any
+import sys
+
+# Add parent to path for imports
+automation_dir = Path(__file__).parent.parent
+sys.path.insert(0, str(automation_dir))
 
 from engines import (
     DimensionAutomationEngine,
@@ -19,10 +23,6 @@ from engines import (
     TaskType,
     create_dimension_engine,
 )
-
-# Add parent to path for imports
-automation_dir = Path(__file__).parent.parent
-sys.path.insert(0, str(automation_dir))
 
 
 class ChangeGovernanceEngine(DimensionAutomationEngine):
@@ -33,7 +33,7 @@ class ChangeGovernanceEngine(DimensionAutomationEngine):
         super().__init__(
             dimension_id="change_governance",
             dimension_name="Change Governance",
-            dimension_path=dimension_path,
+            dimension_path=dimension_path
         )
         self.dimension_type = "change_governance"
         self._setup_dimension_specific_handlers()

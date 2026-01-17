@@ -19,16 +19,14 @@ from typing import Any
 
 class MetricType(Enum):
     """Metric types for monitoring"""
-
-    COUNTER = "counter"  # Monotonically increasing value
-    GAUGE = "gauge"  # Point-in-time value
-    HISTOGRAM = "histogram"  # Distribution of values
-    SUMMARY = "summary"  # Statistical summary
+    COUNTER = "counter"           # Monotonically increasing value
+    GAUGE = "gauge"               # Point-in-time value
+    HISTOGRAM = "histogram"       # Distribution of values
+    SUMMARY = "summary"           # Statistical summary
 
 
 class AlertSeverity(Enum):
     """Alert severity levels"""
-
     INFO = "info"
     WARNING = "warning"
     ERROR = "error"
@@ -38,7 +36,6 @@ class AlertSeverity(Enum):
 @dataclass
 class Metric:
     """A metric data point"""
-
     name: str
     value: float
     metric_type: MetricType
@@ -49,20 +46,19 @@ class Metric:
 
     def to_dict(self) -> dict[str, Any]:
         return {
-            "name": self.name,
-            "value": self.value,
-            "type": self.metric_type.value,
-            "timestamp": self.timestamp.isoformat(),
-            "labels": self.labels,
-            "unit": self.unit,
-            "description": self.description,
+            'name': self.name,
+            'value': self.value,
+            'type': self.metric_type.value,
+            'timestamp': self.timestamp.isoformat(),
+            'labels': self.labels,
+            'unit': self.unit,
+            'description': self.description
         }
 
 
 @dataclass
 class Alert:
     """An alert generated from monitoring"""
-
     alert_id: str = field(default_factory=lambda: str(uuid.uuid4()))
     name: str = ""
     severity: AlertSeverity = AlertSeverity.WARNING
@@ -88,7 +84,7 @@ class Alert:
 class MetricsCollector:
     """
     Continuous metrics collection system
-
+    
     Collects metrics from various sources and stores them for analysis
     """
 
@@ -105,35 +101,35 @@ class MetricsCollector:
         metric_type: MetricType = MetricType.GAUGE,
         labels: dict[str, str] | None = None,
         unit: str = "",
-        description: str = "",
+        description: str = ""
     ) -> None:
         """Register a metric collector function"""
         self._collectors[name] = {
-            "collector": collector,
-            "type": metric_type,
-            "labels": labels or {},
-            "unit": unit,
-            "description": description,
+            'collector': collector,
+            'type': metric_type,
+            'labels': labels or {},
+            'unit': unit,
+            'description': description
         }
         if name not in self._metrics:
             self._metrics[name] = []
 
-    def collect(
-        self, name: str, value: float, labels: dict[str, str] | None = None
-    ) -> Metric:
+    def collect(self, name: str, value: float, labels: dict[str, str] | None = None) -> Metric:
         """Manually collect a metric value"""
-        config = self._collectors.get(
-            name,
-            {"type": MetricType.GAUGE, "labels": {}, "unit": "", "description": ""},
-        )
+        config = self._collectors.get(name, {
+            'type': MetricType.GAUGE,
+            'labels': {},
+            'unit': '',
+            'description': ''
+        })
 
         metric = Metric(
             name=name,
             value=value,
-            metric_type=config.get("type", MetricType.GAUGE),
-            labels={**config.get("labels", {}), **(labels or {})},
-            unit=config.get("unit", ""),
-            description=config.get("description", ""),
+            metric_type=config.get('type', MetricType.GAUGE),
+            labels={**config.get('labels', {}), **(labels or {})},
+            unit=config.get('unit', ''),
+            description=config.get('description', '')
         )
 
         if name not in self._metrics:
@@ -150,7 +146,7 @@ class MetricsCollector:
         collected = []
         for name, config in self._collectors.items():
             try:
-                value = config["collector"]()
+                value = config['collector']()
                 metric = self.collect(name, value)
                 collected.append(metric)
             except Exception:
@@ -177,19 +173,20 @@ class MetricsCollector:
 
         values = [m.value for m in metrics]
         return {
-            "count": len(values),
-            "min": min(values),
-            "max": max(values),
-            "mean": statistics.mean(values),
-            "median": statistics.median(values),
-            "stdev": statistics.stdev(values) if len(values) > 1 else 0.0,
+            'count': len(values),
+            'min': min(values),
+            'max': max(values),
+            'mean': statistics.mean(values),
+            'median': statistics.median(values),
+            'stdev': statistics.stdev(values) if len(values) > 1 else 0.0
         }
 
     def _cleanup_old_metrics(self, name: str) -> None:
         """Remove metrics older than retention period"""
         cutoff = datetime.now().timestamp() - self._retention_seconds
         self._metrics[name] = [
-            m for m in self._metrics.get(name, []) if m.timestamp.timestamp() > cutoff
+            m for m in self._metrics.get(name, [])
+            if m.timestamp.timestamp() > cutoff
         ]
 
     async def start_collection(self, interval_seconds: float = 10.0) -> None:
@@ -207,10 +204,10 @@ class MetricsCollector:
 class IntelligentMonitoringSystem:
     """
     Intelligent Monitoring System (智能監控系統)
-
+    
     24/7 全方位監控所有指標
     持續監控、智能異常檢測、自動診斷和主動修復
-
+    
     Reference: Self-healing systems with continuous monitoring [1]
     """
 
@@ -233,7 +230,7 @@ class IntelligentMonitoringSystem:
         metric_type: MetricType = MetricType.GAUGE,
         labels: dict[str, str] | None = None,
         unit: str = "",
-        description: str = "",
+        description: str = ""
     ) -> None:
         """Register a metric for monitoring"""
         self._metrics_collector.register_collector(
@@ -242,7 +239,7 @@ class IntelligentMonitoringSystem:
             metric_type=metric_type,
             labels=labels,
             unit=unit,
-            description=description,
+            description=description
         )
 
     def add_alert_rule(
@@ -251,14 +248,14 @@ class IntelligentMonitoringSystem:
         metric_name: str,
         condition: Callable[[float], bool],
         severity: AlertSeverity = AlertSeverity.WARNING,
-        message_template: str = "Alert: {metric_name} = {value}",
+        message_template: str = "Alert: {metric_name} = {value}"
     ) -> None:
         """Add an alerting rule"""
         self._alert_rules[name] = {
-            "metric_name": metric_name,
-            "condition": condition,
-            "severity": severity,
-            "message_template": message_template,
+            'metric_name': metric_name,
+            'condition': condition,
+            'severity': severity,
+            'message_template': message_template
         }
 
     def add_alert_handler(self, handler: Callable[[Alert], None]) -> None:
@@ -270,17 +267,18 @@ class IntelligentMonitoringSystem:
         new_alerts = []
 
         for rule_name, rule in self._alert_rules.items():
-            metric = self._metrics_collector.get_latest(rule["metric_name"])
-            if metric and rule["condition"](metric.value):
+            metric = self._metrics_collector.get_latest(rule['metric_name'])
+            if metric and rule['condition'](metric.value):
                 alert = Alert(
                     name=rule_name,
-                    severity=rule["severity"],
-                    message=rule["message_template"].format(
-                        metric_name=rule["metric_name"], value=metric.value
+                    severity=rule['severity'],
+                    message=rule['message_template'].format(
+                        metric_name=rule['metric_name'],
+                        value=metric.value
                     ),
-                    source="IntelligentMonitoringSystem",
-                    metric_name=rule["metric_name"],
-                    metric_value=metric.value,
+                    source='IntelligentMonitoringSystem',
+                    metric_name=rule['metric_name'],
+                    metric_value=metric.value
                 )
                 new_alerts.append(alert)
                 self._alerts.append(alert)
@@ -319,15 +317,9 @@ class IntelligentMonitoringSystem:
     def get_health_status(self) -> dict[str, Any]:
         """Get overall system health status"""
         active_alerts = self.get_active_alerts()
-        critical_count = len(
-            [a for a in active_alerts if a.severity == AlertSeverity.CRITICAL]
-        )
-        error_count = len(
-            [a for a in active_alerts if a.severity == AlertSeverity.ERROR]
-        )
-        warning_count = len(
-            [a for a in active_alerts if a.severity == AlertSeverity.WARNING]
-        )
+        critical_count = len([a for a in active_alerts if a.severity == AlertSeverity.CRITICAL])
+        error_count = len([a for a in active_alerts if a.severity == AlertSeverity.ERROR])
+        warning_count = len([a for a in active_alerts if a.severity == AlertSeverity.WARNING])
 
         if critical_count > 0:
             status = "CRITICAL"
@@ -339,17 +331,15 @@ class IntelligentMonitoringSystem:
             status = "HEALTHY"
 
         return {
-            "status": status,
-            "active_alerts": len(active_alerts),
-            "critical": critical_count,
-            "error": error_count,
-            "warning": warning_count,
-            "timestamp": datetime.now().isoformat(),
+            'status': status,
+            'active_alerts': len(active_alerts),
+            'critical': critical_count,
+            'error': error_count,
+            'warning': warning_count,
+            'timestamp': datetime.now().isoformat()
         }
 
-    async def start(
-        self, collection_interval: float = 10.0, check_interval: float = 30.0
-    ) -> None:
+    async def start(self, collection_interval: float = 10.0, check_interval: float = 30.0) -> None:
         """Start the monitoring system"""
         self._running = True
 

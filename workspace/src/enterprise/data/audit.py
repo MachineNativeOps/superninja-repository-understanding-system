@@ -23,7 +23,6 @@ logger = logging.getLogger(__name__)
 
 class AuditAction(Enum):
     """Audit action categories"""
-
     # Authentication
     AUTH_LOGIN = "auth.login"
     AUTH_LOGOUT = "auth.logout"
@@ -105,7 +104,6 @@ class AuditAction(Enum):
 
 class AuditSeverity(Enum):
     """Audit entry severity levels"""
-
     INFO = "info"
     WARNING = "warning"
     CRITICAL = "critical"
@@ -118,7 +116,6 @@ class AuditEntry:
 
     Immutable record of an auditable event.
     """
-
     id: UUID = field(default_factory=uuid4)
 
     # What happened
@@ -138,8 +135,8 @@ class AuditEntry:
     repo_id: UUID | None = None
 
     # What was affected
-    resource_type: str = ""  # e.g., "policy", "member", "secret"
-    resource_id: str = ""  # ID of the resource
+    resource_type: str = ""   # e.g., "policy", "member", "secret"
+    resource_id: str = ""     # ID of the resource
     resource_name: str | None = None  # Human-readable name
 
     # Details
@@ -195,7 +192,6 @@ class AuditEntry:
 @dataclass
 class AuditQuery:
     """Query parameters for audit log search"""
-
     org_id: UUID | None = None
     actor_id: UUID | None = None
     actions: list[AuditAction] | None = None
@@ -265,18 +261,10 @@ class AuditLogger:
     mask_sensitive_fields: bool = True
 
     # Sensitive field patterns to mask
-    sensitive_fields: list[str] = field(
-        default_factory=lambda: [
-            "password",
-            "secret",
-            "token",
-            "api_key",
-            "private_key",
-            "access_token",
-            "refresh_token",
-            "credential",
-        ]
-    )
+    sensitive_fields: list[str] = field(default_factory=lambda: [
+        "password", "secret", "token", "api_key", "private_key",
+        "access_token", "refresh_token", "credential",
+    ])
 
     # Retention
     retention_days: int = 365
@@ -452,7 +440,11 @@ class AuditLogger:
         request_id: str,
     ) -> AuditEntry:
         """Log an API call"""
-        severity = AuditSeverity.INFO if status_code < 400 else AuditSeverity.WARNING
+        severity = (
+            AuditSeverity.INFO
+            if status_code < 400
+            else AuditSeverity.WARNING
+        )
 
         return await self.log(
             action=AuditAction.API_CALL,
@@ -589,7 +581,8 @@ class AuditLogger:
 
             # Check if field is sensitive
             is_sensitive = any(
-                pattern in key_lower for pattern in self.sensitive_fields
+                pattern in key_lower
+                for pattern in self.sensitive_fields
             )
 
             if is_sensitive:

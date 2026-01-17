@@ -18,30 +18,24 @@ Version: 1.0.0
 """
 
 import argparse
-import hashlib
+import yaml
 import json
 import os
 import re
-from collections import defaultdict
-from dataclasses import asdict, dataclass, field
-from datetime import datetime
-from enum import Enum
+import hashlib
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Set, Tuple
-
-import yaml
+from datetime import datetime
+from typing import Dict, List, Optional, Tuple, Any, Set
+from dataclasses import dataclass, field, asdict
+from enum import Enum
+from collections import defaultdict
 
 # 導入認知引擎
 try:
     from cognitive_engine import (
-        CognitiveContext,
-        CognitiveEngine,
-        IntegrationLayer,
-        ReasoningLayer,
-        SearchLayer,
-        UnderstandingLayer,
+        CognitiveEngine, UnderstandingLayer, ReasoningLayer,
+        SearchLayer, IntegrationLayer, CognitiveContext
     )
-
     COGNITIVE_AVAILABLE = True
 except ImportError:
     COGNITIVE_AVAILABLE = False
@@ -59,72 +53,59 @@ CONFIG_PATH = PLAYBOOKS_PATH / "config" / "legacy-scratch-processor.yaml"
 # 枚舉定義
 # ============================================================================
 
-
 class AssetType(Enum):
     """資產類型"""
-
-    DOCUMENTATION = "documentation"  # 文檔
-    CONFIGURATION = "configuration"  # 配置
-    CODE = "code"  # 代碼
-    DATA = "data"  # 數據
-    SCHEMA = "schema"  # 架構定義
-    MANIFEST = "manifest"  # 清單
-    TEMPLATE = "template"  # 模板
-    UNKNOWN = "unknown"  # 未知
-
+    DOCUMENTATION = "documentation"      # 文檔
+    CONFIGURATION = "configuration"      # 配置
+    CODE = "code"                        # 代碼
+    DATA = "data"                        # 數據
+    SCHEMA = "schema"                    # 架構定義
+    MANIFEST = "manifest"                # 清單
+    TEMPLATE = "template"                # 模板
+    UNKNOWN = "unknown"                  # 未知
 
 class IntegrationType(Enum):
     """整合類型"""
-
-    FULL_INTEGRATION = "full_integration"  # 完整整合
-    EMBEDDED_INTEGRATION = "embedded_integration"  # 嵌入式整合
-    REFERENCE_ONLY = "reference_only"  # 僅引用
-    ARCHIVE = "archive"  # 歸檔
-    DISCARD = "discard"  # 丟棄
-
+    FULL_INTEGRATION = "full_integration"        # 完整整合
+    EMBEDDED_INTEGRATION = "embedded_integration" # 嵌入式整合
+    REFERENCE_ONLY = "reference_only"            # 僅引用
+    ARCHIVE = "archive"                          # 歸檔
+    DISCARD = "discard"                          # 丟棄
 
 class ProcessingStage(Enum):
     """處理階段"""
-
-    INTAKE = "intake"  # 接收
-    SCANNING = "scanning"  # 掃描中
-    ANALYZING = "analyzing"  # 分析中
-    DECIDED = "decided"  # 已決策
-    INTEGRATED = "integrated"  # 已整合
-    ARCHIVED = "archived"  # 已歸檔
-
+    INTAKE = "intake"           # 接收
+    SCANNING = "scanning"       # 掃描中
+    ANALYZING = "analyzing"     # 分析中
+    DECIDED = "decided"         # 已決策
+    INTEGRATED = "integrated"   # 已整合
+    ARCHIVED = "archived"       # 已歸檔
 
 # ============================================================================
 # 資料結構
 # ============================================================================
 
-
 @dataclass
 class VocabularyMatch:
     """詞彙匹配"""
-
     term: str
-    category: str  # namespace, module, domain, keyword
-    context: str  # 匹配的上下文
+    category: str           # namespace, module, domain, keyword
+    context: str            # 匹配的上下文
     line_number: int
     confidence: float
-
 
 @dataclass
 class ReferenceMatch:
     """引用匹配"""
-
-    reference_type: str  # file, url, module, function
+    reference_type: str     # file, url, module, function
     target: str
     source_location: str
     is_internal: bool
     exists: bool
 
-
 @dataclass
 class StructureAnalysis:
     """結構分析"""
-
     file_type: str
     encoding: str
     line_count: int
@@ -133,11 +114,9 @@ class StructureAnalysis:
     has_frontmatter: bool
     metadata: Dict
 
-
 @dataclass
 class AssetAnalysis:
     """資產分析結果"""
-
     asset_id: str
     filename: str
     asset_type: AssetType
@@ -149,27 +128,23 @@ class AssetAnalysis:
     quality_score: float
     timestamp: str
 
-
 @dataclass
 class PlacementDecision:
     """位置決策"""
-
     asset_id: str
     integration_type: IntegrationType
     target_directory: str
     target_filename: Optional[str]
-    embedding_location: Optional[str]  # 用於嵌入式整合
+    embedding_location: Optional[str]    # 用於嵌入式整合
     embedding_section: Optional[str]
     reasoning: List[str]
     confidence: float
     alternatives: List[Dict]
     requires_manual_review: bool
 
-
 @dataclass
 class AssetInventory:
     """資產清單"""
-
     scan_timestamp: str
     scratch_path: str
     total_assets: int
@@ -177,11 +152,9 @@ class AssetInventory:
     by_stage: Dict[str, int]
     assets: List[Dict]
 
-
 # ============================================================================
 # 詞彙掃描器
 # ============================================================================
-
 
 class VocabularyScanner:
     """
@@ -221,7 +194,7 @@ class VocabularyScanner:
     def scan(self, content: str, filename: str) -> List[VocabularyMatch]:
         """掃描內容中的詞彙"""
         matches = []
-        lines = content.split("\n")
+        lines = content.split('\n')
 
         for line_num, line in enumerate(lines, 1):
             line_lower = line.lower()
@@ -230,59 +203,48 @@ class VocabularyScanner:
             for ns, keywords in self.namespace_keywords.items():
                 for kw in keywords:
                     if kw.lower() in line_lower:
-                        matches.append(
-                            VocabularyMatch(
-                                term=kw,
-                                category="namespace",
-                                context=line.strip()[:100],
-                                line_number=line_num,
-                                confidence=0.9 if kw == ns else 0.7,
-                            )
-                        )
+                        matches.append(VocabularyMatch(
+                            term=kw,
+                            category="namespace",
+                            context=line.strip()[:100],
+                            line_number=line_num,
+                            confidence=0.9 if kw == ns else 0.7,
+                        ))
 
             # 掃描模組類型
             for mod, keywords in self.module_keywords.items():
                 for kw in keywords:
                     if kw.lower() in line_lower:
-                        matches.append(
-                            VocabularyMatch(
-                                term=kw,
-                                category="module_type",
-                                context=line.strip()[:100],
-                                line_number=line_num,
-                                confidence=0.8,
-                            )
-                        )
+                        matches.append(VocabularyMatch(
+                            term=kw,
+                            category="module_type",
+                            context=line.strip()[:100],
+                            line_number=line_num,
+                            confidence=0.8,
+                        ))
 
             # 掃描領域
             for domain, keywords in self.domain_keywords.items():
                 for kw in keywords:
                     if kw.lower() in line_lower:
-                        matches.append(
-                            VocabularyMatch(
-                                term=kw,
-                                category="domain",
-                                context=line.strip()[:100],
-                                line_number=line_num,
-                                confidence=0.75,
-                            )
-                        )
+                        matches.append(VocabularyMatch(
+                            term=kw,
+                            category="domain",
+                            context=line.strip()[:100],
+                            line_number=line_num,
+                            confidence=0.75,
+                        ))
 
         # 去重並保留最高信心度
         unique_matches = {}
         for match in matches:
             key = (match.term, match.category)
-            if (
-                key not in unique_matches
-                or match.confidence > unique_matches[key].confidence
-            ):
+            if key not in unique_matches or match.confidence > unique_matches[key].confidence:
                 unique_matches[key] = match
 
         return list(unique_matches.values())
 
-    def extract_domain_classification(
-        self, matches: List[VocabularyMatch]
-    ) -> Dict[str, float]:
+    def extract_domain_classification(self, matches: List[VocabularyMatch]) -> Dict[str, float]:
         """從詞彙匹配中提取領域分類"""
         classification = defaultdict(float)
 
@@ -297,15 +259,13 @@ class VocabularyScanner:
         # 正規化
         total = sum(classification.values())
         if total > 0:
-            classification = {k: round(v / total, 3) for k, v in classification.items()}
+            classification = {k: round(v/total, 3) for k, v in classification.items()}
 
         return dict(sorted(classification.items(), key=lambda x: -x[1]))
-
 
 # ============================================================================
 # 引用掃描器
 # ============================================================================
-
 
 class ReferenceScanner:
     """
@@ -317,10 +277,10 @@ class ReferenceScanner:
 
         # 引用模式
         self.patterns = {
-            "markdown_link": r"\[([^\]]+)\]\(([^)]+)\)",
+            "markdown_link": r'\[([^\]]+)\]\(([^)]+)\)',
             "file_path": r'(?:^|[\s\'"])([a-zA-Z0-9_\-./]+\.[a-zA-Z]{2,4})(?:[\s\'"]|$)',
             "url": r'https?://[^\s\'"<>]+',
-            "import": r"(?:from|import)\s+([a-zA-Z0-9_.]+)",
+            "import": r'(?:from|import)\s+([a-zA-Z0-9_.]+)',
             "yaml_ref": r'\$ref:\s*[\'"]?([^\'">\s]+)[\'"]?',
         }
 
@@ -338,20 +298,18 @@ class ReferenceScanner:
                     target = match.group(1) if match.lastindex else match.group(0)
 
                 # 判斷是否為內部引用
-                is_internal = not target.startswith(("http://", "https://", "ftp://"))
+                is_internal = not target.startswith(('http://', 'https://', 'ftp://'))
 
                 # 驗證引用是否存在
                 exists = self._check_reference_exists(target, source_path, is_internal)
 
-                matches.append(
-                    ReferenceMatch(
-                        reference_type=ref_type,
-                        target=target,
-                        source_location=str(source_path),
-                        is_internal=is_internal,
-                        exists=exists,
-                    )
-                )
+                matches.append(ReferenceMatch(
+                    reference_type=ref_type,
+                    target=target,
+                    source_location=str(source_path),
+                    is_internal=is_internal,
+                    exists=exists,
+                ))
 
         # 去重
         seen = set()
@@ -364,26 +322,22 @@ class ReferenceScanner:
 
         return unique
 
-    def _check_reference_exists(
-        self, target: str, source_path: Path, is_internal: bool
-    ) -> bool:
+    def _check_reference_exists(self, target: str, source_path: Path, is_internal: bool) -> bool:
         """檢查引用是否存在"""
         if not is_internal:
             return True  # 外部連結假設存在
 
         # 嘗試解析相對路徑
-        if target.startswith("./") or target.startswith("../"):
+        if target.startswith('./') or target.startswith('../'):
             resolved = (source_path.parent / target).resolve()
         else:
             resolved = self.project_root / target
 
         return resolved.exists()
 
-
 # ============================================================================
 # 結構分析器
 # ============================================================================
-
 
 class StructureAnalyzer:
     """
@@ -392,7 +346,7 @@ class StructureAnalyzer:
 
     def analyze(self, content: str, filepath: Path) -> StructureAnalysis:
         """分析內容結構"""
-        lines = content.split("\n")
+        lines = content.split('\n')
 
         # 檢測檔案類型
         file_type = self._detect_file_type(filepath, content)
@@ -407,7 +361,7 @@ class StructureAnalyzer:
         hierarchy_depth = self._calculate_hierarchy_depth(content, file_type)
 
         # 檢查 frontmatter
-        has_frontmatter = content.startswith("---\n")
+        has_frontmatter = content.startswith('---\n')
 
         # 提取元數據
         metadata = self._extract_metadata(content, file_type)
@@ -427,64 +381,60 @@ class StructureAnalyzer:
         ext = filepath.suffix.lower()
 
         type_map = {
-            ".md": "markdown",
-            ".yaml": "yaml",
-            ".yml": "yaml",
-            ".json": "json",
-            ".py": "python",
-            ".ts": "typescript",
-            ".js": "javascript",
-            ".txt": "text",
+            '.md': 'markdown',
+            '.yaml': 'yaml',
+            '.yml': 'yaml',
+            '.json': 'json',
+            '.py': 'python',
+            '.ts': 'typescript',
+            '.js': 'javascript',
+            '.txt': 'text',
         }
 
-        return type_map.get(ext, "unknown")
+        return type_map.get(ext, 'unknown')
 
     def _detect_encoding(self, content: str) -> str:
         """檢測編碼"""
         try:
-            content.encode("ascii")
-            return "ascii"
+            content.encode('ascii')
+            return 'ascii'
         except UnicodeEncodeError:
-            return "utf-8"
+            return 'utf-8'
 
     def _analyze_sections(self, content: str, file_type: str) -> List[Dict]:
         """分析段落結構"""
         sections = []
 
-        if file_type == "markdown":
+        if file_type == 'markdown':
             # 提取 Markdown 標題
-            for match in re.finditer(r"^(#{1,6})\s+(.+)$", content, re.MULTILINE):
-                sections.append(
-                    {
-                        "level": len(match.group(1)),
-                        "title": match.group(2),
-                        "position": match.start(),
-                    }
-                )
+            for match in re.finditer(r'^(#{1,6})\s+(.+)$', content, re.MULTILINE):
+                sections.append({
+                    'level': len(match.group(1)),
+                    'title': match.group(2),
+                    'position': match.start(),
+                })
 
-        elif file_type == "yaml":
+        elif file_type == 'yaml':
             # 提取 YAML 頂層鍵
             try:
                 data = yaml.safe_load(content)
                 if isinstance(data, dict):
-                    sections = [
-                        {"key": k, "type": type(v).__name__} for k, v in data.items()
-                    ]
-            except BaseException:
+                    sections = [{'key': k, 'type': type(v).__name__} for k, v in data.items()]
+            except:
                 pass
 
         return sections
 
     def _calculate_hierarchy_depth(self, content: str, file_type: str) -> int:
         """計算層級深度"""
-        if file_type == "markdown":
-            levels = re.findall(r"^(#{1,6})", content, re.MULTILINE)
+        if file_type == 'markdown':
+            levels = re.findall(r'^(#{1,6})', content, re.MULTILINE)
             return max(len(l) for l in levels) if levels else 0
 
-        elif file_type in ["yaml", "json"]:
+        elif file_type in ['yaml', 'json']:
             # 基於縮排計算
             max_indent = 0
-            for line in content.split("\n"):
+            for line in content.split('\n'):
                 stripped = line.lstrip()
                 if stripped:
                     indent = len(line) - len(stripped)
@@ -497,32 +447,30 @@ class StructureAnalyzer:
         """提取元數據"""
         metadata = {}
 
-        if file_type == "markdown" and content.startswith("---\n"):
+        if file_type == 'markdown' and content.startswith('---\n'):
             # 提取 YAML frontmatter
-            end = content.find("\n---\n", 4)
+            end = content.find('\n---\n', 4)
             if end > 0:
                 try:
                     metadata = yaml.safe_load(content[4:end])
-                except BaseException:
+                except:
                     pass
 
-        elif file_type == "yaml":
+        elif file_type == 'yaml':
             try:
                 data = yaml.safe_load(content)
                 if isinstance(data, dict):
-                    for key in ["version", "name", "description", "metadata"]:
+                    for key in ['version', 'name', 'description', 'metadata']:
                         if key in data:
                             metadata[key] = data[key]
-            except BaseException:
+            except:
                 pass
 
         return metadata
 
-
 # ============================================================================
 # 高階決策引擎
 # ============================================================================
-
 
 class DecisionEngine:
     """
@@ -622,9 +570,8 @@ class DecisionEngine:
         # 返回最高評分的領域
         return list(analysis.domain_classification.keys())[0]
 
-    def _determine_integration_type(
-        self, analysis: AssetAnalysis, quality: float
-    ) -> IntegrationType:
+    def _determine_integration_type(self, analysis: AssetAnalysis,
+                                   quality: float) -> IntegrationType:
         """判定整合類型"""
         # 基於品質和結構判定
         if quality >= self.thresholds["full_integration"]:
@@ -646,12 +593,9 @@ class DecisionEngine:
             # 極低品質，歸檔
             return IntegrationType.ARCHIVE
 
-    def _determine_target_location(
-        self,
-        analysis: AssetAnalysis,
-        primary_domain: str,
-        integration_type: IntegrationType,
-    ) -> Tuple[str, Optional[str]]:
+    def _determine_target_location(self, analysis: AssetAnalysis,
+                                   primary_domain: str,
+                                   integration_type: IntegrationType) -> Tuple[str, Optional[str]]:
         """確定目標位置"""
         # 基於領域映射
         if primary_domain in self.directory_mapping:
@@ -671,9 +615,8 @@ class DecisionEngine:
 
         return target_dir, target_file
 
-    def _determine_embedding_location(
-        self, analysis: AssetAnalysis, target_dir: str
-    ) -> Tuple[Optional[str], Optional[str]]:
+    def _determine_embedding_location(self, analysis: AssetAnalysis,
+                                      target_dir: str) -> Tuple[Optional[str], Optional[str]]:
         """確定嵌入位置"""
         # 尋找目標目錄中的主要文件
         target_path = PLAYBOOKS_PATH / target_dir
@@ -686,9 +629,8 @@ class DecisionEngine:
 
         return None, None
 
-    def _calculate_confidence(
-        self, analysis: AssetAnalysis, integration_type: IntegrationType
-    ) -> float:
+    def _calculate_confidence(self, analysis: AssetAnalysis,
+                             integration_type: IntegrationType) -> float:
         """計算決策置信度"""
         confidence = 0.5
 
@@ -712,30 +654,25 @@ class DecisionEngine:
 
         return min(confidence, 1.0)
 
-    def _generate_alternatives(
-        self, analysis: AssetAnalysis, primary_domain: str
-    ) -> List[Dict]:
+    def _generate_alternatives(self, analysis: AssetAnalysis,
+                              primary_domain: str) -> List[Dict]:
         """生成備選方案"""
         alternatives = []
 
         # 基於次要領域生成備選
         for domain, score in list(analysis.domain_classification.items())[1:3]:
             if domain in self.directory_mapping:
-                alternatives.append(
-                    {
-                        "target": self.directory_mapping[domain],
-                        "reason": f"次要領域匹配: {domain} ({score:.2f})",
-                        "confidence": score,
-                    }
-                )
+                alternatives.append({
+                    "target": self.directory_mapping[domain],
+                    "reason": f"次要領域匹配: {domain} ({score:.2f})",
+                    "confidence": score,
+                })
 
         return alternatives
-
 
 # ============================================================================
 # 暫存區處理器 (主類)
 # ============================================================================
-
 
 class LegacyScratchProcessor:
     """
@@ -778,7 +715,7 @@ class LegacyScratchProcessor:
             )
 
         for file in self.scratch_path.rglob("*"):
-            if file.is_file() and not file.name.startswith("."):
+            if file.is_file() and not file.name.startswith('.'):
                 # 判斷資產類型
                 asset_type = self._classify_asset_type(file)
                 by_type[asset_type.value] += 1
@@ -787,18 +724,14 @@ class LegacyScratchProcessor:
                 stage = self._determine_stage(file)
                 by_stage[stage.value] += 1
 
-                assets.append(
-                    {
-                        "filename": file.name,
-                        "path": str(file.relative_to(self.scratch_path)),
-                        "type": asset_type.value,
-                        "stage": stage.value,
-                        "size": file.stat().st_size,
-                        "modified": datetime.fromtimestamp(
-                            file.stat().st_mtime
-                        ).isoformat(),
-                    }
-                )
+                assets.append({
+                    "filename": file.name,
+                    "path": str(file.relative_to(self.scratch_path)),
+                    "type": asset_type.value,
+                    "stage": stage.value,
+                    "size": file.stat().st_size,
+                    "modified": datetime.fromtimestamp(file.stat().st_mtime).isoformat(),
+                })
 
         print(f"   找到 {len(assets)} 個資產")
 
@@ -821,10 +754,10 @@ class LegacyScratchProcessor:
         print(f"🔍 分析資產: {filename}")
 
         # 讀取內容
-        content = filepath.read_text(encoding="utf-8", errors="ignore")
+        content = filepath.read_text(encoding='utf-8', errors='ignore')
 
         # 計算哈希
-        file_hash = hashlib.sha256(content.encode()).hexdigest()
+        file_hash = hashlib.md5(content.encode()).hexdigest()
 
         # 詞彙掃描
         print("   詞彙掃描...")
@@ -847,13 +780,11 @@ class LegacyScratchProcessor:
         # 如果啟用深度分析且認知引擎可用
         if deep and self.cognitive_engine:
             print("   深度認知分析...")
-            cognitive_result = self.cognitive_engine.process(
-                {
-                    "text": content[:5000],  # 限制長度
-                    "filename": filename,
-                    "type": "asset_analysis",
-                }
-            )
+            cognitive_result = self.cognitive_engine.process({
+                "text": content[:5000],  # 限制長度
+                "filename": filename,
+                "type": "asset_analysis",
+            })
             # 可以用認知結果進一步豐富分析
 
         analysis = AssetAnalysis(
@@ -890,9 +821,7 @@ class LegacyScratchProcessor:
 
         return decision
 
-    def batch_process(
-        self, filter_stage: Optional[ProcessingStage] = None
-    ) -> List[Dict]:
+    def batch_process(self, filter_stage: Optional[ProcessingStage] = None) -> List[Dict]:
         """批量處理所有資產"""
         print("🔄 開始批量處理...")
 
@@ -911,23 +840,19 @@ class LegacyScratchProcessor:
                 # 決策
                 decision = self.decide_placement(analysis)
 
-                results.append(
-                    {
-                        "asset": asset_info["filename"],
-                        "analysis_id": analysis.asset_id,
-                        "decision": asdict(decision),
-                        "status": "success",
-                    }
-                )
+                results.append({
+                    "asset": asset_info["filename"],
+                    "analysis_id": analysis.asset_id,
+                    "decision": asdict(decision),
+                    "status": "success",
+                })
 
             except Exception as e:
-                results.append(
-                    {
-                        "asset": asset_info["filename"],
-                        "status": "error",
-                        "error": str(e),
-                    }
-                )
+                results.append({
+                    "asset": asset_info["filename"],
+                    "status": "error",
+                    "error": str(e),
+                })
 
         print(f"\n✅ 批量處理完成: {len(results)} 個資產")
         return results
@@ -937,23 +862,23 @@ class LegacyScratchProcessor:
         ext = filepath.suffix.lower()
         name_lower = filepath.name.lower()
 
-        if ext == ".md":
+        if ext == '.md':
             return AssetType.DOCUMENTATION
-        elif ext in [".yaml", ".yml"]:
-            if "config" in name_lower:
+        elif ext in ['.yaml', '.yml']:
+            if 'config' in name_lower:
                 return AssetType.CONFIGURATION
-            elif "schema" in name_lower:
+            elif 'schema' in name_lower:
                 return AssetType.SCHEMA
             else:
                 return AssetType.DATA
-        elif ext == ".json":
-            if "manifest" in name_lower:
+        elif ext == '.json':
+            if 'manifest' in name_lower:
                 return AssetType.MANIFEST
             else:
                 return AssetType.DATA
-        elif ext in [".py", ".ts", ".js"]:
+        elif ext in ['.py', '.ts', '.js']:
             return AssetType.CODE
-        elif "template" in name_lower:
+        elif 'template' in name_lower:
             return AssetType.TEMPLATE
         else:
             return AssetType.UNKNOWN
@@ -962,23 +887,20 @@ class LegacyScratchProcessor:
         """確定處理階段"""
         rel_path = str(filepath.relative_to(self.scratch_path))
 
-        if rel_path.startswith("intake/"):
+        if rel_path.startswith('intake/'):
             return ProcessingStage.INTAKE
-        elif rel_path.startswith("processing/"):
+        elif rel_path.startswith('processing/'):
             return ProcessingStage.SCANNING
-        elif rel_path.startswith("analyzed/"):
+        elif rel_path.startswith('analyzed/'):
             return ProcessingStage.DECIDED
-        elif rel_path.startswith("archive/"):
+        elif rel_path.startswith('archive/'):
             return ProcessingStage.ARCHIVED
         else:
             return ProcessingStage.INTAKE
 
-    def _calculate_quality_score(
-        self,
-        vocab_matches: List[VocabularyMatch],
-        ref_matches: List[ReferenceMatch],
-        structure: StructureAnalysis,
-    ) -> float:
+    def _calculate_quality_score(self, vocab_matches: List[VocabularyMatch],
+                                 ref_matches: List[ReferenceMatch],
+                                 structure: StructureAnalysis) -> float:
         """計算品質評分"""
         score = 0.5  # 基礎分
 
@@ -1003,11 +925,9 @@ class LegacyScratchProcessor:
 
         return min(score, 1.0)
 
-
 # ============================================================================
 # CLI 入口
 # ============================================================================
-
 
 def main():
     parser = argparse.ArgumentParser(
@@ -1035,9 +955,8 @@ def main():
     # batch 命令
     batch_parser = subparsers.add_parser("batch", help="批量處理")
     batch_parser.add_argument("--all", action="store_true", help="處理所有")
-    batch_parser.add_argument(
-        "--stage", choices=["intake", "scanning", "analyzing"], help="過濾階段"
-    )
+    batch_parser.add_argument("--stage", choices=["intake", "scanning", "analyzing"],
+                             help="過濾階段")
     batch_parser.add_argument("--output", "-o", help="輸出檔案")
 
     args = parser.parse_args()
@@ -1055,7 +974,7 @@ def main():
         output_str = yaml.dump(output, allow_unicode=True, default_flow_style=False)
 
         if args.output:
-            with open(args.output, "w", encoding="utf-8") as f:
+            with open(args.output, 'w', encoding='utf-8') as f:
                 f.write(output_str)
             print(f"\n✅ 清單已儲存: {args.output}")
         else:
@@ -1078,7 +997,7 @@ def main():
         output_str = yaml.dump(output, allow_unicode=True, default_flow_style=False)
 
         if args.output:
-            with open(args.output, "w", encoding="utf-8") as f:
+            with open(args.output, 'w', encoding='utf-8') as f:
                 f.write(output_str)
             print(f"\n✅ 分析已儲存: {args.output}")
         else:
@@ -1094,7 +1013,7 @@ def main():
         output_str = yaml.dump(output, allow_unicode=True, default_flow_style=False)
 
         if args.output:
-            with open(args.output, "w", encoding="utf-8") as f:
+            with open(args.output, 'w', encoding='utf-8') as f:
                 f.write(output_str)
             print(f"\n✅ 決策已儲存: {args.output}")
         else:
@@ -1107,12 +1026,11 @@ def main():
         output_str = yaml.dump(results, allow_unicode=True, default_flow_style=False)
 
         if args.output:
-            with open(args.output, "w", encoding="utf-8") as f:
+            with open(args.output, 'w', encoding='utf-8') as f:
                 f.write(output_str)
             print(f"\n✅ 結果已儲存: {args.output}")
         else:
             print("\n" + output_str)
-
 
 if __name__ == "__main__":
     main()

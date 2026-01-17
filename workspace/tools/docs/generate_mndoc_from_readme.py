@@ -58,8 +58,7 @@ def extract_version(text: str) -> str:
     return match.group(1) if match else "1.0.0"
 
 
-# Canonical tag mapping: maps various forms (Chinese, English, typos) to
-# machine-friendly keys
+# Canonical tag mapping: maps various forms (Chinese, English, typos) to machine-friendly keys
 TAG_CANON = {
     # AI variants
     "人工智慧": "ai",
@@ -109,70 +108,64 @@ TAG_CANON = {
 def extract_tags(text: str) -> list[str]:
     """Extract tags based on content keywords using canonical mapping."""
     tags: set[str] = set()
-
+    
     for key, canon in TAG_CANON.items():
         if key in text:
             tags.add(canon)
-
+    
     return sorted(tags)
 
 
 def extract_languages(text: str) -> list[str]:
     """Detect languages used in the document."""
     languages = []
-
+    
     # Check for Traditional Chinese
     if re.search(r"[\u4e00-\u9fff]", text):
         languages.append("zh-Hant")
-
+    
     # Check for English
     if re.search(r"[a-zA-Z]{5,}", text):
         languages.append("en")
-
+    
     return languages
 
 
 def split_sections(text: str) -> list[dict[str, Any]]:
     """Split README into sections based on H2 headers."""
     sections = []
-
+    
     # Find all H2 sections
     h2_matches = list(SECTION_H2_RE.finditer(text))
-
+    
     for i, match in enumerate(h2_matches):
         start = match.start()
         end = h2_matches[i + 1].start() if i + 1 < len(h2_matches) else len(text)
-
+        
         section_title = match.group(1).strip()
         section_content = text[start:end].strip()
-
+        
         # Clean up title (remove emoji)
         clean_title = re.sub(r"[🌟🔷📁🚀🛠️🤝📚🔄📄🙏]+", "", section_title).strip()
-
+        
         # Generate section ID from title
         section_id = re.sub(r"[^\w\s-]", "", clean_title.lower())
         section_id = re.sub(r"[\s]+", "-", section_id).strip("-")
-
-        sections.append(
-            {
-                "id": section_id or f"section-{i}",
-                "title": clean_title,
-                "type": classify_section(clean_title),
-                "content_preview": (
-                    section_content[:200] + "..."
-                    if len(section_content) > 200
-                    else section_content
-                ),
-            }
-        )
-
+        
+        sections.append({
+            "id": section_id or f"section-{i}",
+            "title": clean_title,
+            "type": classify_section(clean_title),
+            "content_preview": section_content[:200] + "..." if len(section_content) > 200 else section_content,
+        })
+    
     return sections
 
 
 def classify_section(title: str) -> str:
     """Classify section type based on title keywords."""
     title_lower = title.lower()
-
+    
     if any(k in title_lower for k in ["概述", "overview", "系統"]):
         return "overview"
     if any(k in title_lower for k in ["架構", "architecture", "子系統", "subsystem"]):
@@ -193,14 +186,14 @@ def classify_section(title: str) -> str:
         return "license"
     if any(k in title_lower for k in ["致謝", "acknowledgement", "thanks"]):
         return "acknowledgements"
-
+    
     return "content"
 
 
 def detect_subsystems(text: str) -> list[dict[str, Any]]:
     """Detect and extract subsystem information."""
     subsystems = []
-
+    
     for sys_id, keywords in SUBSYSTEM_KEYWORDS.items():
         for keyword in keywords:
             if keyword in text:
@@ -211,7 +204,7 @@ def detect_subsystems(text: str) -> list[dict[str, Any]]:
                 }
                 subsystems.append(subsystem)
                 break
-
+    
     return subsystems
 
 
@@ -226,14 +219,14 @@ def extract_summary(text: str) -> str:
         if len(summary) > 500:
             summary = summary[:500] + "..."
         return summary
-
+    
     return "Enterprise-grade cloud-native intelligent automation platform."
 
 
 def generate_mndoc(readme_path: Path, source_path: str = "README.md") -> dict[str, Any]:
     """Generate MN-DOC structure from README.md content."""
     text = readme_path.read_text(encoding="utf-8")
-
+    
     mndoc = {
         "$schema": "https://schema.superroot.kn/mndoc/v1",
         "id": "unmanned-island",
@@ -256,7 +249,7 @@ def generate_mndoc(readme_path: Path, source_path: str = "README.md") -> dict[st
             "source": source_path,
         },
     }
-
+    
     return mndoc
 
 
@@ -283,24 +276,23 @@ def main():
         help="Print output to stdout instead of writing to file",
     )
     parser.add_argument(
-        "--verbose",
-        "-v",
+        "--verbose", "-v",
         action="store_true",
         help="Show verbose output",
     )
-
+    
     args = parser.parse_args()
-
+    
     if not args.readme.exists():
         print(f"Error: README file not found: {args.readme}")
         sys.exit(1)
-
+    
     if args.verbose:
         print(f"Reading: {args.readme}")
-
+    
     # Generate MN-DOC
     mndoc = generate_mndoc(args.readme, str(args.readme))
-
+    
     # Output
     yaml_output = yaml.dump(
         mndoc,
@@ -309,14 +301,14 @@ def main():
         sort_keys=False,
         width=100,
     )
-
+    
     if args.dry_run:
         print(yaml_output)
     else:
         args.output.parent.mkdir(parents=True, exist_ok=True)
         args.output.write_text(yaml_output, encoding="utf-8")
         print(f"✅ Generated: {args.output}")
-
+        
         if args.verbose:
             print(f"   - Title: {mndoc['title']}")
             print(f"   - Version: {mndoc['version']}")

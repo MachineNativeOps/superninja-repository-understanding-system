@@ -21,7 +21,9 @@ def test_code_assistant_read_write_and_list(monkeypatch, tmp_path):
     )
     assert "Successfully wrote" in write_result
 
-    read_result = code_assistant.execute_tool("read_file", {"file_path": "notes.txt"})
+    read_result = code_assistant.execute_tool(
+        "read_file", {"file_path": "notes.txt"}
+    )
     assert "hello ai" in read_result
 
     listing = code_assistant.execute_tool("list_files", {"path": "."})
@@ -35,16 +37,16 @@ def test_code_assistant_run_command_safety(monkeypatch, tmp_path):
     allowed_output = code_assistant.execute_tool("run_command", {"command": "ls"})
     assert "example.txt" in allowed_output
 
-    blocked_output = code_assistant.execute_tool("run_command", {"command": "rm -rf /"})
+    blocked_output = code_assistant.execute_tool(
+        "run_command", {"command": "rm -rf /"}
+    )
     assert "Command not allowed" in blocked_output
 
 
 def test_chat_app_chat_turn_uses_stubbed_completion(monkeypatch):
     stub_response = SimpleNamespace(
         choices=[
-            SimpleNamespace(
-                message=SimpleNamespace(content="hello back", tool_calls=None)
-            )
+            SimpleNamespace(message=SimpleNamespace(content="hello back", tool_calls=None))
         ]
     )
 

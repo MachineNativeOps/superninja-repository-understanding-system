@@ -19,17 +19,16 @@ Version: 1.0.0
 """
 
 import argparse
+import yaml
 import json
 import os
 import re
-from collections import defaultdict
-from dataclasses import asdict, dataclass, field
-from datetime import datetime
-from enum import Enum
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Set, Tuple
-
-import yaml
+from datetime import datetime
+from typing import Dict, List, Optional, Tuple, Any, Set
+from dataclasses import dataclass, field, asdict
+from enum import Enum
+from collections import defaultdict
 
 # ============================================================================
 # 常數與配置
@@ -43,34 +42,27 @@ CONFIG_PATH = PLAYBOOKS_PATH / "config"
 # 枚舉定義
 # ============================================================================
 
-
 class ValidationLevel(Enum):
     """驗證級別"""
-
     ERROR = "error"
     WARNING = "warning"
     INFO = "info"
 
-
 class ValidationCategory(Enum):
     """驗證類別"""
-
     STRUCTURE = "structure"
     REFERENCE = "reference"
     NAMING = "naming"
     CONTENT = "content"
     CONSISTENCY = "consistency"
 
-
 # ============================================================================
 # 資料結構
 # ============================================================================
 
-
 @dataclass
 class ValidationIssue:
     """驗證問題"""
-
     id: str
     category: ValidationCategory
     level: ValidationLevel
@@ -79,11 +71,9 @@ class ValidationIssue:
     line_number: Optional[int] = None
     suggestion: str = ""
 
-
 @dataclass
 class ValidationResult:
     """驗證結果"""
-
     timestamp: str
     target_path: str
     is_valid: bool
@@ -94,11 +84,9 @@ class ValidationResult:
     statistics: Dict
     summary: str
 
-
 @dataclass
 class StructureSpec:
     """結構規範"""
-
     required_dirs: List[str]
     optional_dirs: List[str]
     required_files: List[str]
@@ -106,11 +94,9 @@ class StructureSpec:
     max_root_files: int
     naming_pattern: str
 
-
 # ============================================================================
 # 結構驗證器
 # ============================================================================
-
 
 class StructureValidator:
     """
@@ -135,7 +121,7 @@ class StructureValidator:
             ],
             max_depth=5,
             max_root_files=15,
-            naming_pattern=r"^[a-z0-9_\-]+(\.[a-z]+)?$",
+            naming_pattern=r'^[a-z0-9_\-]+(\.[a-z]+)?$',
         )
 
     def validate(self, target_path: Path) -> List[ValidationIssue]:
@@ -166,24 +152,20 @@ class StructureValidator:
         for dir_name in self.spec.required_dirs:
             dir_path = target_path / dir_name
             if not dir_path.exists():
-                issues.append(
-                    ValidationIssue(
-                        id=f"struct_missing_dir_{dir_name}",
-                        category=ValidationCategory.STRUCTURE,
-                        level=ValidationLevel.ERROR,
-                        message=f"缺少必要目錄: {dir_name}",
-                        suggestion=f"建立目錄: mkdir {dir_name}",
-                    )
-                )
+                issues.append(ValidationIssue(
+                    id=f"struct_missing_dir_{dir_name}",
+                    category=ValidationCategory.STRUCTURE,
+                    level=ValidationLevel.ERROR,
+                    message=f"缺少必要目錄: {dir_name}",
+                    suggestion=f"建立目錄: mkdir {dir_name}",
+                ))
             elif not dir_path.is_dir():
-                issues.append(
-                    ValidationIssue(
-                        id=f"struct_not_dir_{dir_name}",
-                        category=ValidationCategory.STRUCTURE,
-                        level=ValidationLevel.ERROR,
-                        message=f"{dir_name} 不是目錄",
-                    )
-                )
+                issues.append(ValidationIssue(
+                    id=f"struct_not_dir_{dir_name}",
+                    category=ValidationCategory.STRUCTURE,
+                    level=ValidationLevel.ERROR,
+                    message=f"{dir_name} 不是目錄",
+                ))
 
         return issues
 
@@ -194,15 +176,13 @@ class StructureValidator:
         for file_name in self.spec.required_files:
             file_path = target_path / file_name
             if not file_path.exists():
-                issues.append(
-                    ValidationIssue(
-                        id=f"struct_missing_file_{file_name}",
-                        category=ValidationCategory.STRUCTURE,
-                        level=ValidationLevel.WARNING,
-                        message=f"缺少建議檔案: {file_name}",
-                        suggestion=f"建立檔案: {file_name}",
-                    )
-                )
+                issues.append(ValidationIssue(
+                    id=f"struct_missing_file_{file_name}",
+                    category=ValidationCategory.STRUCTURE,
+                    level=ValidationLevel.WARNING,
+                    message=f"缺少建議檔案: {file_name}",
+                    suggestion=f"建立檔案: {file_name}",
+                ))
 
         return issues
 
@@ -216,16 +196,14 @@ class StructureValidator:
             max_found = max(max_found, depth)
 
             if depth > self.spec.max_depth:
-                issues.append(
-                    ValidationIssue(
-                        id=f"struct_deep_path",
-                        category=ValidationCategory.STRUCTURE,
-                        level=ValidationLevel.WARNING,
-                        message=f"路徑過深 (深度 {depth}): {path.relative_to(target_path)}",
-                        file_path=str(path.relative_to(target_path)),
-                        suggestion="考慮扁平化目錄結構",
-                    )
-                )
+                issues.append(ValidationIssue(
+                    id=f"struct_deep_path",
+                    category=ValidationCategory.STRUCTURE,
+                    level=ValidationLevel.WARNING,
+                    message=f"路徑過深 (深度 {depth}): {path.relative_to(target_path)}",
+                    file_path=str(path.relative_to(target_path)),
+                    suggestion="考慮扁平化目錄結構",
+                ))
                 break  # 只報告一次
 
         return issues
@@ -236,14 +214,13 @@ class StructureValidator:
 
         root_files = [f for f in target_path.iterdir() if f.is_file()]
         if len(root_files) > self.spec.max_root_files:
-            issues.append(
-                ValidationIssue(
-                    id="struct_too_many_root_files",
-                    category=ValidationCategory.STRUCTURE,
-                    level=ValidationLevel.WARNING,
-                    message=f"根目錄檔案過多 ({len(root_files)} 個，建議 <= {self.spec.max_root_files})",
-                    suggestion="將檔案分類到子目錄",
-                ))
+            issues.append(ValidationIssue(
+                id="struct_too_many_root_files",
+                category=ValidationCategory.STRUCTURE,
+                level=ValidationLevel.WARNING,
+                message=f"根目錄檔案過多 ({len(root_files)} 個，建議 <= {self.spec.max_root_files})",
+                suggestion="將檔案分類到子目錄",
+            ))
 
         return issues
 
@@ -254,25 +231,21 @@ class StructureValidator:
         for dir_path in target_path.rglob("*"):
             if dir_path.is_dir() and not any(dir_path.iterdir()):
                 # 排除特殊目錄
-                if not dir_path.name.startswith((".", "_")):
-                    issues.append(
-                        ValidationIssue(
-                            id=f"struct_empty_dir",
-                            category=ValidationCategory.STRUCTURE,
-                            level=ValidationLevel.INFO,
-                            message=f"空目錄: {dir_path.relative_to(target_path)}",
-                            file_path=str(dir_path.relative_to(target_path)),
-                            suggestion="添加內容或刪除目錄",
-                        )
-                    )
+                if not dir_path.name.startswith(('.', '_')):
+                    issues.append(ValidationIssue(
+                        id=f"struct_empty_dir",
+                        category=ValidationCategory.STRUCTURE,
+                        level=ValidationLevel.INFO,
+                        message=f"空目錄: {dir_path.relative_to(target_path)}",
+                        file_path=str(dir_path.relative_to(target_path)),
+                        suggestion="添加內容或刪除目錄",
+                    ))
 
         return issues
-
 
 # ============================================================================
 # 引用驗證器
 # ============================================================================
-
 
 class ReferenceValidator:
     """
@@ -303,50 +276,42 @@ class ReferenceValidator:
 
         for md_file in target_path.rglob("*.md"):
             try:
-                content = md_file.read_text(encoding="utf-8")
+                content = md_file.read_text(encoding='utf-8')
 
                 # 找出所有連結
-                for match in re.finditer(r"\[([^\]]+)\]\(([^)]+)\)", content):
+                for match in re.finditer(r'\[([^\]]+)\]\(([^)]+)\)', content):
                     link_text = match.group(1)
                     link_href = match.group(2)
 
                     # 跳過外部連結和錨點
-                    if link_href.startswith(("http://", "https://", "#", "mailto:")):
+                    if link_href.startswith(('http://', 'https://', '#', 'mailto:')):
                         continue
 
                     # 驗證內部連結
-                    if (
-                        link_href.startswith("./")
-                        or link_href.startswith("../")
-                        or "://" not in link_href
-                    ):
-                        resolved = (md_file.parent / link_href.split("#")[0]).resolve()
+                    if link_href.startswith('./') or link_href.startswith('../') or not '://' in link_href:
+                        resolved = (md_file.parent / link_href.split('#')[0]).resolve()
                         if not resolved.exists():
                             # 計算行號
-                            line_num = content[: match.start()].count("\n") + 1
+                            line_num = content[:match.start()].count('\n') + 1
 
-                            issues.append(
-                                ValidationIssue(
-                                    id=f"ref_broken_link_{md_file.stem}",
-                                    category=ValidationCategory.REFERENCE,
-                                    level=ValidationLevel.ERROR,
-                                    message=f"斷開的連結: [{link_text}]({link_href})",
-                                    file_path=str(md_file.relative_to(target_path)),
-                                    line_number=line_num,
-                                    suggestion=f"更新連結或建立目標檔案",
-                                )
-                            )
+                            issues.append(ValidationIssue(
+                                id=f"ref_broken_link_{md_file.stem}",
+                                category=ValidationCategory.REFERENCE,
+                                level=ValidationLevel.ERROR,
+                                message=f"斷開的連結: [{link_text}]({link_href})",
+                                file_path=str(md_file.relative_to(target_path)),
+                                line_number=line_num,
+                                suggestion=f"更新連結或建立目標檔案",
+                            ))
 
             except Exception as e:
-                issues.append(
-                    ValidationIssue(
-                        id=f"ref_read_error_{md_file.stem}",
-                        category=ValidationCategory.REFERENCE,
-                        level=ValidationLevel.WARNING,
-                        message=f"無法讀取檔案: {e}",
-                        file_path=str(md_file.relative_to(target_path)),
-                    )
-                )
+                issues.append(ValidationIssue(
+                    id=f"ref_read_error_{md_file.stem}",
+                    category=ValidationCategory.REFERENCE,
+                    level=ValidationLevel.WARNING,
+                    message=f"無法讀取檔案: {e}",
+                    file_path=str(md_file.relative_to(target_path)),
+                ))
 
         return issues
 
@@ -356,30 +321,27 @@ class ReferenceValidator:
 
         for yaml_file in target_path.rglob("*.yaml"):
             try:
-                content = yaml_file.read_text(encoding="utf-8")
+                content = yaml_file.read_text(encoding='utf-8')
                 data = yaml.safe_load(content)
 
                 # 遞迴檢查路徑引用
                 issues.extend(self._check_yaml_paths(data, yaml_file, target_path))
 
             except yaml.YAMLError as e:
-                issues.append(
-                    ValidationIssue(
-                        id=f"ref_yaml_error_{yaml_file.stem}",
-                        category=ValidationCategory.REFERENCE,
-                        level=ValidationLevel.ERROR,
-                        message=f"YAML 解析錯誤: {e}",
-                        file_path=str(yaml_file.relative_to(target_path)),
-                    )
-                )
+                issues.append(ValidationIssue(
+                    id=f"ref_yaml_error_{yaml_file.stem}",
+                    category=ValidationCategory.REFERENCE,
+                    level=ValidationLevel.ERROR,
+                    message=f"YAML 解析錯誤: {e}",
+                    file_path=str(yaml_file.relative_to(target_path)),
+                ))
             except Exception as e:
                 pass
 
         return issues
 
-    def _check_yaml_paths(
-        self, data: Any, yaml_file: Path, target_path: Path, path: str = ""
-    ) -> List[ValidationIssue]:
+    def _check_yaml_paths(self, data: Any, yaml_file: Path, target_path: Path,
+                         path: str = "") -> List[ValidationIssue]:
         """遞迴檢查 YAML 中的路徑引用"""
         issues = []
 
@@ -388,36 +350,24 @@ class ReferenceValidator:
                 new_path = f"{path}.{key}" if path else key
 
                 # 檢查路徑相關的鍵
-                if key.endswith(("_path", "_file", "path", "file")) and isinstance(
-                    value, str
-                ):
-                    if (
-                        value
-                        and value != "_pending"
-                        and not value.startswith(("http://", "https://"))
-                    ):
+                if key.endswith(('_path', '_file', 'path', 'file')) and isinstance(value, str):
+                    if value and value != "_pending" and not value.startswith(('http://', 'https://')):
                         full_path = target_path / value
                         if not full_path.exists():
-                            issues.append(
-                                ValidationIssue(
-                                    id=f"ref_yaml_path_{yaml_file.stem}",
-                                    category=ValidationCategory.REFERENCE,
-                                    level=ValidationLevel.ERROR,
-                                    message=f"引用的路徑不存在: {value}",
-                                    file_path=str(yaml_file.relative_to(target_path)),
-                                    suggestion=f"檢查路徑 {new_path}",
-                                )
-                            )
+                            issues.append(ValidationIssue(
+                                id=f"ref_yaml_path_{yaml_file.stem}",
+                                category=ValidationCategory.REFERENCE,
+                                level=ValidationLevel.ERROR,
+                                message=f"引用的路徑不存在: {value}",
+                                file_path=str(yaml_file.relative_to(target_path)),
+                                suggestion=f"檢查路徑 {new_path}",
+                            ))
 
-                issues.extend(
-                    self._check_yaml_paths(value, yaml_file, target_path, new_path)
-                )
+                issues.extend(self._check_yaml_paths(value, yaml_file, target_path, new_path))
 
         elif isinstance(data, list):
             for i, item in enumerate(data):
-                issues.extend(
-                    self._check_yaml_paths(item, yaml_file, target_path, f"{path}[{i}]")
-                )
+                issues.extend(self._check_yaml_paths(item, yaml_file, target_path, f"{path}[{i}]"))
 
         return issues
 
@@ -430,47 +380,43 @@ class ReferenceValidator:
         all_files: Set[str] = set()
 
         for file in target_path.rglob("*"):
-            if file.is_file() and not file.name.startswith("."):
+            if file.is_file() and not file.name.startswith('.'):
                 all_files.add(str(file.relative_to(target_path)))
 
-                if file.suffix == ".md":
+                if file.suffix == '.md':
                     try:
-                        content = file.read_text(encoding="utf-8")
-                        for match in re.finditer(r"\[([^\]]+)\]\(([^)]+)\)", content):
-                            href = match.group(2).split("#")[0]
-                            if href and not href.startswith(("http", "mailto")):
+                        content = file.read_text(encoding='utf-8')
+                        for match in re.finditer(r'\[([^\]]+)\]\(([^)]+)\)', content):
+                            href = match.group(2).split('#')[0]
+                            if href and not href.startswith(('http', 'mailto')):
                                 resolved = (file.parent / href).resolve()
                                 try:
                                     rel = str(resolved.relative_to(target_path))
                                     referenced_files.add(rel)
                                 except ValueError:
                                     pass
-                    except BaseException:
+                    except:
                         pass
 
         # 找出孤立檔案 (未被引用的 playbook)
         for file_path in all_files:
-            if "playbook" in file_path.lower() and file_path not in referenced_files:
+            if 'playbook' in file_path.lower() and file_path not in referenced_files:
                 # 檢查是否在索引中
-                if "index" not in file_path.lower():
-                    issues.append(
-                        ValidationIssue(
-                            id=f"ref_orphan_playbook",
-                            category=ValidationCategory.REFERENCE,
-                            level=ValidationLevel.INFO,
-                            message=f"未被引用的 Playbook: {file_path}",
-                            file_path=file_path,
-                            suggestion="添加到索引或其他文件中",
-                        )
-                    )
+                if 'index' not in file_path.lower():
+                    issues.append(ValidationIssue(
+                        id=f"ref_orphan_playbook",
+                        category=ValidationCategory.REFERENCE,
+                        level=ValidationLevel.INFO,
+                        message=f"未被引用的 Playbook: {file_path}",
+                        file_path=file_path,
+                        suggestion="添加到索引或其他文件中",
+                    ))
 
         return issues
-
 
 # ============================================================================
 # 命名驗證器
 # ============================================================================
-
 
 class NamingValidator:
     """
@@ -482,21 +428,16 @@ class NamingValidator:
 
         # 命名模式
         self.patterns = {
-            "snake_case": r"^[a-z][a-z0-9]*(_[a-z0-9]+)*$",
-            "kebab-case": r"^[a-z][a-z0-9]*(-[a-z0-9]+)*$",
-            "camelCase": r"^[a-z][a-zA-Z0-9]*$",
-            "PascalCase": r"^[A-Z][a-zA-Z0-9]*$",
+            "snake_case": r'^[a-z][a-z0-9]*(_[a-z0-9]+)*$',
+            "kebab-case": r'^[a-z][a-z0-9]*(-[a-z0-9]+)*$',
+            "camelCase": r'^[a-z][a-zA-Z0-9]*$',
+            "PascalCase": r'^[A-Z][a-zA-Z0-9]*$',
         }
 
         # 例外清單
         self.exceptions = {
-            "README",
-            "LICENSE",
-            "CHANGELOG",
-            "TODO",
-            "INDEX",
-            "ARCHITECTURE",
-            "LEGACY_ANALYSIS_REPORT",
+            "README", "LICENSE", "CHANGELOG", "TODO", "INDEX",
+            "ARCHITECTURE", "LEGACY_ANALYSIS_REPORT",
         }
 
     def validate(self, target_path: Path) -> List[ValidationIssue]:
@@ -508,7 +449,7 @@ class NamingValidator:
             return issues
 
         for file in target_path.rglob("*"):
-            if file.is_file() and not file.name.startswith("."):
+            if file.is_file() and not file.name.startswith('.'):
                 stem = file.stem
 
                 # 跳過例外
@@ -520,30 +461,28 @@ class NamingValidator:
                     # 判斷問題類型
                     issue_type = self._identify_naming_issue(stem)
 
-                    issues.append(
-                        ValidationIssue(
-                            id=f"naming_{stem}",
-                            category=ValidationCategory.NAMING,
-                            level=ValidationLevel.WARNING,
-                            message=f"命名不符合 {self.convention} 規範: {file.name}",
-                            file_path=str(
-                                file.relative_to(target_path)),
-                            suggestion=f"建議重命名為: {self._suggest_name(stem, file.suffix)}",
-                        ))
+                    issues.append(ValidationIssue(
+                        id=f"naming_{stem}",
+                        category=ValidationCategory.NAMING,
+                        level=ValidationLevel.WARNING,
+                        message=f"命名不符合 {self.convention} 規範: {file.name}",
+                        file_path=str(file.relative_to(target_path)),
+                        suggestion=f"建議重命名為: {self._suggest_name(stem, file.suffix)}",
+                    ))
 
         return issues
 
     def _identify_naming_issue(self, name: str) -> str:
         """識別命名問題類型"""
-        if re.search(r"[A-Z]", name) and "_" in name:
+        if re.search(r'[A-Z]', name) and '_' in name:
             return "mixed_case"
-        elif "-" in name and "_" in name:
+        elif '-' in name and '_' in name:
             return "mixed_separator"
-        elif re.search(r"[A-Z]", name):
+        elif re.search(r'[A-Z]', name):
             return "has_uppercase"
-        elif "-" in name:
+        elif '-' in name:
             return "has_hyphen"
-        elif "__" in name:
+        elif '__' in name:
             return "double_underscore"
         return "unknown"
 
@@ -551,19 +490,17 @@ class NamingValidator:
         """建議新名稱"""
         if self.convention == "snake_case":
             # 轉換為 snake_case
-            new_name = re.sub(r"([A-Z]+)([A-Z][a-z])", r"\1_\2", name)
-            new_name = re.sub(r"([a-z\d])([A-Z])", r"\1_\2", new_name)
-            new_name = new_name.replace("-", "_")
-            new_name = re.sub(r"_+", "_", new_name)
+            new_name = re.sub(r'([A-Z]+)([A-Z][a-z])', r'\1_\2', name)
+            new_name = re.sub(r'([a-z\d])([A-Z])', r'\1_\2', new_name)
+            new_name = new_name.replace('-', '_')
+            new_name = re.sub(r'_+', '_', new_name)
             return new_name.lower() + suffix
 
         return name + suffix
 
-
 # ============================================================================
 # 內容驗證器
 # ============================================================================
-
 
 class ContentValidator:
     """
@@ -591,36 +528,32 @@ class ContentValidator:
 
         for md_file in target_path.rglob("*.md"):
             try:
-                content = md_file.read_text(encoding="utf-8")
+                content = md_file.read_text(encoding='utf-8')
 
                 # 檢查是否有標題
-                if not re.search(r"^#\s+", content, re.MULTILINE):
-                    issues.append(
-                        ValidationIssue(
-                            id=f"content_no_title_{md_file.stem}",
-                            category=ValidationCategory.CONTENT,
-                            level=ValidationLevel.WARNING,
-                            message=f"缺少一級標題",
-                            file_path=str(md_file.relative_to(target_path)),
-                            suggestion="添加 # 標題",
-                        )
-                    )
+                if not re.search(r'^#\s+', content, re.MULTILINE):
+                    issues.append(ValidationIssue(
+                        id=f"content_no_title_{md_file.stem}",
+                        category=ValidationCategory.CONTENT,
+                        level=ValidationLevel.WARNING,
+                        message=f"缺少一級標題",
+                        file_path=str(md_file.relative_to(target_path)),
+                        suggestion="添加 # 標題",
+                    ))
 
                 # 檢查標題層級跳躍
-                headers = re.findall(r"^(#{1,6})\s", content, re.MULTILINE)
+                headers = re.findall(r'^(#{1,6})\s', content, re.MULTILINE)
                 prev_level = 0
                 for header in headers:
                     level = len(header)
                     if level > prev_level + 1 and prev_level > 0:
-                        issues.append(
-                            ValidationIssue(
-                                id=f"content_header_skip_{md_file.stem}",
-                                category=ValidationCategory.CONTENT,
-                                level=ValidationLevel.INFO,
-                                message=f"標題層級跳躍 (H{prev_level} -> H{level})",
-                                file_path=str(md_file.relative_to(target_path)),
-                            )
-                        )
+                        issues.append(ValidationIssue(
+                            id=f"content_header_skip_{md_file.stem}",
+                            category=ValidationCategory.CONTENT,
+                            level=ValidationLevel.INFO,
+                            message=f"標題層級跳躍 (H{prev_level} -> H{level})",
+                            file_path=str(md_file.relative_to(target_path)),
+                        ))
                         break
                     prev_level = level
 
@@ -635,19 +568,17 @@ class ContentValidator:
 
         for yaml_file in target_path.rglob("*.yaml"):
             try:
-                content = yaml_file.read_text(encoding="utf-8")
+                content = yaml_file.read_text(encoding='utf-8')
                 yaml.safe_load(content)
 
             except yaml.YAMLError as e:
-                issues.append(
-                    ValidationIssue(
-                        id=f"content_yaml_error_{yaml_file.stem}",
-                        category=ValidationCategory.CONTENT,
-                        level=ValidationLevel.ERROR,
-                        message=f"YAML 語法錯誤: {str(e)[:100]}",
-                        file_path=str(yaml_file.relative_to(target_path)),
-                    )
-                )
+                issues.append(ValidationIssue(
+                    id=f"content_yaml_error_{yaml_file.stem}",
+                    category=ValidationCategory.CONTENT,
+                    level=ValidationLevel.ERROR,
+                    message=f"YAML 語法錯誤: {str(e)[:100]}",
+                    file_path=str(yaml_file.relative_to(target_path)),
+                ))
 
         return issues
 
@@ -656,34 +587,24 @@ class ContentValidator:
         issues = []
 
         for file in target_path.rglob("*"):
-            if file.is_file() and file.suffix in [
-                ".md",
-                ".yaml",
-                ".yml",
-                ".json",
-                ".txt",
-            ]:
+            if file.is_file() and file.suffix in ['.md', '.yaml', '.yml', '.json', '.txt']:
                 try:
-                    file.read_text(encoding="utf-8")
+                    file.read_text(encoding='utf-8')
                 except UnicodeDecodeError:
-                    issues.append(
-                        ValidationIssue(
-                            id=f"content_encoding_{file.stem}",
-                            category=ValidationCategory.CONTENT,
-                            level=ValidationLevel.ERROR,
-                            message=f"檔案編碼不是 UTF-8",
-                            file_path=str(file.relative_to(target_path)),
-                            suggestion="轉換為 UTF-8 編碼",
-                        )
-                    )
+                    issues.append(ValidationIssue(
+                        id=f"content_encoding_{file.stem}",
+                        category=ValidationCategory.CONTENT,
+                        level=ValidationLevel.ERROR,
+                        message=f"檔案編碼不是 UTF-8",
+                        file_path=str(file.relative_to(target_path)),
+                        suggestion="轉換為 UTF-8 編碼",
+                    ))
 
         return issues
-
 
 # ============================================================================
 # 主驗證器
 # ============================================================================
-
 
 class StructureValidatorMain:
     """
@@ -780,11 +701,9 @@ class StructureValidatorMain:
             summary=summary,
         )
 
-
 # ============================================================================
 # 報告生成器
 # ============================================================================
-
 
 class ValidationReportGenerator:
     """
@@ -815,25 +734,21 @@ class ValidationReportGenerator:
         ]
 
         # 按類別統計
-        if result.statistics.get("by_category"):
-            lines.extend(
-                [
-                    "### 按類別",
-                    "",
-                ]
-            )
-            for cat, count in result.statistics["by_category"].items():
+        if result.statistics.get('by_category'):
+            lines.extend([
+                "### 按類別",
+                "",
+            ])
+            for cat, count in result.statistics['by_category'].items():
                 lines.append(f"- {cat}: {count}")
             lines.append("")
 
         # 錯誤詳情
         if result.errors:
-            lines.extend(
-                [
-                    "## 錯誤",
-                    "",
-                ]
-            )
+            lines.extend([
+                "## 錯誤",
+                "",
+            ])
             for issue in result.errors:
                 lines.append(f"### {issue.id}")
                 lines.append(f"- **類別**: {issue.category.value}")
@@ -848,12 +763,10 @@ class ValidationReportGenerator:
 
         # 警告詳情
         if result.warnings:
-            lines.extend(
-                [
-                    "## 警告",
-                    "",
-                ]
-            )
+            lines.extend([
+                "## 警告",
+                "",
+            ])
             for issue in result.warnings[:20]:  # 限制數量
                 lines.append(f"- **{issue.message}**")
                 if issue.file_path:
@@ -864,13 +777,11 @@ class ValidationReportGenerator:
                 lines.append(f"- ... 還有 {len(result.warnings) - 20} 個警告")
             lines.append("")
 
-        lines.extend(
-            [
-                "---",
-                "",
-                "*此報告由 `validate_structure.py` 自動生成*",
-            ]
-        )
+        lines.extend([
+            "---",
+            "",
+            "*此報告由 `validate_structure.py` 自動生成*",
+        ])
 
         return "\n".join(lines)
 
@@ -887,11 +798,9 @@ class ValidationReportGenerator:
             "info": [asdict(i) for i in result.info],
         }
 
-
 # ============================================================================
 # CLI 入口
 # ============================================================================
-
 
 def main():
     parser = argparse.ArgumentParser(
@@ -903,13 +812,9 @@ def main():
 
     # full 命令
     full_parser = subparsers.add_parser("full", help="完整驗證")
-    full_parser.add_argument(
-        "--target", "-t", default=str(PLAYBOOKS_PATH), help="目標目錄"
-    )
+    full_parser.add_argument("--target", "-t", default=str(PLAYBOOKS_PATH), help="目標目錄")
     full_parser.add_argument("--output", "-o", help="輸出報告")
-    full_parser.add_argument(
-        "--format", "-f", choices=["md", "yaml", "json"], default="md"
-    )
+    full_parser.add_argument("--format", "-f", choices=["md", "yaml", "json"], default="md")
 
     # structure 命令
     struct_parser = subparsers.add_parser("structure", help="結構驗證")
@@ -922,12 +827,8 @@ def main():
     # naming 命令
     naming_parser = subparsers.add_parser("naming", help="命名驗證")
     naming_parser.add_argument("--target", "-t", default=str(PLAYBOOKS_PATH))
-    naming_parser.add_argument(
-        "--convention",
-        "-c",
-        default="snake_case",
-        choices=["snake_case", "kebab-case", "camelCase"],
-    )
+    naming_parser.add_argument("--convention", "-c", default="snake_case",
+                              choices=["snake_case", "kebab-case", "camelCase"])
 
     # content 命令
     content_parser = subparsers.add_parser("content", help="內容驗證")
@@ -945,7 +846,7 @@ def main():
         parser.print_help()
         return
 
-    target = Path(args.target) if hasattr(args, "target") else PLAYBOOKS_PATH
+    target = Path(args.target) if hasattr(args, 'target') else PLAYBOOKS_PATH
     validator = StructureValidatorMain(target)
     report_gen = ValidationReportGenerator()
 
@@ -961,17 +862,13 @@ def main():
             if args.format == "md":
                 output = report_gen.generate_markdown(result)
             elif args.format == "yaml":
-                output = yaml.dump(
-                    report_gen.generate_yaml(result),
-                    allow_unicode=True,
-                    default_flow_style=False,
-                )
+                output = yaml.dump(report_gen.generate_yaml(result),
+                                  allow_unicode=True, default_flow_style=False)
             else:
-                output = json.dumps(
-                    report_gen.generate_yaml(result), indent=2, ensure_ascii=False
-                )
+                output = json.dumps(report_gen.generate_yaml(result),
+                                   indent=2, ensure_ascii=False)
 
-            with open(args.output, "w", encoding="utf-8") as f:
+            with open(args.output, 'w', encoding='utf-8') as f:
                 f.write(output)
             print(f"\n報告已儲存: {args.output}")
 
@@ -1010,18 +907,14 @@ def main():
         if args.format == "md":
             output = report_gen.generate_markdown(result)
         else:
-            output = yaml.dump(
-                report_gen.generate_yaml(result),
-                allow_unicode=True,
-                default_flow_style=False,
-            )
+            output = yaml.dump(report_gen.generate_yaml(result),
+                              allow_unicode=True, default_flow_style=False)
 
-        with open(args.output, "w", encoding="utf-8") as f:
+        with open(args.output, 'w', encoding='utf-8') as f:
             f.write(output)
 
         print(f"\n報告已儲存: {args.output}")
         print(result.summary)
-
 
 if __name__ == "__main__":
     main()

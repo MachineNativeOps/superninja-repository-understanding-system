@@ -22,19 +22,19 @@ Author: SynergyMesh Platform Team
 """
 
 from .factory import ProjectFactory
+from .spec import ProjectSpec, FeatureSpec, GovernanceSpec
 from .generator import ProjectGenerator
-from .spec import FeatureSpec, GovernanceSpec, ProjectSpec
 from .templates import TemplateEngine
 from .validator import GovernanceValidator
 
 __all__ = [
-    "ProjectFactory",
-    "ProjectSpec",
-    "FeatureSpec",
-    "GovernanceSpec",
-    "ProjectGenerator",
-    "TemplateEngine",
-    "GovernanceValidator",
+    'ProjectFactory',
+    'ProjectSpec',
+    'FeatureSpec',
+    'GovernanceSpec',
+    'ProjectGenerator',
+    'TemplateEngine',
+    'GovernanceValidator',
 ]
 
-__version__ = "1.0.0"
+__version__ = '1.0.0'

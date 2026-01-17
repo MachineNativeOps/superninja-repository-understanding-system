@@ -5,13 +5,11 @@ from pathlib import Path
 
 import pytest
 
-# Ensure local packages are importable when tests are invoked from
-# repository root
+
+# Ensure local packages are importable when tests are invoked from repository root
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 for candidate in Path(__file__).resolve().parents:
-    if (candidate / "namespace_registry").exists() and (
-        candidate / "schema_system"
-    ).exists():
+    if (candidate / "namespace_registry").exists() and (candidate / "schema_system").exists():
         PROJECT_ROOT = candidate
         break
 root_str = str(PROJECT_ROOT)

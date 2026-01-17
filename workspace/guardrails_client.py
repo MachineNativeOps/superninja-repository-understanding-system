@@ -20,13 +20,9 @@ def _safe_import(module_name: str, attr: str) -> Tuple[Optional[Any], bool]:
         return None, False
 
 
-GuardrailsOpenAI, HAS_GUARDRAILS_CLIENT = _safe_import(
-    "guardrails.hub", "GuardrailsOpenAI"
-)
+GuardrailsOpenAI, HAS_GUARDRAILS_CLIENT = _safe_import("guardrails.hub", "GuardrailsOpenAI")
 if GuardrailsOpenAI is None:
-    GuardrailsOpenAI, HAS_GUARDRAILS_CLIENT = _safe_import(
-        "guardrails", "GuardrailsOpenAI"
-    )
+    GuardrailsOpenAI, HAS_GUARDRAILS_CLIENT = _safe_import("guardrails", "GuardrailsOpenAI")
 OpenAI, HAS_OPENAI_CLIENT = _safe_import("openai", "OpenAI")
 
 DEFAULT_MODEL = (
@@ -79,7 +75,8 @@ def build_client(api_key: Optional[str] = None, base_url: Optional[str] = None) 
     if not api_key:
         raise ValueError(
             "API key is required to build the AI client. Set AI_INTEGRATIONS_OPENAI_API_KEY (preferred, checked first) "
-            "or OPENAI_API_KEY.")
+            "or OPENAI_API_KEY."
+        )
 
     client_kwargs: Dict[str, Any] = {"api_key": api_key}
     if base_url:
@@ -91,7 +88,8 @@ def build_client(api_key: Optional[str] = None, base_url: Optional[str] = None) 
     if not HAS_OPENAI_CLIENT:
         raise ImportError(
             "openai package is required to build the AI client when guardrails is unavailable. "
-            "Install via `pip install openai`.")
+            "Install via `pip install openai`."
+        )
 
     return OpenAI(**client_kwargs)
 

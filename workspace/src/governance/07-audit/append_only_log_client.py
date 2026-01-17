@@ -138,16 +138,15 @@ class AppendOnlyLogClient:
             # 建立審計事件
             metadata = event.get("metadata", {})
             audit_event = {
-                "timestamp": datetime.now(timezone.utc)
-                .isoformat()
-                .replace("+00:00", "Z"),
+                "timestamp": datetime.now(timezone.utc).isoformat().replace("+00:00", "Z"),
                 "type": event["type"],
                 "action": event["action"],
                 "data": event.get("data", {}),
                 "metadata": {
                     **metadata,
                     "source": metadata.get("source", "unknown"),
-                    "actor": metadata.get("actor") or os.environ.get("USER", "system"),
+                    "actor": metadata.get("actor")
+                    or os.environ.get("USER", "system"),
                     "environment": metadata.get("environment")
                     or os.environ.get("NODE_ENV", "production"),
                     "commit_sha": metadata.get("commit_sha")
@@ -221,9 +220,7 @@ class AppendOnlyLogClient:
                 errors.append(f"雜湊鏈斷裂: 事件 {event['sequence']}")
 
             # 驗證當前雜湊
-            event_copy = {
-                k: v for k, v in event.items() if k not in ["hash", "signature"]
-            }
+            event_copy = {k: v for k, v in event.items() if k not in ["hash", "signature"]}
             computed_hash = self.hash_event(event_copy)
 
             if event["hash"] != computed_hash:
@@ -231,11 +228,7 @@ class AppendOnlyLogClient:
 
             previous_hash = event["hash"]
 
-        result = {
-            "valid": len(errors) == 0,
-            "totalEvents": len(lines),
-            "errors": errors,
-        }
+        result = {"valid": len(errors) == 0, "totalEvents": len(lines), "errors": errors}
 
         if self.verbose:
             if result["valid"]:
@@ -319,9 +312,7 @@ class AppendOnlyLogClient:
         events = self.query(**filter_kwargs)
 
         report = {
-            "generated_at": datetime.now(timezone.utc)
-            .isoformat()
-            .replace("+00:00", "Z"),
+            "generated_at": datetime.now(timezone.utc).isoformat().replace("+00:00", "Z"),
             "total_events": len(events),
             "period": {
                 "start": events[0]["timestamp"] if events else None,

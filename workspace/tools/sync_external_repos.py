@@ -28,33 +28,19 @@ except ImportError:
     import yaml
 
 # Colors
-
-
 class Colors:
-    GREEN = "\033[92m"
-    YELLOW = "\033[93m"
-    RED = "\033[91m"
-    BLUE = "\033[94m"
-    CYAN = "\033[96m"
-    END = "\033[0m"
-    BOLD = "\033[1m"
+    GREEN = '\033[92m'
+    YELLOW = '\033[93m'
+    RED = '\033[91m'
+    BLUE = '\033[94m'
+    CYAN = '\033[96m'
+    END = '\033[0m'
+    BOLD = '\033[1m'
 
-
-def log_info(msg):
-    print(f"{Colors.CYAN}ℹ️  {msg}{Colors.END}")
-
-
-def log_success(msg):
-    print(f"{Colors.GREEN}✅ {msg}{Colors.END}")
-
-
-def log_warning(msg):
-    print(f"{Colors.YELLOW}⚠️  {msg}{Colors.END}")
-
-
-def log_error(msg):
-    print(f"{Colors.RED}❌ {msg}{Colors.END}")
-
+def log_info(msg): print(f"{Colors.CYAN}ℹ️  {msg}{Colors.END}")
+def log_success(msg): print(f"{Colors.GREEN}✅ {msg}{Colors.END}")
+def log_warning(msg): print(f"{Colors.YELLOW}⚠️  {msg}{Colors.END}")
+def log_error(msg): print(f"{Colors.RED}❌ {msg}{Colors.END}")
 
 class RepoSyncer:
     """Repository synchronization manager"""
@@ -64,7 +50,12 @@ class RepoSyncer:
         self.repo_root = Path(__file__).parent.parent
         self.external_dir = self.repo_root / "external"
         self.config = self._load_config()
-        self.stats = {"total": 0, "success": 0, "failed": 0, "skipped": 0}
+        self.stats = {
+            "total": 0,
+            "success": 0,
+            "failed": 0,
+            "skipped": 0
+        }
 
     def _load_config(self) -> dict:
         """Load configuration from YAML"""
@@ -86,7 +77,7 @@ class RepoSyncer:
                     "url": "https://github.com/your-org/core-repo.git",
                     "branch": "main",
                     "priority": "high",
-                    "description": "Core authentication service",
+                    "description": "Core authentication service"
                 }
             ],
             "sync_repositories": [
@@ -95,7 +86,7 @@ class RepoSyncer:
                     "url": "https://github.com/your-org/sync-repo.git",
                     "branch": "main",
                     "priority": "medium",
-                    "description": "Legacy system integration",
+                    "description": "Legacy system integration"
                 }
             ],
             "sync_options": {
@@ -105,17 +96,21 @@ class RepoSyncer:
                     "node_modules",
                     ".git",
                     ".env",
-                    "*.log",
+                    "*.log"
                 ],
-                "include_paths": ["src/", "lib/", "config/"],
-                "preserve_permissions": True,
-            },
+                "include_paths": [
+                    "src/",
+                    "lib/",
+                    "config/"
+                ],
+                "preserve_permissions": True
+            }
         }
 
         config_file = self.repo_root / "config" / "external_repos.yaml"
         config_file.parent.mkdir(parents=True, exist_ok=True)
 
-        with open(config_file, "w") as f:
+        with open(config_file, 'w') as f:
             yaml.dump(example_config, f, default_flow_style=False, allow_unicode=True)
 
         log_success(f"Example config created: {config_file}")
@@ -123,27 +118,25 @@ class RepoSyncer:
 
     def sync_repo(self, repo_config: dict, dry_run: bool = False) -> bool:
         """Sync a single repository"""
-        name = repo_config["name"]
-        url = repo_config["url"]
-        branch = repo_config.get("branch", "main")
-        priority = repo_config.get("priority", "medium")
+        name = repo_config['name']
+        url = repo_config['url']
+        branch = repo_config.get('branch', 'main')
+        priority = repo_config.get('priority', 'medium')
 
         log_info(f"Syncing: {name} ({priority} priority)")
 
         # Target directory
         target_dir = self.external_dir / name
-        temp_dir = Path(
-            f"/tmp/keystone_sync_{name}_{datetime.now().strftime('%Y%m%d_%H%M%S')}"
-        )
+        temp_dir = Path(f"/tmp/keystone_sync_{name}_{datetime.now().strftime('%Y%m%d_%H%M%S')}")
 
         try:
             # Clone repository
             log_info(f"  Cloning from {url}...")
             result = subprocess.run(
-                ["git", "clone", "--depth=1", "--branch", branch, url, str(temp_dir)],
+                ['git', 'clone', '--depth=1', '--branch', branch, url, str(temp_dir)],
                 capture_output=True,
                 text=True,
-                timeout=300,
+                timeout=300
             )
 
             if result.returncode != 0:
@@ -151,7 +144,7 @@ class RepoSyncer:
                 return False
 
             # Remove .git directory
-            git_dir = temp_dir / ".git"
+            git_dir = temp_dir / '.git'
             if git_dir.exists():
                 shutil.rmtree(git_dir)
 
@@ -193,13 +186,11 @@ class RepoSyncer:
 
     def _apply_exclusions(self, repo_dir: Path) -> int:
         """Apply exclusion patterns"""
-        exclude_patterns = self.config.get("sync_options", {}).get(
-            "exclude_patterns", []
-        )
+        exclude_patterns = self.config.get('sync_options', {}).get('exclude_patterns', [])
         removed_count = 0
 
         for pattern in exclude_patterns:
-            if "*" in pattern:
+            if '*' in pattern:
                 # Glob pattern
                 for item in repo_dir.rglob(pattern):
                     if item.exists():
@@ -223,21 +214,19 @@ class RepoSyncer:
     def _create_metadata(self, target_dir: Path, repo_config: dict):
         """Create metadata file for synced repository"""
         metadata = {
-            "name": repo_config["name"],
-            "source_url": repo_config["url"],
-            "branch": repo_config.get("branch", "main"),
+            "name": repo_config['name'],
+            "source_url": repo_config['url'],
+            "branch": repo_config.get('branch', 'main'),
             "synced_at": datetime.now().isoformat(),
-            "priority": repo_config.get("priority", "medium"),
-            "description": repo_config.get("description", ""),
+            "priority": repo_config.get('priority', 'medium'),
+            "description": repo_config.get('description', '')
         }
 
         metadata_file = target_dir / ".sync_metadata.json"
-        with open(metadata_file, "w") as f:
+        with open(metadata_file, 'w') as f:
             json.dump(metadata, f, indent=2)
 
-    def sync_all(
-        self, core_only: bool = False, exclude_core: bool = False, dry_run: bool = False
-    ):
+    def sync_all(self, core_only: bool = False, exclude_core: bool = False, dry_run: bool = False):
         """Sync all repositories"""
         log_info("=" * 60)
         log_info("Multi-Repository Sync Tool")
@@ -250,35 +239,31 @@ class RepoSyncer:
         repos_to_sync = []
 
         if core_only:
-            repos_to_sync = self.config.get("core_repositories", [])
+            repos_to_sync = self.config.get('core_repositories', [])
             log_info(f"Syncing {len(repos_to_sync)} CORE repositories only")
         elif exclude_core:
             # Exclude core repositories (for hybrid mode)
-            repos_to_sync = self.config.get("sync_repositories", [])
-            log_info(
-                f"Syncing {len(repos_to_sync)} REGULAR repositories (excluding core)"
-            )
+            repos_to_sync = self.config.get('sync_repositories', [])
+            log_info(f"Syncing {len(repos_to_sync)} REGULAR repositories (excluding core)")
         else:
-            core_repos = self.config.get("core_repositories", [])
-            sync_repos = self.config.get("sync_repositories", [])
+            core_repos = self.config.get('core_repositories', [])
+            sync_repos = self.config.get('sync_repositories', [])
             repos_to_sync = core_repos + sync_repos
-            log_info(
-                f"Syncing {len(repos_to_sync)} repositories ({len(core_repos)} core + {len(sync_repos)} sync)"
-            )
+            log_info(f"Syncing {len(repos_to_sync)} repositories ({len(core_repos)} core + {len(sync_repos)} sync)")
 
         if dry_run:
             log_warning("DRY RUN MODE - No changes will be made")
 
         # Sync each repository
-        self.stats["total"] = len(repos_to_sync)
+        self.stats['total'] = len(repos_to_sync)
 
         for idx, repo in enumerate(repos_to_sync, 1):
             log_info(f"\n[{idx}/{len(repos_to_sync)}] Processing: {repo['name']}")
 
             if self.sync_repo(repo, dry_run=dry_run):
-                self.stats["success"] += 1
+                self.stats['success'] += 1
             else:
-                self.stats["failed"] += 1
+                self.stats['failed'] += 1
 
         # Print summary
         self._print_summary()
@@ -286,11 +271,12 @@ class RepoSyncer:
     def sync_single(self, repo_name: str, dry_run: bool = False):
         """Sync a single repository by name"""
         # Find repository in config
-        all_repos = self.config.get("core_repositories", []) + self.config.get(
-            "sync_repositories", []
+        all_repos = (
+            self.config.get('core_repositories', []) +
+            self.config.get('sync_repositories', [])
         )
 
-        repo_config = next((r for r in all_repos if r["name"] == repo_name), None)
+        repo_config = next((r for r in all_repos if r['name'] == repo_name), None)
 
         if not repo_config:
             log_error(f"Repository '{repo_name}' not found in config")
@@ -300,14 +286,14 @@ class RepoSyncer:
             return False
 
         log_info(f"Syncing single repository: {repo_name}")
-        self.stats["total"] = 1
+        self.stats['total'] = 1
 
         if self.sync_repo(repo_config, dry_run=dry_run):
-            self.stats["success"] += 1
+            self.stats['success'] += 1
             self._print_summary()
             return True
         else:
-            self.stats["failed"] += 1
+            self.stats['failed'] += 1
             self._print_summary()
             return False
 
@@ -321,37 +307,42 @@ class RepoSyncer:
         log_error(f"Failed:   {self.stats['failed']}")
         log_info("=" * 60)
 
-        if self.stats["success"] > 0:
-            log_success(
-                f"\n✨ {self.stats['success']} repositories synced to: {self.external_dir}"
-            )
+        if self.stats['success'] > 0:
+            log_success(f"\n✨ {self.stats['success']} repositories synced to: {self.external_dir}")
             log_info("Next steps:")
             log_info("  1. Review changes: git status")
-            log_info(
-                "  2. Commit: git add external/ && git commit -m 'chore: sync external repos'"
-            )
+            log_info("  2. Commit: git add external/ && git commit -m 'chore: sync external repos'")
             log_info("  3. Push: git push")
 
-
 def main():
-    parser = argparse.ArgumentParser(description="Multi-Repository Auto-Sync Tool")
+    parser = argparse.ArgumentParser(
+        description="Multi-Repository Auto-Sync Tool"
+    )
     parser.add_argument(
-        "--config",
+        '--config',
         type=Path,
-        default=Path("config/external_repos.yaml"),
-        help="Configuration file path",
+        default=Path('config/external_repos.yaml'),
+        help='Configuration file path'
     )
     parser.add_argument(
-        "--core-only", action="store_true", help="Sync core repositories only"
+        '--core-only',
+        action='store_true',
+        help='Sync core repositories only'
     )
     parser.add_argument(
-        "--exclude-core",
-        action="store_true",
-        help="Exclude core repositories (sync regular repos only, for hybrid mode)",
+        '--exclude-core',
+        action='store_true',
+        help='Exclude core repositories (sync regular repos only, for hybrid mode)'
     )
-    parser.add_argument("--repo", type=str, help="Sync single repository by name")
     parser.add_argument(
-        "--dry-run", action="store_true", help="Dry run mode (no actual changes)"
+        '--repo',
+        type=str,
+        help='Sync single repository by name'
+    )
+    parser.add_argument(
+        '--dry-run',
+        action='store_true',
+        help='Dry run mode (no actual changes)'
     )
 
     args = parser.parse_args()
@@ -366,9 +357,8 @@ def main():
         syncer.sync_all(
             core_only=args.core_only,
             exclude_core=args.exclude_core,
-            dry_run=args.dry_run,
+            dry_run=args.dry_run
         )
 
-
-if __name__ == "__main__":
+if __name__ == '__main__':
     main()

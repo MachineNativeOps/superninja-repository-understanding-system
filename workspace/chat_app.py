@@ -2,7 +2,9 @@ from typing import Dict, List
 
 from guardrails_client import chat_completion, client_available, get_api_key
 
-SYSTEM_PROMPT = "You are an AI assistant who can chat with users about the project and its codebase."
+SYSTEM_PROMPT = (
+    "You are an AI assistant who can chat with users about the project and its codebase."
+)
 
 
 def initial_messages() -> List[Dict[str, str]]:
@@ -40,13 +42,9 @@ def run_chat() -> None:
     configured_key = get_api_key()
     if not client_available():
         if not configured_key:
-            print(
-                "AI client not configured. Set AI_INTEGRATIONS_OPENAI_API_KEY or OPENAI_API_KEY."
-            )
+            print("AI client not configured. Set AI_INTEGRATIONS_OPENAI_API_KEY or OPENAI_API_KEY.")
         else:
-            print(
-                "AI client dependencies missing. Please install guardrails or openai packages."
-            )
+            print("AI client dependencies missing. Please install guardrails or openai packages.")
         return
 
     messages = initial_messages()

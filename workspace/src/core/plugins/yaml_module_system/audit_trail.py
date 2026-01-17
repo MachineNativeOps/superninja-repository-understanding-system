@@ -17,7 +17,6 @@ from typing import Any
 
 class AuditAction(Enum):
     """審計動作類型"""
-
     CREATE = "create"
     READ = "read"
     UPDATE = "update"
@@ -35,7 +34,6 @@ class AuditAction(Enum):
 
 class AuditLevel(Enum):
     """審計級別"""
-
     INFO = "info"
     WARNING = "warning"
     CRITICAL = "critical"
@@ -44,7 +42,6 @@ class AuditLevel(Enum):
 @dataclass
 class AuditEntry:
     """審計條目"""
-
     id: str
     timestamp: datetime
     action: AuditAction
@@ -63,20 +60,20 @@ class AuditEntry:
     def to_dict(self) -> dict[str, Any]:
         """Convert to dictionary"""
         return {
-            "id": self.id,
-            "timestamp": self.timestamp.isoformat(),
-            "action": self.action.value,
-            "actor": self.actor,
-            "resource_type": self.resource_type,
-            "resource_id": self.resource_id,
-            "level": self.level.value,
-            "details": self.details,
-            "previous_state": self.previous_state,
-            "new_state": self.new_state,
-            "ip_address": self.ip_address,
-            "user_agent": self.user_agent,
-            "session_id": self.session_id,
-            "correlation_id": self.correlation_id,
+            'id': self.id,
+            'timestamp': self.timestamp.isoformat(),
+            'action': self.action.value,
+            'actor': self.actor,
+            'resource_type': self.resource_type,
+            'resource_id': self.resource_id,
+            'level': self.level.value,
+            'details': self.details,
+            'previous_state': self.previous_state,
+            'new_state': self.new_state,
+            'ip_address': self.ip_address,
+            'user_agent': self.user_agent,
+            'session_id': self.session_id,
+            'correlation_id': self.correlation_id,
         }
 
     def get_hash(self) -> str:
@@ -88,7 +85,7 @@ class AuditEntry:
 class AuditLogger:
     """
     審計日誌記錄器
-
+    
     記錄所有系統操作的完整審計追蹤。
     """
 
@@ -97,21 +94,19 @@ class AuditLogger:
         self._storage_backend = storage_backend
         self._retention_days = 365  # 默認保留 365 天
 
-    def log(
-        self,
-        action: AuditAction,
-        actor: str,
-        resource_type: str,
-        resource_id: str,
-        level: AuditLevel = AuditLevel.INFO,
-        details: dict[str, Any] | None = None,
-        previous_state: dict[str, Any] | None = None,
-        new_state: dict[str, Any] | None = None,
-        correlation_id: str | None = None,
-    ) -> AuditEntry:
+    def log(self,
+            action: AuditAction,
+            actor: str,
+            resource_type: str,
+            resource_id: str,
+            level: AuditLevel = AuditLevel.INFO,
+            details: dict[str, Any] | None = None,
+            previous_state: dict[str, Any] | None = None,
+            new_state: dict[str, Any] | None = None,
+            correlation_id: str | None = None) -> AuditEntry:
         """
         記錄審計事件
-
+        
         Args:
             action: 操作類型
             actor: 執行者
@@ -122,7 +117,7 @@ class AuditLogger:
             previous_state: 操作前狀態
             new_state: 操作後狀態
             correlation_id: 關聯 ID（用於追蹤相關事件）
-
+        
         Returns:
             AuditEntry: 審計條目
         """
@@ -143,14 +138,8 @@ class AuditLogger:
         self._entries.append(entry)
         return entry
 
-    def log_create(
-        self,
-        actor: str,
-        resource_type: str,
-        resource_id: str,
-        new_state: dict[str, Any],
-        details: dict[str, Any] | None = None,
-    ) -> AuditEntry:
+    def log_create(self, actor: str, resource_type: str, resource_id: str,
+                   new_state: dict[str, Any], details: dict[str, Any] | None = None) -> AuditEntry:
         """記錄創建操作"""
         return self.log(
             action=AuditAction.CREATE,
@@ -161,15 +150,9 @@ class AuditLogger:
             details=details,
         )
 
-    def log_update(
-        self,
-        actor: str,
-        resource_type: str,
-        resource_id: str,
-        previous_state: dict[str, Any],
-        new_state: dict[str, Any],
-        details: dict[str, Any] | None = None,
-    ) -> AuditEntry:
+    def log_update(self, actor: str, resource_type: str, resource_id: str,
+                   previous_state: dict[str, Any], new_state: dict[str, Any],
+                   details: dict[str, Any] | None = None) -> AuditEntry:
         """記錄更新操作"""
         return self.log(
             action=AuditAction.UPDATE,
@@ -181,14 +164,8 @@ class AuditLogger:
             details=details,
         )
 
-    def log_delete(
-        self,
-        actor: str,
-        resource_type: str,
-        resource_id: str,
-        previous_state: dict[str, Any],
-        details: dict[str, Any] | None = None,
-    ) -> AuditEntry:
+    def log_delete(self, actor: str, resource_type: str, resource_id: str,
+                   previous_state: dict[str, Any], details: dict[str, Any] | None = None) -> AuditEntry:
         """記錄刪除操作"""
         return self.log(
             action=AuditAction.DELETE,
@@ -200,13 +177,8 @@ class AuditLogger:
             details=details,
         )
 
-    def log_approve(
-        self,
-        actor: str,
-        resource_type: str,
-        resource_id: str,
-        details: dict[str, Any] | None = None,
-    ) -> AuditEntry:
+    def log_approve(self, actor: str, resource_type: str, resource_id: str,
+                    details: dict[str, Any] | None = None) -> AuditEntry:
         """記錄審批操作"""
         return self.log(
             action=AuditAction.APPROVE,
@@ -216,13 +188,8 @@ class AuditLogger:
             details=details,
         )
 
-    def log_deploy(
-        self,
-        actor: str,
-        resource_type: str,
-        resource_id: str,
-        details: dict[str, Any] | None = None,
-    ) -> AuditEntry:
+    def log_deploy(self, actor: str, resource_type: str, resource_id: str,
+                   details: dict[str, Any] | None = None) -> AuditEntry:
         """記錄部署操作"""
         return self.log(
             action=AuditAction.DEPLOY,
@@ -233,19 +200,17 @@ class AuditLogger:
             details=details,
         )
 
-    def get_entries(
-        self,
-        resource_type: str | None = None,
-        resource_id: str | None = None,
-        action: AuditAction | None = None,
-        actor: str | None = None,
-        start_time: datetime | None = None,
-        end_time: datetime | None = None,
-        limit: int = 100,
-    ) -> list[AuditEntry]:
+    def get_entries(self,
+                    resource_type: str | None = None,
+                    resource_id: str | None = None,
+                    action: AuditAction | None = None,
+                    actor: str | None = None,
+                    start_time: datetime | None = None,
+                    end_time: datetime | None = None,
+                    limit: int = 100) -> list[AuditEntry]:
         """
         查詢審計記錄
-
+        
         Args:
             resource_type: 資源類型過濾
             resource_id: 資源 ID 過濾
@@ -254,7 +219,7 @@ class AuditLogger:
             start_time: 開始時間
             end_time: 結束時間
             limit: 最大返回數量
-
+        
         Returns:
             List[AuditEntry]: 審計條目列表
         """
@@ -283,13 +248,9 @@ class AuditLogger:
 
         return entries[:limit]
 
-    def get_resource_history(
-        self, resource_type: str, resource_id: str
-    ) -> list[AuditEntry]:
+    def get_resource_history(self, resource_type: str, resource_id: str) -> list[AuditEntry]:
         """獲取資源的完整歷史"""
-        return self.get_entries(
-            resource_type=resource_type, resource_id=resource_id, limit=1000
-        )
+        return self.get_entries(resource_type=resource_type, resource_id=resource_id, limit=1000)
 
     def export(self, format: str = "json") -> str:
         """導出審計日誌"""
@@ -302,7 +263,6 @@ class AuditLogger:
 @dataclass
 class ChangeRecord:
     """變更記錄"""
-
     id: str
     timestamp: datetime
     resource_type: str
@@ -316,46 +276,44 @@ class ChangeRecord:
     def to_dict(self) -> dict[str, Any]:
         """Convert to dictionary"""
         return {
-            "id": self.id,
-            "timestamp": self.timestamp.isoformat(),
-            "resource_type": self.resource_type,
-            "resource_id": self.resource_id,
-            "change_type": self.change_type,
-            "field_path": self.field_path,
-            "old_value": self.old_value,
-            "new_value": self.new_value,
-            "actor": self.actor,
+            'id': self.id,
+            'timestamp': self.timestamp.isoformat(),
+            'resource_type': self.resource_type,
+            'resource_id': self.resource_id,
+            'change_type': self.change_type,
+            'field_path': self.field_path,
+            'old_value': self.old_value,
+            'new_value': self.new_value,
+            'actor': self.actor,
         }
 
 
 class ChangeTracker:
     """
     變更追蹤器
-
+    
     追蹤資源的詳細變更歷史。
     """
 
     def __init__(self):
         self._records: list[ChangeRecord] = []
 
-    def track_changes(
-        self,
-        resource_type: str,
-        resource_id: str,
-        old_state: dict[str, Any] | None,
-        new_state: dict[str, Any] | None,
-        actor: str = "",
-    ) -> list[ChangeRecord]:
+    def track_changes(self,
+                      resource_type: str,
+                      resource_id: str,
+                      old_state: dict[str, Any] | None,
+                      new_state: dict[str, Any] | None,
+                      actor: str = "") -> list[ChangeRecord]:
         """
         追蹤變更
-
+        
         Args:
             resource_type: 資源類型
             resource_id: 資源 ID
             old_state: 舊狀態
             new_state: 新狀態
             actor: 執行者
-
+        
         Returns:
             List[ChangeRecord]: 變更記錄列表
         """
@@ -370,7 +328,7 @@ class ChangeTracker:
                     timestamp=timestamp,
                     resource_type=resource_type,
                     resource_id=resource_id,
-                    change_type="added",
+                    change_type='added',
                     field_path=key,
                     new_value=value,
                     actor=actor,
@@ -385,7 +343,7 @@ class ChangeTracker:
                     timestamp=timestamp,
                     resource_type=resource_type,
                     resource_id=resource_id,
-                    change_type="removed",
+                    change_type='removed',
                     field_path=key,
                     old_value=value,
                     actor=actor,
@@ -405,11 +363,11 @@ class ChangeTracker:
 
                 if old_value != new_value:
                     if key not in old_flat:
-                        change_type = "added"
+                        change_type = 'added'
                     elif key not in new_flat:
-                        change_type = "removed"
+                        change_type = 'removed'
                     else:
-                        change_type = "modified"
+                        change_type = 'modified'
 
                     record = ChangeRecord(
                         id=str(uuid.uuid4()),
@@ -427,7 +385,7 @@ class ChangeTracker:
         self._records.extend(records)
         return records
 
-    def _flatten_dict(self, d: dict[str, Any], parent_key: str = "") -> list[tuple]:
+    def _flatten_dict(self, d: dict[str, Any], parent_key: str = '') -> list[tuple]:
         """展平字典"""
         items = []
         for k, v in d.items():
@@ -438,13 +396,11 @@ class ChangeTracker:
                 items.append((new_key, v))
         return items
 
-    def get_changes(
-        self,
-        resource_type: str | None = None,
-        resource_id: str | None = None,
-        change_type: str | None = None,
-        limit: int = 100,
-    ) -> list[ChangeRecord]:
+    def get_changes(self,
+                    resource_type: str | None = None,
+                    resource_id: str | None = None,
+                    change_type: str | None = None,
+                    limit: int = 100) -> list[ChangeRecord]:
         """獲取變更記錄"""
         records = self._records.copy()
 
@@ -460,13 +416,10 @@ class ChangeTracker:
         records.sort(key=lambda r: r.timestamp, reverse=True)
         return records[:limit]
 
-    def get_field_history(
-        self, resource_type: str, resource_id: str, field_path: str
-    ) -> list[ChangeRecord]:
+    def get_field_history(self, resource_type: str, resource_id: str, field_path: str) -> list[ChangeRecord]:
         """獲取特定字段的歷史"""
         records = [
-            r
-            for r in self._records
+            r for r in self._records
             if r.resource_type == resource_type
             and r.resource_id == resource_id
             and r.field_path == field_path

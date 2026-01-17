@@ -16,7 +16,6 @@ from typing import Any
 
 class ToolCategory(Enum):
     """Tool categories for organization and routing"""
-
     DATABASE = "database"
     FILESYSTEM = "filesystem"
     API = "api"
@@ -29,7 +28,6 @@ class ToolCategory(Enum):
 
 class ToolStatus(Enum):
     """Status of tool execution"""
-
     SUCCESS = "success"
     FAILURE = "failure"
     TIMEOUT = "timeout"
@@ -40,7 +38,6 @@ class ToolStatus(Enum):
 @dataclass
 class ToolResult:
     """Result of tool execution"""
-
     tool_name: str
     status: ToolStatus
     output: Any = None
@@ -55,10 +52,9 @@ class Tool:
     """
     工具接口定義
     Core tool interface for the SynergyMesh execution system
-
+    
     Reference: Function calling and tool execution standards
     """
-
     # Tool metadata
     name: str
     description: str
@@ -96,7 +92,8 @@ class Tool:
 
             if asyncio.iscoroutinefunction(self.execute_fn):
                 result = await asyncio.wait_for(
-                    self.execute_fn(params), timeout=self.timeout_seconds
+                    self.execute_fn(params),
+                    timeout=self.timeout_seconds
                 )
             else:
                 result = self.execute_fn(params)
@@ -107,7 +104,7 @@ class Tool:
                 tool_name=self.name,
                 status=ToolStatus.SUCCESS,
                 output=result,
-                execution_time_ms=execution_time,
+                execution_time_ms=execution_time
             )
 
         except TimeoutError:
@@ -116,7 +113,7 @@ class Tool:
                 tool_name=self.name,
                 status=ToolStatus.TIMEOUT,
                 error=f"Tool execution timed out after {self.timeout_seconds}s",
-                execution_time_ms=execution_time,
+                execution_time_ms=execution_time
             )
         except Exception as e:
             execution_time = (datetime.now() - start_time).total_seconds() * 1000
@@ -124,7 +121,7 @@ class Tool:
                 tool_name=self.name,
                 status=ToolStatus.FAILURE,
                 error=str(e),
-                execution_time_ms=execution_time,
+                execution_time_ms=execution_time
             )
 
     def _validate_input(self, params: dict[str, Any]) -> None:
@@ -132,8 +129,8 @@ class Tool:
         if not self.input_schema:
             return
 
-        required = self.input_schema.get("required", [])
-        properties = self.input_schema.get("properties", {})
+        required = self.input_schema.get('required', [])
+        properties = self.input_schema.get('properties', {})
 
         for req_field in required:
             if req_field not in params:
@@ -141,21 +138,19 @@ class Tool:
 
         for key, value in params.items():
             if key in properties:
-                expected_type = properties[key].get("type")
+                expected_type = properties[key].get('type')
                 if expected_type and not self._check_type(value, expected_type):
-                    raise ValueError(
-                        f"Invalid type for {key}: expected {expected_type}"
-                    )
+                    raise ValueError(f"Invalid type for {key}: expected {expected_type}")
 
     def _check_type(self, value: Any, expected_type: str) -> bool:
         """Check if value matches expected JSON Schema type"""
         type_map = {
-            "string": str,
-            "number": (int, float),
-            "integer": int,
-            "boolean": bool,
-            "array": list,
-            "object": dict,
+            'string': str,
+            'number': (int, float),
+            'integer': int,
+            'boolean': bool,
+            'array': list,
+            'object': dict,
         }
         return isinstance(value, type_map.get(expected_type, object))
 
@@ -164,7 +159,7 @@ class Tool:
         return {
             "name": self.name,
             "description": self.description,
-            "parameters": self.input_schema or {"type": "object", "properties": {}},
+            "parameters": self.input_schema or {"type": "object", "properties": {}}
         }
 
     def to_dict(self) -> dict[str, Any]:
@@ -190,9 +185,7 @@ class ToolRegistry:
 
     def __init__(self):
         self._tools: dict[str, Tool] = {}
-        self._categories: dict[ToolCategory, list[str]] = {
-            cat: [] for cat in ToolCategory
-        }
+        self._categories: dict[ToolCategory, list[str]] = {cat: [] for cat in ToolCategory}
         self._tags: dict[str, list[str]] = {}
 
     def register(self, tool: Tool) -> None:
@@ -243,10 +236,7 @@ class ToolRegistry:
         query_lower = query.lower()
         results = []
         for tool in self._tools.values():
-            if (
-                query_lower in tool.name.lower()
-                or query_lower in tool.description.lower()
-            ):
+            if query_lower in tool.name.lower() or query_lower in tool.description.lower():
                 results.append(tool)
         return results
 
@@ -266,7 +256,10 @@ class ToolExecutor:
         self._execution_history: list[ToolResult] = []
 
     async def execute(
-        self, tool_name: str, params: dict[str, Any], retry_on_failure: bool = True
+        self,
+        tool_name: str,
+        params: dict[str, Any],
+        retry_on_failure: bool = True
     ) -> ToolResult:
         """Execute a tool by name"""
         tool = self.registry.get(tool_name)
@@ -274,7 +267,7 @@ class ToolExecutor:
             return ToolResult(
                 tool_name=tool_name,
                 status=ToolStatus.FAILURE,
-                error=f"Tool not found: {tool_name}",
+                error=f"Tool not found: {tool_name}"
             )
 
         attempts = tool.max_retries if retry_on_failure else 1
@@ -295,19 +288,21 @@ class ToolExecutor:
         return last_result
 
     async def execute_many(
-        self, tool_calls: list[dict[str, Any]], parallel: bool = False
+        self,
+        tool_calls: list[dict[str, Any]],
+        parallel: bool = False
     ) -> list[ToolResult]:
         """Execute multiple tools"""
         if parallel:
             tasks = [
-                self.execute(call["tool_name"], call.get("params", {}))
+                self.execute(call['tool_name'], call.get('params', {}))
                 for call in tool_calls
             ]
             return await asyncio.gather(*tasks)
         else:
             results = []
             for call in tool_calls:
-                result = await self.execute(call["tool_name"], call.get("params", {}))
+                result = await self.execute(call['tool_name'], call.get('params', {}))
                 results.append(result)
             return results
 
@@ -322,7 +317,10 @@ class ToolExecutor:
 
 # Pre-built tool factories for common operations
 def create_database_tool(
-    name: str, description: str, execute_fn: Callable, input_schema: dict | None = None
+    name: str,
+    description: str,
+    execute_fn: Callable,
+    input_schema: dict | None = None
 ) -> Tool:
     """Factory for creating database tools"""
     return Tool(
@@ -331,12 +329,15 @@ def create_database_tool(
         category=ToolCategory.DATABASE,
         execute_fn=execute_fn,
         input_schema=input_schema or {"type": "object", "properties": {}},
-        tags=["database", "sql"],
+        tags=["database", "sql"]
     )
 
 
 def create_api_tool(
-    name: str, description: str, execute_fn: Callable, input_schema: dict | None = None
+    name: str,
+    description: str,
+    execute_fn: Callable,
+    input_schema: dict | None = None
 ) -> Tool:
     """Factory for creating API tools"""
     return Tool(
@@ -345,12 +346,15 @@ def create_api_tool(
         category=ToolCategory.API,
         execute_fn=execute_fn,
         input_schema=input_schema or {"type": "object", "properties": {}},
-        tags=["api", "http"],
+        tags=["api", "http"]
     )
 
 
 def create_code_tool(
-    name: str, description: str, execute_fn: Callable, input_schema: dict | None = None
+    name: str,
+    description: str,
+    execute_fn: Callable,
+    input_schema: dict | None = None
 ) -> Tool:
     """Factory for creating code execution tools"""
     return Tool(
@@ -359,5 +363,5 @@ def create_code_tool(
         category=ToolCategory.CODE,
         execute_fn=execute_fn,
         input_schema=input_schema or {"type": "object", "properties": {}},
-        tags=["code", "execution"],
+        tags=["code", "execution"]
     )

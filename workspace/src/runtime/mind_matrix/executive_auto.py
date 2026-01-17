@@ -50,28 +50,24 @@ class ExecutiveAutoController:
     """
 
     # Allowed actions whitelist for policy gate
-    ALLOWED_ACTIONS = frozenset(
-        {
-            "progressive_deploy",
-            "rollback_and_rerun",
-            "observe_only",
-            "scale_up",
-            "scale_down",
-            "circuit_break",
-            "health_check",
-        }
-    )
+    ALLOWED_ACTIONS = frozenset({
+        "progressive_deploy",
+        "rollback_and_rerun",
+        "observe_only",
+        "scale_up",
+        "scale_down",
+        "circuit_break",
+        "health_check",
+    })
 
     # Required governance principles
-    REQUIRED_PRINCIPLES = frozenset(
-        {
-            "depth_first",
-            "verifiability_first",
-            "security_first",
-            "automation_first",
-            "traceability_first",
-        }
-    )
+    REQUIRED_PRINCIPLES = frozenset({
+        "depth_first",
+        "verifiability_first",
+        "security_first",
+        "automation_first",
+        "traceability_first",
+    })
 
     def __init__(
         self,
@@ -118,8 +114,7 @@ class ExecutiveAutoController:
             Dictionary containing system signals and metrics.
         """
         if signals is None:
-            # Default demonstration signals (in production, fetch from
-            # monitoring)
+            # Default demonstration signals (in production, fetch from monitoring)
             signals = {
                 "latency_ms": 120,
                 "error_rate": 0.02,
@@ -151,68 +146,54 @@ class ExecutiveAutoController:
 
         # Rule-based decision generation
         if signals.get("deploy_pending"):
-            decisions.append(
-                {
-                    "action": "progressive_deploy",
-                    "risk": 0.3,
-                    "reason": "Pending deployment detected",
-                }
-            )
+            decisions.append({
+                "action": "progressive_deploy",
+                "risk": 0.3,
+                "reason": "Pending deployment detected",
+            })
 
         error_rate = signals.get("error_rate", 0)
         if error_rate > 0.05:
-            decisions.append(
-                {
-                    "action": "rollback_and_rerun",
-                    "risk": 0.2,
-                    "reason": f"High error rate: {error_rate:.2%}",
-                }
-            )
+            decisions.append({
+                "action": "rollback_and_rerun",
+                "risk": 0.2,
+                "reason": f"High error rate: {error_rate:.2%}",
+            })
         elif error_rate > 0.03:
-            decisions.append(
-                {
-                    "action": "health_check",
-                    "risk": 0.1,
-                    "reason": f"Elevated error rate: {error_rate:.2%}",
-                }
-            )
+            decisions.append({
+                "action": "health_check",
+                "risk": 0.1,
+                "reason": f"Elevated error rate: {error_rate:.2%}",
+            })
 
         cpu_util = signals.get("cpu_utilization", 0)
         if cpu_util > 0.85:
-            decisions.append(
-                {
-                    "action": "scale_up",
-                    "risk": 0.2,
-                    "reason": f"High CPU utilization: {cpu_util:.2%}",
-                }
-            )
+            decisions.append({
+                "action": "scale_up",
+                "risk": 0.2,
+                "reason": f"High CPU utilization: {cpu_util:.2%}",
+            })
         elif cpu_util < 0.3:
-            decisions.append(
-                {
-                    "action": "scale_down",
-                    "risk": 0.1,
-                    "reason": f"Low CPU utilization: {cpu_util:.2%}",
-                }
-            )
+            decisions.append({
+                "action": "scale_down",
+                "risk": 0.1,
+                "reason": f"Low CPU utilization: {cpu_util:.2%}",
+            })
 
         if signals.get("circuit_breaker_open"):
-            decisions.append(
-                {
-                    "action": "circuit_break",
-                    "risk": 0.4,
-                    "reason": "Circuit breaker is open",
-                }
-            )
+            decisions.append({
+                "action": "circuit_break",
+                "risk": 0.4,
+                "reason": "Circuit breaker is open",
+            })
 
         # Default to observation if no actions needed
         if not decisions:
-            decisions.append(
-                {
-                    "action": "observe_only",
-                    "risk": 0.1,
-                    "reason": "System stable, no action required",
-                }
-            )
+            decisions.append({
+                "action": "observe_only",
+                "risk": 0.1,
+                "reason": "System stable, no action required",
+            })
 
         plan = {
             "decisions": decisions,
@@ -251,12 +232,14 @@ class ExecutiveAutoController:
 
         # Filter to only allowed actions
         filtered_decisions = [
-            d for d in plan["decisions"] if d["action"] in self.ALLOWED_ACTIONS
+            d for d in plan["decisions"]
+            if d["action"] in self.ALLOWED_ACTIONS
         ]
 
         # Log any blocked actions
         blocked = [
-            d for d in plan["decisions"] if d["action"] not in self.ALLOWED_ACTIONS
+            d for d in plan["decisions"]
+            if d["action"] not in self.ALLOWED_ACTIONS
         ]
         if blocked:
             self._evidence("policy_blocked", {"blocked_actions": blocked})
@@ -291,61 +274,45 @@ class ExecutiveAutoController:
             action = decision["action"]
 
             if action == "progressive_deploy":
-                results.append(
-                    self._run_tool(
-                        "tool_execution",
-                        {"op": "deploy", "mode": "rolling", "canary_percent": 10},
-                    )
-                )
+                results.append(self._run_tool(
+                    "tool_execution",
+                    {"op": "deploy", "mode": "rolling", "canary_percent": 10},
+                ))
             elif action == "rollback_and_rerun":
-                results.append(
-                    self._run_tool(
-                        "tool_execution",
-                        {"op": "rollback", "target": "previous_stable"},
-                    )
-                )
-                results.append(
-                    self._run_tool(
-                        "tool_execution",
-                        {"op": "rerun", "pipeline": "validation"},
-                    )
-                )
+                results.append(self._run_tool(
+                    "tool_execution",
+                    {"op": "rollback", "target": "previous_stable"},
+                ))
+                results.append(self._run_tool(
+                    "tool_execution",
+                    {"op": "rerun", "pipeline": "validation"},
+                ))
             elif action == "scale_up":
-                results.append(
-                    self._run_tool(
-                        "tool_execution",
-                        {"op": "scale", "direction": "up", "increment": 2},
-                    )
-                )
+                results.append(self._run_tool(
+                    "tool_execution",
+                    {"op": "scale", "direction": "up", "increment": 2},
+                ))
             elif action == "scale_down":
-                results.append(
-                    self._run_tool(
-                        "tool_execution",
-                        {"op": "scale", "direction": "down", "decrement": 1},
-                    )
-                )
+                results.append(self._run_tool(
+                    "tool_execution",
+                    {"op": "scale", "direction": "down", "decrement": 1},
+                ))
             elif action == "circuit_break":
-                results.append(
-                    self._run_tool(
-                        "tool_execution",
-                        {"op": "circuit_break", "action": "isolate"},
-                    )
-                )
+                results.append(self._run_tool(
+                    "tool_execution",
+                    {"op": "circuit_break", "action": "isolate"},
+                ))
             elif action == "health_check":
-                results.append(
-                    self._run_tool(
-                        "tool_execution",
-                        {"op": "health_check", "deep": True},
-                    )
-                )
+                results.append(self._run_tool(
+                    "tool_execution",
+                    {"op": "health_check", "deep": True},
+                ))
             else:  # observe_only or unknown
-                results.append(
-                    {
-                        "op": "observe",
-                        "status": "noop",
-                        "timestamp": datetime.utcnow().isoformat(),
-                    }
-                )
+                results.append({
+                    "op": "observe",
+                    "status": "noop",
+                    "timestamp": datetime.utcnow().isoformat(),
+                })
 
         exec_result = {
             "results": results,
@@ -397,7 +364,10 @@ class ExecutiveAutoController:
         Returns:
             Healing outcome dictionary.
         """
-        failures = [r for r in exec_result["results"] if r.get("status") == "failed"]
+        failures = [
+            r for r in exec_result["results"]
+            if r.get("status") == "failed"
+        ]
 
         outcome = {
             "autofix": False,
@@ -414,44 +384,32 @@ class ExecutiveAutoController:
             if self._heal_attempt_count > self.max_heal_attempts:
                 # Escalate after max attempts
                 outcome["escalated"] = True
-                self._evidence(
-                    "heal_escalation",
-                    {
-                        "reason": f"Max heal attempts ({self.max_heal_attempts}) exceeded",
-                        "failures": failures,
-                    },
-                )
+                self._evidence("heal_escalation", {
+                    "reason": f"Max heal attempts ({self.max_heal_attempts}) exceeded",
+                    "failures": failures,
+                })
             else:
                 # Attempt auto-fix
                 outcome["autofix"] = True
-                self._evidence(
-                    "issueops_autofix",
-                    {
-                        "attempt": self._heal_attempt_count,
-                        "failure_count": len(failures),
-                        "failures": failures,
-                    },
-                )
+                self._evidence("issueops_autofix", {
+                    "attempt": self._heal_attempt_count,
+                    "failure_count": len(failures),
+                    "failures": failures,
+                })
 
                 # Generate fix PR (simulated)
                 outcome["pr_generated"] = True
-                self._evidence(
-                    "issueops_pr",
-                    {
-                        "pr": f"fix-{datetime.utcnow().strftime('%Y%m%d%H%M%S')}",
-                        "status": "generated",
-                    },
-                )
+                self._evidence("issueops_pr", {
+                    "pr": f"fix-{datetime.utcnow().strftime('%Y%m%d%H%M%S')}",
+                    "status": "generated",
+                })
 
                 # Rerun validation
                 outcome["rerun"] = True
-                self._evidence(
-                    "issueops_rerun",
-                    {
-                        "pipeline": "validation",
-                        "status": "triggered",
-                    },
-                )
+                self._evidence("issueops_rerun", {
+                    "pipeline": "validation",
+                    "status": "triggered",
+                })
         else:
             # Reset heal counter on success
             self._heal_attempt_count = 0
@@ -505,17 +463,15 @@ class ExecutiveAutoController:
         e = self.execute(g)
         checkpoint = self.prove_and_freeze(e)
         h = self.heal_loop(e)
-        ev = self.evolve(
-            {
-                "latency_ms": s.get("latency_ms", 0),
-                "error_rate": s.get("error_rate", 0),
-                "cpu_utilization": s.get("cpu_utilization", 0),
-                "decisions_made": len(g["decisions"]),
-                "executions_success": sum(
-                    1 for r in e["results"] if r.get("status") == "success"
-                ),
-            }
-        )
+        ev = self.evolve({
+            "latency_ms": s.get("latency_ms", 0),
+            "error_rate": s.get("error_rate", 0),
+            "cpu_utilization": s.get("cpu_utilization", 0),
+            "decisions_made": len(g["decisions"]),
+            "executions_success": sum(
+                1 for r in e["results"] if r.get("status") == "success"
+            ),
+        })
 
         return {
             "signals": s,
@@ -591,10 +547,8 @@ class ExecutiveAutoController:
             stage: Stage name for the evidence.
             data: Evidence data to record.
         """
-        self.audit_log.append(
-            {
-                "stage": stage,
-                "data": data,
-                "ts": datetime.utcnow().isoformat(),
-            }
-        )
+        self.audit_log.append({
+            "stage": stage,
+            "data": data,
+            "ts": datetime.utcnow().isoformat(),
+        })

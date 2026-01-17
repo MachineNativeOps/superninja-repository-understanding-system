@@ -6,9 +6,8 @@ import json
 import sys
 from pathlib import Path
 
-import jsonschema
 import yaml
-
+import jsonschema
 
 def main():
     repo = Path(".")
@@ -34,12 +33,9 @@ def main():
         report["result"] = "fail"
         report["errors"].append(str(e))
 
-    report_path.write_text(
-        json.dumps(report, ensure_ascii=False, indent=2), encoding="utf-8"
-    )
+    report_path.write_text(json.dumps(report, ensure_ascii=False, indent=2), encoding="utf-8")
     print(json.dumps(report, ensure_ascii=False, indent=2))
     return 0 if report["result"] == "pass" else 2
-
 
 if __name__ == "__main__":
     sys.exit(main())

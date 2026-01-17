@@ -5,12 +5,12 @@ AXIOM Layer 3 Components
 """
 
 from .service_mesh import (
-    CircuitBreaker,
-    LoadBalancerStrategy,
+    ServiceMesh,
     ServiceDefinition,
     ServiceEndpoint,
-    ServiceMesh,
     ServiceStatus,
+    LoadBalancerStrategy,
+    CircuitBreaker,
 )
 
 __all__ = [

@@ -21,7 +21,6 @@ from typing import Any
 
 class CapabilityStatus(Enum):
     """能力狀態"""
-
     AVAILABLE = "available"
     UNAVAILABLE = "unavailable"
     DEGRADED = "degraded"
@@ -84,7 +83,7 @@ class Capability:
 class CapabilityRegistry:
     """
     能力註冊表 - 管理系統的實際執行能力
-
+    
     核心問題：知識不等於能力
     - 有知識不代表能執行
     - 需要實際的執行器和連接器
@@ -113,140 +112,122 @@ class CapabilityRegistry:
         """註冊默認能力"""
 
         # 數據庫能力
-        self.register(
-            Capability(
-                name="database.query",
-                description="執行數據庫查詢",
-                category="database",
-                status=CapabilityStatus.AVAILABLE,
-                requirements=[
-                    CapabilityRequirement(
-                        name="database_connection",
-                        description="數據庫連接",
-                        required=True,
-                    ),
-                ],
-            )
-        )
+        self.register(Capability(
+            name="database.query",
+            description="執行數據庫查詢",
+            category="database",
+            status=CapabilityStatus.AVAILABLE,
+            requirements=[
+                CapabilityRequirement(
+                    name="database_connection",
+                    description="數據庫連接",
+                    required=True,
+                ),
+            ],
+        ))
 
-        self.register(
-            Capability(
-                name="database.write",
-                description="執行數據庫寫入",
-                category="database",
-                status=CapabilityStatus.AVAILABLE,
-                requirements=[
-                    CapabilityRequirement(
-                        name="database_connection",
-                        description="數據庫連接",
-                        required=True,
-                    ),
-                    CapabilityRequirement(
-                        name="write_permission",
-                        description="寫入權限",
-                        required=True,
-                    ),
-                ],
-            )
-        )
+        self.register(Capability(
+            name="database.write",
+            description="執行數據庫寫入",
+            category="database",
+            status=CapabilityStatus.AVAILABLE,
+            requirements=[
+                CapabilityRequirement(
+                    name="database_connection",
+                    description="數據庫連接",
+                    required=True,
+                ),
+                CapabilityRequirement(
+                    name="write_permission",
+                    description="寫入權限",
+                    required=True,
+                ),
+            ],
+        ))
 
         # 部署能力
-        self.register(
-            Capability(
-                name="deployment.execute",
-                description="執行應用部署",
-                category="deployment",
-                status=CapabilityStatus.AVAILABLE,
-                requirements=[
-                    CapabilityRequirement(
-                        name="container_runtime",
-                        description="容器運行時",
-                        required=True,
-                        alternatives=["docker", "podman", "containerd"],
-                    ),
-                ],
-            )
-        )
+        self.register(Capability(
+            name="deployment.execute",
+            description="執行應用部署",
+            category="deployment",
+            status=CapabilityStatus.AVAILABLE,
+            requirements=[
+                CapabilityRequirement(
+                    name="container_runtime",
+                    description="容器運行時",
+                    required=True,
+                    alternatives=["docker", "podman", "containerd"],
+                ),
+            ],
+        ))
 
         # 文件系統能力
-        self.register(
-            Capability(
-                name="filesystem.read",
-                description="讀取文件系統",
-                category="filesystem",
-                status=CapabilityStatus.AVAILABLE,
-            )
-        )
+        self.register(Capability(
+            name="filesystem.read",
+            description="讀取文件系統",
+            category="filesystem",
+            status=CapabilityStatus.AVAILABLE,
+        ))
 
-        self.register(
-            Capability(
-                name="filesystem.write",
-                description="寫入文件系統",
-                category="filesystem",
-                status=CapabilityStatus.AVAILABLE,
-                requirements=[
-                    CapabilityRequirement(
-                        name="write_permission",
-                        description="寫入權限",
-                        required=True,
-                    ),
-                ],
-            )
-        )
+        self.register(Capability(
+            name="filesystem.write",
+            description="寫入文件系統",
+            category="filesystem",
+            status=CapabilityStatus.AVAILABLE,
+            requirements=[
+                CapabilityRequirement(
+                    name="write_permission",
+                    description="寫入權限",
+                    required=True,
+                ),
+            ],
+        ))
 
         # API 調用能力
-        self.register(
-            Capability(
-                name="api.call",
-                description="執行 API 調用",
-                category="network",
-                status=CapabilityStatus.AVAILABLE,
-                requirements=[
-                    CapabilityRequirement(
-                        name="network_access",
-                        description="網絡訪問",
-                        required=True,
-                    ),
-                ],
-            )
-        )
+        self.register(Capability(
+            name="api.call",
+            description="執行 API 調用",
+            category="network",
+            status=CapabilityStatus.AVAILABLE,
+            requirements=[
+                CapabilityRequirement(
+                    name="network_access",
+                    description="網絡訪問",
+                    required=True,
+                ),
+            ],
+        ))
 
         # 配置管理能力
-        self.register(
-            Capability(
-                name="config.read",
-                description="讀取配置",
-                category="configuration",
-                status=CapabilityStatus.AVAILABLE,
-            )
-        )
+        self.register(Capability(
+            name="config.read",
+            description="讀取配置",
+            category="configuration",
+            status=CapabilityStatus.AVAILABLE,
+        ))
 
-        self.register(
-            Capability(
-                name="config.write",
-                description="寫入配置",
-                category="configuration",
-                status=CapabilityStatus.AVAILABLE,
-            )
-        )
+        self.register(Capability(
+            name="config.write",
+            description="寫入配置",
+            category="configuration",
+            status=CapabilityStatus.AVAILABLE,
+        ))
 
         # 監控能力
-        self.register(
-            Capability(
-                name="monitoring.collect",
-                description="收集監控數據",
-                category="monitoring",
-                status=CapabilityStatus.AVAILABLE,
-            )
-        )
+        self.register(Capability(
+            name="monitoring.collect",
+            description="收集監控數據",
+            category="monitoring",
+            status=CapabilityStatus.AVAILABLE,
+        ))
 
     def register(self, capability: Capability) -> str:
         """
         註冊能力
-
+        
         Args:
             capability: 能力定義
-
+            
         Returns:
             能力 ID
         """
@@ -272,10 +253,10 @@ class CapabilityRegistry:
     def unregister(self, name: str) -> bool:
         """
         註銷能力
-
+        
         Args:
             name: 能力名稱
-
+            
         Returns:
             是否成功
         """
@@ -316,9 +297,7 @@ class CapabilityRegistry:
     def get_by_category(self, category: str) -> list[Capability]:
         """按類別獲取能力"""
         names = self._category_index.get(category, set())
-        return [
-            self._capabilities[name] for name in names if name in self._capabilities
-        ]
+        return [self._capabilities[name] for name in names if name in self._capabilities]
 
     def get_all(self) -> list[Capability]:
         """獲取所有能力"""
@@ -327,18 +306,17 @@ class CapabilityRegistry:
     def get_available(self) -> list[Capability]:
         """獲取所有可用能力"""
         return [
-            cap
-            for cap in self._capabilities.values()
+            cap for cap in self._capabilities.values()
             if cap.status == CapabilityStatus.AVAILABLE
         ]
 
     def check_requirements(self, name: str) -> dict[str, Any]:
         """
         檢查能力需求
-
+        
         Args:
             name: 能力名稱
-
+            
         Returns:
             檢查結果
         """
@@ -386,11 +364,11 @@ class CapabilityRegistry:
     def update_status(self, name: str, status: CapabilityStatus) -> bool:
         """
         更新能力狀態
-
+        
         Args:
             name: 能力名稱
             status: 新狀態
-
+            
         Returns:
             是否成功
         """
@@ -404,26 +382,27 @@ class CapabilityRegistry:
 
         # 通知監聯器
         if old_status != status:
-            self._notify_listeners(
-                "status_changed",
-                capability,
-                {
-                    "old_status": old_status,
-                    "new_status": status,
-                },
-            )
+            self._notify_listeners("status_changed", capability, {
+                "old_status": old_status,
+                "new_status": status,
+            })
 
         return True
 
-    def record_invocation(self, name: str, success: bool, latency_ms: float) -> bool:
+    def record_invocation(
+        self,
+        name: str,
+        success: bool,
+        latency_ms: float
+    ) -> bool:
         """
         記錄能力調用
-
+        
         Args:
             name: 能力名稱
             success: 是否成功
             latency_ms: 延遲（毫秒）
-
+            
         Returns:
             是否成功
         """
@@ -442,7 +421,9 @@ class CapabilityRegistry:
         # 更新平均延遲
         total = capability.invocation_count
         current_avg = capability.average_latency_ms
-        capability.average_latency_ms = (current_avg * (total - 1) + latency_ms) / total
+        capability.average_latency_ms = (
+            (current_avg * (total - 1) + latency_ms) / total
+        )
 
         return True
 
@@ -450,13 +431,8 @@ class CapabilityRegistry:
         """獲取統計信息"""
 
         total = len(self._capabilities)
-        available = len(
-            [
-                c
-                for c in self._capabilities.values()
-                if c.status == CapabilityStatus.AVAILABLE
-            ]
-        )
+        available = len([c for c in self._capabilities.values()
+                        if c.status == CapabilityStatus.AVAILABLE])
 
         return {
             "total_capabilities": total,
@@ -464,7 +440,8 @@ class CapabilityRegistry:
             "unavailable_capabilities": total - available,
             "categories": list(self._category_index.keys()),
             "capabilities_by_category": {
-                cat: len(caps) for cat, caps in self._category_index.items()
+                cat: len(caps)
+                for cat, caps in self._category_index.items()
             },
         }
 
@@ -478,7 +455,10 @@ class CapabilityRegistry:
             self._listeners.remove(listener)
 
     def _notify_listeners(
-        self, event: str, capability: Capability, data: dict[str, Any] | None = None
+        self,
+        event: str,
+        capability: Capability,
+        data: dict[str, Any] | None = None
     ):
         """通知監聽器"""
         for listener in self._listeners:
@@ -490,10 +470,10 @@ class CapabilityRegistry:
     def get_dependency_tree(self, name: str) -> dict[str, Any]:
         """
         獲取能力依賴樹
-
+        
         Args:
             name: 能力名稱
-
+            
         Returns:
             依賴樹
         """

@@ -21,12 +21,12 @@ import yaml
 
 class RefactorPlaybookGenerator:
     """Generate refactor playbooks for directory clusters"""
-
+    
     # Configuration constants
     MAX_HOTSPOTS_DISPLAY = 10
     MAX_SEMGREP_DISPLAY = 10
     AI_SUGGESTIONS_EXCERPT_LENGTH = 500
-
+    
     # System prompt for LLM
     SYSTEM_PROMPT = """你是一個專門為大型雲原生平台設計重構計畫的「AI Refactor Playbook Generator」。
 
@@ -207,7 +207,7 @@ services/gateway/
 
 請務必依照上述段落順序與標題輸出 Markdown，且所有建議都要以 **可執行行動** 為導向，而不是抽象原則。
 """
-
+    
     def __init__(self, repo_root: str):
         self.repo_root = Path(repo_root)
         self.clusters = {}
@@ -216,36 +216,32 @@ services/gateway/
         self.semgrep_results = []
         self.migration_flows = {}
         self.global_suggestions = ""
-
+        
         # Cache settings
         self.cache_enabled, self.cache_ttl_hours = self._load_cache_settings()
         self.cache_dir = self.repo_root / ".cache" / "refactor"
         if self.cache_enabled:
             self.cache_dir.mkdir(parents=True, exist_ok=True)
-
+        
     def load_governance_data(self):
         """Load all governance data files"""
         print("📂 Loading governance data...")
-
+        
         # Load language governance report
-        gov_report_path = (
-            self.repo_root / "governance" / "language-governance-report.md"
-        )
+        gov_report_path = self.repo_root / "governance" / "language-governance-report.md"
         if gov_report_path.exists():
             self._parse_governance_report(gov_report_path)
         else:
             print(f"⚠️ Governance report not found: {gov_report_path}")
-
+            
         # Load hotspot data
-        hotspot_path = (
-            self.repo_root / "apps" / "web" / "public" / "data" / "hotspot.json"
-        )
+        hotspot_path = self.repo_root / "apps" / "web" / "public" / "data" / "hotspot.json"
         if hotspot_path.exists():
             with open(hotspot_path) as f:
                 self.hotspots = json.load(f)
         else:
             print(f"⚠️ Hotspot data not found: {hotspot_path}")
-
+            
         # Load semgrep report
         semgrep_path = self.repo_root / "governance" / "semgrep-report.json"
         if semgrep_path.exists():
@@ -253,307 +249,261 @@ services/gateway/
                 self.semgrep_results = json.load(f)
         else:
             print(f"⚠️ Semgrep report not found: {semgrep_path}")
-
+            
         # Load migration flow
-        migration_path = (
-            self.repo_root / "apps" / "web" / "public" / "data" / "migration-flow.json"
-        )
+        migration_path = self.repo_root / "apps" / "web" / "public" / "data" / "migration-flow.json"
         if migration_path.exists():
             with open(migration_path) as f:
                 self.migration_flows = json.load(f)
         else:
             print(f"⚠️ Migration flow not found: {migration_path}")
-
+            
         # Load cluster heatmap
-        cluster_path = (
-            self.repo_root / "apps" / "web" / "public" / "data" / "cluster-heatmap.json"
-        )
+        cluster_path = self.repo_root / "apps" / "web" / "public" / "data" / "cluster-heatmap.json"
         if cluster_path.exists():
             with open(cluster_path) as f:
                 self.clusters = json.load(f)
         else:
             print(f"⚠️ Cluster heatmap not found: {cluster_path}")
-
+            
         # Load global AI suggestions
-        ai_suggestions_path = (
-            self.repo_root / "governance" / "ai-refactor-suggestions.md"
-        )
+        ai_suggestions_path = self.repo_root / "governance" / "ai-refactor-suggestions.md"
         if ai_suggestions_path.exists():
             with open(ai_suggestions_path) as f:
                 self.global_suggestions = f.read()
         else:
             print(f"⚠️ AI suggestions not found: {ai_suggestions_path}")
-
+    
     def _load_cache_settings(self) -> tuple:
         """Load cache settings from sync-refactor-config.yaml
-
+        
         Returns:
             tuple: (enabled: bool, ttl_hours: int)
         """
         config_path = self.repo_root / "config" / "sync-refactor-config.yaml"
         default_enabled = True
         default_ttl = 24
-
+        
         if config_path.exists():
             try:
                 with open(config_path) as f:
                     config = yaml.safe_load(f)
-                cache_config = config.get("refactor", {}).get("cache", {})
-                enabled = cache_config.get("enabled", default_enabled)
-                ttl = cache_config.get("ttl_hours", default_ttl)
+                cache_config = config.get('refactor', {}).get('cache', {})
+                enabled = cache_config.get('enabled', default_enabled)
+                ttl = cache_config.get('ttl_hours', default_ttl)
                 return (enabled, ttl)
             except Exception as e:
                 print(f"⚠️ Could not load cache settings: {e}")
                 return (default_enabled, default_ttl)
         return (default_enabled, default_ttl)
-
+    
     def _get_data_hash(self) -> str:
         """Generate hash of all input data sources"""
         hash_content = []
-
+        
         # Hash all data source files
         data_files = [
             self.repo_root / "governance" / "language-governance-report.md",
             self.repo_root / "governance" / "semgrep-report.json",
             self.repo_root / "apps" / "web" / "public" / "data" / "hotspot.json",
-            self.repo_root
-            / "apps"
-            / "web"
-            / "public"
-            / "data"
-            / "cluster-heatmap.json",
+            self.repo_root / "apps" / "web" / "public" / "data" / "cluster-heatmap.json",
             self.repo_root / "apps" / "web" / "public" / "data" / "migration-flow.json",
             self.repo_root / "governance" / "ai-refactor-suggestions.md",
         ]
-
+        
         for file_path in data_files:
             if file_path.exists():
                 hash_content.append(f"{file_path.name}:{file_path.stat().st_mtime}")
-
+        
         # Create hash using SHA-256 (more secure than MD5)
         hash_str = "|".join(hash_content)
         return hashlib.sha256(hash_str.encode()).hexdigest()
-
+    
     def _is_cache_valid(self, cluster_name: str) -> bool:
         """Check if cached playbook is still valid"""
         if not self.cache_enabled:
             return False
-
+        
         cache_file = self.cache_dir / f"{cluster_name.replace('/', '_')}.cache"
         if not cache_file.exists():
             return False
-
+        
         try:
             with open(cache_file) as f:
                 cache_data = json.load(f)
-
+            
             # Check if data hash matches
             current_hash = self._get_data_hash()
-            if cache_data.get("data_hash") != current_hash:
+            if cache_data.get('data_hash') != current_hash:
                 return False
-
+            
             # Check TTL using configured value
-            cache_time = datetime.fromisoformat(
-                cache_data.get("timestamp", "2000-01-01")
-            )
+            cache_time = datetime.fromisoformat(cache_data.get('timestamp', '2000-01-01'))
             if datetime.now() - cache_time > timedelta(hours=self.cache_ttl_hours):
                 return False
-
+            
             return True
         except Exception as e:
             print(f"⚠️ Cache validation error for {cluster_name}: {e}")
             return False
-
+    
     def _load_cached_playbook(self, cluster_name: str) -> str | None:
         """Load cached playbook if valid"""
         if not self._is_cache_valid(cluster_name):
             return None
-
+        
         cache_file = self.cache_dir / f"{cluster_name.replace('/', '_')}.cache"
         try:
             with open(cache_file) as f:
                 cache_data = json.load(f)
-            return cache_data.get("playbook")
+            return cache_data.get('playbook')
         except Exception as e:
             print(f"⚠️ Cache load error for {cluster_name}: {e}")
             return None
-
+    
     def _save_to_cache(self, cluster_name: str, playbook: str):
         """Save playbook to cache"""
         if not self.cache_enabled:
             return
-
+        
         cache_file = self.cache_dir / f"{cluster_name.replace('/', '_')}.cache"
         try:
             cache_data = {
-                "cluster_name": cluster_name,
-                "timestamp": datetime.now().isoformat(),
-                "data_hash": self._get_data_hash(),
-                "playbook": playbook,
+                'cluster_name': cluster_name,
+                'timestamp': datetime.now().isoformat(),
+                'data_hash': self._get_data_hash(),
+                'playbook': playbook
             }
-            with open(cache_file, "w", encoding="utf-8") as f:
+            with open(cache_file, 'w', encoding='utf-8') as f:
                 json.dump(cache_data, f, ensure_ascii=False, indent=2)
         except Exception as e:
             print(f"⚠️ Cache save error for {cluster_name}: {e}")
-
+            
     def _parse_governance_report(self, report_path: Path):
         """Parse language governance report markdown
-
+        
         Expected format:
         - **path/to/file.ext** — Reason for violation
         - **path/to/file.ext** - Reason for violation
         """
         import re
-
+        
         with open(report_path) as f:
             content = f.read()
-
+            
         # Use regex for more robust parsing
         # Matches: - **file/path** — reason or - **file/path** - reason
-        violation_pattern = r"-\s+\*\*([^*]+)\*\*\s+[—-]\s+(.+)"
-
+        violation_pattern = r'-\s+\*\*([^*]+)\*\*\s+[—-]\s+(.+)'
+        
         for match in re.finditer(violation_pattern, content):
             file_path = match.group(1).strip()
             reason = match.group(2).strip()
-            self.violations.append({"file": file_path, "reason": reason})
-
+            self.violations.append({
+                'file': file_path,
+                'reason': reason
+            })
+                        
     def _get_cluster_violations(self, cluster_name: str) -> list[dict]:
         """Get violations for a specific cluster"""
         cluster_violations = []
         for v in self.violations:
-            if v["file"].startswith(cluster_name):
+            if v['file'].startswith(cluster_name):
                 cluster_violations.append(v)
         return cluster_violations
-
+        
     def _get_cluster_hotspots(self, cluster_name: str) -> list[dict]:
         """Get hotspot files for a specific cluster"""
         cluster_hotspots = []
         if isinstance(self.hotspots, list):
             for h in self.hotspots:
-                if isinstance(h, dict) and h.get("file", "").startswith(cluster_name):
+                if isinstance(h, dict) and h.get('file', '').startswith(cluster_name):
                     cluster_hotspots.append(h)
         return cluster_hotspots
-
+        
     def _get_cluster_semgrep(self, cluster_name: str) -> list[dict]:
         """Get semgrep issues for a specific cluster
-
+        
         Semgrep data can be in two formats:
         1. Dict with 'results' key: {"results": [...], "summary": {...}}
         2. List of results directly: [...]
         """
         cluster_semgrep = []
         if isinstance(self.semgrep_results, dict):
-            results = self.semgrep_results.get("results", [])
+            results = self.semgrep_results.get('results', [])
         elif isinstance(self.semgrep_results, list):
             results = self.semgrep_results
         else:
             results = []
-
+            
         for issue in results:
             if isinstance(issue, dict):
-                file_path = issue.get("path", "")
+                file_path = issue.get('path', '')
                 if file_path.startswith(cluster_name):
                     cluster_semgrep.append(issue)
         return cluster_semgrep
-
+        
     def _get_migration_flows(self, cluster_name: str) -> tuple:
         """Get migration flows for a cluster"""
         incoming = []
         outgoing = []
-
+        
         if isinstance(self.migration_flows, dict):
-            flows = self.migration_flows.get("flows", [])
+            flows = self.migration_flows.get('flows', [])
             for flow in flows:
                 if isinstance(flow, dict):
-                    source = flow.get("source", "")
-                    target = flow.get("target", "")
-
+                    source = flow.get('source', '')
+                    target = flow.get('target', '')
+                    
                     if target.startswith(cluster_name):
                         incoming.append(flow)
                     if source.startswith(cluster_name):
                         outgoing.append(flow)
-
+                        
         return incoming, outgoing
-
-    def generate_cluster_prompt(
-        self, cluster_name: str, cluster_score: float = 0
-    ) -> str:
+        
+    def generate_cluster_prompt(self, cluster_name: str, cluster_score: float = 0) -> str:
         """Generate LLM prompt for a specific cluster"""
-
+        
         # Get cluster-specific data
         violations = self._get_cluster_violations(cluster_name)
         hotspots = self._get_cluster_hotspots(cluster_name)
         semgrep = self._get_cluster_semgrep(cluster_name)
         incoming, outgoing = self._get_migration_flows(cluster_name)
-
+        
         # Format violations
-        violations_text = (
-            "\n".join([f"- {v['file']}: {v['reason']}" for v in violations])
-            if violations
-            else "無違規"
-        )
-
+        violations_text = "\n".join([
+            f"- {v['file']}: {v['reason']}" for v in violations
+        ]) if violations else "無違規"
+        
         # Format hotspots (limited to MAX_HOTSPOTS_DISPLAY)
-        hotspot_text = (
-            "\n".join(
-                [
-                    f"- {h.get('file', 'unknown')} (score={h.get('score', 0)})"
-                    for h in sorted(
-                        hotspots, key=lambda x: x.get("score", 0), reverse=True
-                    )[: self.MAX_HOTSPOTS_DISPLAY]
-                ]
-            )
-            if hotspots
-            else "無 hotspot"
-        )
-
+        hotspot_text = "\n".join([
+            f"- {h.get('file', 'unknown')} (score={h.get('score', 0)})"
+            for h in sorted(hotspots, key=lambda x: x.get('score', 0), reverse=True)[:self.MAX_HOTSPOTS_DISPLAY]
+        ]) if hotspots else "無 hotspot"
+        
         # Format semgrep (limited to MAX_SEMGREP_DISPLAY)
-        semgrep_text = (
-            "\n".join(
-                [
-                    f"- {s.get('path', 'unknown')} [{s.get('severity', 'UNKNOWN')}] {s.get('rule_id', 'unknown')}: {s.get('message', 'no message')}"
-                    for s in sorted(
-                        semgrep, key=lambda x: x.get("severity", "LOW"), reverse=True
-                    )[: self.MAX_SEMGREP_DISPLAY]
-                ]
-            )
-            if semgrep
-            else "無安全問題"
-        )
-
+        semgrep_text = "\n".join([
+            f"- {s.get('path', 'unknown')} [{s.get('severity', 'UNKNOWN')}] {s.get('rule_id', 'unknown')}: {s.get('message', 'no message')}"
+            for s in sorted(semgrep, key=lambda x: x.get('severity', 'LOW'), reverse=True)[:self.MAX_SEMGREP_DISPLAY]
+        ]) if semgrep else "無安全問題"
+        
         # Format flows
-        incoming_text = (
-            "\n".join(
-                [
-                    f"- {f.get('source', 'unknown')} → {cluster_name} (count={f.get('count', 0)}, type={f.get('type', 'unknown')})"
-                    for f in incoming[:5]
-                ]
-            )
-            if incoming
-            else "無 incoming flows"
-        )
-
-        outgoing_text = (
-            "\n".join(
-                [
-                    f"- {cluster_name} → {f.get('target', 'unknown')} (count={f.get('count', 0)}, type={f.get('type', 'unknown')})"
-                    for f in outgoing[:5]
-                ]
-            )
-            if outgoing
-            else "無 outgoing flows"
-        )
-
+        incoming_text = "\n".join([
+            f"- {f.get('source', 'unknown')} → {cluster_name} (count={f.get('count', 0)}, type={f.get('type', 'unknown')})"
+            for f in incoming[:5]
+        ]) if incoming else "無 incoming flows"
+        
+        outgoing_text = "\n".join([
+            f"- {cluster_name} → {f.get('target', 'unknown')} (count={f.get('count', 0)}, type={f.get('type', 'unknown')})"
+            for f in outgoing[:5]
+        ]) if outgoing else "無 outgoing flows"
+        
         # Get AI suggestions excerpt (configurable length)
         excerpt_len = self.AI_SUGGESTIONS_EXCERPT_LENGTH
-        global_ai_suggestions_excerpt = (
-            self.global_suggestions[:excerpt_len] + "..."
-            if len(self.global_suggestions) > excerpt_len
-            else self.global_suggestions
-        )
+        global_ai_suggestions_excerpt = self.global_suggestions[:excerpt_len] + "..." if len(self.global_suggestions) > excerpt_len else self.global_suggestions
         if not global_ai_suggestions_excerpt:
             global_ai_suggestions_excerpt = "無全局建議"
-
+            
         # Generate prompt
         prompt = self.USER_PROMPT_TEMPLATE.format(
             cluster_name=cluster_name,
@@ -563,31 +513,29 @@ services/gateway/
             semgrep_text=semgrep_text,
             incoming_text=incoming_text,
             outgoing_text=outgoing_text,
-            global_ai_suggestions_excerpt=global_ai_suggestions_excerpt,
+            global_ai_suggestions_excerpt=global_ai_suggestions_excerpt
         )
-
+        
         return prompt
-
-    def generate_playbook_stub(
-        self, cluster_name: str, cluster_score: float = 0
-    ) -> str:
+        
+    def generate_playbook_stub(self, cluster_name: str, cluster_score: float = 0) -> str:
         """Generate a stub playbook (without LLM)"""
-
+        
         violations = self._get_cluster_violations(cluster_name)
         hotspots = self._get_cluster_hotspots(cluster_name)
         semgrep = self._get_cluster_semgrep(cluster_name)
-
+        
         playbook = f"""# Refactor Playbook: {cluster_name}
 
-**Generated:** {datetime.now().isoformat()}
-**Cluster Score:** {cluster_score}
+**Generated:** {datetime.now().isoformat()}  
+**Cluster Score:** {cluster_score}  
 **Status:** Draft (LLM generation required for complete playbook)
 
 ---
 
 ## 1. Cluster 概覽
 
-**Cluster Path:** `{cluster_name}`
+**Cluster Path:** `{cluster_name}`  
 **Current Status:** 需要重構與語言治理改進
 
 這個 cluster 在 Unmanned Island System 中的角色：
@@ -603,7 +551,7 @@ services/gateway/
 ### 語言治理違規 ({len(violations)})
 
 """
-
+        
         if violations:
             for v in violations[:10]:
                 playbook += f"- **{v['file']}** — {v['reason']}\n"
@@ -611,29 +559,23 @@ services/gateway/
                 playbook += f"\n... 和 {len(violations) - 10} 個其他違規\n"
         else:
             playbook += "✅ 無語言治理違規\n"
-
+            
         playbook += f"\n### Hotspot 檔案 ({len(hotspots)})\n\n"
-
+        
         if hotspots:
-            for h in sorted(hotspots, key=lambda x: x.get("score", 0), reverse=True)[
-                :5
-            ]:
-                playbook += (
-                    f"- **{h.get('file', 'unknown')}** (score: {h.get('score', 0)})\n"
-                )
+            for h in sorted(hotspots, key=lambda x: x.get('score', 0), reverse=True)[:5]:
+                playbook += f"- **{h.get('file', 'unknown')}** (score: {h.get('score', 0)})\n"
         else:
             playbook += "✅ 無 hotspot 檔案\n"
-
+            
         playbook += f"\n### Semgrep 安全問題 ({len(semgrep)})\n\n"
-
+        
         if semgrep:
-            for s in sorted(
-                semgrep, key=lambda x: x.get("severity", "LOW"), reverse=True
-            )[:5]:
+            for s in sorted(semgrep, key=lambda x: x.get('severity', 'LOW'), reverse=True)[:5]:
                 playbook += f"- [{s.get('severity', 'UNKNOWN')}] **{s.get('path', 'unknown')}**: {s.get('message', 'no message')}\n"
         else:
             playbook += "✅ 無安全問題\n"
-
+            
         playbook += """
 
 ---
@@ -691,21 +633,21 @@ services/gateway/
 ### 受影響目錄
 
 """
-
+        
         # Add affected directories
         playbook += f"- {cluster_name}\n\n"
-
+        
         # Add directory tree structure
         playbook += "### 結構示意（變更範圍）\n\n```\n"
         playbook += self._generate_directory_tree(cluster_name)
         playbook += "\n```\n\n"
-
+        
         # Add file annotations
         playbook += "### 檔案說明\n\n"
         annotations = self._generate_file_annotations(cluster_name)
         playbook += "\n".join(annotations)
         playbook += "\n\n---\n\n"
-
+        
         playbook += """## 如何使用本 Playbook
 
 1. **立即執行 P0 項目**：處理高優先級問題
@@ -715,33 +657,29 @@ services/gateway/
 5. **人工審查**：關鍵架構調整需要工程師參與
 
 """
-
+        
         return playbook
-
+        
     def generate_all_playbooks(self, use_llm: bool = False):
         """Generate playbooks for all clusters"""
-
+        
         if not self.clusters:
-            print(
-                "⚠️  No clusters found. Creating default clusters from directory structure..."
-            )
+            print("⚠️  No clusters found. Creating default clusters from directory structure...")
             self._detect_clusters()
-
+            
         output_dir = self.repo_root / "docs" / "refactor_playbooks"
         output_dir.mkdir(parents=True, exist_ok=True)
-
+        
         print(f"\n🚀 Generating playbooks for {len(self.clusters)} clusters...\n")
-
+        
         generated_count = 0
         cached_count = 0
-
+        
         for cluster_name, cluster_data in self.clusters.items():
-            cluster_score = (
-                cluster_data.get("score", 0) if isinstance(cluster_data, dict) else 0
-            )
-
+            cluster_score = cluster_data.get('score', 0) if isinstance(cluster_data, dict) else 0
+            
             print(f"  📝 {cluster_name} (score: {cluster_score})")
-
+            
             # Check cache first
             playbook = self._load_cached_playbook(cluster_name)
             if playbook:
@@ -751,212 +689,195 @@ services/gateway/
                 if use_llm:
                     # Generate LLM prompt
                     prompt = self.generate_cluster_prompt(cluster_name, cluster_score)
-
+                    
                     # Save prompt for manual LLM processing
-                    prompt_file = (
-                        output_dir / f"{cluster_name.replace('/', '_')}_prompt.txt"
-                    )
-                    with open(prompt_file, "w", encoding="utf-8") as f:
+                    prompt_file = output_dir / f"{cluster_name.replace('/', '_')}_prompt.txt"
+                    with open(prompt_file, 'w', encoding='utf-8') as f:
                         f.write(f"System Prompt:\n{self.SYSTEM_PROMPT}\n\n")
                         f.write(f"User Prompt:\n{prompt}\n")
                     print(f"     💡 LLM prompt saved to {prompt_file}")
-
-                    # For now, generate stub (actual LLM integration would go
-                    # here)
+                    
+                    # For now, generate stub (actual LLM integration would go here)
                     playbook = self.generate_playbook_stub(cluster_name, cluster_score)
                 else:
                     # Generate stub playbook
                     playbook = self.generate_playbook_stub(cluster_name, cluster_score)
-
+                
                 # Save to cache
                 self._save_to_cache(cluster_name, playbook)
                 generated_count += 1
-
+                
             # Save playbook (sanitize cluster name for filename)
-            safe_cluster_name = (
-                cluster_name.replace("/", "_").replace("\\", "_").replace("..", "_")
-            )
+            safe_cluster_name = cluster_name.replace('/', '_').replace('\\', '_').replace('..', '_')
             playbook_file = output_dir / f"{safe_cluster_name}_playbook.md"
-            with open(playbook_file, "w", encoding="utf-8") as f:
+            with open(playbook_file, 'w', encoding='utf-8') as f:
                 f.write(playbook)
             print(f"     ✅ Playbook saved to {playbook_file}")
-
+        
         print(f"\n✨ Generated {len(self.clusters)} playbooks in {output_dir}")
         print(f"   📊 Stats: {generated_count} generated, {cached_count} from cache")
         if self.cache_enabled:
-            cache_hit_rate = (
-                (cached_count / len(self.clusters) * 100)
-                if len(self.clusters) > 0
-                else 0
-            )
+            cache_hit_rate = (cached_count / len(self.clusters) * 100) if len(self.clusters) > 0 else 0
             print(f"   ⚡ Cache hit rate: {cache_hit_rate:.1f}%")
-
+        
     def _generate_directory_tree(self, cluster_name: str, max_depth: int = 3) -> str:
         """Generate directory tree structure for a cluster
-
+        
         Args:
             cluster_name: Name of the cluster (e.g., "core/", "services/")
             max_depth: Maximum depth to traverse (default: 3)
-
+        
         Returns:
             String representation of directory tree
         """
-        cluster_path = self.repo_root / cluster_name.rstrip("/")
-
+        cluster_path = self.repo_root / cluster_name.rstrip('/')
+        
         if not cluster_path.exists():
             return f"{cluster_name}\n  (目錄不存在)"
-
-        def build_tree(
-            path: Path, prefix: str = "", depth: int = 0, is_last: bool = True
-        ) -> list[str]:
+        
+        def build_tree(path: Path, prefix: str = "", depth: int = 0, is_last: bool = True) -> list[str]:
             """Recursively build tree structure"""
             if depth >= max_depth:
                 return []
-
+            
             lines = []
             items = []
-
+            
             try:
                 items = sorted(path.iterdir(), key=lambda x: (not x.is_dir(), x.name))
             except PermissionError:
                 return [f"{prefix}(無法訪問)"]
-
+            
             # Filter out common ignore patterns
-            ignore_patterns = {
-                ".git",
-                "node_modules",
-                "__pycache__",
-                ".venv",
-                "dist",
-                "build",
-                ".next",
-            }
+            ignore_patterns = {'.git', 'node_modules', '__pycache__', '.venv', 'dist', 'build', '.next'}
             items = [item for item in items if item.name not in ignore_patterns]
-
+            
             for i, item in enumerate(items[:20]):  # Limit to 20 items per directory
-                is_last_item = i == len(items) - 1
+                is_last_item = (i == len(items) - 1)
                 connector = "└── " if is_last_item else "├── "
-
+                
                 if item.is_dir():
                     lines.append(f"{prefix}{connector}{item.name}/")
                     if depth < max_depth:
                         extension = "    " if is_last_item else "│   "
-                        lines.extend(
-                            build_tree(
-                                item, prefix + extension, depth + 1, is_last_item
-                            )
-                        )
+                        lines.extend(build_tree(item, prefix + extension, depth + 1, is_last_item))
                 else:
                     # Show file with extension
                     lines.append(f"{prefix}{connector}{item.name}")
-
+            
             if len(items) > 20:
                 # Always use corner connector for the "more items" indicator
                 lines.append(f"{prefix}└── ... ({len(items) - 20} more items)")
-
+            
             return lines
-
+        
         tree_lines = [f"{cluster_name}"]
         tree_lines.extend(build_tree(cluster_path, "", 0))
-
+        
         return "\n".join(tree_lines)
-
+    
     def _generate_file_annotations(self, cluster_name: str) -> list[str]:
         """Generate annotations for important files in a cluster
-
+        
         Args:
             cluster_name: Name of the cluster
-
+            
         Returns:
             List of annotation strings
         """
         annotations = []
-        cluster_path = self.repo_root / cluster_name.rstrip("/")
-
+        cluster_path = self.repo_root / cluster_name.rstrip('/')
+        
         if not cluster_path.exists():
             return ["（目錄不存在，無法生成註解）"]
-
+        
         # Common important files to annotate
         important_patterns = {
-            "README.md": "說明文檔",
-            "package.json": "Node.js 專案配置",
-            "tsconfig.json": "TypeScript 編譯配置",
-            "pyproject.toml": "Python 專案配置",
-            "Cargo.toml": "Rust 專案配置",
-            "go.mod": "Go 模組定義",
-            "__init__.py": "Python 套件初始化",
-            "index.ts": "模組入口點",
-            "main.py": "Python 主程式",
-            "main.go": "Go 主程式",
+            'README.md': '說明文檔',
+            'package.json': 'Node.js 專案配置',
+            'tsconfig.json': 'TypeScript 編譯配置',
+            'pyproject.toml': 'Python 專案配置',
+            'Cargo.toml': 'Rust 專案配置',
+            'go.mod': 'Go 模組定義',
+            '__init__.py': 'Python 套件初始化',
+            'index.ts': '模組入口點',
+            'main.py': 'Python 主程式',
+            'main.go': 'Go 主程式'
         }
-
+        
         # Scan cluster for important files
         try:
-            for item in cluster_path.rglob("*"):
+            for item in cluster_path.rglob('*'):
                 if item.is_file() and item.name in important_patterns:
                     rel_path = item.relative_to(self.repo_root)
                     desc = important_patterns[item.name]
                     annotations.append(f"- `{rel_path}` — {desc}")
-
+                    
                     if len(annotations) >= 10:  # Limit to 10 annotations
                         break
         except (PermissionError, OSError) as e:
             # Log error but continue - some directories may not be accessible
             print(f"⚠️ Warning: Could not scan {cluster_path}: {e}", file=sys.stderr)
-
+        
         if not annotations:
             annotations.append("（未發現重要檔案需要特別註解）")
-
+        
         return annotations
-
+    
     def _detect_clusters(self):
         """Detect clusters from directory structure"""
         # Default clusters based on Unmanned Island structure
         default_clusters = [
-            "core/",
-            "services/",
-            "automation/",
-            "autonomous/",
-            "governance/",
-            "apps/",
-            "tools/",
-            "infrastructure/",
+            'core/',
+            'services/',
+            'automation/',
+            'autonomous/',
+            'governance/',
+            'apps/',
+            'tools/',
+            'infrastructure/'
         ]
-
+        
         for cluster in default_clusters:
             cluster_path = self.repo_root / cluster
             if cluster_path.exists():
-                self.clusters[cluster] = {"score": 0, "exists": True}
-
-
+                self.clusters[cluster] = {'score': 0, 'exists': True}
+                
 def main():
     """Main function"""
     parser = argparse.ArgumentParser(
-        description="Generate AI Refactor Playbooks for directory clusters"
+        description='Generate AI Refactor Playbooks for directory clusters'
     )
-    parser.add_argument("--repo-root", default=".", help="Repository root directory")
     parser.add_argument(
-        "--use-llm",
-        action="store_true",
-        help="Generate LLM prompts (for future LLM integration)",
+        '--repo-root',
+        default='.',
+        help='Repository root directory'
     )
-    parser.add_argument("--cluster", help="Generate playbook for specific cluster only")
-
+    parser.add_argument(
+        '--use-llm',
+        action='store_true',
+        help='Generate LLM prompts (for future LLM integration)'
+    )
+    parser.add_argument(
+        '--cluster',
+        help='Generate playbook for specific cluster only'
+    )
+    
     args = parser.parse_args()
-
+    
     print("🏝️  Unmanned Island System - AI Refactor Playbook Generator")
     print("=" * 70)
-
+    
     # Create generator
     generator = RefactorPlaybookGenerator(args.repo_root)
-
+    
     # Load governance data
     generator.load_governance_data()
-
+    
     # Generate playbooks
     if args.cluster:
         # Single cluster
-        cluster_score = generator.clusters.get(args.cluster, {}).get("score", 0)
+        cluster_score = generator.clusters.get(args.cluster, {}).get('score', 0)
         if args.use_llm:
             prompt = generator.generate_cluster_prompt(args.cluster, cluster_score)
             print("\nSystem Prompt:")
@@ -965,21 +886,16 @@ def main():
             print(prompt)
         else:
             playbook = generator.generate_playbook_stub(args.cluster, cluster_score)
-            output_file = (
-                Path("docs")
-                / "refactor_playbooks"
-                / f"{args.cluster.replace('/', '_')}_playbook.md"
-            )
+            output_file = Path('docs') / 'refactor_playbooks' / f"{args.cluster.replace('/', '_')}_playbook.md"
             output_file.parent.mkdir(parents=True, exist_ok=True)
-            with open(output_file, "w", encoding="utf-8") as f:
+            with open(output_file, 'w', encoding='utf-8') as f:
                 f.write(playbook)
             print(f"\n✅ Playbook saved to {output_file}")
     else:
         # All clusters
         generator.generate_all_playbooks(use_llm=args.use_llm)
-
+        
     print("\n✨ Done!")
-
-
-if __name__ == "__main__":
+    
+if __name__ == '__main__':
     main()

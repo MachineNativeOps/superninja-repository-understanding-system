@@ -10,17 +10,16 @@ Executes team playbooks with:
 - Audit logging
 """
 
+import os
 import asyncio
+import yaml
 import json
 import logging
-import os
-from dataclasses import dataclass, field
 from datetime import datetime
+from typing import Any, Dict, List, Optional, Callable
 from enum import Enum
+from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Any, Callable, Dict, List, Optional
-
-import yaml
 
 logger = logging.getLogger(__name__)
 
@@ -105,10 +104,10 @@ class PlaybookRunner:
     async def load_playbook(self, name: str) -> Dict[str, Any]:
         """Load a playbook by name."""
         playbook_path = self._playbooks_dir / f"{name}.yaml"
-
+        
         if not playbook_path.exists():
             raise FileNotFoundError(f"Playbook not found: {playbook_path}")
-
+        
         with open(playbook_path) as f:
             return yaml.safe_load(f)
 
@@ -121,9 +120,9 @@ class PlaybookRunner:
         """Execute a playbook."""
         start_time = datetime.utcnow()
         context = context or {}
-
+        
         logger.info(f"Starting playbook: {playbook_name}")
-
+        
         try:
             playbook = await self.load_playbook(playbook_name)
         except FileNotFoundError as e:
@@ -146,26 +145,24 @@ class PlaybookRunner:
 
         stages = playbook.get("stages", [])
         stage_results: Dict[str, StageResult] = {}
-
+        
         for stage in stages:
             stage_id = stage.get("id")
             stage_name = stage.get("name", stage_id)
-
+            
             depends_on = stage.get("depends_on", [])
             should_skip = False
-
+            
             for dep in depends_on:
                 dep_result = stage_results.get(dep)
                 if dep_result and dep_result.status != StageStatus.SUCCESS:
                     should_skip = True
                     break
-
+            
             condition = stage.get("condition")
-            if condition and not self._evaluate_condition(
-                condition, stage_results, context
-            ):
+            if condition and not self._evaluate_condition(condition, stage_results, context):
                 should_skip = True
-
+            
             if should_skip:
                 stage_result = StageResult(
                     stage_id=stage_id,
@@ -175,11 +172,11 @@ class PlaybookRunner:
                 stage_results[stage_id] = stage_result
                 result.stages.append(stage_result)
                 continue
-
+            
             stage_result = await self._execute_stage(stage, context, stage_results)
             stage_results[stage_id] = stage_result
             result.stages.append(stage_result)
-
+            
             if stage_result.status == StageStatus.FAILURE:
                 run_on = stage.get("run_on", "success")
                 if run_on != "always":
@@ -188,24 +185,22 @@ class PlaybookRunner:
         end_time = datetime.utcnow()
         result.completed_at = end_time.isoformat()
         result.duration_seconds = (end_time - start_time).total_seconds()
-
+        
         all_success = all(
             s.status in [StageStatus.SUCCESS, StageStatus.SKIPPED]
             for s in result.stages
         )
-        result.status = (
-            PlaybookStatus.SUCCESS if all_success else PlaybookStatus.FAILURE
-        )
-
+        result.status = PlaybookStatus.SUCCESS if all_success else PlaybookStatus.FAILURE
+        
         result.quality_gates_passed = await self._check_quality_gates(
             playbook.get("quality_gates", []),
             stage_results,
         )
-
+        
         result.evidence_bundle = await self._create_evidence_bundle(result)
-
+        
         logger.info(f"Playbook completed: {playbook_name} - {result.status.value}")
-
+        
         return result
 
     async def _execute_stage(
@@ -218,33 +213,31 @@ class PlaybookRunner:
         stage_id = stage.get("id")
         stage_name = stage.get("name", stage_id)
         start_time = datetime.utcnow()
-
+        
         logger.info(f"Starting stage: {stage_name}")
-
+        
         result = StageResult(
             stage_id=stage_id,
             name=stage_name,
             status=StageStatus.RUNNING,
             started_at=start_time.isoformat(),
         )
-
+        
         try:
             steps = stage.get("steps", [])
             step_outputs = {}
-
+            
             for step in steps:
                 action = step.get("action")
                 params = step.get("params", {})
-
-                params = self._interpolate_params(
-                    params, context, previous_results, step_outputs
-                )
-
+                
+                params = self._interpolate_params(params, context, previous_results, step_outputs)
+                
                 handler = self._action_handlers.get(action)
                 if handler:
                     step_result = await handler(params, context)
                     step_outputs[action] = step_result
-
+                    
                     if step.get("output"):
                         output_config = step["output"]
                         if "artifact" in output_config:
@@ -253,18 +246,18 @@ class PlaybookRunner:
                             result.outputs.update(step_result.get("outputs", {}))
                 else:
                     logger.warning(f"Unknown action: {action}")
-
+            
             result.status = StageStatus.SUCCESS
-
+            
         except Exception as e:
             logger.error(f"Stage failed: {stage_name} - {e}")
             result.status = StageStatus.FAILURE
             result.error = str(e)
-
+        
         end_time = datetime.utcnow()
         result.completed_at = end_time.isoformat()
         result.duration_seconds = (end_time - start_time).total_seconds()
-
+        
         if stage.get("evidence_required"):
             result.evidence = {
                 "stage_id": stage_id,
@@ -272,7 +265,7 @@ class PlaybookRunner:
                 "status": result.status.value,
                 "artifacts": result.artifacts,
             }
-
+        
         return result
 
     def _interpolate_params(
@@ -315,20 +308,18 @@ class PlaybookRunner:
         for gate in gates:
             stage_id = gate.get("stage")
             required = gate.get("required", True)
-
+            
             if required:
                 stage_result = stage_results.get(stage_id)
                 if stage_result and stage_result.status != StageStatus.SUCCESS:
                     return False
-
+        
         return True
 
     async def _create_evidence_bundle(self, result: PlaybookResult) -> str:
         """Create evidence bundle for audit."""
-        bundle_path = (
-            self._artifacts_dir /
-            f"evidence-{result.playbook_name}-{datetime.utcnow().strftime('%Y%m%d%H%M%S')}.json")
-
+        bundle_path = self._artifacts_dir / f"evidence-{result.playbook_name}-{datetime.utcnow().strftime('%Y%m%d%H%M%S')}.json"
+        
         bundle = {
             "playbook": result.playbook_name,
             "version": result.version,
@@ -352,10 +343,10 @@ class PlaybookRunner:
             ],
             "quality_gates_passed": result.quality_gates_passed,
         }
-
+        
         with open(bundle_path, "w") as f:
             json.dump(bundle, f, indent=2)
-
+        
         return str(bundle_path)
 
     async def _action_setup_environment(

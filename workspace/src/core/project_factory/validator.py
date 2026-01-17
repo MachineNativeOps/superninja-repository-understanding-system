@@ -6,11 +6,10 @@ Validates generated projects against governance standards.
 """
 
 import logging
-import re
 from pathlib import Path
-from typing import TYPE_CHECKING, Any, Dict, List
-
+from typing import Dict, Any, List, TYPE_CHECKING
 import yaml
+import re
 
 if TYPE_CHECKING:
     from .factory import GeneratedProject
@@ -30,10 +29,18 @@ class ValidationResult:
         self.overall_status: str = "PENDING"
 
     def add_check(
-        self, check_name: str, status: str, details: str, **extra_data
+        self,
+        check_name: str,
+        status: str,
+        details: str,
+        **extra_data
     ) -> None:
         """Add validation check result."""
-        self.checks[check_name] = {"status": status, "details": details, **extra_data}
+        self.checks[check_name] = {
+            "status": status,
+            "details": details,
+            **extra_data
+        }
 
     def finalize(self) -> None:
         """Compute overall validation status."""
@@ -91,7 +98,7 @@ class GovernanceValidator:
             return self._get_default_config()
 
         try:
-            with open(self.governance_config_path, "r", encoding="utf-8") as f:
+            with open(self.governance_config_path, 'r', encoding='utf-8') as f:
                 return yaml.safe_load(f)
         except Exception as e:
             logger.error(f"Failed to load governance config: {e}")
@@ -116,7 +123,7 @@ class GovernanceValidator:
             },
         }
 
-    def validate(self, project: "GeneratedProject") -> Dict[str, Any]:
+    def validate(self, project: 'GeneratedProject') -> Dict[str, Any]:
         """
         Validate project against all governance standards.
 
@@ -145,7 +152,9 @@ class GovernanceValidator:
         return result.to_dict()
 
     def _check_language_policy(
-        self, project: "GeneratedProject", result: ValidationResult
+        self,
+        project: 'GeneratedProject',
+        result: ValidationResult
     ) -> None:
         """Check language policy compliance."""
         spec = project.spec
@@ -157,7 +166,7 @@ class GovernanceValidator:
             result.add_check(
                 "language_policy",
                 "FAILED",
-                f"Language {spec.language.value} is forbidden by policy",
+                f"Language {spec.language.value} is forbidden by policy"
             )
             return
 
@@ -170,16 +179,20 @@ class GovernanceValidator:
 
         required_version = version_requirements.get(spec.language.value)
         if required_version:
-            details = (
-                f"Language {spec.language.value} requires version {required_version}"
-            )
+            details = f"Language {spec.language.value} requires version {required_version}"
         else:
             details = "All language constraints satisfied"
 
-        result.add_check("language_policy", "PASSED", details)
+        result.add_check(
+            "language_policy",
+            "PASSED",
+            details
+        )
 
     def _check_security_standards(
-        self, project: "GeneratedProject", result: ValidationResult
+        self,
+        project: 'GeneratedProject',
+        result: ValidationResult
     ) -> None:
         """Check security standards compliance."""
         spec = project.spec
@@ -195,38 +208,41 @@ class GovernanceValidator:
         ]
 
         for file_path, content in files.items():
-            if file_path.endswith((".py", ".ts", ".js", ".go")):
+            if file_path.endswith(('.py', '.ts', '.js', '.go')):
                 for pattern in secret_patterns:
                     if re.search(pattern, content, re.IGNORECASE):
                         issues.append(f"Potential secret in {file_path}")
 
         # Check Dockerfile security
-        if "Dockerfile" in files:
-            dockerfile = files["Dockerfile"]
-            if "USER root" in dockerfile:
+        if 'Dockerfile' in files:
+            dockerfile = files['Dockerfile']
+            if 'USER root' in dockerfile:
                 issues.append("Dockerfile runs as root (security risk)")
 
         if issues:
             result.add_check(
-                "security", "WARNING", f"Security issues found: {', '.join(issues)}"
+                "security",
+                "WARNING",
+                f"Security issues found: {', '.join(issues)}"
             )
         else:
-            result.add_check("security", "PASSED", "No security issues found")
+            result.add_check(
+                "security",
+                "PASSED",
+                "No security issues found"
+            )
 
     def _check_architecture_constraints(
-        self, project: "GeneratedProject", result: ValidationResult
+        self,
+        project: 'GeneratedProject',
+        result: ValidationResult
     ) -> None:
         """Check architecture constraints from ai-constitution.yaml."""
         spec = project.spec
 
         # Check if architecture pattern is correctly implemented
         if spec.architecture.pattern.value == "clean-architecture":
-            expected_layers = {
-                "presentation",
-                "application",
-                "domain",
-                "infrastructure",
-            }
+            expected_layers = {"presentation", "application", "domain", "infrastructure"}
             actual_layers = set(spec.architecture.layers)
 
             if not expected_layers.issubset(actual_layers):
@@ -234,23 +250,25 @@ class GovernanceValidator:
                 result.add_check(
                     "architecture",
                     "WARNING",
-                    f"Clean architecture missing layers: {missing}",
+                    f"Clean architecture missing layers: {missing}"
                 )
             else:
                 result.add_check(
                     "architecture",
                     "PASSED",
-                    f"{spec.architecture.pattern.value} correctly implemented",
+                    f"{spec.architecture.pattern.value} correctly implemented"
                 )
         else:
             result.add_check(
                 "architecture",
                 "PASSED",
-                f"Architecture pattern: {spec.architecture.pattern.value}",
+                f"Architecture pattern: {spec.architecture.pattern.value}"
             )
 
     def _check_cicd_standards(
-        self, project: "GeneratedProject", result: ValidationResult
+        self,
+        project: 'GeneratedProject',
+        result: ValidationResult
     ) -> None:
         """Check CI/CD standards compliance."""
         spec = project.spec
@@ -261,10 +279,18 @@ class GovernanceValidator:
 
         if not required_stages.issubset(actual_stages):
             missing = required_stages - actual_stages
-            result.add_check("ci_cd", "WARNING", f"Missing CI/CD stages: {missing}")
+            result.add_check(
+                "ci_cd",
+                "WARNING",
+                f"Missing CI/CD stages: {missing}"
+            )
         else:
             # Check if CI/CD file exists
-            ci_files = [".github/workflows/ci.yml", ".gitlab-ci.yml", ".drone.yml"]
+            ci_files = [
+                ".github/workflows/ci.yml",
+                ".gitlab-ci.yml",
+                ".drone.yml"
+            ]
 
             has_ci_file = any(f in files for f in ci_files)
 
@@ -272,17 +298,19 @@ class GovernanceValidator:
                 result.add_check(
                     "ci_cd",
                     "PASSED",
-                    f"All CI/CD stages configured for {spec.deliverables.ci_cd.platform}",
+                    f"All CI/CD stages configured for {spec.deliverables.ci_cd.platform}"
                 )
             else:
                 result.add_check(
                     "ci_cd",
                     "WARNING",
-                    "CI/CD configured but pipeline file not generated",
+                    "CI/CD configured but pipeline file not generated"
                 )
 
     def _check_compliance_requirements(
-        self, project: "GeneratedProject", result: ValidationResult
+        self,
+        project: 'GeneratedProject',
+        result: ValidationResult
     ) -> None:
         """Check compliance requirements."""
         spec = project.spec
@@ -308,9 +336,11 @@ class GovernanceValidator:
                 "PASSED",
                 f"Compliance requirements met: {', '.join(compliance_artifacts)}",
                 compliance_standards=spec.governance.compliance,
-                artifacts=compliance_artifacts,
+                artifacts=compliance_artifacts
             )
         else:
             result.add_check(
-                "compliance", "WARNING", "Missing compliance documentation"
+                "compliance",
+                "WARNING",
+                "Missing compliance documentation"
             )

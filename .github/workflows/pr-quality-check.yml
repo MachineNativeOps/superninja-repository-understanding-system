@@ -2,212 +2,117 @@ name: PR Quality Check
 
 on:
   pull_request:
-
     types: [opened, synchronize, reopened]
-
   push:
-
     branches:
-
       - main
-
       - develop
-
 
 jobs:
   security-scan:
-
     name: Security Scan
-
     runs-on: ubuntu-latest
-
     steps:
-
       - uses: actions/checkout@v4
-
         with:
-
           fetch-depth: 0
-
       
       - name: Set up Python
-
         uses: actions/setup-python@v5
-
         with:
-
           python-version: '3.11'
-
       
       - name: Install security tools
-
         run: |
-
           pip install detect-secrets bandit safety
-
       
       - name: Run detect-secrets
-
         run: |
-
           if [ -f .secrets.baseline ]; then
-
             detect-secrets scan --baseline .secrets.baseline || echo "::warning::Secrets detected. Please review."
-
           else
-
             detect-secrets scan > .secrets.baseline || echo "::warning::Secrets detected. Creating baseline."
-
           fi
-
       
       - name: Run Bandit security scan
-
         run: |
-
           bandit -r workspace/src/ 00-namespaces/ -f json -o bandit-report.json || true
-
           bandit -r workspace/src/ 00-namespaces/ -ll || echo "::warning::Security issues found. Review bandit-report.json"
-
       
       - name: Upload security reports
-
         uses: actions/upload-artifact@v4
-
         if: always()
-
         with:
-
           name: security-reports
-
           path: |
-
             bandit-report.json
-
             .secrets.baseline
-
   
   python-quality:
-
     name: Python Code Quality
-
     runs-on: ubuntu-latest
-
     steps:
-
       - uses: actions/checkout@v4
-
       
       - name: Set up Python
-
         uses: actions/setup-python@v5
-
         with:
-
           python-version: '3.11'
-
       
       - name: Install dependencies
-
         run: |
-
           pip install black ruff mypy pytest pytest-cov
-
       
       - name: Check code formatting with Black
-
         run: |
-
           black --check --line-length 100 workspace/src/ 00-namespaces/ || echo "::warning::Code formatting issues found"
-
       
       - name: Lint with Ruff
-
         run: |
-
           ruff check workspace/src/ 00-namespaces/ --output-format=github || echo "::warning::Linting issues found"
-
       
       - name: Type check with MyPy
-
         run: |
-
           mypy workspace/src/ --ignore-missing-imports --no-strict-optional || echo "::warning::Type checking issues found"
-
       
       - name: Generate quality report
-
         run: |
-
           echo "## Python Quality Report" > python-quality-report.md
-
           echo "" >> python-quality-report.md
-
           echo "### Type Hint Coverage" >> python-quality-report.md
-
           find workspace/src 00-namespaces -name "*.py" -type f | wc -l | xargs echo "Total Python files:" >> python-quality-report.md
-
           grep -r "def.*->.*:" workspace/src 00-namespaces --include="*.py" | wc -l | xargs echo "Functions with return type hints:" >> python-quality-report.md
-
       
       - name: Upload quality report
-
         uses: actions/upload-artifact@v4
-
         with:
-
           name: python-quality-report
-
           path: python-quality-report.md
-
   
   automated-quality-check:
-
     name: Run Automated Quality Check
-
     runs-on: ubuntu-latest
-
     steps:
-
       - uses: actions/checkout@v4
-
       
       - name: Set up Python
-
         uses: actions/setup-python@v5
-
         with:
-
           python-version: '3.11'
-
       
       - name: Install dependencies
-
         run: |
-
           pip install detect-secrets
-
       
       - name: Run automated quality check
-
         run: |
-
           python scripts/auto-quality-check.py
-
       
       - name: Upload automated reports
-
         uses: actions/upload-artifact@v4
-
         if: always()
-
         with:
-
           name: automated-quality-reports
-
           path: |
-
             auto-quality-report.json
-
             AUTO-QUALITY-REPORT.md
-

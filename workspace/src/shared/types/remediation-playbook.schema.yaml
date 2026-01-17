@@ -8,666 +8,352 @@ description: 定义命名违规的自动修复流程，包括触发条件、执�
 type: object
 required:
   - apiVersion
-
   - kind
-
   - metadata
-
   - spec
-
 
 properties:
   apiVersion:
-
     type: string
-
     pattern: "^governance\\.machinenativeops\\.io/v1(alpha|beta)?[0-9]*$"
 
-
   kind:
-
     type: string
-
     enum: ["RemediationPlaybook"]
 
-
   metadata:
-
     type: object
-
     required: [name]
-
     properties:
-
       name:
-
         type: string
-
         pattern: "^[a-z0-9-]+$"
-
       description:
-
         type: string
-
       labels:
-
         type: object
-
       annotations:
-
         type: object
-
 
   spec:
-
     type: object
-
     required: [triggers, steps]
-
     properties:
-
       # 触发条件
-
       triggers:
-
         type: array
-
         minItems: 1
-
         items:
-
           type: object
-
           required: [type]
-
           properties:
-
             type:
-
               type: string
-
               enum: ["alert", "schedule", "manual", "webhook", "event"]
 
-
             source:
-
               type: string
-
               description: "触发源"
-
               example: "Prometheus"
 
-
             condition:
-
               type: object
-
               description: "触发条件"
-
               properties:
-
                 alertName:
-
                   type: string
-
                 severity:
-
                   type: string
-
                   enum: ["critical", "warning", "info"]
-
                 threshold:
-
                   type: object
-
                 expression:
-
                   type: string
-
 
             schedule:
-
               type: string
-
               description: "Cron 表达式"
-
               example: "0 2 * * *"
 
-
       # 执行步骤
-
       steps:
-
         type: array
-
         minItems: 1
-
         items:
-
           type: object
-
           required: [name, action]
-
           properties:
-
             name:
-
               type: string
-
               description: "步骤名称"
 
-
             description:
-
               type: string
-
               description: "步骤描述"
 
-
             action:
-
               type: object
-
               required: [type]
-
               properties:
-
                 type:
-
                   type: string
-
                   enum: ["script", "api", "kubectl", "terraform", "ansible"]
 
-
                 # Script 类型
-
                 script:
-
                   type: object
-
                   properties:
-
                     language:
-
                       type: string
-
                       enum: ["bash", "python", "go", "node"]
-
                     path:
-
                       type: string
-
                     inline:
-
                       type: string
-
                     args:
-
                       type: array
-
                       items:
-
                         type: string
-
                     env:
-
                       type: object
-
                       additionalProperties:
-
                         type: string
-
 
                 # API 类型
-
                 api:
-
                   type: object
-
                   properties:
-
                     endpoint:
-
                       type: string
-
                     method:
-
                       type: string
-
                       enum: ["GET", "POST", "PUT", "PATCH", "DELETE"]
-
                     headers:
-
                       type: object
-
                     body:
-
                       type: object
-
 
                 # Kubectl 类型
-
                 kubectl:
-
                   type: object
-
                   properties:
-
                     command:
-
                       type: string
-
                       enum: ["apply", "patch", "label", "annotate", "delete"]
-
                     resource:
-
                       type: string
-
                     manifest:
-
                       type: string
-
 
             timeout:
-
               type: string
-
               pattern: "^[0-9]+(s|m|h)$"
-
               default: "5m"
 
-
             retry:
-
               type: object
-
               properties:
-
                 enabled:
-
                   type: boolean
-
                 maxAttempts:
-
                   type: integer
-
                   minimum: 1
-
                   maximum: 10
-
                 backoff:
-
                   type: string
-
                   enum: ["constant", "linear", "exponential"]
 
-
             continueOnError:
-
               type: boolean
-
               default: false
 
-
             condition:
-
               type: object
-
               description: "执行条件"
-
               properties:
-
                 when:
-
                   type: string
-
                   enum: ["always", "on-success", "on-failure"]
 
-
       # 验证步骤
-
       verification:
-
         type: object
-
         properties:
-
           enabled:
-
             type: boolean
-
             default: true
-
 
           checks:
-
             type: array
-
             items:
-
               type: object
-
               properties:
-
                 name:
-
                   type: string
-
                 type:
-
                   type: string
-
                   enum: ["metric", "command", "api"]
-
                 condition:
-
                   type: string
-
                 timeout:
-
                   type: string
-
 
       # 回滚配置
-
       rollback:
-
         type: object
-
         properties:
-
           enabled:
-
             type: boolean
-
             default: true
-
 
           automatic:
-
             type: boolean
-
             description: "是否自动回滚"
 
-
           trigger:
-
             type: array
-
             description: "回滚触发条件"
-
             items:
-
               type: string
 
-
           steps:
-
             type: array
-
             description: "回滚步骤"
-
             items:
-
               type: object
-
               properties:
-
                 name:
-
                   type: string
-
                 action:
-
                   type: object
 
-
       # 通知配置
-
       notifications:
-
         type: object
-
         properties:
-
           onStart:
-
             type: array
-
             items:
-
               type: object
-
               properties:
-
                 channel:
-
                   type: string
-
                 message:
-
                   type: string
-
 
           onSuccess:
-
             type: array
-
             items:
-
               type: object
-
 
           onFailure:
-
             type: array
-
             items:
-
               type: object
 
-
       # 审计和日志
-
       audit:
-
         type: object
-
         properties:
-
           enabled:
-
             type: boolean
-
             default: true
 
-
           logLevel:
-
             type: string
-
             enum: ["debug", "info", "warn", "error"]
 
-
           storage:
-
             type: object
-
             properties:
-
               type:
-
                 type: string
-
                 enum: ["elasticsearch", "s3", "gcs", "local"]
-
               retention:
-
                 type: string
-
 
 examples:
   - apiVersion: governance.machinenativeops.io/v1alpha1
-
     kind: RemediationPlaybook
-
     metadata:
-
       name: naming-violation-auto-remediation
-
       description: "标准命名违规自动修复流程"
-
     spec:
-
       triggers:
-
         - type: alert
-
           source: Prometheus
-
           condition:
-
             alertName: NamingPolicyViolation
-
             severity: critical
-
       steps:
-
         - name: "检查命名违规资源"
-
           action:
-
             type: script
-
             script:
-
               language: python
-
               path: "tools/governance/python/check_naming_violation.py"
-
               args: ["--severity", "critical"]
-
           timeout: "2m"
 
-
         - name: "生成修复建议"
-
           action:
-
             type: script
-
             script:
-
               language: python
-
               path: "tools/governance/python/generate_suggestions.py"
 
-
         - name: "自动修正命名与标签"
-
           action:
-
             type: script
-
             script:
-
               language: python
-
               path: "tools/governance/python/rename_and_label.py"
-
               args: ["--dry-run=false"]
-
           timeout: "5m"
-
           retry:
-
             enabled: true
-
             maxAttempts: 3
-
             backoff: exponential
 
-
         - name: "验证修复结果"
-
           action:
-
             type: script
-
             script:
-
               language: python
-
               path: "tools/governance/python/verify_compliance.py"
 
-
         - name: "报告修复结果"
-
           action:
-
             type: script
-
             script:
-
               language: python
-
               path: "tools/governance/python/report_patch_result.py"
-
       verification:
-
         enabled: true
-
         checks:
-
           - name: "命名合规检查"
-
             type: command
-
             condition: "exit code == 0"
-
       rollback:
-
         enabled: true
-
         automatic: true
-
         trigger:
-
           - "验证失败"
-
           - "错误率 > 5%"
-
         steps:
-
           - name: "还原命名"
-
             action:
-
               type: script
-
               script:
-
                 language: bash
-
                 path: "tools/governance/bash/restore_names.sh"
-
       notifications:
-
         onStart:
-
           - channel: "#governance-alerts"
-
             message: "开始自动修复命名违规"
-
         onSuccess:
-
           - channel: "#governance-alerts"
-
             message: "命名违规修复成功"
-
         onFailure:
-
           - channel: "#governance-alerts"
-
             message: "命名违规修复失败，需要人工介入"
-

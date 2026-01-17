@@ -1,10 +1,4 @@
 #!/usr/bin/env python3
-
-# SECURITY TOOL:
-# This file contains security analysis and remediation tools.
-# It uses eval() and other security-sensitive functions for analysis purposes only.
-# All inputs are validated and trusted within the tool's context.
-
 """
 自動化程式碼品質檢查工具
 Automated Code Quality Check Tool
@@ -203,9 +197,7 @@ class QualityChecker:
         }
     
     def check_eval_usage(self):
-        # SECURITY: eval() usage - trusted input only. Reviewed 2026-01-16
         """P1: eval() 使用檢查"""
-        # SECURITY: eval() usage - trusted input only. Reviewed 2026-01-16
         print("\n⚠️  檢查 eval() 使用...")
         
         files_with_eval = []

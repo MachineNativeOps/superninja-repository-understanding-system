@@ -7,16 +7,15 @@ Event logging and safety monitoring for autonomous systems.
 import json
 import logging
 import time
-from dataclasses import asdict, dataclass, field
+from dataclasses import dataclass, field, asdict
 from datetime import datetime
 from enum import Enum
+from typing import Dict, List, Any, Optional
 from threading import RLock
-from typing import Any, Dict, List, Optional
 
 
 class EventCategory(str, Enum):
     """事件分類 Event Categories"""
-
     SENSOR_ERROR = "sensor_error"
     CONTROL_ERROR = "control_error"
     SAFETY_VIOLATION = "safety_violation"
@@ -27,7 +26,6 @@ class EventCategory(str, Enum):
 @dataclass
 class Event:
     """事件結構 Event Structure"""
-
     timestamp: datetime
     category: EventCategory
     module: str
@@ -40,8 +38,8 @@ class Event:
     def to_dict(self) -> Dict[str, Any]:
         """Convert to dictionary for JSON serialization"""
         data = asdict(self)
-        data["timestamp"] = self.timestamp.isoformat()
-        data["category"] = self.category.value
+        data['timestamp'] = self.timestamp.isoformat()
+        data['category'] = self.category.value
         return data
 
 
@@ -62,7 +60,10 @@ class EventLogger:
 
     def _setup_logging(self) -> None:
         """Setup standard logging"""
-        logging.basicConfig(level=logging.INFO, format="%(levelname)s - %(message)s")
+        logging.basicConfig(
+            level=logging.INFO,
+            format='%(levelname)s - %(message)s'
+        )
         self.logger = logging.getLogger(__name__)
 
     def log_event(
@@ -71,7 +72,7 @@ class EventLogger:
         module: str,
         severity: str,
         message: str,
-        metadata: Optional[Dict[str, Any]] = None,
+        metadata: Optional[Dict[str, Any]] = None
     ) -> None:
         """
         記錄事件 Log an event
@@ -90,7 +91,7 @@ class EventLogger:
             severity=severity,
             message=message,
             metadata=metadata or {},
-            trace_id=self._generate_trace_id(),
+            trace_id=self._generate_trace_id()
         )
 
         with self._lock:
@@ -201,7 +202,7 @@ class SafetyMonitor:
                 {
                     "current_altitude": altitude,
                     "max_altitude": max_altitude,
-                },
+                }
             )
             return False
         return True
@@ -226,7 +227,7 @@ class SafetyMonitor:
                 {
                     "current_velocity": velocity,
                     "max_velocity": max_velocity,
-                },
+                }
             )
             return False
         return True

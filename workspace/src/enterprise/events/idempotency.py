@@ -17,17 +17,17 @@ from enum import Enum
 from typing import Any, Generic, Protocol, TypeVar
 from uuid import UUID, uuid4
 
+
 logger = logging.getLogger(__name__)
 
-T = TypeVar("T")
+T = TypeVar('T')
 
 
 class IdempotencyStatus(Enum):
     """Status of an idempotency record"""
-
-    IN_PROGRESS = "in_progress"  # Operation is currently running
-    COMPLETED = "completed"  # Operation completed successfully
-    FAILED = "failed"  # Operation failed
+    IN_PROGRESS = "in_progress"   # Operation is currently running
+    COMPLETED = "completed"       # Operation completed successfully
+    FAILED = "failed"            # Operation failed
 
 
 @dataclass
@@ -37,10 +37,9 @@ class IdempotencyKey:
 
     Used to uniquely identify an operation for deduplication.
     """
-
     # Primary components
     org_id: UUID
-    operation_type: str  # e.g., "pr_analysis", "check_run_create"
+    operation_type: str   # e.g., "pr_analysis", "check_run_create"
 
     # Context-specific components
     repo_full_name: str = ""
@@ -80,7 +79,6 @@ class IdempotencyRecord:
 
     Tracks the state of an idempotent operation.
     """
-
     id: UUID = field(default_factory=uuid4)
 
     # Key
@@ -110,21 +108,25 @@ class IdempotencyRecord:
 class IdempotencyStorage(Protocol):
     """Storage interface for idempotency records"""
 
-    async def get_by_key(self, key_hash: str) -> IdempotencyRecord | None: ...
+    async def get_by_key(self, key_hash: str) -> IdempotencyRecord | None:
+        ...
 
-    async def save(self, record: IdempotencyRecord) -> IdempotencyRecord: ...
+    async def save(self, record: IdempotencyRecord) -> IdempotencyRecord:
+        ...
 
-    async def update(self, record: IdempotencyRecord) -> IdempotencyRecord: ...
+    async def update(self, record: IdempotencyRecord) -> IdempotencyRecord:
+        ...
 
-    async def delete(self, key_hash: str) -> bool: ...
+    async def delete(self, key_hash: str) -> bool:
+        ...
 
-    async def cleanup_expired(self) -> int: ...
+    async def cleanup_expired(self) -> int:
+        ...
 
 
 @dataclass
 class IdempotencyResult(Generic[T]):
     """Result of an idempotency check"""
-
     is_duplicate: bool
     record: IdempotencyRecord
     cached_result: T | None = None
@@ -373,7 +375,6 @@ class IdempotencyGuard:
             result = await do_work()
             await guard.complete(result)
     """
-
     manager: IdempotencyManager
     key: IdempotencyKey
     ttl_seconds: int | None = None
@@ -417,7 +418,6 @@ class IdempotencyGuard:
 # ------------------------------------------------------------------
 # Convenience Functions for Common Patterns
 # ------------------------------------------------------------------
-
 
 def make_pr_analysis_key(
     org_id: UUID,

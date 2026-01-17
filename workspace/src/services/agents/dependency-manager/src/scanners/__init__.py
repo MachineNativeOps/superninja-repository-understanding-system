@@ -6,4 +6,7 @@
 from .license_scanner import LicenseScanner
 from .vulnerability_scanner import VulnerabilityScanner
 
-__all__ = ["VulnerabilityScanner", "LicenseScanner"]
+__all__ = [
+    "VulnerabilityScanner",
+    "LicenseScanner"
+]

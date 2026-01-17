@@ -16,7 +16,6 @@ from typing import Any
 
 class ExpertiseLevel(Enum):
     """Expertise level for domain knowledge."""
-
     NOVICE = "novice"
     COMPETENT = "competent"
     PROFICIENT = "proficient"
@@ -28,10 +27,9 @@ class ExpertiseLevel(Enum):
 class ExpertPersonality:
     """
     Personality traits of a virtual expert.
-
+    
     虛擬專家的性格特徵
     """
-
     traits: list[str] = field(default_factory=list)
     # e.g., ["analytical", "methodical", "patient", "detail-oriented"]
 
@@ -52,10 +50,9 @@ class ExpertPersonality:
 class WorkStyle:
     """
     Work style characteristics.
-
+    
     工作風格特徵
     """
-
     methodology: str = ""
     # e.g., "data-driven", "intuition-based", "collaborative"
 
@@ -79,10 +76,9 @@ class WorkStyle:
 class CommunicationStyle:
     """
     Communication style preferences.
-
+    
     溝通風格偏好
     """
-
     tone: str = "professional"
     # "formal", "professional", "casual", "friendly"
 
@@ -105,10 +101,9 @@ class CommunicationStyle:
 class ExpertKnowledge:
     """
     Domain knowledge of a virtual expert.
-
+    
     虛擬專家的領域知識
     """
-
     primary_domains: list[str] = field(default_factory=list)
     # Main areas of expertise
 
@@ -141,13 +136,12 @@ class ExpertKnowledge:
 class VirtualExpert:
     """
     Virtual Expert base class.
-
+    
     虛擬專家基礎類
-
+    
     每個虛擬專家代表一個特定領域的專業角色，
     提供專業知識、指導和最佳實踐建議。
     """
-
     # Identity
     id: str
     name: str
@@ -174,9 +168,9 @@ class VirtualExpert:
     def can_handle(self, query_domains: list[str]) -> bool:
         """Check if expert can handle queries in given domains."""
         all_domains = (
-            self.knowledge.primary_domains
-            + self.knowledge.secondary_domains
-            + self.knowledge.specializations
+            self.knowledge.primary_domains +
+            self.knowledge.secondary_domains +
+            self.knowledge.specializations
         )
         return any(domain in all_domains for domain in query_domains)
 
@@ -228,7 +222,7 @@ class VirtualExpert:
     def provide_guidance(self, topic: str, context: dict[str, Any]) -> dict[str, Any]:
         """
         Provide expert guidance on a topic.
-
+        
         This is the base implementation. Specialized experts should override.
         """
         return {
@@ -243,7 +237,7 @@ class VirtualExpert:
     def review_code(self, code: str, language: str) -> dict[str, Any]:
         """
         Review code from expert's perspective.
-
+        
         This is the base implementation. Specialized experts should override.
         """
         return {
@@ -254,12 +248,10 @@ class VirtualExpert:
             "quality_score": 0.0,
         }
 
-    def answer_question(
-        self, question: str, context: dict[str, Any] | None = None
-    ) -> dict[str, Any]:
+    def answer_question(self, question: str, context: dict[str, Any] | None = None) -> dict[str, Any]:
         """
         Answer a question from expert's perspective.
-
+        
         This is the base implementation. Specialized experts should override.
         """
         return {

@@ -26,30 +26,27 @@ logger = logging.getLogger(__name__)
 
 class JobPriority(Enum):
     """Job priority levels"""
-
-    CRITICAL = 0  # Gate checks (blocking)
-    HIGH = 1  # Time-sensitive operations
-    NORMAL = 2  # Standard processing
-    LOW = 3  # Background tasks
-    BULK = 4  # Batch operations
+    CRITICAL = 0    # Gate checks (blocking)
+    HIGH = 1        # Time-sensitive operations
+    NORMAL = 2      # Standard processing
+    LOW = 3         # Background tasks
+    BULK = 4        # Batch operations
 
 
 class JobStatus(Enum):
     """Job status"""
-
-    PENDING = "pending"  # Waiting in queue
-    PROCESSING = "processing"  # Being executed
-    COMPLETED = "completed"  # Successfully completed
-    FAILED = "failed"  # Failed (will retry)
-    DEAD = "dead"  # Exceeded retries, moved to DLQ
-    CANCELLED = "cancelled"  # Manually cancelled
+    PENDING = "pending"           # Waiting in queue
+    PROCESSING = "processing"     # Being executed
+    COMPLETED = "completed"       # Successfully completed
+    FAILED = "failed"            # Failed (will retry)
+    DEAD = "dead"                # Exceeded retries, moved to DLQ
+    CANCELLED = "cancelled"      # Manually cancelled
 
 
 class QueueType(Enum):
     """Queue types"""
-
-    GATE = "gate_queue"  # High priority gate checks
-    REPORT = "report_queue"  # Lower priority reporting
+    GATE = "gate_queue"           # High priority gate checks
+    REPORT = "report_queue"       # Lower priority reporting
     INTEGRATION = "integration_queue"  # Provider integrations
     NOTIFICATION = "notification_queue"  # Notifications
 
@@ -61,14 +58,13 @@ class Job:
 
     Represents a unit of work to be processed.
     """
-
     id: UUID = field(default_factory=uuid4)
 
     # Tenant isolation
     org_id: UUID = field(default_factory=uuid4)
 
     # Job type and data
-    job_type: str = ""  # e.g., "analyze_pr", "generate_report"
+    job_type: str = ""         # e.g., "analyze_pr", "generate_report"
     payload: dict[str, Any] = field(default_factory=dict)
 
     # Queue assignment
@@ -104,7 +100,7 @@ class Job:
     locked_until: datetime | None = None
 
     # Metadata
-    timeout_seconds: int = 600  # Job execution timeout
+    timeout_seconds: int = 600   # Job execution timeout
     idempotency_key: str | None = None
 
     def to_dict(self) -> dict[str, Any]:
@@ -122,18 +118,12 @@ class Job:
             "result": self.result,
             "error": self.error,
             "created_at": self.created_at.isoformat(),
-            "scheduled_at": (
-                self.scheduled_at.isoformat() if self.scheduled_at else None
-            ),
+            "scheduled_at": self.scheduled_at.isoformat() if self.scheduled_at else None,
             "started_at": self.started_at.isoformat() if self.started_at else None,
-            "completed_at": (
-                self.completed_at.isoformat() if self.completed_at else None
-            ),
+            "completed_at": self.completed_at.isoformat() if self.completed_at else None,
             "attempt": self.attempt,
             "max_attempts": self.max_attempts,
-            "next_retry_at": (
-                self.next_retry_at.isoformat() if self.next_retry_at else None
-            ),
+            "next_retry_at": self.next_retry_at.isoformat() if self.next_retry_at else None,
             "visibility_timeout": self.visibility_timeout,
             "worker_id": self.worker_id,
             "timeout_seconds": self.timeout_seconds,
@@ -144,7 +134,6 @@ class Job:
 @dataclass
 class DeadLetterJob:
     """Job that has been moved to the Dead Letter Queue"""
-
     id: UUID = field(default_factory=uuid4)
     original_job: Job = None
     moved_at: datetime = field(default_factory=datetime.utcnow)
@@ -156,13 +145,17 @@ class DeadLetterJob:
 class JobStorage(Protocol):
     """Storage interface for jobs"""
 
-    async def save(self, job: Job) -> Job: ...
+    async def save(self, job: Job) -> Job:
+        ...
 
-    async def get(self, job_id: UUID) -> Job | None: ...
+    async def get(self, job_id: UUID) -> Job | None:
+        ...
 
-    async def update(self, job: Job) -> Job: ...
+    async def update(self, job: Job) -> Job:
+        ...
 
-    async def delete(self, job_id: UUID) -> bool: ...
+    async def delete(self, job_id: UUID) -> bool:
+        ...
 
     async def get_pending_jobs(
         self,
@@ -177,30 +170,36 @@ class JobStorage(Protocol):
         org_id: UUID,
         status: JobStatus,
         limit: int = 100,
-    ) -> list[Job]: ...
+    ) -> list[Job]:
+        ...
 
     async def count_jobs(
         self,
         org_id: UUID,
         queue: QueueType | None = None,
         status: JobStatus | None = None,
-    ) -> int: ...
+    ) -> int:
+        ...
 
 
 class DLQStorage(Protocol):
     """Storage interface for Dead Letter Queue"""
 
-    async def save(self, dlq_job: DeadLetterJob) -> DeadLetterJob: ...
+    async def save(self, dlq_job: DeadLetterJob) -> DeadLetterJob:
+        ...
 
-    async def get(self, job_id: UUID) -> DeadLetterJob | None: ...
+    async def get(self, job_id: UUID) -> DeadLetterJob | None:
+        ...
 
     async def list(
         self,
         org_id: UUID,
         limit: int = 100,
-    ) -> list[DeadLetterJob]: ...
+    ) -> list[DeadLetterJob]:
+        ...
 
-    async def delete(self, job_id: UUID) -> bool: ...
+    async def delete(self, job_id: UUID) -> bool:
+        ...
 
 
 JobHandler = Callable[[Job], Awaitable[dict[str, Any]]]
@@ -494,9 +493,7 @@ class JobQueue:
         handler = self.handlers.get(job.job_type)
 
         if not handler:
-            return await self.fail_job(
-                job.id, f"No handler for job type: {job.job_type}"
-            )
+            return await self.fail_job(job.id, f"No handler for job type: {job.job_type}")
 
         try:
             # Execute with timeout
@@ -507,9 +504,7 @@ class JobQueue:
             return await self.complete_job(job.id, result)
 
         except TimeoutError:
-            return await self.fail_job(
-                job.id, f"Job timed out after {job.timeout_seconds}s"
-            )
+            return await self.fail_job(job.id, f"Job timed out after {job.timeout_seconds}s")
 
         except Exception as e:
             logger.exception(f"Job failed: id={job.id} error={e}")
@@ -596,9 +591,7 @@ class JobQueue:
 
         for queue in QueueType:
             pending = await self.storage.count_jobs(org_id, queue, JobStatus.PENDING)
-            processing = await self.storage.count_jobs(
-                org_id, queue, JobStatus.PROCESSING
-            )
+            processing = await self.storage.count_jobs(org_id, queue, JobStatus.PROCESSING)
 
             stats[queue.value] = {
                 "pending": pending,

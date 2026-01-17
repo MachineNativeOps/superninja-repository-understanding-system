@@ -2,15 +2,15 @@
 Pytest configuration and fixtures for ADK governance agents testing
 """
 
-import asyncio
-from unittest.mock import AsyncMock, Mock
-
 import pytest
+import asyncio
+from unittest.mock import Mock, AsyncMock
+
 from adk.core.agent_runtime import AgentRuntime
 from adk.core.memory_manager import MemoryManager
 from adk.core.workflow_orchestrator import WorkflowOrchestrator
-from adk.governance.mi9_runtime import MI9Runtime
 from adk.mcp.mcp_client import MCPClient
+from adk.governance.mi9_runtime import MI9Runtime
 from adk.observability.metrics import MetricsCollector
 
 
@@ -68,22 +68,16 @@ def mock_metrics():
 
 
 @pytest.fixture
-def agent_components(
-    mock_runtime,
-    mock_memory,
-    mock_orchestrator,
-    mock_mcp_client,
-    mock_mi9_runtime,
-    mock_metrics,
-):
+def agent_components(mock_runtime, mock_memory, mock_orchestrator, 
+                      mock_mcp_client, mock_mi9_runtime, mock_metrics):
     """All agent components as a single fixture"""
     return {
-        "runtime": mock_runtime,
-        "memory": mock_memory,
-        "orchestrator": mock_orchestrator,
-        "mcp_client": mock_mcp_client,
-        "mi9_runtime": mock_mi9_runtime,
-        "metrics": mock_metrics,
+        'runtime': mock_runtime,
+        'memory': mock_memory,
+        'orchestrator': mock_orchestrator,
+        'mcp_client': mock_mcp_client,
+        'mi9_runtime': mock_mi9_runtime,
+        'metrics': mock_metrics
     }
 
 
@@ -91,7 +85,6 @@ def agent_components(
 def sample_dependency_nodes():
     """Sample dependency nodes for testing"""
     from enhanced_adk.governance_agents.dag_maintenance_agent import DependencyNode
-
     return [
         DependencyNode(
             id="node1",
@@ -99,7 +92,7 @@ def sample_dependency_nodes():
             type="service",
             dependencies=["node2"],
             file_path="/workspace/services/agent.yaml",
-            metadata={},
+            metadata={}
         ),
         DependencyNode(
             id="node2",
@@ -107,21 +100,16 @@ def sample_dependency_nodes():
             type="service",
             dependencies=[],
             file_path="/workspace/services/bad.yaml",
-            metadata={},
-        ),
+            metadata={}
+        )
     ]
 
 
 @pytest.fixture
 def sample_pipeline_run():
     """Sample pipeline run for testing"""
+    from enhanced_adk.governance_agents.cicd_repair_agent import PipelineRun, PipelineStatus
     from datetime import datetime
-
-    from enhanced_adk.governance_agents.cicd_repair_agent import (
-        PipelineRun,
-        PipelineStatus,
-    )
-
     return PipelineRun(
         id="12345",
         name="test-pipeline",
@@ -131,7 +119,7 @@ def sample_pipeline_run():
         started_at=datetime.now(),
         completed_at=datetime.now(),
         failure_reason="test_failure",
-        logs_url="https://example.com/logs",
+        logs_url="https://example.com/logs"
     )
 
 
@@ -139,7 +127,6 @@ def sample_pipeline_run():
 def sample_schema_spec():
     """Sample schema specification for testing"""
     from enhanced_adk.governance_agents.artifact_generation_agent import SchemaSpec
-
     return SchemaSpec(
         name="test-schema",
         version="v1",
@@ -149,15 +136,15 @@ def sample_schema_spec():
                 "name": "id",
                 "type": "string",
                 "required": True,
-                "description": "Unique identifier",
+                "description": "Unique identifier"
             },
             {
                 "name": "name",
                 "type": "string",
                 "required": False,
-                "description": "Display name",
-            },
-        ],
+                "description": "Display name"
+            }
+        ]
     )
 
 
@@ -165,7 +152,6 @@ def sample_schema_spec():
 def sample_pr_spec():
     """Sample PR specification for testing"""
     from enhanced_adk.governance_agents.gitops_workflow_agent import PRSpec
-
     return PRSpec(
         title="feat: Add new feature",
         description="This PR adds a new feature",
@@ -173,7 +159,7 @@ def sample_pr_spec():
         target_branch="main",
         labels=["enhancement"],
         reviewers=["user1", "user2"],
-        draft=False,
+        draft=False
     )
 
 
@@ -182,10 +168,10 @@ def sample_pr_spec():
 async def dag_maintenance_agent(agent_components):
     """DAG maintenance agent fixture"""
     from enhanced_adk.governance_agents.dag_maintenance_agent import (
-        DAGMaintenanceAgent,
-        create_dag_maintenance_agent,
+        DAGMaintenanceAgent, 
+        create_dag_maintenance_agent
     )
-
+    
     agent = await create_dag_maintenance_agent(**agent_components)
     yield agent
 
@@ -195,9 +181,9 @@ async def cicd_repair_agent(agent_components):
     """CI/CD repair agent fixture"""
     from enhanced_adk.governance_agents.cicd_repair_agent import (
         CICDRepairAgent,
-        create_cicd_repair_agent,
+        create_cicd_repair_agent
     )
-
+    
     agent = await create_cicd_repair_agent(**agent_components)
     yield agent
 
@@ -207,9 +193,9 @@ async def artifact_generation_agent(agent_components):
     """Artifact generation agent fixture"""
     from enhanced_adk.governance_agents.artifact_generation_agent import (
         ArtifactGenerationAgent,
-        create_artifact_generation_agent,
+        create_artifact_generation_agent
     )
-
+    
     agent = await create_artifact_generation_agent(**agent_components)
     yield agent
 
@@ -219,9 +205,9 @@ async def gitops_workflow_agent(agent_components):
     """GitOps workflow agent fixture"""
     from enhanced_adk.governance_agents.gitops_workflow_agent import (
         GitOpsPRWorkflowAgent,
-        create_gitops_workflow_agent,
+        create_gitops_workflow_agent
     )
-
+    
     agent = await create_gitops_workflow_agent(**agent_components)
     yield agent
 
@@ -233,7 +219,7 @@ def agent_config():
     return {
         "agent_name": "platform-test-agent-v1",
         "autonomy_threshold": 0.8,
-        "enabled": True,
+        "enabled": True
     }
 
 
@@ -243,7 +229,11 @@ def taxonomy_config():
     return {
         "enabled": True,
         "version": "1.0.0",
-        "validation_rules": ["kebab-case", "domain-prefix", "no-consecutive-hyphens"],
+        "validation_rules": [
+            "kebab-case",
+            "domain-prefix",
+            "no-consecutive-hyphens"
+        ]
     }
 
 
@@ -254,13 +244,13 @@ def mcp_server_config():
         "github_mcp": {
             "enabled": True,
             "url": "http://localhost:8001",
-            "transport": "http",
+            "transport": "http"
         },
         "filesystem_mcp": {
             "enabled": True,
             "url": "http://localhost:8007",
-            "transport": "http",
-        },
+            "transport": "http"
+        }
     }
 
 
@@ -272,7 +262,7 @@ def mock_filesystem_scan_result():
         "files": [
             "/workspace/services/agent.yaml",
             "/workspace/services/bad.yaml",
-            "/workspace/config/app.yaml",
+            "/workspace/config/app.yaml"
         ]
     }
 
@@ -291,7 +281,7 @@ def mock_github_workflow_runs():
                 "head_sha": "abc123",
                 "created_at": "2024-01-09T10:00:00Z",
                 "updated_at": "2024-01-09T10:05:00Z",
-                "logs_url": "https://example.com/logs",
+                "logs_url": "https://example.com/logs"
             }
         ]
     }
@@ -308,7 +298,7 @@ def mock_pr_creation_result():
         "created_at": "2024-01-09T10:00:00Z",
         "additions": 100,
         "deletions": 50,
-        "changed_files": 5,
+        "changed_files": 5
     }
 
 
@@ -319,4 +309,4 @@ def async_wrapper(coro):
 
 
 # Pytest configuration
-pytest_plugins = ("pytest_asyncio",)
+pytest_plugins = ('pytest_asyncio',)

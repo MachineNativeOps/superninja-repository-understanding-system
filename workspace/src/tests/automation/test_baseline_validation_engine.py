@@ -66,10 +66,7 @@ class TestValidationResult(unittest.TestCase):
         """Test ValidationResult with custom details"""
         details = {"count": 5, "items": ["a", "b"]}
         result = ValidationResult(
-            check_name="test_check",
-            status=Status.PASS,
-            message="Test message",
-            details=details,
+            check_name="test_check", status=Status.PASS, message="Test message", details=details
         )
         self.assertEqual(result.details, details)
 
@@ -95,9 +92,7 @@ class TestValidateNamespaceName(unittest.TestCase):
 
     def test_valid_namespace_with_hyphen(self):
         """Test valid namespace name with hyphens"""
-        self.assertTrue(
-            BaselineValidationEngine.validate_namespace_name("test-namespace")
-        )
+        self.assertTrue(BaselineValidationEngine.validate_namespace_name("test-namespace"))
 
     def test_valid_namespace_with_numbers(self):
         """Test valid namespace name with numbers"""
@@ -105,9 +100,7 @@ class TestValidateNamespaceName(unittest.TestCase):
 
     def test_invalid_namespace_uppercase(self):
         """Test invalid namespace with uppercase letters"""
-        self.assertFalse(
-            BaselineValidationEngine.validate_namespace_name("TestNamespace")
-        )
+        self.assertFalse(BaselineValidationEngine.validate_namespace_name("TestNamespace"))
 
     def test_invalid_namespace_start_hyphen(self):
         """Test invalid namespace starting with hyphen"""
@@ -244,9 +237,7 @@ class TestBaselineValidationEngine(unittest.TestCase):
 
         self.assertEqual(report["auto_evolution"]["remediations_available"], 1)
         self.assertEqual(len(report["auto_evolution"]["remediation_plan"]), 1)
-        self.assertEqual(
-            report["auto_evolution"]["remediation_plan"][0]["suggestion"], "Fix this"
-        )
+        self.assertEqual(report["auto_evolution"]["remediation_plan"][0]["suggestion"], "Fix this")
 
     @patch("builtins.open", new_callable=mock_open)
     @patch("subprocess.run")

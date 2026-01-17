@@ -20,32 +20,29 @@ logger = logging.getLogger(__name__)
 
 class ConnectionStatus(Enum):
     """Connection status enumeration"""
-
-    DISCONNECTED = "disconnected"
-    CONNECTING = "connecting"
-    CONNECTED = "connected"
-    RECONNECTING = "reconnecting"
-    ERROR = "error"
+    DISCONNECTED = 'disconnected'
+    CONNECTING = 'connecting'
+    CONNECTED = 'connected'
+    RECONNECTING = 'reconnecting'
+    ERROR = 'error'
 
 
 class TransportType(Enum):
     """Transport type enumeration"""
-
-    STDIO = "stdio"
-    HTTP = "http"
-    WEBSOCKET = "websocket"
-    SSE = "sse"  # Server-Sent Events
+    STDIO = 'stdio'
+    HTTP = 'http'
+    WEBSOCKET = 'websocket'
+    SSE = 'sse'  # Server-Sent Events
 
 
 @dataclass
 class ConnectionConfig:
     """Configuration for a connection"""
-
     server_name: str
     transport: TransportType = TransportType.STDIO
-    host: str = "localhost"
+    host: str = 'localhost'
     port: int = 3000
-    path: str = "/"
+    path: str = '/'
     timeout: int = 30000  # milliseconds
     reconnect: bool = True
     reconnect_interval: int = 5000  # milliseconds
@@ -60,7 +57,6 @@ class ConnectionConfig:
 @dataclass
 class Connection:
     """Represents a connection to an MCP server"""
-
     id: str
     config: ConnectionConfig
     status: ConnectionStatus = ConnectionStatus.DISCONNECTED
@@ -76,31 +72,26 @@ class Connection:
     def to_dict(self) -> dict[str, Any]:
         """Convert connection to dictionary"""
         return {
-            "id": self.id,
-            "server_name": self.config.server_name,
-            "transport": self.config.transport.value,
-            "status": self.status.value,
-            "host": self.config.host,
-            "port": self.config.port,
-            "last_activity": (
-                self.last_activity.isoformat() if self.last_activity else None
-            ),
-            "connect_time": (
-                self.connect_time.isoformat() if self.connect_time else None
-            ),
-            "reconnect_count": self.reconnect_count,
-            "error_count": self.error_count,
-            "messages_sent": self.messages_sent,
-            "messages_received": self.messages_received,
-            "latency_ms": self.latency_ms,
-            "metadata": self.metadata,
+            'id': self.id,
+            'server_name': self.config.server_name,
+            'transport': self.config.transport.value,
+            'status': self.status.value,
+            'host': self.config.host,
+            'port': self.config.port,
+            'last_activity': self.last_activity.isoformat() if self.last_activity else None,
+            'connect_time': self.connect_time.isoformat() if self.connect_time else None,
+            'reconnect_count': self.reconnect_count,
+            'error_count': self.error_count,
+            'messages_sent': self.messages_sent,
+            'messages_received': self.messages_received,
+            'latency_ms': self.latency_ms,
+            'metadata': self.metadata
         }
 
 
 @dataclass
 class Message:
     """Message for communication"""
-
     id: str
     type: str  # request, response, notification
     method: str | None = None
@@ -111,49 +102,52 @@ class Message:
 
     def to_dict(self) -> dict[str, Any]:
         """Convert message to dictionary"""
-        data = {"jsonrpc": "2.0", "id": self.id}
-        if self.type == "request":
-            data["method"] = self.method
+        data = {
+            'jsonrpc': '2.0',
+            'id': self.id
+        }
+        if self.type == 'request':
+            data['method'] = self.method
             if self.params:
-                data["params"] = self.params
-        elif self.type == "response":
+                data['params'] = self.params
+        elif self.type == 'response':
             if self.error:
-                data["error"] = self.error
+                data['error'] = self.error
             else:
-                data["result"] = self.result
-        elif self.type == "notification":
-            data["method"] = self.method
+                data['result'] = self.result
+        elif self.type == 'notification':
+            data['method'] = self.method
             if self.params:
-                data["params"] = self.params
-            del data["id"]
+                data['params'] = self.params
+            del data['id']
         return data
 
     @classmethod
-    def from_dict(cls, data: dict[str, Any]) -> "Message":
+    def from_dict(cls, data: dict[str, Any]) -> 'Message':
         """Create message from dictionary"""
-        msg_id = data.get("id", str(uuid4()))
+        msg_id = data.get('id', str(uuid4()))
 
-        if "method" in data and "id" in data:
-            msg_type = "request"
-        elif "method" in data:
-            msg_type = "notification"
+        if 'method' in data and 'id' in data:
+            msg_type = 'request'
+        elif 'method' in data:
+            msg_type = 'notification'
         else:
-            msg_type = "response"
+            msg_type = 'response'
 
         return cls(
             id=msg_id,
             type=msg_type,
-            method=data.get("method"),
-            params=data.get("params"),
-            result=data.get("result"),
-            error=data.get("error"),
+            method=data.get('method'),
+            params=data.get('params'),
+            result=data.get('result'),
+            error=data.get('error')
         )
 
 
 class RealTimeConnector:
     """
     Real-time connector for MCP server communication
-
+    
     Features:
     - Multiple transport support (stdio, HTTP, WebSocket, SSE)
     - Connection pooling
@@ -173,7 +167,7 @@ class RealTimeConnector:
     async def start(self) -> None:
         """Start the connector"""
         self._is_running = True
-        logger.info("RealTimeConnector started")
+        logger.info('RealTimeConnector started')
 
     async def stop(self) -> None:
         """Stop the connector and close all connections"""
@@ -198,21 +192,23 @@ class RealTimeConnector:
             future.cancel()
         self._pending_requests.clear()
 
-        logger.info("RealTimeConnector stopped")
+        logger.info('RealTimeConnector stopped')
 
     async def connect(self, config: ConnectionConfig) -> Connection:
         """
         Establish a connection to an MCP server
-
+        
         Args:
             config: Connection configuration
-
+            
         Returns:
             Connection instance
         """
         conn_id = str(uuid4())
         connection = Connection(
-            id=conn_id, config=config, status=ConnectionStatus.CONNECTING
+            id=conn_id,
+            config=config,
+            status=ConnectionStatus.CONNECTING
         )
 
         self._connections[conn_id] = connection
@@ -230,13 +226,13 @@ class RealTimeConnector:
                     self._heartbeat_loop(connection)
                 )
 
-            await self._emit_event("connected", connection)
-            logger.info(f"Connected to {config.server_name} (id: {conn_id})")
+            await self._emit_event('connected', connection)
+            logger.info(f'Connected to {config.server_name} (id: {conn_id})')
 
         except Exception as e:
             connection.status = ConnectionStatus.ERROR
             connection.error_count += 1
-            logger.error(f"Failed to connect to {config.server_name}: {e}")
+            logger.error(f'Failed to connect to {config.server_name}: {e}')
 
             if config.reconnect:
                 self._schedule_reconnect(connection)
@@ -248,7 +244,7 @@ class RealTimeConnector:
     async def disconnect(self, connection_id: str) -> bool:
         """
         Disconnect from a server
-
+        
         Returns:
             True if disconnected, False if not found
         """
@@ -267,8 +263,8 @@ class RealTimeConnector:
             task.cancel()
 
         connection.status = ConnectionStatus.DISCONNECTED
-        await self._emit_event("disconnected", connection)
-        logger.info(f"Disconnected from {connection.config.server_name}")
+        await self._emit_event('disconnected', connection)
+        logger.info(f'Disconnected from {connection.config.server_name}')
 
         return True
 
@@ -284,7 +280,8 @@ class RealTimeConnector:
         return None
 
     def list_connections(
-        self, status: ConnectionStatus | None = None
+        self,
+        status: ConnectionStatus | None = None
     ) -> list[Connection]:
         """List all connections, optionally filtered by status"""
         connections = list(self._connections.values())
@@ -297,34 +294,39 @@ class RealTimeConnector:
         connection_id: str,
         method: str,
         params: dict[str, Any] | None = None,
-        timeout: int | None = None,
+        timeout: int | None = None
     ) -> Any:
         """
         Send a request to a server
-
+        
         Args:
             connection_id: Connection ID
             method: Method name
             params: Optional parameters
             timeout: Optional timeout in milliseconds
-
+            
         Returns:
             Response result
-
+            
         Raises:
             ConnectionError: If not connected
             TimeoutError: If request times out
         """
         connection = self._connections.get(connection_id)
         if not connection:
-            raise ConnectionError(f"Connection not found: {connection_id}")
+            raise ConnectionError(f'Connection not found: {connection_id}')
 
         if connection.status != ConnectionStatus.CONNECTED:
-            raise ConnectionError(f"Connection not active: {connection.status.value}")
+            raise ConnectionError(f'Connection not active: {connection.status.value}')
 
         # Create request message
         request_id = str(uuid4())
-        message = Message(id=request_id, type="request", method=method, params=params)
+        message = Message(
+            id=request_id,
+            type='request',
+            method=method,
+            params=params
+        )
 
         # Create future for response
         future = asyncio.Future()
@@ -347,23 +349,29 @@ class RealTimeConnector:
             return result
 
         except TimeoutError:
-            raise TimeoutError(f"Request timed out: {method}")
+            raise TimeoutError(f'Request timed out: {method}')
         finally:
             self._pending_requests.pop(request_id, None)
 
     async def send_notification(
-        self, connection_id: str, method: str, params: dict[str, Any] | None = None
+        self,
+        connection_id: str,
+        method: str,
+        params: dict[str, Any] | None = None
     ) -> None:
         """Send a notification (no response expected)"""
         connection = self._connections.get(connection_id)
         if not connection:
-            raise ConnectionError(f"Connection not found: {connection_id}")
+            raise ConnectionError(f'Connection not found: {connection_id}')
 
         if connection.status != ConnectionStatus.CONNECTED:
-            raise ConnectionError(f"Connection not active: {connection.status.value}")
+            raise ConnectionError(f'Connection not active: {connection.status.value}')
 
         message = Message(
-            id=str(uuid4()), type="notification", method=method, params=params
+            id=str(uuid4()),
+            type='notification',
+            method=method,
+            params=params
         )
 
         await self._send_message(connection, message)
@@ -415,24 +423,20 @@ class RealTimeConnector:
             pass
 
         # Simulate sending
-        logger.debug(
-            f"Sent message to {connection.config.server_name}: {message.method}"
-        )
+        logger.debug(f'Sent message to {connection.config.server_name}: {message.method}')
 
         # Simulate response for requests
-        if message.type == "request":
+        if message.type == 'request':
             asyncio.create_task(self._simulate_response(connection, message))
 
-    async def _simulate_response(
-        self, connection: Connection, request: Message
-    ) -> None:
+    async def _simulate_response(self, connection: Connection, request: Message) -> None:
         """Simulate a response for testing"""
         await asyncio.sleep(0.05)  # Simulate latency
 
         response = Message(
             id=request.id,
-            type="response",
-            result={"status": "success", "method": request.method},
+            type='response',
+            result={'status': 'success', 'method': request.method}
         )
 
         await self._handle_response(response)
@@ -444,7 +448,7 @@ class RealTimeConnector:
         if future and not future.done():
             if message.error:
                 future.set_exception(
-                    Exception(message.error.get("message", "Unknown error"))
+                    Exception(message.error.get('message', 'Unknown error'))
                 )
             else:
                 future.set_result(message.result)
@@ -462,12 +466,12 @@ class RealTimeConnector:
                 # Send heartbeat
                 try:
                     await self.send_notification(
-                        connection.id, "ping", {"timestamp": datetime.now().isoformat()}
+                        connection.id,
+                        'ping',
+                        {'timestamp': datetime.now().isoformat()}
                     )
                 except Exception as e:
-                    logger.warning(
-                        f"Heartbeat failed for {connection.config.server_name}: {e}"
-                    )
+                    logger.warning(f'Heartbeat failed for {connection.config.server_name}: {e}')
                     connection.error_count += 1
 
                     if connection.error_count >= 3:
@@ -478,14 +482,12 @@ class RealTimeConnector:
             except asyncio.CancelledError:
                 break
             except Exception as e:
-                logger.error(f"Heartbeat loop error: {e}")
+                logger.error(f'Heartbeat loop error: {e}')
 
     def _schedule_reconnect(self, connection: Connection) -> None:
         """Schedule a reconnection attempt"""
         if connection.reconnect_count >= connection.config.max_reconnect_attempts:
-            logger.error(
-                f"Max reconnect attempts reached for {connection.config.server_name}"
-            )
+            logger.error(f'Max reconnect attempts reached for {connection.config.server_name}')
             return
 
         connection.status = ConnectionStatus.RECONNECTING
@@ -501,13 +503,11 @@ class RealTimeConnector:
                 connection.error_count = 0
                 connection.last_activity = datetime.now()
 
-                await self._emit_event("reconnected", connection)
-                logger.info(f"Reconnected to {connection.config.server_name}")
+                await self._emit_event('reconnected', connection)
+                logger.info(f'Reconnected to {connection.config.server_name}')
 
             except Exception as e:
-                logger.error(
-                    f"Reconnect failed for {connection.config.server_name}: {e}"
-                )
+                logger.error(f'Reconnect failed for {connection.config.server_name}: {e}')
                 self._schedule_reconnect(connection)
 
         self._reconnect_tasks[connection.id] = asyncio.create_task(reconnect())
@@ -522,7 +522,7 @@ class RealTimeConnector:
                 else:
                     handler(data)
             except Exception as e:
-                logger.error(f"Event handler error for {event}: {e}")
+                logger.error(f'Event handler error for {event}: {e}')
 
     def get_stats(self) -> dict[str, Any]:
         """Get connector statistics"""
@@ -533,17 +533,18 @@ class RealTimeConnector:
 
         total_sent = sum(c.messages_sent for c in self._connections.values())
         total_received = sum(c.messages_received for c in self._connections.values())
-        avg_latency = sum(c.latency_ms for c in self._connections.values()) / max(
-            len(self._connections), 1
+        avg_latency = (
+            sum(c.latency_ms for c in self._connections.values()) /
+            max(len(self._connections), 1)
         )
 
         return {
-            "total_connections": len(self._connections),
-            "status_distribution": status_counts,
-            "pending_requests": len(self._pending_requests),
-            "total_messages_sent": total_sent,
-            "total_messages_received": total_received,
-            "average_latency_ms": avg_latency,
+            'total_connections': len(self._connections),
+            'status_distribution': status_counts,
+            'pending_requests': len(self._pending_requests),
+            'total_messages_sent': total_sent,
+            'total_messages_received': total_received,
+            'average_latency_ms': avg_latency
         }
 
 

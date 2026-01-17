@@ -25,7 +25,7 @@ WorkStyle = eb.WorkStyle
 # ============ Factory Functions for Domain Experts ============
 
 
-def dr_alex_chen() -> VirtualExpert:
+def DrAlexChen() -> VirtualExpert:
     """
     Create Dr. Alex Chen - AI 架構師
 
@@ -222,7 +222,7 @@ def dr_alex_chen() -> VirtualExpert:
     return expert
 
 
-def sarah_wong() -> VirtualExpert:
+def SarahWong() -> VirtualExpert:
     """
     Create Sarah Wong - 自然語言處理專家
 
@@ -326,7 +326,7 @@ def sarah_wong() -> VirtualExpert:
     return expert
 
 
-def marcus_johnson() -> VirtualExpert:
+def MarcusJohnson() -> VirtualExpert:
     """
     Create Marcus Johnson - 安全架構師
 
@@ -497,7 +497,6 @@ def verify_password(password: str, hashed: str) -> bool:
                     }
                 )
 
-# SECURITY: eval() used with trusted input only. Do not use with untrusted user input.
         if "eval(" in code_lower or "exec(" in code_lower:
             issues.append(
                 {
@@ -522,7 +521,7 @@ def verify_password(password: str, hashed: str) -> bool:
     return expert
 
 
-def li_wei() -> VirtualExpert:
+def LiWei() -> VirtualExpert:
     """
     Create Li Wei - 數據庫專家
 
@@ -657,7 +656,7 @@ LEFT JOIN orders o ON u.id = o.user_id
     return expert
 
 
-def emma_thompson() -> VirtualExpert:
+def EmmaThompson() -> VirtualExpert:
     """
     Create Emma Thompson - DevOps 專家
 
@@ -757,7 +756,7 @@ def emma_thompson() -> VirtualExpert:
     return expert
 
 
-def james_miller() -> VirtualExpert:
+def JamesMiller() -> VirtualExpert:
     """
     Create James Miller - 系統架構師
 

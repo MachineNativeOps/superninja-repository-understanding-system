@@ -17,31 +17,29 @@ from datetime import datetime
 from enum import Enum
 from typing import Any
 
+
 logger = logging.getLogger(__name__)
 
 
 class VersionStatus(Enum):
     """Version status"""
-
-    CURRENT = "current"  # Currently active version
-    SUPPORTED = "supported"  # Still supported, not default
-    DEPRECATED = "deprecated"  # Still works, will be removed
-    RETIRED = "retired"  # No longer supported
+    CURRENT = "current"         # Currently active version
+    SUPPORTED = "supported"     # Still supported, not default
+    DEPRECATED = "deprecated"   # Still works, will be removed
+    RETIRED = "retired"        # No longer supported
 
 
 class CompatibilityLevel(Enum):
     """Compatibility levels"""
-
-    FULL = "full"  # Fully compatible
-    FORWARD = "forward"  # Old clients can use new server
-    BACKWARD = "backward"  # New clients can use old server
-    NONE = "none"  # Not compatible
+    FULL = "full"               # Fully compatible
+    FORWARD = "forward"         # Old clients can use new server
+    BACKWARD = "backward"       # New clients can use old server
+    NONE = "none"              # Not compatible
 
 
 @dataclass
 class SemanticVersion:
     """Semantic version (SemVer)"""
-
     major: int = 1
     minor: int = 0
     patch: int = 0
@@ -58,22 +56,14 @@ class SemanticVersion:
 
     def __lt__(self, other: "SemanticVersion") -> bool:
         # Compare major.minor.patch first
-        if (self.major, self.minor, self.patch) != (
-            other.major,
-            other.minor,
-            other.patch,
-        ):
-            return (self.major, self.minor, self.patch) < (
-                other.major,
-                other.minor,
-                other.patch,
-            )
-
+        if (self.major, self.minor, self.patch) != (other.major, other.minor, other.patch):
+            return (self.major, self.minor, self.patch) < (other.major, other.minor, other.patch)
+        
         # If major.minor.patch are equal, handle prerelease versions
         # According to SemVer 2.0.0:
         # - A prerelease version has lower precedence than a normal version
         # - When both have prereleases, compare them lexicographically
-
+        
         # Normal version (no prerelease) has higher precedence
         if not self.prerelease and not other.prerelease:
             return False  # Equal versions
@@ -81,7 +71,7 @@ class SemanticVersion:
             return False  # self (normal) > other (prerelease)
         if not other.prerelease:
             return True  # self (prerelease) < other (normal)
-
+        
         # Both have prereleases - compare them according to SemVer spec
         return self._compare_prerelease(self.prerelease, other.prerelease) < 0
 
@@ -95,26 +85,25 @@ class SemanticVersion:
         return not (self < other)
 
     def __eq__(self, other: "SemanticVersion") -> bool:
-        return (self.major, self.minor, self.patch) == (
-            other.major,
-            other.minor,
-            other.patch,
-        ) and self.prerelease == other.prerelease
-
+        return (
+            (self.major, self.minor, self.patch) == (other.major, other.minor, other.patch)
+            and self.prerelease == other.prerelease
+        )
+    
     @staticmethod
     def _compare_prerelease(pre1: str, pre2: str) -> int:
         """
         Compare two prerelease version strings according to SemVer 2.0.0 spec.
-
+        
         Returns:
             -1 if pre1 < pre2
             0 if pre1 == pre2
             1 if pre1 > pre2
         """
         # Split by dots to get identifiers
-        parts1 = pre1.split(".")
-        parts2 = pre2.split(".")
-
+        parts1 = pre1.split('.')
+        parts2 = pre2.split('.')
+        
         # Compare each identifier
         for i in range(max(len(parts1), len(parts2))):
             # A larger set of pre-release fields has higher precedence (per SemVer spec)
@@ -123,26 +112,24 @@ class SemanticVersion:
                 return -1
             if i >= len(parts2):
                 return 1
-
+            
             part1 = parts1[i]
             part2 = parts2[i]
-
+            
             # Check if parts are numeric
             is_num1 = part1.isdigit()
             is_num2 = part2.isdigit()
-
+            
             if is_num1 and is_num2:
                 # Both numeric - compare as integers
                 cmp = int(part1) - int(part2)
                 if cmp != 0:
                     return -1 if cmp < 0 else 1
             elif is_num1:
-                # Numeric has lower precedence than non-numeric (per SemVer
-                # spec)
+                # Numeric has lower precedence than non-numeric (per SemVer spec)
                 return -1
             elif is_num2:
-                # Numeric has lower precedence than non-numeric (per SemVer
-                # spec)
+                # Numeric has lower precedence than non-numeric (per SemVer spec)
                 return 1
             else:
                 # Both non-numeric - compare lexically
@@ -150,13 +137,13 @@ class SemanticVersion:
                     return -1
                 elif part1 > part2:
                     return 1
-
+        
         return 0  # Equal
 
     @classmethod
     def parse(cls, version_string: str) -> "SemanticVersion":
         """Parse a version string"""
-        pattern = r"^(\d+)\.(\d+)\.(\d+)(?:-([a-zA-Z0-9.-]+))?(?:\+([a-zA-Z0-9.-]+))?$"
+        pattern = r'^(\d+)\.(\d+)\.(\d+)(?:-([a-zA-Z0-9.-]+))?(?:\+([a-zA-Z0-9.-]+))?$'
         match = re.match(pattern, version_string)
 
         if not match:
@@ -180,8 +167,7 @@ class APIVersion:
     """
     API version definition
     """
-
-    version: str = "v1"  # e.g., "v1", "v2"
+    version: str = "v1"                     # e.g., "v1", "v2"
     semantic_version: SemanticVersion = field(default_factory=SemanticVersion)
     status: VersionStatus = VersionStatus.CURRENT
 
@@ -203,8 +189,7 @@ class SchemaVersion:
     """
     Event/data schema version
     """
-
-    name: str = ""  # e.g., "webhook_event"
+    name: str = ""                          # e.g., "webhook_event"
     version: SemanticVersion = field(default_factory=SemanticVersion)
     status: VersionStatus = VersionStatus.CURRENT
 
@@ -213,9 +198,7 @@ class SchemaVersion:
     json_schema: str | None = None
 
     # Compatibility
-    backward_compatible_with: list[str] = field(
-        default_factory=list
-    )  # List of versions
+    backward_compatible_with: list[str] = field(default_factory=list)  # List of versions
 
     # Dates
     released_at: datetime = field(default_factory=datetime.utcnow)
@@ -227,7 +210,6 @@ class VersionCompatibility:
     """
     Compatibility information between versions
     """
-
     source_version: str
     target_version: str
     compatibility: CompatibilityLevel
@@ -285,8 +267,7 @@ class VersionManager:
     def get_supported_api_versions(self) -> list[APIVersion]:
         """Get all supported API versions"""
         return [
-            v
-            for v in self.api_versions.values()
+            v for v in self.api_versions.values()
             if v.status in (VersionStatus.CURRENT, VersionStatus.SUPPORTED)
         ]
 
@@ -304,7 +285,9 @@ class VersionManager:
         api_version.deprecated_at = datetime.utcnow()
         api_version.sunset_at = sunset_at
 
-        logger.warning(f"API version deprecated: {version}, sunset at {sunset_at}")
+        logger.warning(
+            f"API version deprecated: {version}, sunset at {sunset_at}"
+        )
 
     def retire_api_version(self, version: str) -> None:
         """Retire an API version (no longer supported)"""
@@ -342,7 +325,9 @@ class VersionManager:
         if schema.status == VersionStatus.CURRENT:
             self.default_schema_versions[schema.name] = str(schema.version)
 
-        logger.info(f"Schema version registered: {schema.name} v{schema.version}")
+        logger.info(
+            f"Schema version registered: {schema.name} v{schema.version}"
+        )
 
     def get_schema_version(
         self,
@@ -367,7 +352,8 @@ class VersionManager:
             return None
 
         versions = [
-            (SemanticVersion.parse(v), s) for v, s in self.schema_versions[name].items()
+            (SemanticVersion.parse(v), s)
+            for v, s in self.schema_versions[name].items()
         ]
 
         if not versions:
@@ -513,9 +499,7 @@ class VersionManager:
                     "version": v.version,
                     "status": v.status.value,
                     "base_path": v.base_path,
-                    "deprecated_at": (
-                        v.deprecated_at.isoformat() if v.deprecated_at else None
-                    ),
+                    "deprecated_at": v.deprecated_at.isoformat() if v.deprecated_at else None,
                     "sunset_at": v.sunset_at.isoformat() if v.sunset_at else None,
                 }
                 for v in self.get_supported_api_versions()

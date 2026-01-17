@@ -12,23 +12,18 @@ Version: 1.0.0
 """
 
 import asyncio
-import sys
-from datetime import datetime
-from pathlib import Path
-from typing import Any, Dict, List, Optional
-
 import yaml
-from engine_base import (
-    BaseEngine,
-    EngineConfig,
-    EngineState,
-    EngineType,
-    ExecutionMode,
-    TaskResult,
-)
+from pathlib import Path
+from datetime import datetime
+from typing import Dict, List, Optional, Any
 
+import sys
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
+from engine_base import (
+    BaseEngine, EngineConfig, EngineState,
+    EngineType, ExecutionMode, TaskResult
+)
 
 BASE_PATH = Path(__file__).parent.parent.parent.parent
 PLAYBOOKS_PATH = BASE_PATH / "docs" / "refactor_playbooks"
@@ -70,9 +65,7 @@ class GenerationEngine(BaseEngine):
             elif operation == "generate_all":
                 result = await self._generate_all()
             else:
-                return TaskResult(
-                    task_id=task_id, success=False, error=f"未知操作: {operation}"
-                )
+                return TaskResult(task_id=task_id, success=False, error=f"未知操作: {operation}")
 
             return TaskResult(task_id=task_id, success=True, result=result)
 
@@ -84,18 +77,8 @@ class GenerationEngine(BaseEngine):
 
     def _get_capabilities(self) -> Dict[str, Any]:
         return {
-            "operations": [
-                "generate_playbook",
-                "generate_index",
-                "generate_report",
-                "generate_readme",
-                "generate_all",
-            ],
-            "templates": (
-                list(self._templates_path.glob("*.md"))
-                if self._templates_path.exists()
-                else []
-            ),
+            "operations": ["generate_playbook", "generate_index", "generate_report", "generate_readme", "generate_all"],
+            "templates": list(self._templates_path.glob("*.md")) if self._templates_path.exists() else [],
         }
 
     async def _generate_playbook(self, params: Dict) -> Dict:
@@ -158,7 +141,7 @@ python tools/refactor/refactor_engine.py rollback --checkpoint latest
 
         output_path = self._target_path / "03_refactor" / f"{cluster_id}__playbook.md"
         output_path.parent.mkdir(parents=True, exist_ok=True)
-        output_path.write_text(playbook_content, encoding="utf-8")
+        output_path.write_text(playbook_content, encoding='utf-8')
 
         return {"generated": str(output_path), "cluster_id": cluster_id}
 
@@ -167,21 +150,17 @@ python tools/refactor/refactor_engine.py rollback --checkpoint latest
         target = Path(target_dir) if target_dir else self._target_path / "03_refactor"
 
         # 掃描 playbook 檔案
-        playbooks = list(target.glob("*__playbook.md")) + list(
-            target.glob("*_playbook.md")
-        )
+        playbooks = list(target.glob("*__playbook.md")) + list(target.glob("*_playbook.md"))
 
         clusters = []
         for pb in playbooks:
             cluster_id = pb.stem.replace("__playbook", "").replace("_playbook", "")
-            clusters.append(
-                {
-                    "cluster_id": cluster_id,
-                    "name": cluster_id.replace("_", " ").title(),
-                    "playbook_path": str(pb.relative_to(self._target_path)),
-                    "status": "active",
-                }
-            )
+            clusters.append({
+                "cluster_id": cluster_id,
+                "name": cluster_id.replace("_", " ").title(),
+                "playbook_path": str(pb.relative_to(self._target_path)),
+                "status": "active",
+            })
 
         index_data = {
             "version": "1.0.0",
@@ -190,7 +169,7 @@ python tools/refactor/refactor_engine.py rollback --checkpoint latest
         }
 
         index_path = target / "index.yaml"
-        with open(index_path, "w", encoding="utf-8") as f:
+        with open(index_path, 'w', encoding='utf-8') as f:
             yaml.dump(index_data, f, allow_unicode=True, default_flow_style=False)
 
         return {"generated": str(index_path), "clusters": len(clusters)}
@@ -204,13 +183,9 @@ python tools/refactor/refactor_engine.py rollback --checkpoint latest
         else:
             report = await self._generate_summary_report()
 
-        output_path = (
-            self._target_path
-            / "reports"
-            / f"{report_type}_report_{datetime.now().strftime('%Y%m%d')}.md"
-        )
+        output_path = self._target_path / "reports" / f"{report_type}_report_{datetime.now().strftime('%Y%m%d')}.md"
         output_path.parent.mkdir(parents=True, exist_ok=True)
-        output_path.write_text(report, encoding="utf-8")
+        output_path.write_text(report, encoding='utf-8')
 
         return {"generated": str(output_path)}
 
@@ -266,10 +241,8 @@ docs/refactor_playbooks/
 """
         # 列出子目錄
         for item in sorted(target.iterdir()):
-            if item.is_dir() and not item.name.startswith("."):
-                readme_content += (
-                    f"- `{item.name}/` - {item.name.replace('_', ' ').title()}\n"
-                )
+            if item.is_dir() and not item.name.startswith('.'):
+                readme_content += f"- `{item.name}/` - {item.name.replace('_', ' ').title()}\n"
 
         readme_content += """
 ## 使用方式
@@ -282,7 +255,7 @@ docs/refactor_playbooks/
 """
 
         readme_path = target / "README.md"
-        readme_path.write_text(readme_content, encoding="utf-8")
+        readme_path.write_text(readme_content, encoding='utf-8')
 
         return {"generated": str(readme_path)}
 

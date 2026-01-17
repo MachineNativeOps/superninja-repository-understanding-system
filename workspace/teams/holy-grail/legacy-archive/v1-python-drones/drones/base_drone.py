@@ -17,7 +17,6 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent.parent))
 
 class DroneStatus:
     """無人機狀態"""
-
     INITIALIZED = "initialized"
     RUNNING = "running"
     PAUSED = "paused"
@@ -27,22 +26,21 @@ class DroneStatus:
 
 class Colors:
     """終端機顏色輸出"""
-
-    RED = "\033[0;31m"
-    GREEN = "\033[0;32m"
-    YELLOW = "\033[1;33m"
-    BLUE = "\033[0;34m"
-    PURPLE = "\033[0;35m"
-    CYAN = "\033[0;36m"
-    NC = "\033[0m"
+    RED = '\033[0;31m'
+    GREEN = '\033[0;32m'
+    YELLOW = '\033[1;33m'
+    BLUE = '\033[0;34m'
+    PURPLE = '\033[0;35m'
+    CYAN = '\033[0;36m'
+    NC = '\033[0m'
 
 
 class BaseDrone(ABC):
     """
     基礎無人機抽象類別
-
+    
     所有具體無人機都應繼承此類別並實作抽象方法。
-
+    
     Attributes:
         name: 無人機名稱
         drone_id: 無人機識別碼
@@ -62,9 +60,9 @@ class BaseDrone(ABC):
         """尋找專案根目錄"""
         current = Path(__file__).resolve().parent
         while current != current.parent:
-            if (current / "drone-config.yml").exists():
+            if (current / 'drone-config.yml').exists():
                 return current
-            if (current / "package.json").exists():
+            if (current / 'package.json').exists():
                 return current
             current = current.parent
         return Path.cwd()
@@ -94,7 +92,7 @@ class BaseDrone(ABC):
     def load_config(self) -> bool:
         """
         載入無人機配置
-
+        
         Returns:
             是否載入成功
         """
@@ -105,8 +103,7 @@ class BaseDrone(ABC):
             except (ImportError, ValueError):
                 # 如果相對導入失敗，使用絕對路徑導入
                 import sys
-
-                sys.path.insert(0, str(self.project_root / "v1-python-drones"))
+                sys.path.insert(0, str(self.project_root / 'v1-python-drones'))
                 from config import DroneConfig
 
             drone_config = DroneConfig.load()
@@ -121,7 +118,7 @@ class BaseDrone(ABC):
     def start(self) -> bool:
         """
         啟動無人機
-
+        
         Returns:
             是否啟動成功
         """
@@ -131,7 +128,7 @@ class BaseDrone(ABC):
     def stop(self) -> bool:
         """
         停止無人機
-
+        
         Returns:
             是否停止成功
         """
@@ -141,7 +138,7 @@ class BaseDrone(ABC):
     def execute(self) -> Any:
         """
         執行無人機主要任務
-
+        
         Returns:
             執行結果
         """
@@ -150,7 +147,7 @@ class BaseDrone(ABC):
     def health_check(self) -> bool:
         """
         健康檢查
-
+        
         Returns:
             是否健康
         """
@@ -159,7 +156,7 @@ class BaseDrone(ABC):
     def get_status(self) -> dict[str, Any]:
         """
         取得無人機狀態資訊
-
+        
         Returns:
             狀態資訊字典
         """
@@ -172,6 +169,4 @@ class BaseDrone(ABC):
         }
 
     def __repr__(self) -> str:
-        return (
-            f"<{self.__class__.__name__}(name='{self.name}', status='{self.status}')>"
-        )
+        return f"<{self.__class__.__name__}(name='{self.name}', status='{self.status}')>"

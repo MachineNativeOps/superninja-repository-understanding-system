@@ -26,9 +26,7 @@ def test_ai_auto_fix_init_warns_when_unavailable(monkeypatch, capsys):
 def test_ai_refactor_review_init_warns_when_unavailable(monkeypatch, capsys):
     monkeypatch.setenv("AI_INTEGRATIONS_OPENAI_API_KEY", "")
     monkeypatch.setenv("OPENAI_API_KEY", "")
-    monkeypatch.setattr(
-        ai_refactor_review, "client_available", lambda api_key=None: False
-    )
+    monkeypatch.setattr(ai_refactor_review, "client_available", lambda api_key=None: False)
     monkeypatch.setattr(ai_refactor_review, "get_api_key", lambda: None)
 
     generator = ai_refactor_review.AISuggestionGenerator()

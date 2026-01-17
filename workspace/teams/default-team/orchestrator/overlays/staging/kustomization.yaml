@@ -13,16 +13,12 @@ namePrefix: staging-
 labels:
 - pairs:
     environment: staging
-
   includeSelectors: false
-
 
 replicas:
 - name: super-agent
   count: 2
 
-
 images:
 - name: machinenativeops/super-agent
   newTag: staging-v1.0.0
-

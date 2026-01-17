@@ -5,12 +5,12 @@ TypeScript 島嶼 - 全棧開發
 負責 Web 儀表板、API 客戶端生成、實時監控等任務。
 """
 
-import importlib
 import subprocess
 from datetime import datetime
 from typing import Any
 
-base_island_module = importlib.import_module("bridges.language-islands.base-island")
+import importlib
+base_island_module = importlib.import_module('bridges.language-islands.base-island')
 BaseIsland = base_island_module.BaseIsland
 IslandStatus = base_island_module.IslandStatus
 
@@ -35,13 +35,13 @@ class TypeScriptIsland(BaseIsland):
         super().__init__(
             name="⚡ TypeScript 全棧開發島",
             island_id="typescript",
-            language="typescript",
+            language="typescript"
         )
         self.capabilities = [
             "web_dashboard",
             "api_client_generator",
             "real_time_monitor",
-            "dev_tools_suite",
+            "dev_tools_suite"
         ]
 
     def _get_language_check_command(self) -> tuple[str, str]:
@@ -81,11 +81,11 @@ class TypeScriptIsland(BaseIsland):
         self.log_info("🔍 執行開發環境檢查...")
 
         result = {
-            "island": self.island_id,
-            "task": "dev_environment_check",
-            "timestamp": datetime.now().isoformat(),
-            "tools": self._check_dev_tools(),
-            "project_info": self._check_project(),
+            'island': self.island_id,
+            'task': 'dev_environment_check',
+            'timestamp': datetime.now().isoformat(),
+            'tools': self._check_dev_tools(),
+            'project_info': self._check_project(),
         }
 
         self._display_result(result)
@@ -95,7 +95,9 @@ class TypeScriptIsland(BaseIsland):
         """檢查 Node.js"""
         try:
             result = subprocess.run(
-                ["node", "--version"], capture_output=True, timeout=5
+                ['node', '--version'],
+                capture_output=True,
+                timeout=5
             )
             return result.returncode == 0
         except (FileNotFoundError, subprocess.TimeoutExpired):
@@ -106,37 +108,38 @@ class TypeScriptIsland(BaseIsland):
         tools = {}
 
         tool_commands = [
-            ("node", ["node", "--version"]),
-            ("npm", ["npm", "--version"]),
-            ("tsc", ["tsc", "--version"]),
-            ("eslint", ["eslint", "--version"]),
+            ('node', ['node', '--version']),
+            ('npm', ['npm', '--version']),
+            ('tsc', ['tsc', '--version']),
+            ('eslint', ['eslint', '--version']),
         ]
 
         for tool_name, cmd in tool_commands:
             try:
-                result = subprocess.run(cmd, capture_output=True, text=True, timeout=5)
+                result = subprocess.run(
+                    cmd,
+                    capture_output=True,
+                    text=True,
+                    timeout=5
+                )
                 tools[tool_name] = {
-                    "available": result.returncode == 0,
-                    "version": (
-                        result.stdout.strip().split("\n")[0]
-                        if result.returncode == 0
-                        else None
-                    ),
+                    'available': result.returncode == 0,
+                    'version': result.stdout.strip().split('\n')[0] if result.returncode == 0 else None,
                 }
             except (FileNotFoundError, subprocess.TimeoutExpired):
-                tools[tool_name] = {"available": False, "version": None}
+                tools[tool_name] = {'available': False, 'version': None}
 
         return tools
 
     def _check_project(self) -> dict[str, Any]:
         """檢查專案資訊"""
-        package_json = self.project_root / "package.json"
-        tsconfig = self.project_root / "tsconfig.json"
+        package_json = self.project_root / 'package.json'
+        tsconfig = self.project_root / 'tsconfig.json'
 
         return {
-            "has_package_json": package_json.exists(),
-            "has_tsconfig": tsconfig.exists(),
-            "project_root": str(self.project_root),
+            'has_package_json': package_json.exists(),
+            'has_tsconfig': tsconfig.exists(),
+            'project_root': str(self.project_root),
         }
 
     def _display_result(self, result: dict[str, Any]) -> None:
@@ -144,15 +147,11 @@ class TypeScriptIsland(BaseIsland):
         self.log_info("📊 開發環境狀態:")
 
         print("\n  工具:")
-        for tool, info in result["tools"].items():
-            status = "✅" if info["available"] else "❌"
-            version = info.get("version", "未安裝")
+        for tool, info in result['tools'].items():
+            status = '✅' if info['available'] else '❌'
+            version = info.get('version', '未安裝')
             print(f"    {status} {tool}: {version}")
 
         print("\n  專案:")
-        print(
-            f"    package.json: {'✅' if result['project_info']['has_package_json'] else '❌'}"
-        )
-        print(
-            f"    tsconfig.json: {'✅' if result['project_info']['has_tsconfig'] else '❌'}"
-        )
+        print(f"    package.json: {'✅' if result['project_info']['has_package_json'] else '❌'}")
+        print(f"    tsconfig.json: {'✅' if result['project_info']['has_tsconfig'] else '❌'}")

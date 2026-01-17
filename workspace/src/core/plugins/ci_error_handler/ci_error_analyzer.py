@@ -16,7 +16,6 @@ from typing import Any
 
 class ErrorCategory(Enum):
     """Categories of CI/CD errors"""
-
     BUILD_ERROR = "build_error"
     TEST_FAILURE = "test_failure"
     LINT_ERROR = "lint_error"
@@ -34,7 +33,6 @@ class ErrorCategory(Enum):
 
 class ErrorSeverity(Enum):
     """Severity levels for CI errors"""
-
     LOW = "low"
     MEDIUM = "medium"
     HIGH = "high"
@@ -44,7 +42,6 @@ class ErrorSeverity(Enum):
 @dataclass
 class ErrorPattern:
     """Pattern for matching specific error types"""
-
     pattern_id: str
     category: ErrorCategory
     regex: str
@@ -62,10 +59,10 @@ class ErrorPattern:
         match = re.search(self.regex, log_content, re.MULTILINE | re.IGNORECASE)
         if match:
             return {
-                "matched_text": match.group(0),
-                "groups": match.groups(),
-                "start": match.start(),
-                "end": match.end(),
+                'matched_text': match.group(0),
+                'groups': match.groups(),
+                'start': match.start(),
+                'end': match.end(),
             }
         return {}
 
@@ -73,7 +70,6 @@ class ErrorPattern:
 @dataclass
 class CIError:
     """Represents a parsed CI/CD error"""
-
     error_id: str
     category: ErrorCategory
     severity: ErrorSeverity
@@ -93,30 +89,30 @@ class CIError:
     def to_dict(self) -> dict[str, Any]:
         """Convert to dictionary for JSON serialization"""
         return {
-            "error_id": self.error_id,
-            "category": self.category.value,
-            "severity": self.severity.value,
-            "title": self.title,
-            "message": self.message,
-            "file_path": self.file_path,
-            "line_number": self.line_number,
-            "column_number": self.column_number,
-            "code_snippet": self.code_snippet,
-            "stack_trace": self.stack_trace,
-            "timestamp": self.timestamp.isoformat(),
-            "auto_fixable": self.auto_fixable,
-            "fix_suggestion": self.fix_suggestion,
-            "metadata": self.metadata,
+            'error_id': self.error_id,
+            'category': self.category.value,
+            'severity': self.severity.value,
+            'title': self.title,
+            'message': self.message,
+            'file_path': self.file_path,
+            'line_number': self.line_number,
+            'column_number': self.column_number,
+            'code_snippet': self.code_snippet,
+            'stack_trace': self.stack_trace,
+            'timestamp': self.timestamp.isoformat(),
+            'auto_fixable': self.auto_fixable,
+            'fix_suggestion': self.fix_suggestion,
+            'metadata': self.metadata,
         }
 
 
 class CIErrorAnalyzer:
     """
     CI Error Analyzer
-
+    
     Parse and analyze CI/CD error logs to identify error types, severity,
     and provide structured error information.
-
+    
     Features:
     - Multi-format log parsing (GitHub Actions, Jenkins, etc.)
     - Pattern-based error detection
@@ -152,6 +148,7 @@ class CIErrorAnalyzer:
             description="Python syntax error",
             auto_fixable=False,
         ),
+
         # Test Failures
         ErrorPattern(
             pattern_id="jest_test_failure",
@@ -169,6 +166,7 @@ class CIErrorAnalyzer:
             description="Pytest failure",
             auto_fixable=False,
         ),
+
         # Lint Errors
         ErrorPattern(
             pattern_id="eslint_error",
@@ -197,6 +195,7 @@ class CIErrorAnalyzer:
             auto_fixable=True,
             fix_hint="Run 'black' or 'autopep8'",
         ),
+
         # Dependency Errors
         ErrorPattern(
             pattern_id="npm_dependency_error",
@@ -215,6 +214,7 @@ class CIErrorAnalyzer:
             description="Python dependency error",
             auto_fixable=False,
         ),
+
         # Security Scan Errors
         ErrorPattern(
             pattern_id="npm_audit_vulnerability",
@@ -233,6 +233,7 @@ class CIErrorAnalyzer:
             description="CodeQL security alert",
             auto_fixable=False,
         ),
+
         # Deployment Errors
         ErrorPattern(
             pattern_id="docker_build_error",
@@ -250,6 +251,7 @@ class CIErrorAnalyzer:
             description="Kubernetes deployment error",
             auto_fixable=False,
         ),
+
         # Timeout Errors
         ErrorPattern(
             pattern_id="job_timeout",
@@ -259,6 +261,7 @@ class CIErrorAnalyzer:
             description="Job timeout",
             auto_fixable=False,
         ),
+
         # Permission Errors
         ErrorPattern(
             pattern_id="permission_denied",
@@ -273,7 +276,7 @@ class CIErrorAnalyzer:
     def __init__(self, custom_patterns: list[ErrorPattern] | None = None):
         """
         Initialize the CI Error Analyzer
-
+        
         Args:
             custom_patterns: Additional custom error patterns
         """
@@ -285,18 +288,16 @@ class CIErrorAnalyzer:
     def _generate_error_id(self) -> str:
         """Generate a unique error ID"""
         self._error_counter += 1
-        return (
-            f"ERR-{datetime.now().strftime('%Y%m%d%H%M%S')}-{self._error_counter:04d}"
-        )
+        return f"ERR-{datetime.now().strftime('%Y%m%d%H%M%S')}-{self._error_counter:04d}"
 
     def analyze_log(self, log_content: str, source: str = "unknown") -> list[CIError]:
         """
         Analyze CI/CD log content and extract errors
-
+        
         Args:
             log_content: Raw log content
             source: Source of the log (e.g., "github_actions", "jenkins")
-
+            
         Returns:
             List of parsed CI errors
         """
@@ -314,46 +315,42 @@ class CIErrorAnalyzer:
                     category=pattern.category,
                     severity=pattern.severity,
                     title=pattern.description,
-                    message=details.get("matched_text", "Error detected"),
-                    file_path=file_info.get("file_path"),
-                    line_number=file_info.get("line_number"),
-                    column_number=file_info.get("column_number"),
+                    message=details.get('matched_text', 'Error detected'),
+                    file_path=file_info.get('file_path'),
+                    line_number=file_info.get('line_number'),
+                    column_number=file_info.get('column_number'),
                     code_snippet=self._extract_code_snippet(log_content, file_info),
                     stack_trace=self._extract_stack_trace(log_content),
                     auto_fixable=pattern.auto_fixable,
                     fix_suggestion=pattern.fix_hint,
                     raw_log=log_content[:5000],  # Limit raw log size
                     metadata={
-                        "source": source,
-                        "pattern_id": pattern.pattern_id,
-                    },
+                        'source': source,
+                        'pattern_id': pattern.pattern_id,
+                    }
                 )
                 errors.append(error)
 
         # If no patterns matched, create an unknown error
         if not errors and self._looks_like_error(log_content):
-            errors.append(
-                CIError(
-                    error_id=self._generate_error_id(),
-                    category=ErrorCategory.UNKNOWN,
-                    severity=ErrorSeverity.MEDIUM,
-                    title="Unknown CI Error",
-                    message=self._extract_error_summary(log_content),
-                    raw_log=log_content[:5000],
-                    metadata={"source": source},
-                )
-            )
+            errors.append(CIError(
+                error_id=self._generate_error_id(),
+                category=ErrorCategory.UNKNOWN,
+                severity=ErrorSeverity.MEDIUM,
+                title="Unknown CI Error",
+                message=self._extract_error_summary(log_content),
+                raw_log=log_content[:5000],
+                metadata={'source': source}
+            ))
 
         return errors
 
-    def _extract_file_info(
-        self, log_content: str, category: ErrorCategory
-    ) -> dict[str, Any]:
+    def _extract_file_info(self, log_content: str, category: ErrorCategory) -> dict[str, Any]:
         """Extract file path and line number from log content"""
         # Common patterns for file:line:column format
         patterns = [
-            r"([^\s:]+\.(?:js|ts|jsx|tsx|py|java|go|rs|rb)):(\d+):(\d+)",
-            r"([^\s:]+\.(?:js|ts|jsx|tsx|py|java|go|rs|rb)):(\d+)",
+            r'([^\s:]+\.(?:js|ts|jsx|tsx|py|java|go|rs|rb)):(\d+):(\d+)',
+            r'([^\s:]+\.(?:js|ts|jsx|tsx|py|java|go|rs|rb)):(\d+)',
             r'File "([^"]+)", line (\d+)',
         ]
 
@@ -361,23 +358,21 @@ class CIErrorAnalyzer:
             match = re.search(pattern, log_content)
             if match:
                 groups = match.groups()
-                result = {"file_path": groups[0]}
+                result = {'file_path': groups[0]}
                 if len(groups) > 1:
-                    result["line_number"] = int(groups[1])
+                    result['line_number'] = int(groups[1])
                 if len(groups) > 2:
-                    result["column_number"] = int(groups[2])
+                    result['column_number'] = int(groups[2])
                 return result
 
         return {}
 
-    def _extract_code_snippet(
-        self, log_content: str, file_info: dict[str, Any]
-    ) -> str | None:
+    def _extract_code_snippet(self, log_content: str, file_info: dict[str, Any]) -> str | None:
         """Extract code snippet from log content if available"""
         # Look for code snippet markers
         snippet_patterns = [
-            r">\s*\d+\s*\|.*\n.*\n.*",  # Typical error format with line markers
-            r"```[\s\S]*?```",  # Markdown code blocks
+            r'>\s*\d+\s*\|.*\n.*\n.*',  # Typical error format with line markers
+            r'```[\s\S]*?```',  # Markdown code blocks
         ]
 
         for pattern in snippet_patterns:
@@ -391,9 +386,9 @@ class CIErrorAnalyzer:
         """Extract stack trace from log content"""
         # Look for stack trace patterns
         stack_patterns = [
-            r"(at\s+.*\(.*:\d+:\d+\)[\s\S]*){3,}",  # JavaScript stack
+            r'(at\s+.*\(.*:\d+:\d+\)[\s\S]*){3,}',  # JavaScript stack
             r'(File ".*", line \d+[\s\S]*){3,}',  # Python traceback
-            r"(^\s+at\s+.*$[\s\S]*){3,}",  # Java/Go stack
+            r'(^\s+at\s+.*$[\s\S]*){3,}',  # Java/Go stack
         ]
 
         for pattern in stack_patterns:
@@ -406,12 +401,12 @@ class CIErrorAnalyzer:
     def _looks_like_error(self, log_content: str) -> bool:
         """Check if log content looks like it contains errors"""
         error_indicators = [
-            r"\berror\b",
-            r"\bfail(?:ed|ure)?\b",
-            r"\bexception\b",
-            r"\bcrash(?:ed)?\b",
-            r"exit code [1-9]",
-            r"Process completed with exit code [1-9]",
+            r'\berror\b',
+            r'\bfail(?:ed|ure)?\b',
+            r'\bexception\b',
+            r'\bcrash(?:ed)?\b',
+            r'exit code [1-9]',
+            r'Process completed with exit code [1-9]',
         ]
 
         for indicator in error_indicators:
@@ -424,9 +419,9 @@ class CIErrorAnalyzer:
         """Extract a summary of the error from log content"""
         # Look for common error message patterns
         error_line_patterns = [
-            r"^.*error.*$",
-            r"^.*failed.*$",
-            r"^.*exception.*$",
+            r'^.*error.*$',
+            r'^.*failed.*$',
+            r'^.*exception.*$',
         ]
 
         for pattern in error_line_patterns:
@@ -435,7 +430,7 @@ class CIErrorAnalyzer:
                 return match.group(0)[:500]
 
         # Return first non-empty line as fallback
-        lines = [line.strip() for line in log_content.split("\n") if line.strip()]
+        lines = [line.strip() for line in log_content.split('\n') if line.strip()]
         return lines[0][:500] if lines else "Unknown error"
 
     def add_pattern(self, pattern: ErrorPattern) -> None:
@@ -453,20 +448,20 @@ class CIErrorAnalyzer:
     def summarize_errors(self, errors: list[CIError]) -> dict[str, Any]:
         """Generate a summary of analyzed errors"""
         if not errors:
-            return {"total": 0, "by_category": {}, "by_severity": {}}
+            return {'total': 0, 'by_category': {}, 'by_severity': {}}
 
         summary = {
-            "total": len(errors),
-            "by_category": {},
-            "by_severity": {},
-            "auto_fixable_count": len(self.get_auto_fixable_errors(errors)),
-            "files_affected": list({e.file_path for e in errors if e.file_path}),
+            'total': len(errors),
+            'by_category': {},
+            'by_severity': {},
+            'auto_fixable_count': len(self.get_auto_fixable_errors(errors)),
+            'files_affected': list({e.file_path for e in errors if e.file_path}),
         }
 
         for error in errors:
             cat = error.category.value
             sev = error.severity.value
-            summary["by_category"][cat] = summary["by_category"].get(cat, 0) + 1
-            summary["by_severity"][sev] = summary["by_severity"].get(sev, 0) + 1
+            summary['by_category'][cat] = summary['by_category'].get(cat, 0) + 1
+            summary['by_severity'][sev] = summary['by_severity'].get(sev, 0) + 1
 
         return summary

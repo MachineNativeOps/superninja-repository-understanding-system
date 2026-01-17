@@ -181,9 +181,7 @@ class ModelGateway:
         self, messages: list[dict[str, str]], model: str | None = None, **kwargs: Any
     ) -> AsyncIterator[str]:
         """執行串流完成請求"""
-        request = CompletionRequest(
-            messages=messages, model=model, stream=True, **kwargs
-        )
+        request = CompletionRequest(messages=messages, model=model, stream=True, **kwargs)
 
         provider = self._get_provider_for_model(model)
         client = self.clients.get(provider)

@@ -17,15 +17,16 @@ from datetime import datetime
 from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
-from models.consensus import ConsensusState, VoteType
-from models.incidents import Incident, IncidentState
-from services.agent_client import AgentClient, AgentRegistry
-from services.audit_trail import AuditAction, AuditEntry, AuditTrail
-from services.consensus import ConsensusManager
-from services.event_store import EventStore, StoredEvent
-from services.state_machine import IncidentStateMachine
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
+from services.audit_trail import AuditTrail, AuditEntry, AuditAction
+from services.event_store import EventStore, StoredEvent
+from services.state_machine import IncidentStateMachine
+from services.consensus import ConsensusManager
+from services.agent_client import AgentClient, AgentRegistry
+from models.incidents import Incident, IncidentState
+from models.consensus import VoteType, ConsensusState
 
 
 class TestAuditTrail:
@@ -402,10 +403,7 @@ class TestAgentClient:
             capabilities=["monitor", "alert"],
         )
         assert "monitoring-agent" in agent_registry._agents
-        assert (
-            agent_registry._agents["monitoring-agent"]["url"]
-            == "http://monitoring:8080"
-        )
+        assert agent_registry._agents["monitoring-agent"]["url"] == "http://monitoring:8080"
 
     def test_get_agent_url(self, agent_registry):
         """Test getting an agent URL."""

@@ -26,10 +26,8 @@ from .code_analyzer import (
 # API 數據模型
 # ============================================================================
 
-
 class AnalysisRequest(BaseModel):
     """分析請求"""
-
     repository: str = Field(..., description="代碼庫路徑或 URL")
     commit_hash: str = Field(..., description="提交哈希")
     branch: str = Field(default="main", description="分支名稱")
@@ -41,14 +39,13 @@ class AnalysisRequest(BaseModel):
                 "repository": "https://github.com/example/repo",
                 "commit_hash": "abc123",
                 "branch": "main",
-                "strategy": "STANDARD",
+                "strategy": "STANDARD"
             }
         }
 
 
 class AnalysisResponse(BaseModel):
     """分析回應"""
-
     analysis_id: str
     status: str
     message: str
@@ -57,7 +54,6 @@ class AnalysisResponse(BaseModel):
 
 class HealthResponse(BaseModel):
     """健康檢查回應"""
-
     status: str
     timestamp: str
     version: str
@@ -96,14 +92,13 @@ analysis_tasks: dict[str, dict[str, Any]] = {}
 # 啟動和關閉事件
 # ============================================================================
 
-
 @app.on_event("startup")
 async def startup_event():
     """應用啟動事件"""
     global analysis_engine
     config = {
-        "max_workers": 4,
-        "cache_enabled": True,
+        'max_workers': 4,
+        'cache_enabled': True,
     }
     analysis_engine = CodeAnalysisEngine(config)
     logging.info("Code Analysis Engine initialized")
@@ -119,14 +114,13 @@ async def shutdown_event():
 # API 端點
 # ============================================================================
 
-
 @app.get("/", response_model=dict[str, str])
 async def root():
     """根端點"""
     return {
         "service": "SLASolve Code Analysis API",
         "version": "2.0.0",
-        "docs": "/api/docs",
+        "docs": "/api/docs"
     }
 
 
@@ -137,15 +131,18 @@ async def health_check():
         status="healthy",
         timestamp=datetime.utcnow().isoformat(),
         version="2.0.0",
-        uptime=0.0,  # 實際應計算真實運行時間
+        uptime=0.0  # 實際應計算真實運行時間
     )
 
 
 @app.post("/api/v1/analyze", response_model=AnalysisResponse)
-async def analyze_code(request: AnalysisRequest, background_tasks: BackgroundTasks):
+async def analyze_code(
+    request: AnalysisRequest,
+    background_tasks: BackgroundTasks
+):
     """
     提交代碼分析任務
-
+    
     - **repository**: 代碼庫路徑或 URL
     - **commit_hash**: 提交哈希
     - **branch**: 分支名稱（默認 main）
@@ -160,30 +157,33 @@ async def analyze_code(request: AnalysisRequest, background_tasks: BackgroundTas
     except KeyError:
         raise HTTPException(
             status_code=400,
-            detail=f"Invalid strategy. Must be one of: {[s.value for s in AnalysisStrategy]}",
+            detail=f"Invalid strategy. Must be one of: {[s.value for s in AnalysisStrategy]}"
         )
 
     # 生成分析 ID
     import uuid
-
     analysis_id = str(uuid.uuid4())
 
     # 記錄任務
     analysis_tasks[analysis_id] = {
         "status": "pending",
         "request": request.dict(),
-        "created_at": datetime.utcnow().isoformat(),
+        "created_at": datetime.utcnow().isoformat()
     }
 
     # 在背景執行分析
     background_tasks.add_task(
-        run_analysis, analysis_id, request.repository, request.commit_hash, strategy
+        run_analysis,
+        analysis_id,
+        request.repository,
+        request.commit_hash,
+        strategy
     )
 
     return AnalysisResponse(
         analysis_id=analysis_id,
         status="pending",
-        message="Analysis task submitted successfully",
+        message="Analysis task submitted successfully"
     )
 
 
@@ -191,7 +191,7 @@ async def analyze_code(request: AnalysisRequest, background_tasks: BackgroundTas
 async def get_analysis_result(analysis_id: str):
     """
     獲取分析結果
-
+    
     - **analysis_id**: 分析任務 ID
     """
     if analysis_id not in analysis_tasks:
@@ -203,31 +203,32 @@ async def get_analysis_result(analysis_id: str):
         analysis_id=analysis_id,
         status=task["status"],
         message=task.get("message", ""),
-        result=task.get("result"),
+        result=task.get("result")
     )
 
 
 @app.get("/api/v1/analyze", response_model=list[dict[str, Any]])
 async def list_analyses(
-    limit: int = Query(default=10, le=100), offset: int = Query(default=0, ge=0)
+    limit: int = Query(default=10, le=100),
+    offset: int = Query(default=0, ge=0)
 ):
     """
     列出分析任務
-
+    
     - **limit**: 返回數量限制（最大 100）
     - **offset**: 偏移量
     """
     tasks = list(analysis_tasks.items())
     tasks.sort(key=lambda x: x[1].get("created_at", ""), reverse=True)
 
-    paginated = tasks[offset: offset + limit]
+    paginated = tasks[offset:offset + limit]
 
     return [
         {
             "analysis_id": task_id,
             "status": task["status"],
             "created_at": task.get("created_at"),
-            "repository": task["request"].get("repository"),
+            "repository": task["request"].get("repository")
         }
         for task_id, task in paginated
     ]
@@ -237,7 +238,7 @@ async def list_analyses(
 async def delete_analysis(analysis_id: str):
     """
     刪除分析結果
-
+    
     - **analysis_id**: 分析任務 ID
     """
     if analysis_id not in analysis_tasks:
@@ -260,19 +261,11 @@ async def get_metrics():
         "engine_metrics": metrics,
         "task_stats": {
             "total": len(analysis_tasks),
-            "pending": sum(
-                1 for t in analysis_tasks.values() if t["status"] == "pending"
-            ),
-            "running": sum(
-                1 for t in analysis_tasks.values() if t["status"] == "running"
-            ),
-            "completed": sum(
-                1 for t in analysis_tasks.values() if t["status"] == "completed"
-            ),
-            "failed": sum(
-                1 for t in analysis_tasks.values() if t["status"] == "failed"
-            ),
-        },
+            "pending": sum(1 for t in analysis_tasks.values() if t["status"] == "pending"),
+            "running": sum(1 for t in analysis_tasks.values() if t["status"] == "running"),
+            "completed": sum(1 for t in analysis_tasks.values() if t["status"] == "completed"),
+            "failed": sum(1 for t in analysis_tasks.values() if t["status"] == "failed"),
+        }
     }
 
 
@@ -280,7 +273,7 @@ async def get_metrics():
 async def get_language_governance():
     """
     獲取語言治理報告
-
+    
     返回語言治理儀表板數據，包括：
     - 健康分數
     - 違規列表
@@ -292,193 +285,177 @@ async def get_language_governance():
     from pathlib import Path
 
     import yaml
-
+    
     def get_project_root():
         """獲取項目根目錄"""
         current = Path(__file__).resolve()
         for parent in current.parents:
-            if (parent / "governance").exists():
+            if (parent / 'governance').exists():
                 return parent
         return Path.cwd()
-
+    
     project_root = get_project_root()
-
+    
     # 加載數據
     violations = []
-    semgrep_data = {"errors": 0, "results": []}
+    semgrep_data = {'errors': 0, 'results': []}
     history = []
     health_score = 85
-
+    
     # 加載治理報告
-    gov_path = project_root / "governance" / "language-governance-report.md"
+    gov_path = project_root / 'governance' / 'language-governance-report.md'
     if gov_path.exists():
         try:
-            with open(gov_path, encoding="utf-8") as f:
+            with open(gov_path, encoding='utf-8') as f:
                 content = f.read()
                 # 簡單解析違規
-                for line in content.split("\n"):
-                    if "—" in line and ("**" in line):
-                        parts = line.split("—")
+                for line in content.split('\n'):
+                    if '—' in line and ('**' in line):
+                        parts = line.split('—')
                         if len(parts) >= 2:
-                            file_part = parts[0].strip("- *").strip()
+                            file_part = parts[0].strip('- *').strip()
                             reason_part = parts[1].strip()
-                            violations.append(
-                                {
-                                    "file": file_part,
-                                    "reason": reason_part,
-                                    "severity": "warning",
-                                    "layer": "L5: Applications",
-                                }
-                            )
+                            violations.append({
+                                'file': file_part,
+                                'reason': reason_part,
+                                'severity': 'warning',
+                                'layer': 'L5: Applications'
+                            })
         except Exception as e:
             logging.error(f"Error reading governance report: {e}")
-
+    
     # 加載 Semgrep 報告
-    semgrep_path = project_root / "governance" / "semgrep-report.json"
+    semgrep_path = project_root / 'governance' / 'semgrep-report.json'
     if semgrep_path.exists():
         try:
-            with open(semgrep_path, encoding="utf-8") as f:
+            with open(semgrep_path, encoding='utf-8') as f:
                 data = json.load(f)
                 semgrep_data = {
-                    "errors": len(data.get("errors", [])),
-                    "results": [
+                    'errors': len(data.get('errors', [])),
+                    'results': [
                         {
-                            "check_id": r.get("check_id", "unknown"),
-                            "path": r.get("path", "unknown"),
-                            "message": r.get("extra", {}).get("message", "No message"),
-                            "severity": r.get("extra", {}).get("severity", "WARNING"),
+                            'check_id': r.get('check_id', 'unknown'),
+                            'path': r.get('path', 'unknown'),
+                            'message': r.get('extra', {}).get('message', 'No message'),
+                            'severity': r.get('extra', {}).get('severity', 'WARNING')
                         }
-                        for r in data.get("results", [])[:10]
-                    ],
+                        for r in data.get('results', [])[:10]
+                    ]
                 }
         except Exception as e:
             logging.error(f"Error reading semgrep report: {e}")
-
+    
     # 加載歷史記錄
-    history_path = project_root / "knowledge" / "language-history.yaml"
+    history_path = project_root / 'knowledge' / 'language-history.yaml'
     if history_path.exists():
         try:
-            with open(history_path, encoding="utf-8") as f:
+            with open(history_path, encoding='utf-8') as f:
                 history_data = yaml.safe_load(f)
-                if history_data and "events" in history_data:
+                if history_data and 'events' in history_data:
                     history = [
                         {
-                            "timestamp": event.get(
-                                "timestamp", datetime.utcnow().isoformat()
-                            ),
-                            "event": event.get("event", "Event"),
-                            "details": event.get("details", ""),
-                            "type": event.get("type", "scan"),
+                            'timestamp': event.get('timestamp', datetime.utcnow().isoformat()),
+                            'event': event.get('event', 'Event'),
+                            'details': event.get('details', ''),
+                            'type': event.get('type', 'scan')
                         }
-                        for event in history_data["events"][:10]
+                        for event in history_data['events'][:10]
                     ]
         except Exception as e:
             logging.error(f"Error reading history: {e}")
-
+    
     # 讀取健康分數
-    health_path = project_root / "docs" / "KNOWLEDGE_HEALTH.md"
+    health_path = project_root / 'docs' / 'KNOWLEDGE_HEALTH.md'
     if health_path.exists():
         try:
-            with open(health_path, encoding="utf-8") as f:
+            with open(health_path, encoding='utf-8') as f:
                 content = f.read()
                 import re
-
-                match = re.search(r"\*\*(\d+)/100\*\*", content)
+                match = re.search(r'\*\*(\d+)/100\*\*', content)
                 if match:
                     health_score = int(match.group(1))
         except Exception as e:
             logging.error(f"Error reading health score: {e}")
-
+    
     # 加載 Sankey 數據
     sankey_data = []
-    sankey_path = project_root / "governance" / "sankey-data.json"
+    sankey_path = project_root / 'governance' / 'sankey-data.json'
     if sankey_path.exists():
         try:
-            with open(sankey_path, encoding="utf-8") as f:
+            with open(sankey_path, encoding='utf-8') as f:
                 sankey_json = json.load(f)
-                sankey_data = sankey_json.get("flows", [])
+                sankey_data = sankey_json.get('flows', [])
         except Exception as e:
             logging.error(f"Error reading sankey data: {e}")
-
+    
     # 加載 Hotspot 數據
     hotspot_data = []
-    hotspot_path = project_root / "governance" / "hotspot-data.json"
+    hotspot_path = project_root / 'governance' / 'hotspot-data.json'
     if hotspot_path.exists():
         try:
-            with open(hotspot_path, encoding="utf-8") as f:
+            with open(hotspot_path, encoding='utf-8') as f:
                 hotspot_json = json.load(f)
-                hotspot_data = hotspot_json.get("hotspots", [])
+                hotspot_data = hotspot_json.get('hotspots', [])
         except Exception as e:
             logging.error(f"Error reading hotspot data: {e}")
-
+    
     # 加載 Migration Flow 數據
-    migration_data = {"edges": [], "statistics": {}}
-    migration_path = project_root / "governance" / "migration-flow.json"
+    migration_data = {
+        'edges': [],
+        'statistics': {}
+    }
+    migration_path = project_root / 'governance' / 'migration-flow.json'
     if migration_path.exists():
         try:
-            with open(migration_path, encoding="utf-8") as f:
+            with open(migration_path, encoding='utf-8') as f:
                 migration_json = json.load(f)
                 migration_data = {
-                    "edges": migration_json.get("edges", []),
-                    "statistics": migration_json.get("statistics", {}),
+                    'edges': migration_json.get('edges', []),
+                    'statistics': migration_json.get('statistics', {})
                 }
         except Exception as e:
             logging.error(f"Error reading migration flow data: {e}")
-
+    
     # 返回數據
     return {
-        "healthScore": health_score,
-        "violations": (
-            violations
-            if violations
-            else [
-                {
-                    "file": "apps/web/src/legacy-code.js",
-                    "reason": "JavaScript file in TypeScript project",
-                    "severity": "warning",
-                    "layer": "L5: Applications",
-                }
-            ]
-        ),
-        "semgrep": (
-            semgrep_data
-            if semgrep_data["results"]
-            else {
-                "errors": 1,
-                "results": [
-                    {
-                        "check_id": "javascript.lang.security.audit.xss",
-                        "path": "apps/web/src/utils/render.ts",
-                        "message": "Potential XSS vulnerability detected",
-                        "severity": "WARNING",
-                    }
-                ],
+        'healthScore': health_score,
+        'violations': violations if violations else [
+            {
+                'file': 'apps/web/src/legacy-code.js',
+                'reason': 'JavaScript file in TypeScript project',
+                'severity': 'warning',
+                'layer': 'L5: Applications'
             }
-        ),
-        "history": (
-            history
-            if history
-            else [
+        ],
+        'semgrep': semgrep_data if semgrep_data['results'] else {
+            'errors': 1,
+            'results': [
                 {
-                    "timestamp": datetime.utcnow().isoformat(),
-                    "event": "Auto-fix applied",
-                    "details": "Fixed 3 TypeScript violations in core module",
-                    "type": "fix",
+                    'check_id': 'javascript.lang.security.audit.xss',
+                    'path': 'apps/web/src/utils/render.ts',
+                    'message': 'Potential XSS vulnerability detected',
+                    'severity': 'WARNING'
                 }
             ]
-        ),
-        "sankeyData": sankey_data,
-        "hotspotData": hotspot_data,
-        "migrationData": migration_data,
-        "generatedAt": datetime.utcnow().isoformat(),
-        "metrics": {
-            "totalViolations": len(violations) if violations else 2,
-            "securityFindings": (
-                len(semgrep_data["results"]) if semgrep_data["results"] else 1
-            ),
-            "architectureCompliance": 92,
-            "fixSuccessRate": 87,
         },
+        'history': history if history else [
+            {
+                'timestamp': datetime.utcnow().isoformat(),
+                'event': 'Auto-fix applied',
+                'details': 'Fixed 3 TypeScript violations in core module',
+                'type': 'fix'
+            }
+        ],
+        'sankeyData': sankey_data,
+        'hotspotData': hotspot_data,
+        'migrationData': migration_data,
+        'generatedAt': datetime.utcnow().isoformat(),
+        'metrics': {
+            'totalViolations': len(violations) if violations else 2,
+            'securityFindings': len(semgrep_data['results']) if semgrep_data['results'] else 1,
+            'architectureCompliance': 92,
+            'fixSuccessRate': 87
+        }
     }
 
 
@@ -486,9 +463,11 @@ async def get_language_governance():
 # 背景任務
 # ============================================================================
 
-
 async def run_analysis(
-    analysis_id: str, repository: str, commit_hash: str, strategy: AnalysisStrategy
+    analysis_id: str,
+    repository: str,
+    commit_hash: str,
+    strategy: AnalysisStrategy
 ):
     """執行分析任務"""
     try:
@@ -498,7 +477,9 @@ async def run_analysis(
 
         # 執行分析
         result = await analysis_engine.analyze_repository(
-            repo_path=repository, commit_hash=commit_hash, strategy=strategy
+            repo_path=repository,
+            commit_hash=commit_hash,
+            strategy=strategy
         )
 
         # 轉換結果為可序列化格式
@@ -531,7 +512,7 @@ async def run_analysis(
                 }
                 for issue in result.issues[:100]  # 限制返回數量
             ],
-            "metrics": result.metrics.to_dict(),
+            "metrics": result.metrics.to_dict()
         }
 
         # 更新狀態為完成
@@ -556,4 +537,9 @@ async def run_analysis(
 if __name__ == "__main__":
     import uvicorn
 
-    uvicorn.run(app, host="0.0.0.0", port=8000, log_level="info")
+    uvicorn.run(
+        app,
+        host="0.0.0.0",
+        port=8000,
+        log_level="info"
+    )

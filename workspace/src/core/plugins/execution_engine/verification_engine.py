@@ -21,7 +21,6 @@ from typing import Any
 
 class VerificationStrategy(Enum):
     """驗證策略"""
-
     EXACT_MATCH = "exact_match"
     PARTIAL_MATCH = "partial_match"
     SCHEMA_VALIDATION = "schema_validation"
@@ -32,7 +31,6 @@ class VerificationStrategy(Enum):
 
 class VerificationSeverity(Enum):
     """驗證嚴重性"""
-
     ERROR = "error"
     WARNING = "warning"
     INFO = "info"
@@ -97,7 +95,7 @@ class VerificationResult:
 class VerificationEngine:
     """
     驗證引擎 - 確保執行結果符合預期
-
+    
     核心職責：
     1. 驗證執行輸出是否正確
     2. 支持多種驗證策略
@@ -139,17 +137,17 @@ class VerificationEngine:
         actual: Any,
         expected: Any,
         strategy: VerificationStrategy = VerificationStrategy.EXACT_MATCH,
-        checks: list[dict[str, Any]] | None = None,
+        checks: list[dict[str, Any]] | None = None
     ) -> VerificationResult:
         """
         執行驗證
-
+        
         Args:
             actual: 實際值
             expected: 期望值
             strategy: 驗證策略
             checks: 額外檢查列表
-
+            
         Returns:
             驗證結果
         """
@@ -181,7 +179,9 @@ class VerificationEngine:
                     ),
                     expected=check_def.get("expected"),
                     actual=check_def.get("actual", actual),
-                    severity=VerificationSeverity(check_def.get("severity", "error")),
+                    severity=VerificationSeverity(
+                        check_def.get("severity", "error")
+                    ),
                 )
 
                 executed_check = self._execute_check(check)
@@ -190,20 +190,14 @@ class VerificationEngine:
         # 計算統計
         result.total_checks = len(result.checks)
         result.passed_checks = len([c for c in result.checks if c.passed])
-        result.failed_checks = len(
-            [
-                c
-                for c in result.checks
-                if not c.passed and c.severity == VerificationSeverity.ERROR
-            ]
-        )
-        result.warning_checks = len(
-            [
-                c
-                for c in result.checks
-                if not c.passed and c.severity == VerificationSeverity.WARNING
-            ]
-        )
+        result.failed_checks = len([
+            c for c in result.checks
+            if not c.passed and c.severity == VerificationSeverity.ERROR
+        ])
+        result.warning_checks = len([
+            c for c in result.checks
+            if not c.passed and c.severity == VerificationSeverity.WARNING
+        ])
 
         # 收集錯誤和警告
         for check in result.checks:
@@ -218,7 +212,9 @@ class VerificationEngine:
 
         # 計算持續時間
         end_time = datetime.now()
-        result.duration_ms = int((end_time - start_time).total_seconds() * 1000)
+        result.duration_ms = int(
+            (end_time - start_time).total_seconds() * 1000
+        )
 
         # 更新統計
         self._stats["total_verifications"] += 1
@@ -361,9 +357,9 @@ class VerificationEngine:
         # 檢查語義相似性
         # 這是簡化實現，實際應使用 NLP
         return (
-            actual_str == expected_str
-            or expected_str in actual_str
-            or actual_str in expected_str
+            actual_str == expected_str or
+            expected_str in actual_str or
+            actual_str in expected_str
         )
 
     def _statistical_match(self, actual: Any, expected: Any) -> bool:
@@ -400,15 +396,17 @@ class VerificationEngine:
         return False
 
     def verify_output(
-        self, output: Any, rules: list[dict[str, Any]]
+        self,
+        output: Any,
+        rules: list[dict[str, Any]]
     ) -> VerificationResult:
         """
         使用規則列表驗證輸出
-
+        
         Args:
             output: 輸出值
             rules: 驗證規則列表
-
+            
         Returns:
             驗證結果
         """
@@ -421,15 +419,13 @@ class VerificationEngine:
 
             if validator:
                 passed, message = validator(output, rule)
-                checks.append(
-                    {
-                        "name": rule.get("name", rule_type),
-                        "strategy": "custom",
-                        "expected": rule.get("expected"),
-                        "passed": passed,
-                        "message": message,
-                    }
-                )
+                checks.append({
+                    "name": rule.get("name", rule_type),
+                    "strategy": "custom",
+                    "expected": rule.get("expected"),
+                    "passed": passed,
+                    "message": message,
+                })
 
         return self.verify(output, None, checks=checks)
 
@@ -447,13 +443,21 @@ class VerificationEngine:
 
     # ============ 默認驗證器實現 ============
 
-    def _validate_not_null(self, value: Any, rule: dict[str, Any]) -> tuple:
+    def _validate_not_null(
+        self,
+        value: Any,
+        rule: dict[str, Any]
+    ) -> tuple:
         """非空驗證"""
         passed = value is not None
         message = "Value is not null" if passed else "Value is null"
         return passed, message
 
-    def _validate_type(self, value: Any, rule: dict[str, Any]) -> tuple:
+    def _validate_type(
+        self,
+        value: Any,
+        rule: dict[str, Any]
+    ) -> tuple:
         """類型驗證"""
         expected_type = rule.get("expected_type")
 
@@ -475,7 +479,11 @@ class VerificationEngine:
         )
         return passed, message
 
-    def _validate_range(self, value: Any, rule: dict[str, Any]) -> tuple:
+    def _validate_range(
+        self,
+        value: Any,
+        rule: dict[str, Any]
+    ) -> tuple:
         """範圍驗證"""
         min_val = rule.get("min")
         max_val = rule.get("max")
@@ -495,7 +503,11 @@ class VerificationEngine:
         )
         return passed, message
 
-    def _validate_pattern(self, value: Any, rule: dict[str, Any]) -> tuple:
+    def _validate_pattern(
+        self,
+        value: Any,
+        rule: dict[str, Any]
+    ) -> tuple:
         """模式匹配驗證"""
         import re
 
@@ -506,11 +518,16 @@ class VerificationEngine:
 
         passed = bool(re.match(pattern, value))
         message = (
-            f"Pattern check {'passed' if passed else 'failed'}: " f"pattern={pattern}"
+            f"Pattern check {'passed' if passed else 'failed'}: "
+            f"pattern={pattern}"
         )
         return passed, message
 
-    def _validate_contains(self, value: Any, rule: dict[str, Any]) -> tuple:
+    def _validate_contains(
+        self,
+        value: Any,
+        rule: dict[str, Any]
+    ) -> tuple:
         """包含驗證"""
         expected = rule.get("expected")
 
@@ -527,7 +544,11 @@ class VerificationEngine:
         )
         return passed, message
 
-    def _validate_length(self, value: Any, rule: dict[str, Any]) -> tuple:
+    def _validate_length(
+        self,
+        value: Any,
+        rule: dict[str, Any]
+    ) -> tuple:
         """長度驗證"""
         min_len = rule.get("min_length", 0)
         max_len = rule.get("max_length")

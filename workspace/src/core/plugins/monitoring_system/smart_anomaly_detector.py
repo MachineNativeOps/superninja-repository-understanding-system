@@ -16,31 +16,28 @@ from typing import Any
 
 class AnomalyDetectionStrategy(Enum):
     """Strategies for detecting anomalies"""
-
-    STATISTICAL = "statistical"  # Z-score based detection
-    THRESHOLD = "threshold"  # Fixed threshold based
-    RATE_LIMIT = "rate_limit"  # Rate of change based
-    PATTERN = "pattern"  # Pattern matching based
-    ML = "ml"  # Machine learning based
-    HYBRID = "hybrid"  # Combination of strategies
+    STATISTICAL = "statistical"     # Z-score based detection
+    THRESHOLD = "threshold"         # Fixed threshold based
+    RATE_LIMIT = "rate_limit"       # Rate of change based
+    PATTERN = "pattern"             # Pattern matching based
+    ML = "ml"                       # Machine learning based
+    HYBRID = "hybrid"               # Combination of strategies
 
 
 class AnomalyCategory(Enum):
     """Categories of anomalies"""
-
-    PERFORMANCE = "performance"  # Performance degradation
-    AVAILABILITY = "availability"  # Service availability issues
-    SECURITY = "security"  # Security-related anomalies
-    RESOURCE = "resource"  # Resource exhaustion
-    ERROR = "error"  # Error rate anomalies
-    LATENCY = "latency"  # Latency anomalies
-    TRAFFIC = "traffic"  # Traffic anomalies
-    UNKNOWN = "unknown"  # Unknown category
+    PERFORMANCE = "performance"     # Performance degradation
+    AVAILABILITY = "availability"   # Service availability issues
+    SECURITY = "security"           # Security-related anomalies
+    RESOURCE = "resource"           # Resource exhaustion
+    ERROR = "error"                 # Error rate anomalies
+    LATENCY = "latency"             # Latency anomalies
+    TRAFFIC = "traffic"             # Traffic anomalies
+    UNKNOWN = "unknown"             # Unknown category
 
 
 class AnomalySeverity(Enum):
     """Severity levels for anomalies"""
-
     LOW = "low"
     MEDIUM = "medium"
     HIGH = "high"
@@ -50,7 +47,6 @@ class AnomalySeverity(Enum):
 @dataclass
 class DetectedAnomaly:
     """A detected anomaly"""
-
     anomaly_id: str = field(default_factory=lambda: str(uuid.uuid4()))
     metric_name: str = ""
     category: AnomalyCategory = AnomalyCategory.UNKNOWN
@@ -67,27 +63,27 @@ class DetectedAnomaly:
 
     def to_dict(self) -> dict[str, Any]:
         return {
-            "anomaly_id": self.anomaly_id,
-            "metric_name": self.metric_name,
-            "category": self.category.value,
-            "severity": self.severity.value,
-            "strategy_used": self.strategy_used.value,
-            "current_value": self.current_value,
-            "expected_value": self.expected_value,
-            "deviation": self.deviation,
-            "confidence": self.confidence,
-            "description": self.description,
-            "timestamp": self.timestamp.isoformat(),
-            "recommended_actions": self.recommended_actions,
+            'anomaly_id': self.anomaly_id,
+            'metric_name': self.metric_name,
+            'category': self.category.value,
+            'severity': self.severity.value,
+            'strategy_used': self.strategy_used.value,
+            'current_value': self.current_value,
+            'expected_value': self.expected_value,
+            'deviation': self.deviation,
+            'confidence': self.confidence,
+            'description': self.description,
+            'timestamp': self.timestamp.isoformat(),
+            'recommended_actions': self.recommended_actions
         }
 
 
 class SmartAnomalyDetector:
     """
     Smart Anomaly Detector (智能異常檢測器)
-
+    
     AI-driven anomaly detection without manual thresholds
-
+    
     Reference: AI-enhanced observability with automatic anomaly detection [4]
     """
 
@@ -95,7 +91,7 @@ class SmartAnomalyDetector:
         self,
         default_strategy: AnomalyDetectionStrategy = AnomalyDetectionStrategy.STATISTICAL,
         sensitivity: float = 2.0,  # Z-score threshold
-        min_samples: int = 10,
+        min_samples: int = 10
     ):
         self._default_strategy = default_strategy
         self._sensitivity = sensitivity
@@ -111,14 +107,14 @@ class SmartAnomalyDetector:
         mean: float,
         stdev: float,
         min_val: float | None = None,
-        max_val: float | None = None,
+        max_val: float | None = None
     ) -> None:
         """Set baseline statistics for a metric"""
         self._baselines[metric_name] = {
-            "mean": mean,
-            "stdev": stdev,
-            "min": min_val,
-            "max": max_val,
+            'mean': mean,
+            'stdev': stdev,
+            'min': min_val,
+            'max': max_val
         }
 
     def learn_baseline(self, metric_name: str, values: list[float]) -> dict[str, float]:
@@ -127,10 +123,10 @@ class SmartAnomalyDetector:
             return {}
 
         baseline = {
-            "mean": statistics.mean(values),
-            "stdev": statistics.stdev(values) if len(values) > 1 else 0.0,
-            "min": min(values),
-            "max": max(values),
+            'mean': statistics.mean(values),
+            'stdev': statistics.stdev(values) if len(values) > 1 else 0.0,
+            'min': min(values),
+            'max': max(values)
         }
         self._baselines[metric_name] = baseline
         self._history[metric_name] = values.copy()
@@ -165,24 +161,22 @@ class SmartAnomalyDetector:
                 return category
 
         # Default categorization
-        if any(kw in metric_lower for kw in ["cpu", "memory", "disk", "network"]):
+        if any(kw in metric_lower for kw in ['cpu', 'memory', 'disk', 'network']):
             return AnomalyCategory.RESOURCE
-        elif any(kw in metric_lower for kw in ["latency", "response_time", "duration"]):
+        elif any(kw in metric_lower for kw in ['latency', 'response_time', 'duration']):
             return AnomalyCategory.LATENCY
-        elif any(kw in metric_lower for kw in ["error", "failure", "exception"]):
+        elif any(kw in metric_lower for kw in ['error', 'failure', 'exception']):
             return AnomalyCategory.ERROR
-        elif any(kw in metric_lower for kw in ["request", "traffic", "throughput"]):
+        elif any(kw in metric_lower for kw in ['request', 'traffic', 'throughput']):
             return AnomalyCategory.TRAFFIC
-        elif any(kw in metric_lower for kw in ["uptime", "availability", "health"]):
+        elif any(kw in metric_lower for kw in ['uptime', 'availability', 'health']):
             return AnomalyCategory.AVAILABILITY
-        elif any(kw in metric_lower for kw in ["auth", "security", "login"]):
+        elif any(kw in metric_lower for kw in ['auth', 'security', 'login']):
             return AnomalyCategory.SECURITY
         else:
             return AnomalyCategory.UNKNOWN
 
-    def _calculate_severity(
-        self, deviation: float, confidence: float
-    ) -> AnomalySeverity:
+    def _calculate_severity(self, deviation: float, confidence: float) -> AnomalySeverity:
         """Calculate severity based on deviation and confidence"""
         score = deviation * confidence
 
@@ -196,14 +190,16 @@ class SmartAnomalyDetector:
             return AnomalySeverity.LOW
 
     def detect_statistical(
-        self, metric_name: str, value: float
+        self,
+        metric_name: str,
+        value: float
     ) -> DetectedAnomaly | None:
         """Detect anomaly using statistical method (Z-score)"""
         baseline = self._baselines.get(metric_name)
-        if not baseline or baseline["stdev"] == 0:
+        if not baseline or baseline['stdev'] == 0:
             return None
 
-        z_score = abs((value - baseline["mean"]) / baseline["stdev"])
+        z_score = abs((value - baseline['mean']) / baseline['stdev'])
 
         if z_score > self._sensitivity:
             deviation = z_score
@@ -212,15 +208,13 @@ class SmartAnomalyDetector:
             return DetectedAnomaly(
                 metric_name=metric_name,
                 category=self._get_category(metric_name),
-                severity=self._calculate_severity(
-                    deviation,
-                    confidence),
+                severity=self._calculate_severity(deviation, confidence),
                 strategy_used=AnomalyDetectionStrategy.STATISTICAL,
                 current_value=value,
-                expected_value=baseline["mean"],
+                expected_value=baseline['mean'],
                 deviation=deviation,
                 confidence=confidence,
-                description=f"Statistical anomaly: {metric_name} = {value:.2f} (expected {baseline['mean']:.2f}, z-score {z_score:.2f})",
+                description=f"Statistical anomaly: {metric_name} = {value:.2f} (expected {baseline['mean']:.2f}, z-score {z_score:.2f})"
             )
 
         return None
@@ -230,19 +224,19 @@ class SmartAnomalyDetector:
         metric_name: str,
         value: float,
         min_threshold: float | None = None,
-        max_threshold: float | None = None,
+        max_threshold: float | None = None
     ) -> DetectedAnomaly | None:
         """Detect anomaly using threshold-based method"""
         baseline = self._baselines.get(metric_name, {})
 
-        min_val = min_threshold if min_threshold is not None else baseline.get("min")
-        max_val = max_threshold if max_threshold is not None else baseline.get("max")
+        min_val = min_threshold if min_threshold is not None else baseline.get('min')
+        max_val = max_threshold if max_threshold is not None else baseline.get('max')
 
         violation = None
         if min_val is not None and value < min_val:
-            violation = ("below", min_val)
+            violation = ('below', min_val)
         elif max_val is not None and value > max_val:
-            violation = ("above", max_val)
+            violation = ('above', max_val)
 
         if violation:
             direction, threshold = violation
@@ -251,21 +245,22 @@ class SmartAnomalyDetector:
             return DetectedAnomaly(
                 metric_name=metric_name,
                 category=self._get_category(metric_name),
-                severity=self._calculate_severity(
-                    deviation,
-                    0.9),
+                severity=self._calculate_severity(deviation, 0.9),
                 strategy_used=AnomalyDetectionStrategy.THRESHOLD,
                 current_value=value,
                 expected_value=threshold,
                 deviation=deviation,
                 confidence=0.9,
-                description=f"Threshold violation: {metric_name} = {value:.2f} is {direction} threshold {threshold:.2f}",
+                description=f"Threshold violation: {metric_name} = {value:.2f} is {direction} threshold {threshold:.2f}"
             )
 
         return None
 
     def detect_rate_change(
-        self, metric_name: str, value: float, max_rate_change: float = 0.5  # 50% change
+        self,
+        metric_name: str,
+        value: float,
+        max_rate_change: float = 0.5  # 50% change
     ) -> DetectedAnomaly | None:
         """Detect anomaly based on rate of change"""
         history = self._history.get(metric_name, [])
@@ -282,15 +277,13 @@ class SmartAnomalyDetector:
             return DetectedAnomaly(
                 metric_name=metric_name,
                 category=self._get_category(metric_name),
-                severity=self._calculate_severity(
-                    rate_change * 2,
-                    0.8),
+                severity=self._calculate_severity(rate_change * 2, 0.8),
                 strategy_used=AnomalyDetectionStrategy.RATE_LIMIT,
                 current_value=value,
                 expected_value=prev_value,
                 deviation=rate_change,
                 confidence=0.8,
-                description=f"Rate change anomaly: {metric_name} changed {rate_change*100:.1f}% from {prev_value:.2f} to {value:.2f}",
+                description=f"Rate change anomaly: {metric_name} changed {rate_change*100:.1f}% from {prev_value:.2f} to {value:.2f}"
             )
 
         return None
@@ -299,11 +292,11 @@ class SmartAnomalyDetector:
         self,
         metric_name: str,
         value: float,
-        strategy: AnomalyDetectionStrategy | None = None,
+        strategy: AnomalyDetectionStrategy | None = None
     ) -> DetectedAnomaly | None:
         """
         Detect anomaly using specified or default strategy
-
+        
         For HYBRID strategy, uses all available methods and returns most confident result
         """
         strategy = strategy or self._default_strategy
@@ -347,7 +340,7 @@ class SmartAnomalyDetector:
 class AnomalyClassifier:
     """
     Anomaly Classifier
-
+    
     Classifies anomalies by severity and category
     """
 
@@ -360,7 +353,7 @@ class AnomalyClassifier:
             AnomalyCategory.RESOURCE: 1.0,
             AnomalyCategory.LATENCY: 0.9,
             AnomalyCategory.TRAFFIC: 0.8,
-            AnomalyCategory.UNKNOWN: 0.7,
+            AnomalyCategory.UNKNOWN: 0.7
         }
 
     def classify(self, anomaly: DetectedAnomaly) -> DetectedAnomaly:
@@ -393,43 +386,43 @@ class AnomalyClassifier:
             recommendations = [
                 "Check resource utilization trends",
                 "Consider scaling resources",
-                "Investigate potential memory leaks or CPU-intensive processes",
+                "Investigate potential memory leaks or CPU-intensive processes"
             ]
         elif anomaly.category == AnomalyCategory.LATENCY:
             recommendations = [
                 "Check network connectivity",
                 "Review database query performance",
-                "Check for bottlenecks in dependent services",
+                "Check for bottlenecks in dependent services"
             ]
         elif anomaly.category == AnomalyCategory.ERROR:
             recommendations = [
                 "Review error logs for details",
                 "Check recent deployments",
-                "Verify external service dependencies",
+                "Verify external service dependencies"
             ]
         elif anomaly.category == AnomalyCategory.AVAILABILITY:
             recommendations = [
                 "Check service health endpoints",
                 "Verify infrastructure status",
-                "Review recent changes",
+                "Review recent changes"
             ]
         elif anomaly.category == AnomalyCategory.SECURITY:
             recommendations = [
                 "Review security logs immediately",
                 "Check for unauthorized access attempts",
-                "Verify authentication systems",
+                "Verify authentication systems"
             ]
         elif anomaly.category == AnomalyCategory.TRAFFIC:
             recommendations = [
                 "Check for traffic spikes",
                 "Verify load balancing configuration",
-                "Consider rate limiting if needed",
+                "Consider rate limiting if needed"
             ]
         else:
             recommendations = [
                 "Investigate the anomaly",
                 "Review related metrics",
-                "Check system logs",
+                "Check system logs"
             ]
 
         return recommendations

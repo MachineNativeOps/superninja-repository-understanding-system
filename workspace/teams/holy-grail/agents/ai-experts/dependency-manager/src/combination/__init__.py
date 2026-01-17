@@ -6,14 +6,14 @@ Advanced Prompt Combination Strategy Module
 Phase 8: Core-Satellite Architecture, Dynamic Adjustment Mechanisms
 """
 
-from .combination_templates import CombinationTemplateManager
 from .core_satellite import CoreSatelliteArchitecture
+from .combination_templates import CombinationTemplateManager
 from .dynamic_adjuster import DynamicAdjuster
 from .quarterly_review import QuarterlyReviewEngine
 
 __all__ = [
-    "CoreSatelliteArchitecture",
-    "CombinationTemplateManager",
-    "DynamicAdjuster",
-    "QuarterlyReviewEngine",
+    'CoreSatelliteArchitecture',
+    'CombinationTemplateManager',
+    'DynamicAdjuster',
+    'QuarterlyReviewEngine',
 ]

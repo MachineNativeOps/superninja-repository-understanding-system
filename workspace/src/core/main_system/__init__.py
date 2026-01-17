@@ -5,50 +5,50 @@ SynergyMesh Main System Integration (Phase 14)
 將所有階段整合成統一的自動化系統
 """
 
-from .automation_pipeline import (
-    AutomationPipeline,
-    PipelineConfig,
-    PipelineTask,
-    TaskResult,
-)
-from .phase_orchestrator import (
-    ExecutionMode,
-    PhaseDefinition,
-    PhaseOrchestrator,
-    PhaseTransition,
-)
 from .synergymesh_core import (
-    PhaseStatus,
     SynergyMeshCore,
     SystemConfig,
+    PhaseStatus,
     SystemHealth,
 )
 from .system_bootstrap import (
-    BootstrapConfig,
-    DependencyInjector,
-    ServiceRegistry,
     SystemBootstrap,
+    BootstrapConfig,
+    ServiceRegistry,
+    DependencyInjector,
+)
+from .phase_orchestrator import (
+    PhaseOrchestrator,
+    PhaseDefinition,
+    PhaseTransition,
+    ExecutionMode,
+)
+from .automation_pipeline import (
+    AutomationPipeline,
+    PipelineTask,
+    TaskResult,
+    PipelineConfig,
 )
 
 __all__ = [
     # Core
-    "SynergyMeshCore",
-    "SystemConfig",
-    "PhaseStatus",
-    "SystemHealth",
+    'SynergyMeshCore',
+    'SystemConfig',
+    'PhaseStatus',
+    'SystemHealth',
     # Bootstrap
-    "SystemBootstrap",
-    "BootstrapConfig",
-    "ServiceRegistry",
-    "DependencyInjector",
+    'SystemBootstrap',
+    'BootstrapConfig',
+    'ServiceRegistry',
+    'DependencyInjector',
     # Orchestrator
-    "PhaseOrchestrator",
-    "PhaseDefinition",
-    "PhaseTransition",
-    "ExecutionMode",
+    'PhaseOrchestrator',
+    'PhaseDefinition',
+    'PhaseTransition',
+    'ExecutionMode',
     # Pipeline
-    "AutomationPipeline",
-    "PipelineTask",
-    "TaskResult",
-    "PipelineConfig",
+    'AutomationPipeline',
+    'PipelineTask',
+    'TaskResult',
+    'PipelineConfig',
 ]

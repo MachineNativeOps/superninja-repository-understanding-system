@@ -17,7 +17,7 @@ from .base_drone import BaseDrone, DroneStatus
 class AutopilotDrone(BaseDrone):
     """
     自動駕駛無人機
-
+    
     負責：
     - 監控文件變更
     - 觸發自動化任務
@@ -66,39 +66,39 @@ class AutopilotDrone(BaseDrone):
     def run_diagnosis(self) -> dict[str, Any]:
         """
         執行系統診斷
-
+        
         Returns:
             診斷結果
         """
         diagnosis = {
-            "timestamp": datetime.now().isoformat(),
-            "checks": [],
-            "passed": 0,
-            "failed": 0,
+            'timestamp': datetime.now().isoformat(),
+            'checks': [],
+            'passed': 0,
+            'failed': 0,
         }
 
         # 檢查 Node.js
-        node_check = self._check_tool("node")
-        diagnosis["checks"].append(node_check)
+        node_check = self._check_tool('node')
+        diagnosis['checks'].append(node_check)
 
         # 檢查 npm
-        npm_check = self._check_tool("npm")
-        diagnosis["checks"].append(npm_check)
+        npm_check = self._check_tool('npm')
+        diagnosis['checks'].append(npm_check)
 
         # 檢查 Docker
-        docker_check = self._check_tool("docker")
-        diagnosis["checks"].append(docker_check)
+        docker_check = self._check_tool('docker')
+        diagnosis['checks'].append(docker_check)
 
         # 檢查 Python
-        python_check = self._check_tool("python3")
-        diagnosis["checks"].append(python_check)
+        python_check = self._check_tool('python3')
+        diagnosis['checks'].append(python_check)
 
         # 統計結果
-        for check in diagnosis["checks"]:
-            if check["status"] == "ok":
-                diagnosis["passed"] += 1
+        for check in diagnosis['checks']:
+            if check['status'] == 'ok':
+                diagnosis['passed'] += 1
             else:
-                diagnosis["failed"] += 1
+                diagnosis['failed'] += 1
 
         # 顯示結果
         self._display_diagnosis(diagnosis)
@@ -109,21 +109,22 @@ class AutopilotDrone(BaseDrone):
         """檢查工具是否可用"""
         try:
             result = subprocess.run(
-                [tool, "--version"], capture_output=True, text=True, timeout=5
+                [tool, '--version'],
+                capture_output=True,
+                text=True,
+                timeout=5
             )
-            version = (
-                result.stdout.strip().split("\n")[0] if result.returncode == 0 else None
-            )
+            version = result.stdout.strip().split('\n')[0] if result.returncode == 0 else None
             return {
-                "tool": tool,
-                "status": "ok" if result.returncode == 0 else "error",
-                "version": version,
+                'tool': tool,
+                'status': 'ok' if result.returncode == 0 else 'error',
+                'version': version,
             }
         except (FileNotFoundError, subprocess.TimeoutExpired):
             return {
-                "tool": tool,
-                "status": "error",
-                "version": None,
+                'tool': tool,
+                'status': 'error',
+                'version': None,
             }
 
     def _display_diagnosis(self, diagnosis: dict[str, Any]) -> None:
@@ -131,31 +132,27 @@ class AutopilotDrone(BaseDrone):
         self.log_info("📊 系統診斷結果:")
         print()
 
-        for check in diagnosis["checks"]:
-            icon = "✅" if check["status"] == "ok" else "❌"
-            version = check.get("version", "未安裝")
+        for check in diagnosis['checks']:
+            icon = '✅' if check['status'] == 'ok' else '❌'
+            version = check.get('version', '未安裝')
             print(f"  {icon} {check['tool']}: {version}")
 
         print()
-        self.log_info(
-            f"診斷結果: {diagnosis['passed']} 通過, {diagnosis['failed']} 失敗"
-        )
+        self.log_info(f"診斷結果: {diagnosis['passed']} 通過, {diagnosis['failed']} 失敗")
 
     def queue_task(self, task_name: str, options: dict | None = None) -> None:
         """
         將任務加入佇列
-
+        
         Args:
             task_name: 任務名稱
             options: 任務選項
         """
-        self.task_queue.append(
-            {
-                "name": task_name,
-                "options": options or {},
-                "queued_at": datetime.now().isoformat(),
-            }
-        )
+        self.task_queue.append({
+            'name': task_name,
+            'options': options or {},
+            'queued_at': datetime.now().isoformat(),
+        })
         self.log_info(f"任務已加入佇列: {task_name}")
 
         # 處理佇列
@@ -176,14 +173,14 @@ class AutopilotDrone(BaseDrone):
 
     def _execute_task(self, task: dict[str, Any]) -> bool:
         """執行單一任務"""
-        task_name = task["name"]
+        task_name = task['name']
         self.log_info(f"🚀 執行任務: {task_name}")
 
         task_handlers: dict[str, Callable[[], bool]] = {
-            "lint": self._run_lint,
-            "format": self._run_format,
-            "test": self._run_tests,
-            "build": self._run_build,
+            'lint': self._run_lint,
+            'format': self._run_format,
+            'test': self._run_tests,
+            'build': self._run_build,
         }
 
         handler = task_handlers.get(task_name)
@@ -203,10 +200,10 @@ class AutopilotDrone(BaseDrone):
         self.log_info("  執行程式碼檢查...")
         try:
             subprocess.run(
-                ["npm", "run", "lint", "--if-present"],
+                ['npm', 'run', 'lint', '--if-present'],
                 cwd=self.project_root,
                 capture_output=True,
-                timeout=120,
+                timeout=120
             )
             return True
         except Exception:
@@ -222,10 +219,10 @@ class AutopilotDrone(BaseDrone):
         self.log_info("  執行測試...")
         try:
             subprocess.run(
-                ["npm", "test", "--if-present"],
+                ['npm', 'test', '--if-present'],
                 cwd=self.project_root,
                 capture_output=True,
-                timeout=300,
+                timeout=300
             )
             return True
         except Exception:
@@ -236,10 +233,10 @@ class AutopilotDrone(BaseDrone):
         self.log_info("  執行建置...")
         try:
             subprocess.run(
-                ["npm", "run", "build", "--if-present"],
+                ['npm', 'run', 'build', '--if-present'],
                 cwd=self.project_root,
                 capture_output=True,
-                timeout=300,
+                timeout=300
             )
             return True
         except Exception:
@@ -248,11 +245,11 @@ class AutopilotDrone(BaseDrone):
     def run_core_autopilot(self) -> int:
         """
         執行核心自動駕駛 (config/dev/automation/auto-pilot.js)
-
+        
         Returns:
             執行結果代碼
         """
-        core_script = self.project_root / "config/dev" / "automation" / "auto-pilot.js"
+        core_script = self.project_root / 'config/dev' / 'automation' / 'auto-pilot.js'
 
         if not core_script.exists():
             self.log_error(f"核心自動駕駛腳本不存在: {core_script}")
@@ -262,7 +259,8 @@ class AutopilotDrone(BaseDrone):
 
         try:
             result = subprocess.run(
-                ["node", str(core_script), "diagnose"], cwd=self.project_root
+                ['node', str(core_script), 'diagnose'],
+                cwd=self.project_root
             )
             return result.returncode
         except Exception as e:
