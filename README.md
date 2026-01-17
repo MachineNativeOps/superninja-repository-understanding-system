@@ -4,6 +4,7 @@
 
 - **Taxonomy Root Layer**（專案命名分類法）：以 Linux FHS 風格落地的最小根層骨架，並以嚴謹的 taxonomy 命名分類將治理配置集中到 `controlplane/`。
 - **CI/CD System**：以 GitHub Actions 為核心的企業級交付流水線，包含安全掃描、驗證閘門、Cloudflare 部署等。
+- **Repository Understanding System**（儲存庫理解系統）：事件驅動的自動化平台，維護儲存庫結構和內容的最新知識庫，實現零人工干預的持續維護（見 `docs/repository-understanding/README.md`）。
 
 若你是第一次進來：先看「Taxonomy Root Layer」理解目錄邊界，再看「CI/CD System」了解交付與驗證機制。
 
@@ -15,6 +16,7 @@
 - ✨ **NEW**: QuantumFlow Toolkit 已完全整合，支持混合量子-古典工作流程（見 `workspace/docs/QUANTUMFLOW_INTEGRATION_REPORT.md`）
 - 🔬 **NEW**: 量子增強驗證系統已整合，提供 8 維度驗證矩陣，99.3% 準確率，< 100ms 延遲（見 `workspace/docs/QUANTUM_VALIDATION_INTEGRATION_REPORT.md`）
 - 🔍 **NEW**: CI Error Analyzer 自動化工作流分析，自動檢測錯誤並提供修復建議（見 `docs/ci-error-analyzer-integration.md`）
+- 🤖 **NEW**: Repository Understanding System 事件驅動自動化平台，提供實時儲存庫知識庫維護、零人工干預（見 `docs/repository-understanding/README.md`、CI 改進文檔見 `docs/ci-implementation-guide.md`）
 - ⚡ **INSTANT 觸發器**: 自動化 PR 驗證與重構驗證，事件驅動，零人工介入（見 `.github/workflows/quantum-validation-pr.yml`）
 - 所有工作優先支持架構重構與自動化執行，不引入與計劃無關的需求
 
@@ -177,6 +179,62 @@ kubectl apply -f workspace/tools/infrastructure/kubernetes/validation/
 - Progressive / canary deployment workflows
 - Intelligent rollback / drill simulation tooling
 - Security & compliance gates（含供應鏈/簽章/掃描等）
+
+---
+
+## 🤖 Repository Understanding System
+
+**完全自動化的儲存庫知識庫維護系統**，提供實時監控與零人工干預的事件驅動自動化。
+
+### 核心特性
+
+- **實時文件監控**: 每 10 秒檢測一次變更
+- **自動維護**: 基於條件自動觸發所有 4 個階段的執行
+- **事件驅動架構**: 優先級事件處理，3 個工作線程並行處理
+- **零人工干預**: 完全自主運行
+- **自我修復**: 自動錯誤檢測與恢復
+- **完整日誌記錄**: 實時事件追蹤與審計軌跡
+
+### 系統組件
+
+| 組件                          | 位置                                        | 說明                           |
+| ----------------------------- | ------------------------------------------- | ------------------------------ |
+| **Python 腳本** (9 個)        | `workspace/tools/repository-understanding/` | 核心系統、4 階段、自動化引擎   |
+| **Shell 腳本** (6 個)         | `scripts/repository-understanding/`         | 管理腳本（啟動/停止/狀態/日誌）|
+| **文檔** (17 個)              | `docs/repository-understanding/`            | 完整系統文檔、階段報告、指南   |
+| **Systemd 服務**              | `etc/systemd/event-driven-system.service`   | 生產環境部署配置               |
+
+### 快速開始
+
+```bash
+# 初始掃描 - 建立知識庫
+cd workspace/tools/repository-understanding
+python3 phase1_scanner.py
+
+# 啟動事件驅動系統
+cd /home/runner/work/machine-native-ops/machine-native-ops
+./scripts/repository-understanding/start_event_driven.sh
+
+# 檢查系統狀態
+./scripts/repository-understanding/status_event_driven.sh
+
+# 查看實時日誌
+./scripts/repository-understanding/logs_event_driven.sh
+```
+
+### 四個核心階段
+
+1. **Phase 1 - Repository Scanner**: 全面儲存庫分析與知識庫創建
+2. **Phase 2 - Operation Checker**: 智能操作前驗證與安全檢查
+3. **Phase 3 - Visualizer**: 進階查詢引擎與視覺化工具
+4. **Phase 4 - Learning System**: 持續學習與自適應改進
+
+### 相關文檔
+
+- 📘 **系統概述**: `docs/repository-understanding/README.md`
+- 📗 **完整文檔**: `docs/repository-understanding/FINAL_SYSTEM_DOCUMENTATION.md`
+- 📙 **項目完成報告**: `docs/repository-understanding/PROJECT_COMPLETION_SUMMARY.md`
+- 📕 **CI/CD 改進指南**: `docs/ci-implementation-guide.md`
 
 ---
 
