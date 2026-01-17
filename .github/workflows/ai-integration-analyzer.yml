@@ -17,6 +17,7 @@ on:
           - 'true'
           - 'false'
 
+
 jobs:
   ai-code-review:
     name: AI Code Review and Analysis
@@ -56,7 +57,7 @@ jobs:
           echo "- 刪除行數: $LINES_DELETED" >> /tmp/ai-analysis.md
           
           echo "" >> /tmp/ai-analysis.md
-          echo "### 🔍 智能分析" >> /tmp/ai-analysis.md
+          echo "### 🧠 智能分析" >> /tmp/ai-analysis.md
           echo "" >> /tmp/ai-analysis.md
           echo "正在分析代碼變更的影響..." >> /tmp/ai-analysis.md
           
@@ -66,7 +67,7 @@ jobs:
           PY_FILES=$(git diff --name-only origin/${{ github.base_ref }} HEAD | grep '\.py$' | wc -l)
           if [ $PY_FILES -gt 0 ]; then
             echo "- Python文件變更: $PY_FILES 個" >> /tmp/ai-analysis.md
-            echo "  - 建議進行額外的代碼審查" >> /tmp/ai-analysis.md
+            echo "  - 建議進行額外的代碼檢查" >> /tmp/ai-analysis.md
           fi
           
           # Analyze impact on FHS integration
@@ -102,11 +103,11 @@ jobs:
           echo "### 💡 建議" >> /tmp/ai-analysis.md
           echo "" >> /tmp/ai-analysis.md
           if [ "$RISK_LEVEL" = "high" ]; then
-            echo "- 建議進行全面的代碼審查" >> /tmp/ai-analysis.md
+            echo "- 建議進行全面的代碼檢查" >> /tmp/ai-analysis.md
             echo "- 建議運行完整的測試套件" >> /tmp/ai-analysis.md
             echo "- 建議進行回滾測試" >> /tmp/ai-analysis.md
           elif [ "$RISK_LEVEL" = "medium" ]; then
-            echo "- 建議進行常規代碼審查" >> /tmp/ai-analysis.md
+            echo "- 建議進行常規代碼檢查" >> /tmp/ai-analysis.md
             echo "- 建議運行相關測試" >> /tmp/ai-analysis.md
           else
             echo "- 可以快速合併" >> /tmp/ai-analysis.md
@@ -138,7 +139,7 @@ jobs:
             
             comment += '\n---\n\n';
             comment += '📋 **分析摘要**:\n';
-            comment += `- 變更風險: ${'{{ steps.ai-analysis.outputs.risk }}'}\n`;
+            comment += `- 變更風險: \${{ steps.ai-analysis.outputs.risk }}\n`;
             
             const hasImpact = '${{ steps.ai-analysis.outputs.impact }}';
             if (hasImpact === 'true') {
@@ -167,6 +168,7 @@ jobs:
               repo: context.repo.repo,
               labels: ['auto-merge-ready']
             });
+
 
   auto-merge-decision:
     name: Automated Merge Decision
@@ -212,7 +214,7 @@ jobs:
               repo: context.repo.repo,
               pull_number: context.issue.number,
               event: 'APPROVE',
-              body: '✅ AI自動審查通過，批准合併'
+              body: '✅ AI自動檢查通過，批准合併'
             });
             
             // Merge the PR
