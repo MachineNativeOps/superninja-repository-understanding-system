@@ -97,9 +97,7 @@ class Agent(ABC):
         """處理訊息"""
         pass
 
-    def send_message(
-        self, receiver: str, content: str, msg_type: str = "request"
-    ) -> None:
+    def send_message(self, receiver: str, content: str, msg_type: str = "request") -> None:
         """發送訊息"""
         message = AgentMessage(
             sender=self.name, receiver=receiver, content=content, message_type=msg_type
@@ -118,10 +116,7 @@ class ArchitectAgent(Agent):
         """執行架構設計任務"""
         self.status = AgentStatus.WORKING
         # 實際實現會調用 LLM
-        result = {
-            "design": "Architecture design for " + task.name,
-            "recommendations": [],
-        }
+        result = {"design": "Architecture design for " + task.name, "recommendations": []}
         self.status = AgentStatus.COMPLETED
         return result
 

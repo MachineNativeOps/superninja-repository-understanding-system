@@ -36,16 +36,15 @@ Version: 1.0.0
 ═══════════════════════════════════════════════════════════════════════════════
 """
 
-import argparse
 import asyncio
-import json
-import os
-import sys
-from datetime import datetime
-from pathlib import Path
-from typing import Any, Dict, List, Optional
-
+import argparse
 import yaml
+import json
+import sys
+import os
+from pathlib import Path
+from datetime import datetime
+from typing import Dict, List, Optional, Any
 
 # 設置路徑
 BASE_PATH = Path(__file__).parent
@@ -86,18 +85,22 @@ DEFAULT_CONFIG = {
     "name": "SynergyMesh-Automation",
     "version": "1.0.0",
     "mode": "autonomous",  # autonomous | supervised | interactive
+
     # 引擎路徑
     "engine_paths": [
         "tools/automation/engines",
         "tools/refactor",
     ],
+
     # 自動化設定
     "auto_discover": True,
     "auto_start": True,
     "auto_recover": True,
+
     # 監控設定
     "health_check_interval": 30,
     "metrics_enabled": True,
+
     # 日誌設定
     "log_level": "INFO",
     "log_file": ".automation_logs/launcher.log",
@@ -106,7 +109,6 @@ DEFAULT_CONFIG = {
 # ============================================================================
 # 啟動器
 # ============================================================================
-
 
 class AutomationLauncher:
     """
@@ -132,9 +134,7 @@ class AutomationLauncher:
         if show_banner:
             print(BANNER)
 
-        print(
-            f"[{datetime.now().strftime('%H:%M:%S')}] 🚀 啟動 SynergyMesh 自動化系統..."
-        )
+        print(f"[{datetime.now().strftime('%H:%M:%S')}] 🚀 啟動 SynergyMesh 自動化系統...")
         print(f"[{datetime.now().strftime('%H:%M:%S')}] 📋 模式: {self.config['mode']}")
         print()
 
@@ -160,7 +160,7 @@ class AutomationLauncher:
             if success:
                 self._running = True
                 self._start_time = datetime.now()
-
+                
                 # Start heartbeat
                 self._heartbeat_task = asyncio.create_task(self._heartbeat_loop())
 
@@ -168,9 +168,7 @@ class AutomationLauncher:
                 print("=" * 70)
                 print(f"✅ SynergyMesh 自動化系統啟動成功")
                 print(f"   運行模式: {self.config['mode']}")
-                print(
-                    f"   引擎數量: {len(self.orchestrator.registry.get_all_engines())}"
-                )
+                print(f"   引擎數量: {len(self.orchestrator.registry.get_all_engines())}")
                 print(f"   💓 Heartbeat: Active (Phoenix-ready)")
                 print("=" * 70)
                 print()
@@ -190,14 +188,13 @@ class AutomationLauncher:
         except Exception as e:
             print(f"❌ 啟動錯誤: {e}")
             import traceback
-
             traceback.print_exc()
             return False
 
     async def stop(self):
         """停止全部"""
         print(f"\n[{datetime.now().strftime('%H:%M:%S')}] 🛑 停止自動化系統...")
-
+        
         # Stop heartbeat
         if self._heartbeat_task:
             self._heartbeat_task.cancel()
@@ -219,26 +216,22 @@ class AutomationLauncher:
                 heartbeat = {
                     "timestamp": datetime.now().isoformat(),
                     "status": "running",
-                    "uptime": (
-                        str(datetime.now() - self._start_time)
-                        if self._start_time
-                        else "0"
-                    ),
-                    "pid": os.getpid(),
+                    "uptime": str(datetime.now() - self._start_time) if self._start_time else "0",
+                    "pid": os.getpid()
                 }
-
+                
                 # Write heartbeat file
-                with open(self._heartbeat_file, "w") as f:
+                with open(self._heartbeat_file, 'w') as f:
                     json.dump(heartbeat, f, indent=2)
-
+                
                 # Wait 20 seconds before next heartbeat
                 await asyncio.sleep(20)
-
+                
             except Exception as e:
                 # Don't let heartbeat errors crash the system
                 print(f"⚠️  Heartbeat error: {e}")
                 await asyncio.sleep(20)
-
+    
     async def run_forever(self):
         """持續運行"""
         try:
@@ -255,9 +248,7 @@ class AutomationLauncher:
         status = self.orchestrator.get_status()
         status["launcher"] = {
             "mode": self.config["mode"],
-            "uptime": (
-                str(datetime.now() - self._start_time) if self._start_time else "N/A"
-            ),
+            "uptime": str(datetime.now() - self._start_time) if self._start_time else "N/A",
         }
         return status
 
@@ -312,11 +303,9 @@ class AutomationLauncher:
             return []
         return list(self.orchestrator.pipeline_executor._pipelines.keys())
 
-
 # ============================================================================
 # CLI
 # ============================================================================
-
 
 async def main():
     parser = argparse.ArgumentParser(
@@ -338,7 +327,7 @@ async def main():
 
   執行管道:
     python automation_launcher.py pipeline <pipeline_id>
-        """,
+        """
     )
 
     subparsers = parser.add_subparsers(dest="command", help="可用命令")
@@ -346,13 +335,8 @@ async def main():
     # start 命令
     start_parser = subparsers.add_parser("start", help="啟動系統")
     start_parser.add_argument("--config", "-c", help="配置檔案")
-    start_parser.add_argument(
-        "--mode",
-        "-m",
-        choices=["autonomous", "supervised", "interactive"],
-        default="autonomous",
-        help="運行模式",
-    )
+    start_parser.add_argument("--mode", "-m", choices=["autonomous", "supervised", "interactive"],
+                              default="autonomous", help="運行模式")
     start_parser.add_argument("--no-banner", action="store_true", help="不顯示橫幅")
 
     # stop 命令
@@ -395,8 +379,8 @@ async def main():
 
     # 創建啟動器
     config = DEFAULT_CONFIG.copy()
-    if hasattr(args, "mode") and args.mode:
-        config["mode"] = args.mode
+    if hasattr(args, 'mode') and args.mode:
+        config['mode'] = args.mode
 
     launcher = AutomationLauncher(config)
 
@@ -463,7 +447,6 @@ async def main():
         result = await launcher.execute_pipeline(args.pipeline_id, input_data)
         print(yaml.dump(result, allow_unicode=True, default_flow_style=False))
         await launcher.stop()
-
 
 if __name__ == "__main__":
     asyncio.run(main())

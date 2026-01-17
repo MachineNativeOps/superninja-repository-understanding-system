@@ -9,14 +9,13 @@ import importlib.util
 import sys
 from pathlib import Path
 
-
 # Import AgentConfig from kebab-case filename
 def _import_agent_config():
     """Import AgentConfig from agent-config.py"""
-    module_path = Path(__file__).parent / "agent-config.py"
+    module_path = Path(__file__).parent / 'agent-config.py'
     if not module_path.exists():
         return None
-    module_name = "autonomous.agents.config.agent_config"
+    module_name = 'autonomous.agents.config.agent_config'
     spec = importlib.util.spec_from_file_location(module_name, module_path)
     if spec and spec.loader:
         module = importlib.util.module_from_spec(spec)
@@ -25,7 +24,6 @@ def _import_agent_config():
         return module
     return None
 
-
 _agent_config_module = _import_agent_config()
 if _agent_config_module:
     AgentConfig = _agent_config_module.AgentConfig
@@ -33,5 +31,5 @@ else:
     AgentConfig = None
 
 __all__ = [
-    "AgentConfig",
+    'AgentConfig',
 ]

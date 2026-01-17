@@ -12,10 +12,10 @@ This script tests the SuperAgent functionality including:
 import asyncio
 import json
 import time
-import urllib.error
-import urllib.request
 from datetime import datetime
-from typing import Any, Dict
+from typing import Dict, Any
+import urllib.request
+import urllib.error
 
 # Configuration
 SUPER_AGENT_URL = "http://localhost:8080"
@@ -42,9 +42,7 @@ class HttpSession:
     def get(self, url: str, timeout: float = 10) -> SimpleResponse:
         return self._request("GET", url, data=None, headers=None, timeout=timeout)
 
-    def post(
-        self, url: str, json_data: Dict[str, Any] | None = None, timeout: float = 10
-    ) -> "SimpleResponse":
+    def post(self, url: str, json_data: Dict[str, Any] | None = None, timeout: float = 10) -> "SimpleResponse":
         data = None
         headers: Dict[str, str] | None = None
         if json_data is not None:
@@ -79,15 +77,12 @@ class SuperAgentTester:
     def __init__(self, base_url: str = SUPER_AGENT_URL):
         self.base_url = base_url
         self.session = HttpSession()
-
-    def generate_test_message(
-        self, message_type: str, payload: Dict[str, Any]
-    ) -> Dict[str, Any]:
+    
+    def generate_test_message(self, message_type: str, payload: Dict[str, Any]) -> Dict[str, Any]:
         """Generate a test message with proper envelope"""
         import uuid
-
         trace_id = f"mno-{datetime.now().strftime('%Y%m%d')}-{uuid.uuid4()}"
-
+        
         return {
             "meta": {
                 "trace_id": trace_id,
@@ -96,17 +91,17 @@ class SuperAgentTester:
                 "source_agent": "test-client",
                 "target_agent": "super-agent",
                 "message_type": message_type,
-                "schema_version": "v1.0.0",
+                "schema_version": "v1.0.0"
             },
             "context": {
                 "namespace": "machinenativeops",
                 "namespace": "machinenativenops-system",
                 "cluster": "test-cluster",
-                "urgency": "P1",
+                "urgency": "P1"
             },
-            "payload": payload,
+            "payload": payload
         }
-
+    
     def test_health_check(self) -> bool:
         """Test health check endpoint"""
         try:
@@ -121,7 +116,7 @@ class SuperAgentTester:
         except Exception as e:
             print(f"❌ Health check error: {e}")
             return False
-
+    
     def test_readiness_check(self) -> bool:
         """Test readiness check endpoint"""
         try:
@@ -136,7 +131,7 @@ class SuperAgentTester:
         except Exception as e:
             print(f"❌ Readiness check error: {e}")
             return False
-
+    
     def test_incident_signal(self) -> bool:
         """Test incident signal handling"""
         try:
@@ -146,26 +141,24 @@ class SuperAgentTester:
                 "affected_resources": ["configmap://test-config"],
                 "metadata": {
                     "description": "Test configuration validation failure",
-                    "source": "unit-test",
-                },
+                    "source": "unit-test"
+                }
             }
-
+            
             message = self.generate_test_message("IncidentSignal", payload)
             response = self.session.post(f"{self.base_url}/message", json=message)
-
+            
             if response.status_code == 200:
                 data = response.json()
                 print(f"✅ Incident signal processed: {data}")
                 return data["processing_result"]["status"] == "created"
             else:
-                print(
-                    f"❌ Incident signal failed: {response.status_code}, {response.text}"
-                )
+                print(f"❌ Incident signal failed: {response.status_code}, {response.text}")
                 return False
         except Exception as e:
             print(f"❌ Incident signal error: {e}")
             return False
-
+    
     def test_invalid_message(self) -> bool:
         """Test invalid message rejection"""
         try:
@@ -174,14 +167,15 @@ class SuperAgentTester:
                     "source_agent": "test-client"
                     # Missing required fields
                 },
-                "context": {"namespace": "machinenativenops-system"},
-                "payload": {},
+                "context": {
+                    "namespace": "machinenativeops"
+                    "namespace": "machinenativenops-system"
+                },
+                "payload": {}
             }
-
-            response = self.session.post(
-                f"{self.base_url}/message", json=invalid_message
-            )
-
+            
+            response = self.session.post(f"{self.base_url}/message", json=invalid_message)
+            
             if response.status_code == 400:
                 print("✅ Invalid message properly rejected")
                 return True
@@ -191,7 +185,7 @@ class SuperAgentTester:
         except Exception as e:
             print(f"❌ Invalid message test error: {e}")
             return False
-
+    
     def test_list_incidents(self) -> bool:
         """Test incident listing"""
         try:
@@ -206,7 +200,7 @@ class SuperAgentTester:
         except Exception as e:
             print(f"❌ List incidents error: {e}")
             return False
-
+    
     def test_metrics(self) -> bool:
         """Test metrics endpoint"""
         try:
@@ -221,17 +215,18 @@ class SuperAgentTester:
         except Exception as e:
             print(f"❌ Metrics error: {e}")
             return False
-
+    
     def test_message_validation(self) -> bool:
         """Test message envelope validation"""
         try:
             # Test valid message
-            valid_message = self.generate_test_message(
-                "IncidentSignal", {"incident_type": "test", "severity": "low"}
-            )
-
+            valid_message = self.generate_test_message("IncidentSignal", {
+                "incident_type": "test",
+                "severity": "low"
+            })
+            
             response = self.session.post(f"{self.base_url}/message", json=valid_message)
-
+            
             if response.status_code == 200:
                 print("✅ Valid message accepted")
                 return True
@@ -241,12 +236,12 @@ class SuperAgentTester:
         except Exception as e:
             print(f"❌ Message validation error: {e}")
             return False
-
+    
     def run_all_tests(self) -> Dict[str, bool]:
         """Run all tests and return results"""
         print("🧪 Starting SuperAgent Integration Tests...")
         print("=" * 50)
-
+        
         tests = {
             "Health Check": self.test_health_check,
             "Readiness Check": self.test_readiness_check,
@@ -256,11 +251,11 @@ class SuperAgentTester:
             "List Incidents": self.test_list_incidents,
             "Metrics": self.test_metrics,
         }
-
+        
         results = {}
         passed = 0
         total = len(tests)
-
+        
         for test_name, test_func in tests.items():
             print(f"\n🔍 Running {test_name}...")
             try:
@@ -272,47 +267,45 @@ class SuperAgentTester:
             except Exception as e:
                 print(f"❌ {test_name} crashed: {e}")
                 results[test_name] = False
-
+        
         # Summary
         print("\n" + "=" * 50)
         print("📊 Test Results Summary:")
         print(f"Passed: {passed}/{total}")
-
+        
         for test_name, result in results.items():
             status = "✅ PASS" if result else "❌ FAIL"
             print(f"  {status} {test_name}")
-
+        
         success_rate = (passed / total) * 100
         print(f"\nSuccess Rate: {success_rate:.1f}%")
-
+        
         if success_rate >= 80:
             print("🎉 SuperAgent tests PASSED!")
         else:
             print("⚠️  SuperAgent tests need attention")
-
+        
         return results
-
 
 def main():
     """Main test runner"""
     import sys
-
+    
     # Allow custom URL from command line
     base_url = sys.argv[1] if len(sys.argv) > 1 else SUPER_AGENT_URL
     tester = SuperAgentTester(base_url)
-
+    
     print(f"Testing SuperAgent at: {base_url}")
     print("Waiting for service to be ready...")
-
+    
     # Wait a moment for service startup
     time.sleep(2)
-
+    
     results = tester.run_all_tests()
-
+    
     # Return appropriate exit code
     success_rate = sum(1 for r in results.values() if r) / len(results)
     sys.exit(0 if success_rate >= 0.8 else 1)
-
 
 if __name__ == "__main__":
     main()

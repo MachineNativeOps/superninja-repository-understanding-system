@@ -5,25 +5,14 @@ lastUpdated: "2025-12-10"
 status: "active"
 engagement_strategy:
   internal_stakeholders:
-
     - "Regular town halls"
-
     - "Team meetings"
-
     - "Feedback surveys"
-
   external_stakeholders:
-
     - "Customer forums"
-
     - "Partner reviews"
-
     - "Investor updates"
-
 frequency:
   high_interest: "Monthly"
-
   medium_interest: "Quarterly"
-
   low_interest: "Annual"
-

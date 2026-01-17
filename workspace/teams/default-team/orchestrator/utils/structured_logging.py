@@ -13,18 +13,14 @@ import json
 import logging
 import sys
 import traceback
-from contextvars import ContextVar
 from datetime import datetime
 from typing import Any, Dict, Optional
+from contextvars import ContextVar
 
 # Context variables for request tracking
-current_trace_id: ContextVar[Optional[str]] = ContextVar(
-    "current_trace_id", default=None
-)
+current_trace_id: ContextVar[Optional[str]] = ContextVar("current_trace_id", default=None)
 current_span_id: ContextVar[Optional[str]] = ContextVar("current_span_id", default=None)
-current_request_id: ContextVar[Optional[str]] = ContextVar(
-    "current_request_id", default=None
-)
+current_request_id: ContextVar[Optional[str]] = ContextVar("current_request_id", default=None)
 
 
 class JSONFormatter(logging.Formatter):
@@ -80,11 +76,7 @@ class JSONFormatter(logging.Formatter):
             log_data["exception"] = {
                 "type": record.exc_info[0].__name__ if record.exc_info[0] else None,
                 "message": str(record.exc_info[1]) if record.exc_info[1] else None,
-                "traceback": (
-                    traceback.format_exception(*record.exc_info)
-                    if record.exc_info[2]
-                    else None
-                ),
+                "traceback": traceback.format_exception(*record.exc_info) if record.exc_info[2] else None,
             }
 
         return json.dumps(log_data)
@@ -94,10 +86,10 @@ class TextFormatter(logging.Formatter):
     """Human-readable text formatter."""
 
     COLORS = {
-        "DEBUG": "\033[36m",  # Cyan
-        "INFO": "\033[32m",  # Green
-        "WARNING": "\033[33m",  # Yellow
-        "ERROR": "\033[31m",  # Red
+        "DEBUG": "\033[36m",     # Cyan
+        "INFO": "\033[32m",      # Green
+        "WARNING": "\033[33m",   # Yellow
+        "ERROR": "\033[31m",     # Red
         "CRITICAL": "\033[35m",  # Magenta
     }
     RESET = "\033[0m"
@@ -214,9 +206,7 @@ class StructuredLogger:
 
     def critical(self, message: str, exc_info: bool = False, **extra) -> None:
         """Log critical message."""
-        self._log(
-            logging.CRITICAL, message, extra if extra else None, exc_info=exc_info
-        )
+        self._log(logging.CRITICAL, message, extra if extra else None, exc_info=exc_info)
 
     def exception(self, message: str, **extra) -> None:
         """Log exception with traceback."""

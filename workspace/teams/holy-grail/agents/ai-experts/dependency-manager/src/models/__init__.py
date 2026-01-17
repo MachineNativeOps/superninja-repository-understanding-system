@@ -4,15 +4,15 @@
 """
 
 from .dependency import Dependency, DependencyAnalysis
-from .update import Update, UpdateResult, UpdateType
 from .vulnerability import Vulnerability, VulnerabilitySeverity
+from .update import Update, UpdateResult, UpdateType
 
 __all__ = [
     "Dependency",
-    "DependencyAnalysis",
+    "DependencyAnalysis", 
     "Vulnerability",
     "VulnerabilitySeverity",
     "Update",
     "UpdateResult",
-    "UpdateType",
+    "UpdateType"
 ]

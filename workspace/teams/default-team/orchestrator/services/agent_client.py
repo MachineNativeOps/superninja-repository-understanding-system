@@ -11,20 +11,18 @@ Provides HTTP client for communicating with other agents:
 
 import asyncio
 import json
-from dataclasses import dataclass, field
 from datetime import datetime
 from typing import Any, Dict, List, Optional
-
+from dataclasses import dataclass, field
 import aiohttp
 
-from ..config import get_agent_url, settings
 from ..models.messages import MessageEnvelope, MessageType, Urgency
+from ..config import settings, get_agent_url
 
 
 @dataclass
 class AgentInfo:
     """Information about a registered agent."""
-
     agent_id: str
     url: str
     agent_type: str
@@ -48,17 +46,9 @@ class AgentRegistry:
         """Initialize known agents from configuration."""
         known_agents = [
             ("monitoring-agent", settings.monitoring_agent_url, ["observe", "alert"]),
-            (
-                "problem-solver-agent",
-                settings.problem_solver_agent_url,
-                ["rca", "propose"],
-            ),
+            ("problem-solver-agent", settings.problem_solver_agent_url, ["rca", "propose"]),
             ("qa-agent", settings.qa_agent_url, ["verify", "validate"]),
-            (
-                "maintenance-agent",
-                settings.maintenance_agent_url,
-                ["execute", "rollback"],
-            ),
+            ("maintenance-agent", settings.maintenance_agent_url, ["execute", "rollback"]),
             ("learning-agent", settings.learning_agent_url, ["learn", "knowledge"]),
         ]
 

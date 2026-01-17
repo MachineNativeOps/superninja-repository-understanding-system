@@ -11,27 +11,24 @@ Usage:
     machinenativenops list templates
 """
 
+import sys
 import argparse
 import logging
-import sys
 from pathlib import Path
 from typing import Optional
-
 import yaml
 
 from .factory import ProjectFactory
 from .spec import (
-    ArchitecturePattern,
-    CacheSpec,
-    DatabaseSpec,
-    Language,
-    MessagingSpec,
-    ProjectSpec,
-    ProjectType,
+    ProjectSpec, ProjectType, Language, ArchitecturePattern,
+    DatabaseSpec, CacheSpec, MessagingSpec
 )
 
 # Setup logging
-logging.basicConfig(level=logging.INFO, format="%(levelname)s: %(message)s")
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(levelname)s: %(message)s'
+)
 logger = logging.getLogger(__name__)
 
 
@@ -57,7 +54,9 @@ def create_spec_from_args(args: argparse.Namespace) -> ProjectSpec:
     # Configure database
     if args.database:
         spec.features.database = DatabaseSpec(
-            type=args.database, orm=args.orm, migrations=args.migrations
+            type=args.database,
+            orm=args.orm,
+            migrations=args.migrations
         )
 
     # Configure cache
@@ -68,7 +67,7 @@ def create_spec_from_args(args: argparse.Namespace) -> ProjectSpec:
     if args.messaging:
         spec.features.messaging = MessagingSpec(
             type=args.messaging,
-            topics=args.messaging_topics.split(",") if args.messaging_topics else [],
+            topics=args.messaging_topics.split(',') if args.messaging_topics else []
         )
 
     # Configure deliverables
@@ -83,7 +82,7 @@ def create_spec_from_args(args: argparse.Namespace) -> ProjectSpec:
 
     # Configure governance
     if args.compliance:
-        spec.governance.compliance = args.compliance.split(",")
+        spec.governance.compliance = args.compliance.split(',')
     spec.governance.security_level = args.security_level
     spec.governance.license = args.license
 
@@ -96,79 +95,78 @@ def load_spec_from_yaml(spec_file: Path) -> ProjectSpec:
 
     從 YAML 文件加載 ProjectSpec。
     """
-    with open(spec_file, "r", encoding="utf-8") as f:
+    with open(spec_file, 'r', encoding='utf-8') as f:
         data = yaml.safe_load(f)
 
     # Extract spec section
-    spec_data = data.get("spec", {})
-    metadata = data.get("metadata", {})
+    spec_data = data.get('spec', {})
+    metadata = data.get('metadata', {})
 
     # Create base spec
     spec = ProjectSpec(
-        name=metadata.get("name"),
-        type=ProjectType(spec_data.get("type", "microservice")),
-        language=Language(spec_data.get("language", "python")),
-        framework=spec_data.get("framework", "fastapi"),
-        description=metadata.get("description", ""),
-        version=metadata.get("version", "1.0.0"),
+        name=metadata.get('name'),
+        type=ProjectType(spec_data.get('type', 'microservice')),
+        language=Language(spec_data.get('language', 'python')),
+        framework=spec_data.get('framework', 'fastapi'),
+        description=metadata.get('description', ''),
+        version=metadata.get('version', '1.0.0'),
     )
 
     # Load architecture
-    if "architecture" in spec_data:
-        arch = spec_data["architecture"]
-        if "pattern" in arch:
-            spec.architecture.pattern = ArchitecturePattern(arch["pattern"])
-        if "layers" in arch:
-            spec.architecture.layers = arch["layers"]
+    if 'architecture' in spec_data:
+        arch = spec_data['architecture']
+        if 'pattern' in arch:
+            spec.architecture.pattern = ArchitecturePattern(arch['pattern'])
+        if 'layers' in arch:
+            spec.architecture.layers = arch['layers']
 
     # Load features
-    if "features" in spec_data:
-        features = spec_data["features"]
+    if 'features' in spec_data:
+        features = spec_data['features']
 
         # Database
-        if "database" in features:
-            db = features["database"]
+        if 'database' in features:
+            db = features['database']
             spec.features.database = DatabaseSpec(
-                type=db.get("type", "postgresql"),
-                orm=db.get("orm"),
-                migrations=db.get("migrations"),
+                type=db.get('type', 'postgresql'),
+                orm=db.get('orm'),
+                migrations=db.get('migrations')
             )
 
         # Cache
-        if "cache" in features:
-            cache = features["cache"]
-            spec.features.cache = CacheSpec(type=cache.get("type", "redis"))
+        if 'cache' in features:
+            cache = features['cache']
+            spec.features.cache = CacheSpec(type=cache.get('type', 'redis'))
 
         # Messaging
-        if "messaging" in features:
-            msg = features["messaging"]
+        if 'messaging' in features:
+            msg = features['messaging']
             spec.features.messaging = MessagingSpec(
-                type=msg.get("type", "kafka"), topics=msg.get("topics", [])
+                type=msg.get('type', 'kafka'),
+                topics=msg.get('topics', [])
             )
 
     # Load deliverables
-    if "deliverables" in spec_data:
-        deliv = spec_data["deliverables"]
+    if 'deliverables' in spec_data:
+        deliv = spec_data['deliverables']
 
-        if "tests" in deliv:
-            tests = deliv["tests"]
-            spec.deliverables.tests.unit = tests.get("unit", True)
-            spec.deliverables.tests.integration = tests.get("integration", True)
-            spec.deliverables.tests.e2e = tests.get("e2e", False)
-            spec.deliverables.tests.coverage_threshold = tests.get(
-                "coverage_threshold", 80
-            )
+        if 'tests' in deliv:
+            tests = deliv['tests']
+            spec.deliverables.tests.unit = tests.get('unit', True)
+            spec.deliverables.tests.integration = tests.get('integration', True)
+            spec.deliverables.tests.e2e = tests.get('e2e', False)
+            spec.deliverables.tests.coverage_threshold = tests.get('coverage_threshold', 80)
 
-        if "ci_cd" in deliv:
-            cicd = deliv["ci_cd"]
-            spec.deliverables.ci_cd.platform = cicd.get("platform", "github-actions")
+        if 'ci_cd' in deliv:
+            cicd = deliv['ci_cd']
+            spec.deliverables.ci_cd.platform = cicd.get('platform', 'github-actions')
 
     # Load governance
-    if "governance" in spec_data:
-        gov = spec_data["governance"]
-        spec.governance.compliance = gov.get("compliance", ["ISO-42001"])
-        spec.governance.security_level = gov.get("security_level", "high")
-        spec.governance.license = gov.get("license", "MIT")
+    if 'governance' in spec_data:
+        gov = spec_data['governance']
+        spec.governance.compliance = gov.get('compliance', ['ISO-42001'])
+        spec.governance.security_level = gov.get('security_level', 'high')
+        spec.governance.license = gov.get('license', 'MIT')
 
     return spec
 
@@ -196,7 +194,7 @@ def cmd_generate_project(args: argparse.Namespace) -> int:
         project = factory.generate(
             spec,
             output_path=Path(args.output) if args.output else None,
-            validate=not args.skip_validation,
+            validate=not args.skip_validation
         )
 
         # Export project
@@ -210,8 +208,8 @@ def cmd_generate_project(args: argparse.Namespace) -> int:
             print("\n📋 Governance Validation Results:")
             print(f"   Status: {project.validation_result['overall_status']}")
             print("\n   Checks:")
-            for check_name, check_result in project.validation_result["checks"].items():
-                status_icon = "✅" if check_result["status"] == "PASSED" else "⚠️"
+            for check_name, check_result in project.validation_result['checks'].items():
+                status_icon = "✅" if check_result['status'] == "PASSED" else "⚠️"
                 print(f"   {status_icon} {check_name}: {check_result['status']}")
                 print(f"      {check_result['details']}")
 
@@ -270,145 +268,78 @@ Examples:
 
   # List available templates
   %(prog)s list templates
-        """,
+        """
     )
 
-    subparsers = parser.add_subparsers(dest="command", help="Command to execute")
+    subparsers = parser.add_subparsers(dest='command', help='Command to execute')
 
     # Generate command
-    gen_parser = subparsers.add_parser("generate", help="Generate project artifacts")
-    gen_subparsers = gen_parser.add_subparsers(
-        dest="generate_type", help="What to generate"
-    )
+    gen_parser = subparsers.add_parser('generate', help='Generate project artifacts')
+    gen_subparsers = gen_parser.add_subparsers(dest='generate_type', help='What to generate')
 
     # Generate project
-    project_parser = gen_subparsers.add_parser(
-        "project", help="Generate complete project"
-    )
+    project_parser = gen_subparsers.add_parser('project', help='Generate complete project')
 
     # Specification source (mutually exclusive)
     spec_group = project_parser.add_mutually_exclusive_group(required=True)
-    spec_group.add_argument(
-        "--spec-file", type=str, help="Load specification from YAML file"
-    )
-    spec_group.add_argument("--name", type=str, help="Project name")
+    spec_group.add_argument('--spec-file', type=str, help='Load specification from YAML file')
+    spec_group.add_argument('--name', type=str, help='Project name')
 
     # Basic project options
-    project_parser.add_argument(
-        "--type",
-        type=str,
-        choices=["microservice", "frontend", "ai-agent", "library"],
-        help="Project type",
-    )
-    project_parser.add_argument(
-        "--language",
-        type=str,
-        choices=["python", "typescript", "go", "rust"],
-        help="Programming language",
-    )
-    project_parser.add_argument(
-        "--framework", type=str, help="Framework (e.g., fastapi, nestjs, gin)"
-    )
-    project_parser.add_argument("--description", type=str, help="Project description")
-    project_parser.add_argument(
-        "--version", type=str, default="1.0.0", help="Project version"
-    )
+    project_parser.add_argument('--type', type=str, choices=['microservice', 'frontend', 'ai-agent', 'library'], help='Project type')
+    project_parser.add_argument('--language', type=str, choices=['python', 'typescript', 'go', 'rust'], help='Programming language')
+    project_parser.add_argument('--framework', type=str, help='Framework (e.g., fastapi, nestjs, gin)')
+    project_parser.add_argument('--description', type=str, help='Project description')
+    project_parser.add_argument('--version', type=str, default='1.0.0', help='Project version')
 
     # Architecture
-    project_parser.add_argument(
-        "--architecture",
-        type=str,
-        choices=["clean-architecture", "hexagonal", "ddd", "layered"],
-        help="Architecture pattern",
-    )
+    project_parser.add_argument('--architecture', type=str, choices=['clean-architecture', 'hexagonal', 'ddd', 'layered'], help='Architecture pattern')
 
     # Features
-    project_parser.add_argument(
-        "--database", type=str, help="Database type (postgresql, mysql, mongodb, etc.)"
-    )
-    project_parser.add_argument(
-        "--orm", type=str, help="ORM framework (sqlalchemy, typeorm, etc.)"
-    )
-    project_parser.add_argument(
-        "--migrations", type=str, help="Migration tool (alembic, flyway, etc.)"
-    )
-    project_parser.add_argument(
-        "--cache", type=str, help="Cache type (redis, memcached, etc.)"
-    )
-    project_parser.add_argument(
-        "--messaging", type=str, help="Messaging system (kafka, rabbitmq, etc.)"
-    )
-    project_parser.add_argument(
-        "--messaging-topics", type=str, help="Comma-separated list of topics"
-    )
+    project_parser.add_argument('--database', type=str, help='Database type (postgresql, mysql, mongodb, etc.)')
+    project_parser.add_argument('--orm', type=str, help='ORM framework (sqlalchemy, typeorm, etc.)')
+    project_parser.add_argument('--migrations', type=str, help='Migration tool (alembic, flyway, etc.)')
+    project_parser.add_argument('--cache', type=str, help='Cache type (redis, memcached, etc.)')
+    project_parser.add_argument('--messaging', type=str, help='Messaging system (kafka, rabbitmq, etc.)')
+    project_parser.add_argument('--messaging-topics', type=str, help='Comma-separated list of topics')
 
     # Tests
-    project_parser.add_argument(
-        "--tests-unit", type=bool, default=True, help="Generate unit tests"
-    )
-    project_parser.add_argument(
-        "--tests-integration",
-        type=bool,
-        default=True,
-        help="Generate integration tests",
-    )
-    project_parser.add_argument(
-        "--tests-e2e", type=bool, default=False, help="Generate E2E tests"
-    )
-    project_parser.add_argument(
-        "--coverage-threshold", type=int, default=80, help="Test coverage threshold"
-    )
+    project_parser.add_argument('--tests-unit', type=bool, default=True, help='Generate unit tests')
+    project_parser.add_argument('--tests-integration', type=bool, default=True, help='Generate integration tests')
+    project_parser.add_argument('--tests-e2e', type=bool, default=False, help='Generate E2E tests')
+    project_parser.add_argument('--coverage-threshold', type=int, default=80, help='Test coverage threshold')
 
     # Infrastructure
-    project_parser.add_argument(
-        "--docker", type=bool, default=True, help="Generate Dockerfile"
-    )
-    project_parser.add_argument(
-        "--kubernetes", type=bool, default=True, help="Generate Kubernetes manifests"
-    )
-    project_parser.add_argument(
-        "--cicd-platform", type=str, default="github-actions", help="CI/CD platform"
-    )
+    project_parser.add_argument('--docker', type=bool, default=True, help='Generate Dockerfile')
+    project_parser.add_argument('--kubernetes', type=bool, default=True, help='Generate Kubernetes manifests')
+    project_parser.add_argument('--cicd-platform', type=str, default='github-actions', help='CI/CD platform')
 
     # Governance
-    project_parser.add_argument(
-        "--compliance", type=str, help="Comma-separated compliance standards"
-    )
-    project_parser.add_argument(
-        "--security-level",
-        type=str,
-        default="high",
-        choices=["low", "medium", "high", "critical"],
-    )
-    project_parser.add_argument(
-        "--license", type=str, default="MIT", help="License type"
-    )
+    project_parser.add_argument('--compliance', type=str, help='Comma-separated compliance standards')
+    project_parser.add_argument('--security-level', type=str, default='high', choices=['low', 'medium', 'high', 'critical'])
+    project_parser.add_argument('--license', type=str, default='MIT', help='License type')
 
     # Output
-    project_parser.add_argument("--output", type=str, help="Output directory")
-    project_parser.add_argument(
-        "--skip-validation", action="store_true", help="Skip governance validation"
-    )
+    project_parser.add_argument('--output', type=str, help='Output directory')
+    project_parser.add_argument('--skip-validation', action='store_true', help='Skip governance validation')
 
     project_parser.set_defaults(func=cmd_generate_project)
 
     # List templates command
-    list_parser = subparsers.add_parser("list", help="List available resources")
-    list_subparsers = list_parser.add_subparsers(dest="list_type", help="What to list")
-    templates_parser = list_subparsers.add_parser(
-        "templates", help="List available templates"
-    )
+    list_parser = subparsers.add_parser('list', help='List available resources')
+    list_subparsers = list_parser.add_subparsers(dest='list_type', help='What to list')
+    templates_parser = list_subparsers.add_parser('templates', help='List available templates')
     templates_parser.set_defaults(func=cmd_list_templates)
 
     # Parse arguments
     args = parser.parse_args()
 
-    if not hasattr(args, "func"):
+    if not hasattr(args, 'func'):
         parser.print_help()
         return 1
 
     return args.func(args)
 
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     sys.exit(main())

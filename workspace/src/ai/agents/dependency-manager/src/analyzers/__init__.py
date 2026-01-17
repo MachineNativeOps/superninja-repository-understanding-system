@@ -4,8 +4,13 @@
 """
 
 from .base_analyzer import BaseAnalyzer
-from .go_analyzer import GoAnalyzer
 from .npm_analyzer import NpmAnalyzer
 from .pip_analyzer import PipAnalyzer
+from .go_analyzer import GoAnalyzer
 
-__all__ = ["BaseAnalyzer", "NpmAnalyzer", "PipAnalyzer", "GoAnalyzer"]
+__all__ = [
+    "BaseAnalyzer",
+    "NpmAnalyzer",
+    "PipAnalyzer",
+    "GoAnalyzer"
+]

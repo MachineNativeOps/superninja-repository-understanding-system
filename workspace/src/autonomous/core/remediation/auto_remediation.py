@@ -9,16 +9,15 @@ Responsibilities:
 - Health restoration
 """
 
-import asyncio
+from typing import Dict, List, Optional, Any, Callable
 from dataclasses import dataclass
-from datetime import datetime, timezone
 from enum import Enum
-from typing import Any, Callable, Dict, List, Optional
+from datetime import datetime, timezone
+import asyncio
 
 
 class RemediationStrategy(Enum):
     """Remediation strategies."""
-
     RESTART = "restart"
     ROLLBACK = "rollback"
     SCALE = "scale"
@@ -29,7 +28,6 @@ class RemediationStrategy(Enum):
 
 class RemediationStatus(Enum):
     """Remediation status."""
-
     PENDING = "pending"
     IN_PROGRESS = "in_progress"
     COMPLETED = "completed"
@@ -40,19 +38,17 @@ class RemediationStatus(Enum):
 @dataclass
 class RemediationAction:
     """Single remediation action."""
-
     id: str
     strategy: RemediationStrategy
     target: str
     parameters: Dict[str, Any]
     timeout: int = 60  # seconds
-    rollback_action: Optional["RemediationAction"] = None
+    rollback_action: Optional['RemediationAction'] = None
 
 
 @dataclass
 class RemediationJob:
     """Remediation job containing multiple actions."""
-
     id: str
     issue_id: str
     actions: List[RemediationAction]
@@ -97,13 +93,9 @@ class AutoRemediation:
         for action in job.actions:
             try:
                 result = await self._execute_action(action)
-                results.append(
-                    {"action_id": action.id, "success": True, "result": result}
-                )
+                results.append({"action_id": action.id, "success": True, "result": result})
             except Exception as e:
-                results.append(
-                    {"action_id": action.id, "success": False, "error": str(e)}
-                )
+                results.append({"action_id": action.id, "success": False, "error": str(e)})
 
                 # Attempt rollback if available
                 if action.rollback_action:
@@ -127,58 +119,46 @@ class AutoRemediation:
 
         try:
             result = await asyncio.wait_for(
-                handler(action.target, action.parameters), timeout=action.timeout
+                handler(action.target, action.parameters),
+                timeout=action.timeout
             )
             return result
         except asyncio.TimeoutError:
             raise TimeoutError(f"Action {action.id} timed out after {action.timeout}s")
 
-    async def _handle_restart(
-        self, target: str, params: Dict[str, Any]
-    ) -> Dict[str, Any]:
+    async def _handle_restart(self, target: str, params: Dict[str, Any]) -> Dict[str, Any]:
         """Handle restart strategy."""
         # Placeholder implementation
         graceful = params.get("graceful", True)
         return {"target": target, "action": "restart", "graceful": graceful}
 
-    async def _handle_rollback(
-        self, target: str, params: Dict[str, Any]
-    ) -> Dict[str, Any]:
+    async def _handle_rollback(self, target: str, params: Dict[str, Any]) -> Dict[str, Any]:
         """Handle rollback strategy."""
         version = params.get("version", "previous")
         return {"target": target, "action": "rollback", "version": version}
 
-    async def _handle_scale(
-        self, target: str, params: Dict[str, Any]
-    ) -> Dict[str, Any]:
+    async def _handle_scale(self, target: str, params: Dict[str, Any]) -> Dict[str, Any]:
         """Handle scale strategy."""
         replicas = params.get("replicas", 1)
         return {"target": target, "action": "scale", "replicas": replicas}
 
-    async def _handle_failover(
-        self, target: str, params: Dict[str, Any]
-    ) -> Dict[str, Any]:
+    async def _handle_failover(self, target: str, params: Dict[str, Any]) -> Dict[str, Any]:
         """Handle failover strategy."""
         backup = params.get("backup_target")
         return {"target": target, "action": "failover", "backup": backup}
 
-    async def _handle_patch(
-        self, target: str, params: Dict[str, Any]
-    ) -> Dict[str, Any]:
+    async def _handle_patch(self, target: str, params: Dict[str, Any]) -> Dict[str, Any]:
         """Handle patch strategy."""
         patch = params.get("patch")
         return {"target": target, "action": "patch", "applied": patch is not None}
 
-    async def _handle_isolate(
-        self, target: str, params: Dict[str, Any]
-    ) -> Dict[str, Any]:
+    async def _handle_isolate(self, target: str, params: Dict[str, Any]) -> Dict[str, Any]:
         """Handle isolate strategy."""
         duration = params.get("duration", 300)
         return {"target": target, "action": "isolate", "duration": duration}
 
-    def register_handler(
-        self, strategy: RemediationStrategy, handler: Callable
-    ) -> None:
+    def register_handler(self, strategy: RemediationStrategy,
+                        handler: Callable) -> None:
         """Register a custom remediation handler."""
         self._handlers[strategy] = handler
 
@@ -186,9 +166,7 @@ class AutoRemediation:
         """Get job by ID."""
         return self._jobs.get(job_id)
 
-    def list_jobs(
-        self, status: Optional[RemediationStatus] = None
-    ) -> List[RemediationJob]:
+    def list_jobs(self, status: Optional[RemediationStatus] = None) -> List[RemediationJob]:
         """List all jobs, optionally filtered by status."""
         jobs = list(self._jobs.values())
         if status:

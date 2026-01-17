@@ -5,7 +5,7 @@ Web-based dashboard for governance monitoring and management
 Version: 1.0.0
 """
 
-from flask import Flask, jsonify, render_template_string
+from flask import Flask, render_template_string, jsonify
 from flask_cors import CORS
 
 app = Flask(__name__)
@@ -81,7 +81,7 @@ DASHBOARD_HTML = """
         <h1>🏛️ SynergyMesh Governance Dashboard</h1>
         <p>23-Dimension Enterprise Governance Framework</p>
     </div>
-
+    
     <div class="container">
         <div class="card">
             <h2>📊 Key Metrics</h2>
@@ -102,7 +102,7 @@ DASHBOARD_HTML = """
                 <div class="metric-label">Compliance Score</div>
             </div>
         </div>
-
+        
         <div class="card">
             <h2>🎯 Dimension Status</h2>
             <div class="status-grid">
@@ -177,32 +177,26 @@ DASHBOARD_HTML = """
 </html>
 """
 
-
-@app.route("/")
+@app.route('/')
 def dashboard():
     """Main dashboard view"""
     return render_template_string(DASHBOARD_HTML)
 
-
-@app.route("/health")
+@app.route('/health')
 def health():
     """Health check endpoint"""
-    return jsonify({"status": "healthy", "version": "1.0.0"})
+    return jsonify({'status': 'healthy', 'version': '1.0.0'})
 
-
-@app.route("/api/status")
+@app.route('/api/status')
 def api_status():
     """API status endpoint"""
-    return jsonify(
-        {
-            "dimensions_active": 14,
-            "dimensions_total": 23,
-            "completion_rate": 61,
-            "config_files": 68,
-            "compliance_score": 95,
-        }
-    )
+    return jsonify({
+        'dimensions_active': 14,
+        'dimensions_total': 23,
+        'completion_rate': 61,
+        'config_files': 68,
+        'compliance_score': 95
+    })
 
-
-if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=8080)
+if __name__ == '__main__':
+    app.run(host='0.0.0.0', port=8080)

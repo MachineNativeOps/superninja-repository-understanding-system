@@ -9,16 +9,15 @@ Responsibilities:
 - Circuit breaker and retry patterns
 """
 
-import random
+from typing import Dict, List, Optional, Any
 from dataclasses import dataclass, field
-from datetime import datetime, timezone
 from enum import Enum
-from typing import Any, Dict, List, Optional
+from datetime import datetime, timezone
+import random
 
 
 class ServiceStatus(Enum):
     """Service status."""
-
     HEALTHY = "healthy"
     DEGRADED = "degraded"
     UNHEALTHY = "unhealthy"
@@ -27,7 +26,6 @@ class ServiceStatus(Enum):
 
 class LoadBalancerStrategy(Enum):
     """Load balancer strategies."""
-
     ROUND_ROBIN = "round_robin"
     RANDOM = "random"
     LEAST_CONNECTIONS = "least_connections"
@@ -37,7 +35,6 @@ class LoadBalancerStrategy(Enum):
 @dataclass
 class ServiceEndpoint:
     """Service endpoint."""
-
     id: str
     host: str
     port: int
@@ -49,7 +46,6 @@ class ServiceEndpoint:
 @dataclass
 class ServiceDefinition:
     """Service definition."""
-
     name: str
     version: str
     endpoints: List[ServiceEndpoint] = field(default_factory=list)
@@ -61,7 +57,8 @@ class ServiceDefinition:
 class CircuitBreaker:
     """Circuit breaker for service calls."""
 
-    def __init__(self, failure_threshold: int = 5, recovery_timeout: int = 30):
+    def __init__(self, failure_threshold: int = 5,
+                 recovery_timeout: int = 30):
         self.failure_threshold = failure_threshold
         self.recovery_timeout = recovery_timeout
         self.failures = 0
@@ -146,11 +143,8 @@ class ServiceMesh:
             return None
 
         # Filter healthy endpoints
-        healthy = [
-            e
-            for e in service.endpoints
-            if e.status in (ServiceStatus.HEALTHY, ServiceStatus.UNKNOWN)
-        ]
+        healthy = [e for e in service.endpoints
+                   if e.status in (ServiceStatus.HEALTHY, ServiceStatus.UNKNOWN)]
         if not healthy:
             return None
 
@@ -162,9 +156,8 @@ class ServiceMesh:
         # Apply load balancing strategy
         return self._select_endpoint(service_name, healthy)
 
-    def _select_endpoint(
-        self, service_name: str, endpoints: List[ServiceEndpoint]
-    ) -> ServiceEndpoint:
+    def _select_endpoint(self, service_name: str,
+                        endpoints: List[ServiceEndpoint]) -> ServiceEndpoint:
         """Select endpoint based on strategy."""
         if self._lb_strategy == LoadBalancerStrategy.RANDOM:
             return random.choice(endpoints)
@@ -177,9 +170,8 @@ class ServiceMesh:
             self._round_robin_index[service_name] = idx + 1
             return endpoint
 
-    async def call(
-        self, service_name: str, path: str, method: str = "GET", **kwargs
-    ) -> Dict[str, Any]:
+    async def call(self, service_name: str, path: str,
+                   method: str = "GET", **kwargs) -> Dict[str, Any]:
         """Call a service with resilience patterns."""
         service = self._services.get(service_name)
         if not service:
@@ -207,9 +199,8 @@ class ServiceMesh:
 
         raise ServiceCallError(f"Failed to call service: {service_name}")
 
-    async def _make_request(
-        self, endpoint: ServiceEndpoint, path: str, method: str, **kwargs
-    ) -> Dict[str, Any]:
+    async def _make_request(self, endpoint: ServiceEndpoint, path: str,
+                           method: str, **kwargs) -> Dict[str, Any]:
         """Make HTTP request to endpoint."""
         # Placeholder - actual implementation would use aiohttp or similar
         return {
@@ -218,9 +209,8 @@ class ServiceMesh:
             "method": method,
         }
 
-    def set_endpoint_status(
-        self, service_name: str, endpoint_id: str, status: ServiceStatus
-    ) -> bool:
+    def set_endpoint_status(self, service_name: str, endpoint_id: str,
+                           status: ServiceStatus) -> bool:
         """Update endpoint health status."""
         service = self._services.get(service_name)
         if not service:
@@ -242,19 +232,16 @@ class ServiceMesh:
 
 class ServiceNotFoundError(Exception):
     """Service not found error."""
-
     pass
 
 
 class NoHealthyEndpointError(Exception):
     """No healthy endpoint available."""
-
     pass
 
 
 class ServiceCallError(Exception):
     """Service call failed."""
-
     pass
 
 

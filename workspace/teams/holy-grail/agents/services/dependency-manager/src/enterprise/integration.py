@@ -23,7 +23,6 @@ from typing import Any
 
 class IntegrationType(Enum):
     """整合類型"""
-
     REST_API = "rest_api"
     WEBHOOK = "webhook"
     LDAP = "ldap"
@@ -39,7 +38,6 @@ class IntegrationType(Enum):
 
 class AuthMethod(Enum):
     """認證方法"""
-
     API_KEY = "api_key"
     OAUTH2 = "oauth2"
     JWT = "jwt"
@@ -51,7 +49,6 @@ class AuthMethod(Enum):
 @dataclass
 class IntegrationConfig:
     """整合配置"""
-
     type: IntegrationType
     name: str
     endpoint: str
@@ -68,7 +65,6 @@ class IntegrationConfig:
 @dataclass
 class WebhookEvent:
     """Webhook 事件"""
-
     event_type: str
     payload: dict[str, Any]
     timestamp: datetime
@@ -79,7 +75,6 @@ class WebhookEvent:
 @dataclass
 class IntegrationResult:
     """整合操作結果"""
-
     success: bool
     integration_name: str
     operation: str
@@ -92,7 +87,7 @@ class IntegrationResult:
 class EnterpriseIntegration:
     """
     企業級整合管理器
-
+    
     提供統一的企業系統整合介面，支援：
     - 多種認證機制
     - Webhook 事件處理
@@ -110,10 +105,10 @@ class EnterpriseIntegration:
     def register_integration(self, config: IntegrationConfig) -> bool:
         """
         註冊整合配置
-
+        
         Args:
             config: 整合配置
-
+            
         Returns:
             是否註冊成功
         """
@@ -127,10 +122,10 @@ class EnterpriseIntegration:
     def unregister_integration(self, name: str) -> bool:
         """
         取消註冊整合
-
+        
         Args:
             name: 整合名稱
-
+            
         Returns:
             是否取消成功
         """
@@ -146,18 +141,16 @@ class EnterpriseIntegration:
         """取得整合配置"""
         return self._integrations.get(name)
 
-    def list_integrations(
-        self,
-        integration_type: IntegrationType | None = None,
-        enabled_only: bool = False,
-    ) -> list[IntegrationConfig]:
+    def list_integrations(self,
+                         integration_type: IntegrationType | None = None,
+                         enabled_only: bool = False) -> list[IntegrationConfig]:
         """
         列出整合
-
+        
         Args:
             integration_type: 篩選特定類型
             enabled_only: 僅顯示啟用的整合
-
+            
         Returns:
             整合配置列表
         """
@@ -173,12 +166,12 @@ class EnterpriseIntegration:
 
     # ==================== Webhook 管理 ====================
 
-    def register_webhook_handler(
-        self, event_type: str, handler: Callable[[WebhookEvent], None]
-    ) -> None:
+    def register_webhook_handler(self,
+                                 event_type: str,
+                                 handler: Callable[[WebhookEvent], None]) -> None:
         """
         註冊 Webhook 事件處理器
-
+        
         Args:
             event_type: 事件類型
             handler: 處理函數
@@ -187,38 +180,32 @@ class EnterpriseIntegration:
             self._webhook_handlers[event_type] = []
         self._webhook_handlers[event_type].append(handler)
 
-    def process_webhook(
-        self,
-        event_type: str,
-        payload: dict[str, Any],
-        signature: str | None = None,
-        secret: str | None = None,
-    ) -> IntegrationResult:
+    def process_webhook(self,
+                       event_type: str,
+                       payload: dict[str, Any],
+                       signature: str | None = None,
+                       secret: str | None = None) -> IntegrationResult:
         """
         處理 Webhook 事件
-
+        
         Args:
             event_type: 事件類型
             payload: 事件資料
             signature: 簽名（用於驗證）
             secret: 密鑰（用於驗證）
-
+            
         Returns:
             處理結果
         """
         start_time = datetime.now()
 
         # 驗證簽名
-        if (
-            signature
-            and secret
-            and not self._verify_signature(payload, signature, secret)
-        ):
+        if signature and secret and not self._verify_signature(payload, signature, secret):
             return IntegrationResult(
                 success=False,
                 integration_name="webhook",
                 operation="process",
-                error="簽名驗證失敗",
+                error="簽名驗證失敗"
             )
 
         # 建立事件
@@ -226,7 +213,7 @@ class EnterpriseIntegration:
             event_type=event_type,
             payload=payload,
             timestamp=datetime.now(),
-            signature=signature,
+            signature=signature
         )
 
         self._event_history.append(event)
@@ -249,7 +236,7 @@ class EnterpriseIntegration:
                 integration_name="webhook",
                 operation="process",
                 error="; ".join(errors),
-                duration_ms=duration,
+                duration_ms=duration
             )
 
         return IntegrationResult(
@@ -257,39 +244,40 @@ class EnterpriseIntegration:
             integration_name="webhook",
             operation="process",
             response={"handlers_executed": len(handlers)},
-            duration_ms=duration,
+            duration_ms=duration
         )
 
-    def _verify_signature(
-        self, payload: dict[str, Any], signature: str, secret: str
-    ) -> bool:
+    def _verify_signature(self,
+                         payload: dict[str, Any],
+                         signature: str,
+                         secret: str) -> bool:
         """驗證 Webhook 簽名"""
         payload_str = json.dumps(payload, sort_keys=True)
         expected = hmac.new(
-            secret.encode(), payload_str.encode(), hashlib.sha256
+            secret.encode(),
+            payload_str.encode(),
+            hashlib.sha256
         ).hexdigest()
         return hmac.compare_digest(signature, expected)
 
     # ==================== 訊息通知 ====================
 
-    def send_notification(
-        self,
-        integration_name: str,
-        message: str,
-        channel: str | None = None,
-        mentions: list[str] | None = None,
-        attachments: list[dict] | None = None,
-    ) -> IntegrationResult:
+    def send_notification(self,
+                         integration_name: str,
+                         message: str,
+                         channel: str | None = None,
+                         mentions: list[str] | None = None,
+                         attachments: list[dict] | None = None) -> IntegrationResult:
         """
         發送通知訊息
-
+        
         Args:
             integration_name: 整合名稱
             message: 訊息內容
             channel: 頻道（可選）
             mentions: 提及用戶（可選）
             attachments: 附件（可選）
-
+            
         Returns:
             發送結果
         """
@@ -299,7 +287,7 @@ class EnterpriseIntegration:
                 success=False,
                 integration_name=integration_name,
                 operation="send_notification",
-                error=f"整合 '{integration_name}' 不存在",
+                error=f"整合 '{integration_name}' 不存在"
             )
 
         if not config.enabled:
@@ -307,7 +295,7 @@ class EnterpriseIntegration:
                 success=False,
                 integration_name=integration_name,
                 operation="send_notification",
-                error=f"整合 '{integration_name}' 已停用",
+                error=f"整合 '{integration_name}' 已停用"
             )
 
         # 速率限制檢查
@@ -316,7 +304,7 @@ class EnterpriseIntegration:
                 success=False,
                 integration_name=integration_name,
                 operation="send_notification",
-                error="超過速率限制",
+                error="超過速率限制"
             )
 
         # 根據類型格式化訊息
@@ -329,17 +317,15 @@ class EnterpriseIntegration:
             success=True,
             integration_name=integration_name,
             operation="send_notification",
-            response={"payload": formatted_payload},
+            response={"payload": formatted_payload}
         )
 
-    def _format_notification(
-        self,
-        integration_type: IntegrationType,
-        message: str,
-        channel: str | None,
-        mentions: list[str] | None,
-        attachments: list[dict] | None,
-    ) -> dict[str, Any]:
+    def _format_notification(self,
+                            integration_type: IntegrationType,
+                            message: str,
+                            channel: str | None,
+                            mentions: list[str] | None,
+                            attachments: list[dict] | None) -> dict[str, Any]:
         """格式化通知訊息"""
         if integration_type == IntegrationType.SLACK:
             payload = {"text": message}
@@ -352,7 +338,10 @@ class EnterpriseIntegration:
             return payload
 
         elif integration_type == IntegrationType.TEAMS:
-            payload = {"@type": "MessageCard", "text": message}
+            payload = {
+                "@type": "MessageCard",
+                "text": message
+            }
             if mentions:
                 payload["text"] = " ".join(f"@{m}" for m in mentions) + " " + message
             return payload
@@ -371,8 +360,7 @@ class EnterpriseIntegration:
 
         # 清理舊記錄
         self._rate_limiters[integration_name] = [
-            t
-            for t in self._rate_limiters[integration_name]
+            t for t in self._rate_limiters[integration_name]
             if t.timestamp() > window_start
         ]
 
@@ -386,22 +374,20 @@ class EnterpriseIntegration:
 
     # ==================== CI/CD 整合 ====================
 
-    def trigger_ci_build(
-        self,
-        integration_name: str,
-        repository: str,
-        branch: str = "main",
-        parameters: dict[str, str] | None = None,
-    ) -> IntegrationResult:
+    def trigger_ci_build(self,
+                        integration_name: str,
+                        repository: str,
+                        branch: str = "main",
+                        parameters: dict[str, str] | None = None) -> IntegrationResult:
         """
         觸發 CI 構建
-
+        
         Args:
             integration_name: CI 整合名稱
             repository: 儲存庫
             branch: 分支
             parameters: 構建參數
-
+            
         Returns:
             觸發結果
         """
@@ -411,14 +397,14 @@ class EnterpriseIntegration:
                 success=False,
                 integration_name=integration_name,
                 operation="trigger_ci_build",
-                error=f"整合 '{integration_name}' 不存在",
+                error=f"整合 '{integration_name}' 不存在"
             )
 
         ci_types = [
             IntegrationType.GITHUB,
             IntegrationType.GITLAB,
             IntegrationType.JENKINS,
-            IntegrationType.AZURE_DEVOPS,
+            IntegrationType.AZURE_DEVOPS
         ]
 
         if config.type not in ci_types:
@@ -426,7 +412,7 @@ class EnterpriseIntegration:
                 success=False,
                 integration_name=integration_name,
                 operation="trigger_ci_build",
-                error=f"整合類型 '{config.type.value}' 不支援 CI 構建",
+                error=f"整合類型 '{config.type.value}' 不支援 CI 構建"
             )
 
         # 模擬觸發構建
@@ -434,28 +420,26 @@ class EnterpriseIntegration:
             "repository": repository,
             "branch": branch,
             "parameters": parameters or {},
-            "triggered_at": datetime.now().isoformat(),
+            "triggered_at": datetime.now().isoformat()
         }
 
         return IntegrationResult(
             success=True,
             integration_name=integration_name,
             operation="trigger_ci_build",
-            response=build_payload,
+            response=build_payload
         )
 
-    def create_issue(
-        self,
-        integration_name: str,
-        title: str,
-        description: str,
-        labels: list[str] | None = None,
-        assignees: list[str] | None = None,
-        priority: str | None = None,
-    ) -> IntegrationResult:
+    def create_issue(self,
+                    integration_name: str,
+                    title: str,
+                    description: str,
+                    labels: list[str] | None = None,
+                    assignees: list[str] | None = None,
+                    priority: str | None = None) -> IntegrationResult:
         """
         建立工單/Issue
-
+        
         Args:
             integration_name: 整合名稱
             title: 標題
@@ -463,7 +447,7 @@ class EnterpriseIntegration:
             labels: 標籤
             assignees: 指派人員
             priority: 優先級
-
+            
         Returns:
             建立結果
         """
@@ -473,13 +457,13 @@ class EnterpriseIntegration:
                 success=False,
                 integration_name=integration_name,
                 operation="create_issue",
-                error=f"整合 '{integration_name}' 不存在",
+                error=f"整合 '{integration_name}' 不存在"
             )
 
         issue_types = [
             IntegrationType.GITHUB,
             IntegrationType.GITLAB,
-            IntegrationType.JIRA,
+            IntegrationType.JIRA
         ]
 
         if config.type not in issue_types:
@@ -487,7 +471,7 @@ class EnterpriseIntegration:
                 success=False,
                 integration_name=integration_name,
                 operation="create_issue",
-                error=f"整合類型 '{config.type.value}' 不支援工單建立",
+                error=f"整合類型 '{config.type.value}' 不支援工單建立"
             )
 
         # 格式化工單
@@ -499,18 +483,16 @@ class EnterpriseIntegration:
             success=True,
             integration_name=integration_name,
             operation="create_issue",
-            response=issue_payload,
+            response=issue_payload
         )
 
-    def _format_issue(
-        self,
-        integration_type: IntegrationType,
-        title: str,
-        description: str,
-        labels: list[str] | None,
-        assignees: list[str] | None,
-        priority: str | None,
-    ) -> dict[str, Any]:
+    def _format_issue(self,
+                     integration_type: IntegrationType,
+                     title: str,
+                     description: str,
+                     labels: list[str] | None,
+                     assignees: list[str] | None,
+                     priority: str | None) -> dict[str, Any]:
         """格式化工單"""
         if integration_type == IntegrationType.JIRA:
             return {
@@ -519,7 +501,7 @@ class EnterpriseIntegration:
                     "description": description,
                     "labels": labels or [],
                     "assignee": {"name": assignees[0]} if assignees else None,
-                    "priority": {"name": priority} if priority else None,
+                    "priority": {"name": priority} if priority else None
                 }
             }
         else:  # GitHub/GitLab
@@ -527,7 +509,7 @@ class EnterpriseIntegration:
                 "title": title,
                 "body": description,
                 "labels": labels or [],
-                "assignees": assignees or [],
+                "assignees": assignees or []
             }
 
     # ==================== 報告生成 ====================
@@ -535,19 +517,17 @@ class EnterpriseIntegration:
     def generate_integration_report(self) -> dict[str, Any]:
         """
         生成整合狀態報告
-
+        
         Returns:
             整合報告
         """
         report = {
             "generated_at": datetime.now().isoformat(),
             "total_integrations": len(self._integrations),
-            "enabled_integrations": len(
-                [i for i in self._integrations.values() if i.enabled]
-            ),
+            "enabled_integrations": len([i for i in self._integrations.values() if i.enabled]),
             "integrations_by_type": {},
             "webhook_handlers": {},
-            "recent_events": [],
+            "recent_events": []
         }
 
         # 按類型統計
@@ -555,13 +535,11 @@ class EnterpriseIntegration:
             type_name = config.type.value
             if type_name not in report["integrations_by_type"]:
                 report["integrations_by_type"][type_name] = []
-            report["integrations_by_type"][type_name].append(
-                {
-                    "name": config.name,
-                    "enabled": config.enabled,
-                    "auth_method": config.auth_method.value,
-                }
-            )
+            report["integrations_by_type"][type_name].append({
+                "name": config.name,
+                "enabled": config.enabled,
+                "auth_method": config.auth_method.value
+            })
 
         # Webhook 處理器統計
         for event_type, handlers in self._webhook_handlers.items():
@@ -569,7 +547,10 @@ class EnterpriseIntegration:
 
         # 最近事件
         report["recent_events"] = [
-            {"event_type": e.event_type, "timestamp": e.timestamp.isoformat()}
+            {
+                "event_type": e.event_type,
+                "timestamp": e.timestamp.isoformat()
+            }
             for e in self._event_history[-10:]
         ]
 
@@ -578,10 +559,10 @@ class EnterpriseIntegration:
     def format_report_zh_tw(self, report: dict[str, Any]) -> str:
         """
         格式化繁體中文報告
-
+        
         Args:
             report: 報告資料
-
+            
         Returns:
             格式化報告
         """
@@ -603,23 +584,19 @@ class EnterpriseIntegration:
                 status = "✅" if i["enabled"] else "⏸️"
                 lines.append(f"    {status} {i['name']} ({i['auth_method']})")
 
-        lines.extend(
-            [
-                "",
-                "🔔 Webhook 處理器：",
-            ]
-        )
+        lines.extend([
+            "",
+            "🔔 Webhook 處理器：",
+        ])
 
         for event_type, count in report.get("webhook_handlers", {}).items():
             lines.append(f"  • {event_type}：{count} 個處理器")
 
         if report.get("recent_events"):
-            lines.extend(
-                [
-                    "",
-                    "📨 最近事件：",
-                ]
-            )
+            lines.extend([
+                "",
+                "📨 最近事件：",
+            ])
             for event in report["recent_events"]:
                 lines.append(f"  • [{event['timestamp']}] {event['event_type']}")
 

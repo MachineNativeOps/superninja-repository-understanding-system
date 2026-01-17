@@ -29,46 +29,30 @@ Refactor Tools Package - 重構工具包
 Version: 1.0.0
 """
 
-from .cognitive_engine import CognitiveEngine
-from .execute_integration import IntegrationExecutor
-from .process_legacy_scratch import LegacyScratchProcessor
-from .refactor_engine import DirectoryAnalyzer as RefactorEngine
-from .update_indexes import IndexUpdater
-from .validate_structure import StructureValidatorMain as StructureValidator
-
 __version__ = "1.0.0"
 __author__ = "SynergyMesh"
 
 # 延遲導入以避免循環依賴
-
-
 def __getattr__(name):
     if name == "RefactorEngine":
         from .refactor_engine import DirectoryAnalyzer
-
         return DirectoryAnalyzer
     elif name == "CognitiveEngine":
         from .cognitive_engine import CognitiveEngine
-
         return CognitiveEngine
     elif name == "LegacyScratchProcessor":
         from .process_legacy_scratch import LegacyScratchProcessor
-
         return LegacyScratchProcessor
     elif name == "IntegrationExecutor":
         from .execute_integration import IntegrationExecutor
-
         return IntegrationExecutor
     elif name == "IndexUpdater":
         from .update_indexes import IndexUpdater
-
         return IndexUpdater
     elif name == "StructureValidator":
         from .validate_structure import StructureValidatorMain
-
         return StructureValidatorMain
     raise AttributeError(f"module {__name__!r} has no attribute {name!r}")
-
 
 __all__ = [
     "RefactorEngine",
@@ -79,5 +63,10 @@ __all__ = [
     "StructureValidator",
 ]
 
-
 # Eagerly bind all exported names to ensure they exist for `from ... import *`
+from .refactor_engine import DirectoryAnalyzer as RefactorEngine
+from .cognitive_engine import CognitiveEngine
+from .process_legacy_scratch import LegacyScratchProcessor
+from .execute_integration import IntegrationExecutor
+from .update_indexes import IndexUpdater
+from .validate_structure import StructureValidatorMain as StructureValidator

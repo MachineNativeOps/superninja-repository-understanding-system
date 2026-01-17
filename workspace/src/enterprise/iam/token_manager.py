@@ -71,13 +71,16 @@ SCOPE_PERMISSIONS: dict[TokenScope, list[Permission]] = {
 class TokenRepository(Protocol):
     """Repository interface for token storage"""
 
-    async def save_token(self, token: APIToken) -> APIToken: ...
+    async def save_token(self, token: APIToken) -> APIToken:
+        ...
 
-    async def get_token_by_hash(self, token_hash: str) -> APIToken | None: ...
+    async def get_token_by_hash(self, token_hash: str) -> APIToken | None:
+        ...
 
     async def get_token_by_id(
         self, org_id: UUID, token_id: UUID
-    ) -> APIToken | None: ...
+    ) -> APIToken | None:
+        ...
 
     async def list_tokens(
         self,
@@ -85,11 +88,14 @@ class TokenRepository(Protocol):
         user_id: UUID | None = None,
         offset: int = 0,
         limit: int = 100,
-    ) -> list[APIToken]: ...
+    ) -> list[APIToken]:
+        ...
 
-    async def update_token(self, token: APIToken) -> APIToken: ...
+    async def update_token(self, token: APIToken) -> APIToken:
+        ...
 
-    async def delete_token(self, org_id: UUID, token_id: UUID) -> bool: ...
+    async def delete_token(self, org_id: UUID, token_id: UUID) -> bool:
+        ...
 
 
 class AuditLogger(Protocol):
@@ -103,13 +109,13 @@ class AuditLogger(Protocol):
         resource_type: str,
         resource_id: str,
         details: dict[str, Any],
-    ) -> None: ...
+    ) -> None:
+        ...
 
 
 @dataclass
 class TokenValidationResult:
     """Result of token validation"""
-
     valid: bool
     token: APIToken | None = None
     org_id: UUID | None = None
@@ -221,9 +227,7 @@ class TokenManager:
                 },
             )
 
-        logger.info(
-            f"Token created: {token_prefix}... org={org_id} scope={scope.value}"
-        )
+        logger.info(f"Token created: {token_prefix}... org={org_id} scope={scope.value}")
 
         return raw_token, token
 
@@ -268,32 +272,40 @@ class TokenManager:
             TokenValidationResult with validation status and permissions
         """
         if not raw_token or not raw_token.startswith(self.TOKEN_PREFIX):
-            return TokenValidationResult(valid=False, error="Invalid token format")
+            return TokenValidationResult(
+                valid=False,
+                error="Invalid token format"
+            )
 
         token_hash = self._hash_token(raw_token)
         token = await self.repository.get_token_by_hash(token_hash)
 
         if not token:
-            return TokenValidationResult(valid=False, error="Token not found")
+            return TokenValidationResult(
+                valid=False,
+                error="Token not found"
+            )
 
         # Check if revoked
         if token.revoked_at is not None:
-            return TokenValidationResult(valid=False, error="Token has been revoked")
+            return TokenValidationResult(
+                valid=False,
+                error="Token has been revoked"
+            )
 
         # Check expiration
         if token.expires_at and datetime.utcnow() > token.expires_at:
-            return TokenValidationResult(valid=False, error="Token has expired")
+            return TokenValidationResult(
+                valid=False,
+                error="Token has expired"
+            )
 
         # Update last used
         token.last_used_at = datetime.utcnow()
         await self.repository.update_token(token)
 
         # Parse permissions
-        permissions = [
-            Permission(p)
-            for p in token.permissions
-            if p in [e.value for e in Permission]
-        ]
+        permissions = [Permission(p) for p in token.permissions if p in [e.value for e in Permission]]
 
         return TokenValidationResult(
             valid=True,
@@ -328,7 +340,7 @@ class TokenManager:
                 token=result.token,
                 org_id=result.org_id,
                 permissions=result.permissions,
-                error=f"Token lacks required permission: {required_permission.value}",
+                error=f"Token lacks required permission: {required_permission.value}"
             )
 
         return result
@@ -482,28 +494,22 @@ class TokenManager:
             if not include_revoked and token.revoked_at is not None:
                 continue
 
-            result.append(
-                {
-                    "id": str(token.id),
-                    "name": token.name,
-                    "description": token.description,
-                    "token_prefix": token.token_prefix,
-                    "scope": token.scope.value,
-                    "is_personal": token.is_personal,
-                    "created_at": token.created_at.isoformat(),
-                    "expires_at": (
-                        token.expires_at.isoformat() if token.expires_at else None
-                    ),
-                    "last_used_at": (
-                        token.last_used_at.isoformat() if token.last_used_at else None
-                    ),
-                    "is_expired": (
-                        token.expires_at is not None
-                        and datetime.utcnow() > token.expires_at
-                    ),
-                    "is_revoked": token.revoked_at is not None,
-                }
-            )
+            result.append({
+                "id": str(token.id),
+                "name": token.name,
+                "description": token.description,
+                "token_prefix": token.token_prefix,
+                "scope": token.scope.value,
+                "is_personal": token.is_personal,
+                "created_at": token.created_at.isoformat(),
+                "expires_at": token.expires_at.isoformat() if token.expires_at else None,
+                "last_used_at": token.last_used_at.isoformat() if token.last_used_at else None,
+                "is_expired": (
+                    token.expires_at is not None
+                    and datetime.utcnow() > token.expires_at
+                ),
+                "is_revoked": token.revoked_at is not None,
+            })
 
         return result
 

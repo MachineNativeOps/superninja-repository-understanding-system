@@ -36,22 +36,20 @@ from .operational_rules import (
 
 class VerdictType(Enum):
     """裁決類型"""
-
-    APPROVED = "approved"  # 完全批准
+    APPROVED = "approved"                     # 完全批准
     APPROVED_WITH_CONDITIONS = "approved_with_conditions"  # 有條件批准
     REQUIRES_MODIFICATION = "requires_modification"  # 需要修改
-    DENIED = "denied"  # 拒絕
-    ESCALATED = "escalated"  # 升級處理
+    DENIED = "denied"                         # 拒絕
+    ESCALATED = "escalated"                   # 升級處理
 
 
 class VerdictPriority(Enum):
     """裁決優先級"""
-
-    IMMEDIATE = "immediate"  # 立即執行
-    HIGH = "high"  # 高優先級
-    NORMAL = "normal"  # 正常優先級
-    LOW = "low"  # 低優先級
-    DEFERRED = "deferred"  # 延後執行
+    IMMEDIATE = "immediate"       # 立即執行
+    HIGH = "high"                 # 高優先級
+    NORMAL = "normal"             # 正常優先級
+    LOW = "low"                   # 低優先級
+    DEFERRED = "deferred"         # 延後執行
 
 
 @dataclass
@@ -60,16 +58,13 @@ class ConstitutionVerdict:
     憲章裁決結果
     Constitution Verdict Result
     """
-
     verdict_id: str
     action_id: str
     verdict_type: VerdictType
     priority: VerdictPriority
 
     # 三層驗證結果
-    fundamental_law_results: dict[str, LawVerificationResult] = field(
-        default_factory=dict
-    )
+    fundamental_law_results: dict[str, LawVerificationResult] = field(default_factory=dict)
     operational_rule_results: dict[str, RuleCheckResult] = field(default_factory=dict)
     guideline_recommendations: dict[str, Any] = field(default_factory=dict)
 
@@ -96,7 +91,6 @@ class ActionProposal:
     行動提案
     Action Proposal
     """
-
     proposal_id: str
     action_type: str
     description: str
@@ -126,14 +120,14 @@ class ConstitutionEngine:
     """
     憲章執行引擎
     Constitution Execution Engine
-
+    
     這是 AI 最高指導憲章的核心引擎，負責：
     1. 接收行動提案
     2. 依序驗證三層規則
     3. 生成統一裁決
     4. 應用自動修正
     5. 記錄所有決策
-
+    
     This is the core engine of AI Supreme Directive Constitution, responsible for:
     1. Receiving action proposals
     2. Sequentially verifying three-layer rules
@@ -175,7 +169,7 @@ class ConstitutionEngine:
         """
         評估行動提案並生成裁決
         Evaluate action proposal and generate verdict
-
+        
         這是憲章引擎的主要入口點
         """
         start_time = datetime.utcnow()
@@ -211,7 +205,7 @@ class ConstitutionEngine:
                     "domain": proposal.context.get("domain", "system_operation"),
                     "parameters": proposal.parameters,
                 },
-                proposal.context,
+                proposal.context
             )
 
             # 綜合裁決
@@ -238,7 +232,8 @@ class ConstitutionEngine:
         return f"VERDICT_{hashlib.sha256(data.encode()).hexdigest()[:12]}"
 
     def _check_absolute_violations(
-        self, results: dict[str, LawVerificationResult]
+        self,
+        results: dict[str, LawVerificationResult]
     ) -> list[str]:
         """檢查是否有絕對違規"""
         violations = []
@@ -250,7 +245,8 @@ class ConstitutionEngine:
         return violations
 
     def _check_operational_rules(
-        self, proposal: ActionProposal
+        self,
+        proposal: ActionProposal
     ) -> dict[str, RuleCheckResult]:
         """檢查操作規則"""
         results = {}
@@ -265,9 +261,7 @@ class ConstitutionEngine:
             "requestor": proposal.requestor,
             "encrypted": proposal.parameters.get("encrypted", False),
             "access_logged": proposal.parameters.get("access_logged", False),
-            "authorization_verified": proposal.parameters.get(
-                "authorization_verified", False
-            ),
+            "authorization_verified": proposal.parameters.get("authorization_verified", False),
         }
 
         # 檢查所有適用規則
@@ -325,7 +319,10 @@ class ConstitutionEngine:
         # 應用自動修正
         corrected_action = None
         if auto_corrections and self._config["auto_correction_enabled"]:
-            corrected_action = self._apply_auto_corrections(proposal, auto_corrections)
+            corrected_action = self._apply_auto_corrections(
+                proposal,
+                auto_corrections
+            )
             verdict_type = VerdictType.APPROVED_WITH_CONDITIONS
             conditions.append("已應用自動修正")
 
@@ -396,7 +393,9 @@ class ConstitutionEngine:
             return VerdictType.DENIED
 
     def _determine_priority(
-        self, proposal: ActionProposal, verdict_type: VerdictType
+        self,
+        proposal: ActionProposal,
+        verdict_type: VerdictType
     ) -> VerdictPriority:
         """決定執行優先級"""
         if verdict_type == VerdictType.DENIED:
@@ -413,7 +412,9 @@ class ConstitutionEngine:
         return priority_map.get(proposal.priority, VerdictPriority.NORMAL)
 
     def _apply_auto_corrections(
-        self, proposal: ActionProposal, corrections: list[str]
+        self,
+        proposal: ActionProposal,
+        corrections: list[str]
     ) -> dict[str, Any]:
         """應用自動修正"""
         corrected = {
@@ -497,7 +498,7 @@ class ConstitutionEngine:
             self._statistics["denied"] += 1
         elif verdict.verdict_type in [
             VerdictType.APPROVED_WITH_CONDITIONS,
-            VerdictType.REQUIRES_MODIFICATION,
+            VerdictType.REQUIRES_MODIFICATION
         ]:
             self._statistics["modified"] += 1
         elif verdict.verdict_type == VerdictType.ESCALATED:
@@ -505,11 +506,17 @@ class ConstitutionEngine:
 
     # ========== 查詢方法 ==========
 
-    def get_verdict_history(self, limit: int = 100) -> list[ConstitutionVerdict]:
+    def get_verdict_history(
+        self,
+        limit: int = 100
+    ) -> list[ConstitutionVerdict]:
         """獲取裁決歷史"""
         return self._verdict_history[-limit:]
 
-    def get_verdict_by_id(self, verdict_id: str) -> ConstitutionVerdict | None:
+    def get_verdict_by_id(
+        self,
+        verdict_id: str
+    ) -> ConstitutionVerdict | None:
         """根據 ID 獲取裁決"""
         for verdict in self._verdict_history:
             if verdict.verdict_id == verdict_id:
@@ -523,10 +530,11 @@ class ConstitutionEngine:
         if stats["total_verdicts"] > 0:
             stats["approval_rate"] = round(
                 (stats["approved"] + stats["modified"]) / stats["total_verdicts"] * 100,
-                2,
+                2
             )
             stats["denial_rate"] = round(
-                stats["denied"] / stats["total_verdicts"] * 100, 2
+                stats["denied"] / stats["total_verdicts"] * 100,
+                2
             )
         else:
             stats["approval_rate"] = 0
@@ -562,7 +570,10 @@ class ConstitutionEngine:
 
 # 便捷函數
 async def evaluate_action(
-    action_type: str, description: str, target: str, **kwargs
+    action_type: str,
+    description: str,
+    target: str,
+    **kwargs
 ) -> ConstitutionVerdict:
     """便捷函數：評估單一行動"""
     engine = ConstitutionEngine()

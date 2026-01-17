@@ -12,6 +12,9 @@ import os
 import sys
 import unittest
 
+# 添加路徑
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', 'src'))
+
 from enterprise.analytics import (
     CommercialAnalytics,
     CostCategory,
@@ -38,14 +41,11 @@ from enterprise.security import (
     TrustLevel,
 )
 
-# 添加路徑
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "src"))
-
 
 class TestEnterpriseIntegration(unittest.TestCase):
     """企業整合模組測試"""
 
-    def set_up(self):
+    def setUp(self):
         self.integration = EnterpriseIntegration()
 
     def test_register_integration(self):
@@ -54,7 +54,7 @@ class TestEnterpriseIntegration(unittest.TestCase):
             type=IntegrationType.SLACK,
             name="slack-alerts",
             endpoint="https://hooks.slack.com/services/xxx",
-            auth_method=AuthMethod.API_KEY,
+            auth_method=AuthMethod.API_KEY
         )
 
         result = self.integration.register_integration(config)
@@ -72,15 +72,15 @@ class TestEnterpriseIntegration(unittest.TestCase):
                 name="slack",
                 endpoint="https://slack.com",
                 auth_method=AuthMethod.API_KEY,
-                enabled=True,
+                enabled=True
             ),
             IntegrationConfig(
                 type=IntegrationType.GITHUB,
                 name="github",
                 endpoint="https://api.github.com",
                 auth_method=AuthMethod.OAUTH2,
-                enabled=False,
-            ),
+                enabled=False
+            )
         ]
 
         for config in configs:
@@ -110,7 +110,8 @@ class TestEnterpriseIntegration(unittest.TestCase):
         self.integration.register_webhook_handler("push", handler)
 
         result = self.integration.process_webhook(
-            event_type="push", payload={"repo": "test", "ref": "main"}
+            event_type="push",
+            payload={"repo": "test", "ref": "main"}
         )
 
         self.assertTrue(result.success)
@@ -124,12 +125,14 @@ class TestEnterpriseIntegration(unittest.TestCase):
             name="slack",
             endpoint="https://hooks.slack.com",
             auth_method=AuthMethod.API_KEY,
-            enabled=True,
+            enabled=True
         )
         self.integration.register_integration(config)
 
         result = self.integration.send_notification(
-            integration_name="slack", message="Test notification", channel="#alerts"
+            integration_name="slack",
+            message="Test notification",
+            channel="#alerts"
         )
 
         self.assertTrue(result.success)
@@ -140,7 +143,7 @@ class TestEnterpriseIntegration(unittest.TestCase):
             type=IntegrationType.GITHUB,
             name="github",
             endpoint="https://api.github.com",
-            auth_method=AuthMethod.OAUTH2,
+            auth_method=AuthMethod.OAUTH2
         )
         self.integration.register_integration(config)
 
@@ -160,7 +163,7 @@ class TestEnterpriseIntegration(unittest.TestCase):
 class TestCommercialAnalytics(unittest.TestCase):
     """商業分析模組測試"""
 
-    def set_up(self):
+    def setUp(self):
         self.analytics = CommercialAnalytics(hourly_rate=100.0)
 
     def test_calculate_roi(self):
@@ -182,7 +185,7 @@ class TestCommercialAnalytics(unittest.TestCase):
             is_outdated=True,
             has_vulnerabilities=2,
             has_license_risk=False,
-            monthly_maintenance_hours=2.0,
+            monthly_maintenance_hours=2.0
         )
 
         self.assertGreater(len(costs), 0)
@@ -206,7 +209,7 @@ class TestCommercialAnalytics(unittest.TestCase):
             dependency_name="lodash",
             severity="medium",
             estimated_fix_hours=4.0,
-            hourly_rate=100.0,
+            hourly_rate=100.0
         )
 
         self.analytics.register_tech_debt(debt)
@@ -223,21 +226,22 @@ class TestCommercialAnalytics(unittest.TestCase):
                 debt_type=TechDebtType.SECURITY_VULNERABILITY,
                 dependency_name="pkg1",
                 severity="critical",
-                estimated_fix_hours=8.0,
+                estimated_fix_hours=8.0
             ),
             TechDebtItem(
                 debt_type=TechDebtType.OUTDATED_DEPENDENCY,
                 dependency_name="pkg2",
                 severity="low",
-                estimated_fix_hours=2.0,
-            ),
+                estimated_fix_hours=2.0
+            )
         ]
 
         for debt in debts:
             self.analytics.register_tech_debt(debt)
 
         plan = self.analytics.calculate_debt_payoff_plan(
-            monthly_budget=500.0, strategy="critical_first"
+            monthly_budget=500.0,
+            strategy="critical_first"
         )
 
         self.assertGreater(len(plan), 0)
@@ -247,18 +251,8 @@ class TestCommercialAnalytics(unittest.TestCase):
     def test_comprehensive_analysis(self):
         """測試綜合分析"""
         dependencies = [
-            {
-                "name": "express",
-                "version": "4.18.0",
-                "outdated": True,
-                "vulnerabilities": 1,
-            },
-            {
-                "name": "lodash",
-                "version": "4.17.21",
-                "outdated": False,
-                "vulnerabilities": 0,
-            },
+            {"name": "express", "version": "4.18.0", "outdated": True, "vulnerabilities": 1},
+            {"name": "lodash", "version": "4.17.21", "outdated": False, "vulnerabilities": 0},
         ]
 
         analysis = self.analytics.comprehensive_analysis(dependencies)
@@ -281,7 +275,7 @@ class TestCommercialAnalytics(unittest.TestCase):
 class TestIntelligentRecommendation(unittest.TestCase):
     """智能推薦引擎測試"""
 
-    def set_up(self):
+    def setUp(self):
         self.engine = IntelligentRecommendation()
 
     def test_calculate_health_score(self):
@@ -295,8 +289,8 @@ class TestIntelligentRecommendation(unittest.TestCase):
                 "stars": 50000,
                 "weekly_downloads": 20000000,
                 "has_documentation": True,
-                "license": "MIT",
-            },
+                "license": "MIT"
+            }
         )
 
         self.assertGreater(score.overall_score, 70)
@@ -305,7 +299,9 @@ class TestIntelligentRecommendation(unittest.TestCase):
     def test_health_score_deprecated(self):
         """測試已棄用套件健康度"""
         score = self.engine.calculate_health_score(
-            dependency_name="moment", version="2.29.0", metadata={}
+            dependency_name="moment",
+            version="2.29.0",
+            metadata={}
         )
 
         # 已棄用套件應有較低分數
@@ -314,7 +310,8 @@ class TestIntelligentRecommendation(unittest.TestCase):
     def test_find_alternatives(self):
         """測試替代方案發現"""
         alternatives = self.engine.find_alternatives(
-            dependency_name="moment", current_version="2.29.0"
+            dependency_name="moment",
+            current_version="2.29.0"
         )
 
         self.assertGreater(len(alternatives), 0)
@@ -326,7 +323,9 @@ class TestIntelligentRecommendation(unittest.TestCase):
     def test_plan_upgrade_path(self):
         """測試升級路徑規劃"""
         path = self.engine.plan_upgrade_path(
-            dependency_name="express", current_version="3.0.0", target_version="5.0.0"
+            dependency_name="express",
+            current_version="3.0.0",
+            target_version="5.0.0"
         )
 
         self.assertEqual(path.current_version, "3.0.0")
@@ -352,18 +351,8 @@ class TestIntelligentRecommendation(unittest.TestCase):
     def test_generate_recommendations(self):
         """測試建議生成"""
         dependencies = [
-            {
-                "name": "lodash",
-                "version": "4.0.0",
-                "outdated": True,
-                "vulnerabilities": 0,
-            },
-            {
-                "name": "moment",
-                "version": "2.29.0",
-                "outdated": False,
-                "vulnerabilities": 0,
-            },
+            {"name": "lodash", "version": "4.0.0", "outdated": True, "vulnerabilities": 0},
+            {"name": "moment", "version": "2.29.0", "outdated": False, "vulnerabilities": 0},
         ]
 
         recommendations = self.engine.generate_recommendations(dependencies)
@@ -371,9 +360,7 @@ class TestIntelligentRecommendation(unittest.TestCase):
         self.assertGreater(len(recommendations), 0)
 
         # moment 應有替換建議
-        replace_recs = [
-            r for r in recommendations if r.rec_type == RecommendationType.REPLACE
-        ]
+        replace_recs = [r for r in recommendations if r.rec_type == RecommendationType.REPLACE]
         self.assertGreater(len(replace_recs), 0)
 
     def test_generate_insight_report(self):
@@ -402,7 +389,7 @@ class TestIntelligentRecommendation(unittest.TestCase):
 class TestNextGenSecurity(unittest.TestCase):
     """下世代安全模組測試"""
 
-    def set_up(self):
+    def setUp(self):
         self.security = NextGenSecurity()
 
     def test_generate_sbom(self):
@@ -413,7 +400,9 @@ class TestNextGenSecurity(unittest.TestCase):
         ]
 
         sbom = self.security.generate_sbom(
-            project_name="test-project", version="1.0.0", dependencies=dependencies
+            project_name="test-project",
+            version="1.0.0",
+            dependencies=dependencies
         )
 
         self.assertEqual(sbom.name, "test-project")
@@ -422,7 +411,9 @@ class TestNextGenSecurity(unittest.TestCase):
 
     def test_export_sbom_cyclonedx(self):
         """測試 SBOM 匯出 (CycloneDX)"""
-        dependencies = [{"name": "express", "version": "4.18.0", "license": "MIT"}]
+        dependencies = [
+            {"name": "express", "version": "4.18.0", "license": "MIT"}
+        ]
 
         sbom = self.security.generate_sbom("test", "1.0.0", dependencies)
         exported = self.security.export_sbom(sbom)
@@ -432,10 +423,13 @@ class TestNextGenSecurity(unittest.TestCase):
 
     def test_export_sbom_spdx(self):
         """測試 SBOM 匯出 (SPDX)"""
-        dependencies = [{"name": "lodash", "version": "4.17.21", "license": "MIT"}]
+        dependencies = [
+            {"name": "lodash", "version": "4.17.21", "license": "MIT"}
+        ]
 
         sbom = self.security.generate_sbom(
-            "test", "1.0.0", dependencies, sbom_format=SBOMFormat.SPDX
+            "test", "1.0.0", dependencies,
+            sbom_format=SBOMFormat.SPDX
         )
         exported = self.security.export_sbom(sbom)
 
@@ -449,7 +443,8 @@ class TestNextGenSecurity(unittest.TestCase):
         ]
 
         report = self.security.check_compliance(
-            framework=ComplianceFramework.SOC2, dependencies=dependencies
+            framework=ComplianceFramework.SOC2,
+            dependencies=dependencies
         )
 
         self.assertEqual(report.framework, ComplianceFramework.SOC2)
@@ -463,7 +458,8 @@ class TestNextGenSecurity(unittest.TestCase):
         ]
 
         report = self.security.check_compliance(
-            framework=ComplianceFramework.ISO27001, dependencies=dependencies
+            framework=ComplianceFramework.ISO27001,
+            dependencies=dependencies
         )
 
         self.assertEqual(report.framework, ComplianceFramework.ISO27001)
@@ -479,9 +475,8 @@ class TestNextGenSecurity(unittest.TestCase):
 
         self.assertGreater(len(alerts), 0)
 
-        malicious_alerts = [
-            a for a in alerts if a.risk_type == SupplyChainRisk.MALICIOUS_PACKAGE
-        ]
+        malicious_alerts = [a for a in alerts
+                          if a.risk_type == SupplyChainRisk.MALICIOUS_PACKAGE]
         self.assertGreater(len(malicious_alerts), 0)
 
     def test_analyze_supply_chain_unpinned(self):
@@ -492,9 +487,8 @@ class TestNextGenSecurity(unittest.TestCase):
 
         alerts = self.security.analyze_supply_chain(dependencies)
 
-        unpinned_alerts = [
-            a for a in alerts if a.risk_type == SupplyChainRisk.UNPINNED_DEPENDENCY
-        ]
+        unpinned_alerts = [a for a in alerts
+                         if a.risk_type == SupplyChainRisk.UNPINNED_DEPENDENCY]
         self.assertGreater(len(unpinned_alerts), 0)
 
     def test_assess_trust(self):
@@ -506,8 +500,8 @@ class TestNextGenSecurity(unittest.TestCase):
                 "from_official_registry": True,
                 "has_signature": True,
                 "verified_maintainer": True,
-                "integrity_verified": True,
-            },
+                "integrity_verified": True
+            }
         )
 
         self.assertEqual(assessment.trust_level, TrustLevel.VERIFIED)
@@ -516,7 +510,8 @@ class TestNextGenSecurity(unittest.TestCase):
     def test_assess_trust_malicious(self):
         """測試信任評估 - 惡意套件"""
         assessment = self.security.assess_trust(
-            package_name="event-stream", version="3.3.6"
+            package_name="event-stream",
+            version="3.3.6"
         )
 
         self.assertEqual(assessment.trust_level, TrustLevel.UNTRUSTED)
@@ -531,7 +526,7 @@ class TestNextGenSecurity(unittest.TestCase):
             version="1.0.0",
             expected_checksum=expected,
             content=content,
-            algorithm="sha256",
+            algorithm="sha256"
         )
 
         self.assertTrue(result.verified)
@@ -544,7 +539,8 @@ class TestNextGenSecurity(unittest.TestCase):
         ]
 
         report = self.security.generate_security_report(
-            dependencies=dependencies, frameworks=[ComplianceFramework.SOC2]
+            dependencies=dependencies,
+            frameworks=[ComplianceFramework.SOC2]
         )
 
         self.assertIn("summary", report)
@@ -575,22 +571,22 @@ class TestPhase4Integration(unittest.TestCase):
                 "version": "4.18.0",
                 "license": "MIT",
                 "outdated": False,
-                "vulnerabilities": 0,
+                "vulnerabilities": 0
             },
             {
                 "name": "moment",
                 "version": "2.29.0",
                 "license": "MIT",
                 "outdated": True,
-                "vulnerabilities": 0,
+                "vulnerabilities": 0
             },
             {
                 "name": "lodash",
                 "version": "4.17.21",
                 "license": "MIT",
                 "outdated": False,
-                "vulnerabilities": 1,
-            },
+                "vulnerabilities": 1
+            }
         ]
 
         # 1. 安全分析
@@ -614,5 +610,5 @@ class TestPhase4Integration(unittest.TestCase):
         self.assertIn("total_integrations", integration_report)
 
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     unittest.main()

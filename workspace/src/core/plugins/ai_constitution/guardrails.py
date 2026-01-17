@@ -25,24 +25,22 @@ from typing import Any
 
 class GuardrailType(Enum):
     """護欄類型"""
-
-    SAFETY = "safety"  # 安全護欄
-    COMPLIANCE = "compliance"  # 合規護欄
-    ETHICS = "ethics"  # 倫理護欄
-    QUALITY = "quality"  # 品質護欄
-    PERFORMANCE = "performance"  # 效能護欄
-    CONTENT = "content"  # 內容護欄
-    INPUT = "input"  # 輸入護欄
-    OUTPUT = "output"  # 輸出護欄
+    SAFETY = "safety"               # 安全護欄
+    COMPLIANCE = "compliance"       # 合規護欄
+    ETHICS = "ethics"               # 倫理護欄
+    QUALITY = "quality"             # 品質護欄
+    PERFORMANCE = "performance"     # 效能護欄
+    CONTENT = "content"             # 內容護欄
+    INPUT = "input"                 # 輸入護欄
+    OUTPUT = "output"               # 輸出護欄
 
 
 class GuardrailSeverity(Enum):
     """護欄嚴重性"""
-
-    CRITICAL = "critical"  # 絕對阻止
-    HIGH = "high"  # 強烈建議阻止
-    MEDIUM = "medium"  # 警告並記錄
-    LOW = "low"  # 僅記錄
+    CRITICAL = "critical"   # 絕對阻止
+    HIGH = "high"           # 強烈建議阻止
+    MEDIUM = "medium"       # 警告並記錄
+    LOW = "low"             # 僅記錄
 
 
 @dataclass
@@ -51,7 +49,6 @@ class GuardrailResult:
     護欄檢查結果
     Guardrail Check Result
     """
-
     guardrail_id: str
     guardrail_type: GuardrailType
     passed: bool
@@ -77,7 +74,7 @@ class Guardrail(ABC):
     """
     護欄基類
     Base Guardrail Class
-
+    
     所有護欄必須繼承此類
     """
 
@@ -111,7 +108,7 @@ class Guardrail(ABC):
         message: str = "",
         violations: list[str] = None,
         recommendations: list[str] = None,
-        **kwargs,
+        **kwargs
     ) -> GuardrailResult:
         """創建檢查結果"""
         self.check_count += 1
@@ -128,7 +125,7 @@ class Guardrail(ABC):
             message=message,
             violations=violations or [],
             recommendations=recommendations or [],
-            **kwargs,
+            **kwargs
         )
 
 
@@ -136,7 +133,7 @@ class SafetyGuardrail(Guardrail):
     """
     安全護欄
     Safety Guardrail
-
+    
     防止生成有害、危險或不安全的內容
     """
 
@@ -219,7 +216,7 @@ class ComplianceGuardrail(Guardrail):
     """
     合規護欄
     Compliance Guardrail
-
+    
     確保符合各種法規和標準
     """
 
@@ -297,7 +294,9 @@ class ComplianceGuardrail(Guardrail):
 
             for pattern_name, pattern in rule["patterns"].items():
                 if re.search(pattern, content, re.IGNORECASE):
-                    violations.append(f"[{rule['name']}] 偵測到 {pattern_name} 違規")
+                    violations.append(
+                        f"[{rule['name']}] 偵測到 {pattern_name} 違規"
+                    )
                     recommendations.extend(rule["requirements"])
 
         # 移除重複的建議
@@ -319,7 +318,7 @@ class EthicsGuardrail(Guardrail):
     """
     倫理護欄
     Ethics Guardrail
-
+    
     確保 AI 行為符合倫理標準
     """
 
@@ -386,7 +385,9 @@ class EthicsGuardrail(Guardrail):
         for _principle_id, principle in self.ETHICS_PRINCIPLES.items():
             for indicator in principle["indicators"]:
                 if re.search(indicator, content, re.IGNORECASE):
-                    violations.append(f"可能違反 {principle['name']} 原則")
+                    violations.append(
+                        f"可能違反 {principle['name']} 原則"
+                    )
                     recommendations.append(principle["guidance"])
                     break  # 每個原則只報告一次
 
@@ -409,7 +410,7 @@ class ContentGuardrail(Guardrail):
     """
     內容護欄
     Content Guardrail
-
+    
     過濾不當或低品質內容
     """
 
@@ -487,11 +488,11 @@ class GuardrailSystem:
     """
     護欄系統
     Guardrail System
-
+    
     整合所有護欄的核心系統
-
+    
     This is the core system that integrates all guardrails
-
+    
     自成閉環：完整管理所有護欄的註冊、執行和統計
     """
 
@@ -572,15 +573,13 @@ class GuardrailSystem:
 
     def _log_execution(self, guardrail_id: str, result: GuardrailResult):
         """記錄執行"""
-        self._execution_log.append(
-            {
-                "guardrail_id": guardrail_id,
-                "passed": result.passed,
-                "severity": result.severity.value,
-                "violation_count": len(result.violations),
-                "timestamp": result.checked_at,
-            }
-        )
+        self._execution_log.append({
+            "guardrail_id": guardrail_id,
+            "passed": result.passed,
+            "severity": result.severity.value,
+            "violation_count": len(result.violations),
+            "timestamp": result.checked_at,
+        })
 
     def is_safe(
         self,
@@ -635,7 +634,9 @@ class GuardrailSystem:
         """獲取統計數據"""
         stats = {
             "total_guardrails": len(self._guardrails),
-            "active_guardrails": sum(1 for g in self._guardrails.values() if g.enabled),
+            "active_guardrails": sum(
+                1 for g in self._guardrails.values() if g.enabled
+            ),
             "by_type": {},
             "total_checks": 0,
             "total_passes": 0,
@@ -664,7 +665,8 @@ class GuardrailSystem:
 
         if stats["total_checks"] > 0:
             stats["pass_rate"] = round(
-                stats["total_passes"] / stats["total_checks"] * 100, 2
+                stats["total_passes"] / stats["total_checks"] * 100,
+                2
             )
         else:
             stats["pass_rate"] = 0

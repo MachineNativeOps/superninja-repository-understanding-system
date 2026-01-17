@@ -15,14 +15,15 @@ from pathlib import Path
 import pytest
 import yaml
 from pydantic import ValidationError
+
+# Add runtime to path for imports
+sys.path.insert(0, str(Path(__file__).parent.parent.parent))
+
 from runtime.mind_matrix.main import (
     ExecutiveRole,
     MindMatrix,
     MindMatrixModel,
 )
-
-# Add runtime to path for imports
-sys.path.insert(0, str(Path(__file__).parent.parent.parent))
 
 
 class TestTopologyLoadAndSelfcheck:
@@ -31,9 +32,7 @@ class TestTopologyLoadAndSelfcheck:
     @pytest.fixture
     def topology_path(self) -> Path:
         """Get path to topology config file."""
-        return (
-            Path(__file__).parent.parent.parent / "config" / "topology-mind-matrix.yaml"
-        )
+        return Path(__file__).parent.parent.parent / "config" / "topology-mind-matrix.yaml"
 
     @pytest.fixture
     def topology_config(self, topology_path: Path) -> dict:
@@ -94,9 +93,7 @@ class TestExecutiveRoles:
     @pytest.fixture
     def mind_matrix(self) -> MindMatrix:
         """Create MindMatrix instance from config file."""
-        topology_path = (
-            Path(__file__).parent.parent.parent / "config" / "topology-mind-matrix.yaml"
-        )
+        topology_path = Path(__file__).parent.parent.parent / "config" / "topology-mind-matrix.yaml"
         with open(topology_path, encoding="utf-8") as f:
             topology = yaml.safe_load(f)
         return MindMatrix(topology)
@@ -147,9 +144,7 @@ class TestGovernancePrinciples:
     @pytest.fixture
     def mind_matrix(self) -> MindMatrix:
         """Create MindMatrix instance from config file."""
-        topology_path = (
-            Path(__file__).parent.parent.parent / "config" / "topology-mind-matrix.yaml"
-        )
+        topology_path = Path(__file__).parent.parent.parent / "config" / "topology-mind-matrix.yaml"
         with open(topology_path, encoding="utf-8") as f:
             topology = yaml.safe_load(f)
         return MindMatrix(topology)
@@ -182,9 +177,7 @@ class TestCognitiveStack:
     @pytest.fixture
     def mind_matrix(self) -> MindMatrix:
         """Create MindMatrix instance from config file."""
-        topology_path = (
-            Path(__file__).parent.parent.parent / "config" / "topology-mind-matrix.yaml"
-        )
+        topology_path = Path(__file__).parent.parent.parent / "config" / "topology-mind-matrix.yaml"
         with open(topology_path, encoding="utf-8") as f:
             topology = yaml.safe_load(f)
         return MindMatrix(topology)
@@ -215,9 +208,7 @@ class TestMultiAgentHypergraph:
     @pytest.fixture
     def mind_matrix(self) -> MindMatrix:
         """Create MindMatrix instance from config file."""
-        topology_path = (
-            Path(__file__).parent.parent.parent / "config" / "topology-mind-matrix.yaml"
-        )
+        topology_path = Path(__file__).parent.parent.parent / "config" / "topology-mind-matrix.yaml"
         with open(topology_path, encoding="utf-8") as f:
             topology = yaml.safe_load(f)
         return MindMatrix(topology)
@@ -247,9 +238,7 @@ class TestSLSAConfiguration:
     @pytest.fixture
     def mind_matrix(self) -> MindMatrix:
         """Create MindMatrix instance from config file."""
-        topology_path = (
-            Path(__file__).parent.parent.parent / "config" / "topology-mind-matrix.yaml"
-        )
+        topology_path = Path(__file__).parent.parent.parent / "config" / "topology-mind-matrix.yaml"
         with open(topology_path, encoding="utf-8") as f:
             topology = yaml.safe_load(f)
         return MindMatrix(topology)

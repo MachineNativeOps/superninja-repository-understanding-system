@@ -9,8 +9,8 @@ from .instant_execution_pipeline import (
     InstantExecutionPipeline,
     PipelineContext,
     PipelineStage,
-    StageResult,
     StageStatus,
+    StageResult,
 )
 
 __all__ = [

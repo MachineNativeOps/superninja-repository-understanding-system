@@ -9,22 +9,22 @@ Provides persistent storage for events with:
 - Query and replay
 """
 
-import asyncio
 import json
 import sqlite3
-import uuid
+import asyncio
 from datetime import datetime
-from pathlib import Path
-from typing import Any, Callable, Dict, List, Optional
-
+from typing import Any, Dict, List, Optional, Callable
 from pydantic import BaseModel, Field
+import uuid
+from pathlib import Path
 
 
 class StoredEvent(BaseModel):
     """Event stored in the event store."""
 
     event_id: str = Field(
-        default_factory=lambda: str(uuid.uuid4()), description="Unique event ID"
+        default_factory=lambda: str(uuid.uuid4()),
+        description="Unique event ID"
     )
     event_type: str = Field(..., description="Type of event")
     aggregate_type: str = Field(..., description="Aggregate type (e.g., 'incident')")
@@ -32,7 +32,7 @@ class StoredEvent(BaseModel):
     sequence_number: int = Field(..., description="Sequence number within aggregate")
     timestamp: str = Field(
         default_factory=lambda: datetime.now().isoformat(),
-        description="Event timestamp",
+        description="Event timestamp"
     )
     trace_id: Optional[str] = Field(default=None, description="Trace ID")
     data: Dict[str, Any] = Field(default_factory=dict, description="Event data")
@@ -77,8 +77,7 @@ class EventStore:
 
         # In-memory storage
         self._events: List[StoredEvent] = []
-        # aggregate_id -> last sequence
-        self._sequence_numbers: Dict[str, int] = {}
+        self._sequence_numbers: Dict[str, int] = {}  # aggregate_id -> last sequence
 
         # SQLite connection (lazy init)
         self._connection: Optional[sqlite3.Connection] = None
@@ -99,8 +98,7 @@ class EventStore:
         self._connection = sqlite3.connect(str(path), check_same_thread=False)
         cursor = self._connection.cursor()
 
-        cursor.execute(
-            """
+        cursor.execute("""
             CREATE TABLE IF NOT EXISTS events (
                 event_id TEXT PRIMARY KEY,
                 event_type TEXT NOT NULL,
@@ -113,29 +111,22 @@ class EventStore:
                 metadata TEXT NOT NULL,
                 UNIQUE(aggregate_id, sequence_number)
             )
-        """
-        )
+        """)
 
-        cursor.execute(
-            """
+        cursor.execute("""
             CREATE INDEX IF NOT EXISTS idx_aggregate
             ON events(aggregate_type, aggregate_id)
-        """
-        )
+        """)
 
-        cursor.execute(
-            """
+        cursor.execute("""
             CREATE INDEX IF NOT EXISTS idx_timestamp
             ON events(timestamp)
-        """
-        )
+        """)
 
-        cursor.execute(
-            """
+        cursor.execute("""
             CREATE INDEX IF NOT EXISTS idx_trace
             ON events(trace_id)
-        """
-        )
+        """)
 
         self._connection.commit()
 
@@ -220,15 +211,8 @@ class EventStore:
         """Query events with filters."""
         if self._store_type == "sqlite" and self._connection:
             return await self._query_sqlite(
-                aggregate_type,
-                aggregate_id,
-                event_type,
-                trace_id,
-                from_sequence,
-                to_sequence,
-                from_timestamp,
-                to_timestamp,
-                limit,
+                aggregate_type, aggregate_id, event_type, trace_id,
+                from_sequence, to_sequence, from_timestamp, to_timestamp, limit
             )
 
         # In-memory query
@@ -306,19 +290,17 @@ class EventStore:
 
         events = []
         for row in cursor.fetchall():
-            events.append(
-                StoredEvent(
-                    event_id=row[0],
-                    event_type=row[1],
-                    aggregate_type=row[2],
-                    aggregate_id=row[3],
-                    sequence_number=row[4],
-                    timestamp=row[5],
-                    trace_id=row[6],
-                    data=json.loads(row[7]),
-                    metadata=json.loads(row[8]),
-                )
-            )
+            events.append(StoredEvent(
+                event_id=row[0],
+                event_type=row[1],
+                aggregate_type=row[2],
+                aggregate_id=row[3],
+                sequence_number=row[4],
+                timestamp=row[5],
+                trace_id=row[6],
+                data=json.loads(row[7]),
+                metadata=json.loads(row[8]),
+            ))
 
         return events
 
@@ -389,9 +371,7 @@ class EventStore:
                 by_aggregate: Dict[str, int] = {}
                 for e in self._events:
                     by_type[e.event_type] = by_type.get(e.event_type, 0) + 1
-                    by_aggregate[e.aggregate_type] = (
-                        by_aggregate.get(e.aggregate_type, 0) + 1
-                    )
+                    by_aggregate[e.aggregate_type] = by_aggregate.get(e.aggregate_type, 0) + 1
 
         return {
             "total_events": total,

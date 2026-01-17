@@ -6,13 +6,24 @@ Next Generation Automation Platform Core
 """
 
 from .architecture import (
-    EnterpriseSaaS,
-    MultiLanguageSupport,
     UniversalCodeGenerator,
+    MultiLanguageSupport,
     VisualConfigInterface,
+    EnterpriseSaaS
 )
-from .intelligence import AIAgentOrchestrator, AutonomousOptimizer, SmartDecisionEngine
-from .services import BillingSystem, MCPService, MonitoringDashboard, SecurityFramework
+
+from .services import (
+    MCPService,
+    SecurityFramework,
+    MonitoringDashboard,
+    BillingSystem
+)
+
+from .intelligence import (
+    AIAgentOrchestrator,
+    SmartDecisionEngine,
+    AutonomousOptimizer
+)
 
 __version__ = "2.0.0"
 __author__ = "MachineNativeOps Next Gen Team"
@@ -25,13 +36,13 @@ PLATFORM_CONFIG = {
     "saas_enabled": True,
     "enterprise_ready": True,
     "revenue_target": "$10M/month",
-    "platform_compatibility": ["super.myninja.ai", "replit"],
+    "platform_compatibility": ["super.myninja.ai", "replit"]
 }
 
 # Export main components
 __all__ = [
     "UniversalCodeGenerator",
-    "MultiLanguageSupport",
+    "MultiLanguageSupport", 
     "VisualConfigInterface",
     "EnterpriseSaaS",
     "MCPService",
@@ -40,5 +51,5 @@ __all__ = [
     "BillingSystem",
     "AIAgentOrchestrator",
     "SmartDecisionEngine",
-    "AutonomousOptimizer",
+    "AutonomousOptimizer"
 ]

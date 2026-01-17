@@ -15,16 +15,16 @@ from dataclasses import dataclass, field
 from enum import Enum
 from typing import Any, Protocol
 
+
 logger = logging.getLogger(__name__)
 
 
 class MetricType(Enum):
     """Types of metrics"""
-
-    COUNTER = "counter"  # Monotonically increasing
-    GAUGE = "gauge"  # Can go up or down
-    HISTOGRAM = "histogram"  # Distribution of values
-    SUMMARY = "summary"  # Similar to histogram
+    COUNTER = "counter"       # Monotonically increasing
+    GAUGE = "gauge"           # Can go up or down
+    HISTOGRAM = "histogram"   # Distribution of values
+    SUMMARY = "summary"       # Similar to histogram
 
 
 @dataclass
@@ -34,7 +34,6 @@ class MetricLabels:
 
     Common labels used across metrics.
     """
-
     org_id: str | None = None
     repo: str | None = None
     run_type: str | None = None
@@ -47,8 +46,7 @@ class MetricLabels:
     def to_dict(self) -> dict[str, str]:
         """Convert to label dictionary"""
         return {
-            k: v
-            for k, v in {
+            k: v for k, v in {
                 "org_id": self.org_id,
                 "repo": self.repo,
                 "run_type": self.run_type,
@@ -57,8 +55,7 @@ class MetricLabels:
                 "error_type": self.error_type,
                 "tool": self.tool,
                 "queue": self.queue,
-            }.items()
-            if v is not None
+            }.items() if v is not None
         }
 
 
@@ -70,21 +67,24 @@ class MetricsBackend(Protocol):
         name: str,
         value: float = 1.0,
         labels: dict[str, str] | None = None,
-    ) -> None: ...
+    ) -> None:
+        ...
 
     def gauge_set(
         self,
         name: str,
         value: float,
         labels: dict[str, str] | None = None,
-    ) -> None: ...
+    ) -> None:
+        ...
 
     def histogram_observe(
         self,
         name: str,
         value: float,
         labels: dict[str, str] | None = None,
-    ) -> None: ...
+    ) -> None:
+        ...
 
 
 @dataclass
@@ -94,7 +94,6 @@ class Counter:
 
     Monotonically increasing counter.
     """
-
     name: str
     description: str = ""
     labels: list[str] = field(default_factory=list)
@@ -121,7 +120,6 @@ class Gauge:
 
     Value that can go up or down.
     """
-
     name: str
     description: str = ""
     labels: list[str] = field(default_factory=list)
@@ -165,25 +163,12 @@ class Histogram:
 
     Distribution of values with configurable buckets.
     """
-
     name: str
     description: str = ""
     labels: list[str] = field(default_factory=list)
-    buckets: list[float] = field(
-        default_factory=lambda: [
-            0.005,
-            0.01,
-            0.025,
-            0.05,
-            0.1,
-            0.25,
-            0.5,
-            1.0,
-            2.5,
-            5.0,
-            10.0,
-        ]
-    )
+    buckets: list[float] = field(default_factory=lambda: [
+        0.005, 0.01, 0.025, 0.05, 0.1, 0.25, 0.5, 1.0, 2.5, 5.0, 10.0
+    ])
     _backend: MetricsBackend | None = None
 
     def observe(
@@ -207,7 +192,6 @@ class Histogram:
 @dataclass
 class HistogramTimer:
     """Context manager for timing with histogram"""
-
     histogram: Histogram
     labels: MetricLabels | None = None
     _start: float = 0.0
@@ -482,7 +466,8 @@ class MetricsCollector:
         self.runs_total.inc(1, labels)
         self.runs_in_progress.dec(1, MetricLabels(org_id=org_id, run_type=run_type))
         self.runs_duration_seconds.observe(
-            duration_seconds, MetricLabels(org_id=org_id, run_type=run_type)
+            duration_seconds,
+            MetricLabels(org_id=org_id, run_type=run_type)
         )
 
     def record_webhook_received(
@@ -511,7 +496,8 @@ class MetricsCollector:
             self.gate_failed_total.inc(1, labels)
 
         self.gate_duration_seconds.observe(
-            duration_seconds, MetricLabels(org_id=org_id)
+            duration_seconds,
+            MetricLabels(org_id=org_id)
         )
 
     def record_error(

@@ -5,27 +5,24 @@ Generates all missing artifacts for all 4 modules
 """
 
 import os
-from datetime import datetime
 from pathlib import Path
+from datetime import datetime
 
 BASE_DIR = Path("00-namespaces/namespaces-mcp")
 
-
 def get_timestamp():
     return datetime.utcnow().isoformat() + "Z"
-
 
 # ============================================================================
 # MONITORING & OBSERVABILITY MODULE
 # ============================================================================
 
-
 def generate_monitoring_artifacts():
     """Generate Monitoring & Observability module artifacts"""
     print("\n📊 Generating Monitoring & Observability artifacts...")
-
+    
     timestamp = get_timestamp()
-
+    
     # 1. SCHEMAS
     schemas_content = f"""version: "2.0.0"
 semantic_role: schema_definitions
@@ -196,7 +193,7 @@ validation_rules:
   metric_name:
     pattern: "^[a-z][a-z0-9_]*$"
     message: "Metric name must start with lowercase letter and contain only lowercase letters, numbers, and underscores"
-
+  
   log_level:
     enum: ["debug", "info", "warn", "error", "fatal"]
     message: "Log level must be one of: debug, info, warn, error, fatal"
@@ -211,12 +208,12 @@ metadata:
     - "naming-registry.yaml"
     - "protocol.schema.yaml"
 """
-
+    
     schemas_path = BASE_DIR / "schemas" / "monitoring-observability.schema.yaml"
-    with open(schemas_path, "w") as f:
+    with open(schemas_path, 'w') as f:
         f.write(schemas_content)
     print(f"✅ Created: {schemas_path} ({len(schemas_content)} bytes)")
-
+    
     # 2. SPECS
     specs_content = f"""version: "2.0.0"
 semantic_role: specification_definitions
@@ -239,7 +236,7 @@ interfaces:
         performance:
           max_latency: "5ms"
           throughput: ">100000 metrics/s"
-
+      
       - name: "recordBatch"
         description: "Record multiple metrics in batch"
         parameters:
@@ -251,7 +248,7 @@ interfaces:
         performance:
           max_latency: "10ms"
           throughput: ">500000 metrics/s"
-
+      
       - name: "getMetrics"
         description: "Query metrics"
         parameters:
@@ -274,7 +271,7 @@ interfaces:
             required: true
         returns:
           type: "Promise<void>"
-
+      
       - name: "getPerformanceReport"
         description: "Get performance report"
         returns:
@@ -303,7 +300,7 @@ interfaces:
         performance:
           max_latency: "1ms"
           throughput: ">50000 logs/s"
-
+      
       - name: "query"
         description: "Query logs"
         parameters:
@@ -350,7 +347,7 @@ interfaces:
         performance:
           max_latency: "1ms"
           overhead: "<1%"
-
+      
       - name: "endSpan"
         description: "End a span"
         parameters:
@@ -361,7 +358,7 @@ interfaces:
           type: "void"
         performance:
           max_latency: "1ms"
-
+      
       - name: "getTrace"
         description: "Get complete trace"
         parameters:
@@ -387,7 +384,7 @@ interfaces:
           type: "Promise<Dashboard>"
         performance:
           max_latency: "100ms"
-
+      
       - name: "updateWidget"
         description: "Update dashboard widget"
         parameters:
@@ -418,7 +415,7 @@ interfaces:
           type: "Promise<string>"
         performance:
           max_latency: "10ms"
-
+      
       - name: "getAlerts"
         description: "Get active alerts"
         parameters:
@@ -435,17 +432,17 @@ performance_contracts:
     collection_latency: {{p50: "2ms", p95: "5ms", p99: "10ms"}}
     query_latency: {{p50: "20ms", p95: "50ms", p99: "100ms"}}
     throughput: {{collection: ">100000 metrics/s", query: ">1000 queries/s"}}
-
+  
   logging:
     write_latency: {{p50: "0.5ms", p95: "1ms", p99: "2ms"}}
     query_latency: {{p50: "50ms", p95: "100ms", p99: "200ms"}}
     throughput: {{write: ">50000 logs/s", query: ">500 queries/s"}}
-
+  
   tracing:
     span_creation: {{p50: "0.5ms", p95: "1ms", p99: "2ms"}}
     trace_query: {{p50: "20ms", p95: "50ms", p99: "100ms"}}
     overhead: "<1%"
-
+  
   dashboard:
     render_latency: {{p50: "50ms", p95: "100ms", p99: "200ms"}}
     update_latency: {{p50: "20ms", p95: "50ms", p99: "100ms"}}
@@ -457,36 +454,33 @@ metadata:
   status: "active"
   author: "SuperNinja AI Agent"
 """
-
+    
     specs_path = BASE_DIR / "specs" / "monitoring-observability.spec.yaml"
-    with open(specs_path, "w") as f:
+    with open(specs_path, 'w') as f:
         f.write(specs_content)
     print(f"✅ Created: {specs_path} ({len(specs_content)} bytes)")
-
+    
     # Continue with policies, bundles, graphs, flows...
     # (Due to length, I'll create these in the next step)
-
+    
     print("✅ Monitoring & Observability schemas and specs complete!")
-
 
 # ============================================================================
 # MAIN EXECUTION
 # ============================================================================
 
-
 def main():
     """Main execution"""
     print("🚀 Complete MCP Level 2 Artifacts Generator")
     print("=" * 60)
-
+    
     # Generate Monitoring & Observability artifacts
     generate_monitoring_artifacts()
-
+    
     print("\n" + "=" * 60)
     print("✅ Artifact generation in progress...")
     print("\nNote: This is a partial generation.")
     print("Run the complete script to generate all remaining artifacts.")
-
 
 if __name__ == "__main__":
     main()

@@ -8,28 +8,27 @@ Defines incident lifecycle data structures including:
 - State machine validation
 """
 
-import uuid
 from datetime import datetime
 from enum import Enum
 from typing import Any, Dict, List, Optional
-
 from pydantic import BaseModel, Field
+import uuid
 
 
 class IncidentState(str, Enum):
     """States in the incident lifecycle state machine."""
 
-    OPEN = "OPEN"  # Initial state when incident is created
-    TRIAGE = "TRIAGE"  # Severity assessment and categorization
-    RCA = "RCA"  # Root cause analysis in progress
-    PROPOSE = "PROPOSE"  # Fix proposals being generated
-    VERIFY = "VERIFY"  # Proposals under verification
-    APPROVE = "APPROVE"  # Waiting for approval
-    EXECUTE = "EXECUTE"  # Fix being executed
+    OPEN = "OPEN"          # Initial state when incident is created
+    TRIAGE = "TRIAGE"      # Severity assessment and categorization
+    RCA = "RCA"            # Root cause analysis in progress
+    PROPOSE = "PROPOSE"    # Fix proposals being generated
+    VERIFY = "VERIFY"      # Proposals under verification
+    APPROVE = "APPROVE"    # Waiting for approval
+    EXECUTE = "EXECUTE"    # Fix being executed
     VALIDATE = "VALIDATE"  # Validating the fix
     ROLLBACK = "ROLLBACK"  # Rolling back failed fix
-    CLOSE = "CLOSE"  # Incident resolved and closed
-    LEARN = "LEARN"  # Post-incident learning
+    CLOSE = "CLOSE"        # Incident resolved and closed
+    LEARN = "LEARN"        # Post-incident learning
 
 
 # Valid state transitions
@@ -41,11 +40,7 @@ VALID_TRANSITIONS: Dict[IncidentState, List[IncidentState]] = {
     IncidentState.VERIFY: [IncidentState.APPROVE, IncidentState.PROPOSE],
     IncidentState.APPROVE: [IncidentState.EXECUTE, IncidentState.PROPOSE],
     IncidentState.EXECUTE: [IncidentState.VALIDATE, IncidentState.ROLLBACK],
-    IncidentState.VALIDATE: [
-        IncidentState.CLOSE,
-        IncidentState.ROLLBACK,
-        IncidentState.EXECUTE,
-    ],
+    IncidentState.VALIDATE: [IncidentState.CLOSE, IncidentState.ROLLBACK, IncidentState.EXECUTE],
     IncidentState.ROLLBACK: [IncidentState.PROPOSE, IncidentState.CLOSE],
     IncidentState.CLOSE: [IncidentState.LEARN],
     IncidentState.LEARN: [],  # Terminal state
@@ -54,11 +49,10 @@ VALID_TRANSITIONS: Dict[IncidentState, List[IncidentState]] = {
 
 class IncidentSeverity(str, Enum):
     """Incident severity levels."""
-
     CRITICAL = "critical"  # Service down, immediate action required
-    HIGH = "high"  # Major functionality impaired
-    MEDIUM = "medium"  # Degraded performance
-    LOW = "low"  # Minor issue
+    HIGH = "high"          # Major functionality impaired
+    MEDIUM = "medium"      # Degraded performance
+    LOW = "low"            # Minor issue
 
 
 class IncidentTransition(BaseModel):
@@ -68,16 +62,12 @@ class IncidentTransition(BaseModel):
     to_state: IncidentState = Field(..., description="New state")
     timestamp: str = Field(
         default_factory=lambda: datetime.now().isoformat(),
-        description="Transition timestamp",
+        description="Transition timestamp"
     )
     trigger: str = Field(..., description="What triggered the transition")
-    triggered_by: str = Field(
-        ..., description="Agent or user that triggered transition"
-    )
+    triggered_by: str = Field(..., description="Agent or user that triggered transition")
     message_id: Optional[str] = Field(default=None, description="Related message ID")
-    metadata: Dict[str, Any] = Field(
-        default_factory=dict, description="Additional transition data"
-    )
+    metadata: Dict[str, Any] = Field(default_factory=dict, description="Additional transition data")
 
     def to_dict(self) -> Dict[str, Any]:
         """Convert to dictionary."""
@@ -98,12 +88,8 @@ class IncidentHistory(BaseModel):
     incident_id: str = Field(..., description="Incident identifier")
     transitions: List[IncidentTransition] = Field(default_factory=list)
     messages: List[str] = Field(default_factory=list, description="Related message IDs")
-    proposals: List[Dict[str, Any]] = Field(
-        default_factory=list, description="Fix proposals"
-    )
-    evidence: List[str] = Field(
-        default_factory=list, description="Evidence bundle references"
-    )
+    proposals: List[Dict[str, Any]] = Field(default_factory=list, description="Fix proposals")
+    evidence: List[str] = Field(default_factory=list, description="Evidence bundle references")
 
     def add_transition(self, transition: IncidentTransition) -> None:
         """Add a transition to history."""
@@ -123,35 +109,27 @@ class Incident(BaseModel):
 
     incident_id: str = Field(
         default_factory=lambda: str(uuid.uuid4()),
-        description="Unique incident identifier",
+        description="Unique incident identifier"
     )
     trace_id: str = Field(..., description="Distributed tracing ID")
-    state: IncidentState = Field(
-        default=IncidentState.OPEN, description="Current state"
-    )
+    state: IncidentState = Field(default=IncidentState.OPEN, description="Current state")
     incident_type: str = Field(..., description="Type/category of incident")
     severity: str = Field(default="medium", description="Incident severity")
     title: Optional[str] = Field(default=None, description="Short incident title")
     description: Optional[str] = Field(default=None, description="Detailed description")
-    affected_resources: List[str] = Field(
-        default_factory=list, description="Affected resources"
-    )
+    affected_resources: List[str] = Field(default_factory=list, description="Affected resources")
     created_at: str = Field(
         default_factory=lambda: datetime.now().isoformat(),
-        description="Creation timestamp",
+        description="Creation timestamp"
     )
     updated_at: str = Field(
         default_factory=lambda: datetime.now().isoformat(),
-        description="Last update timestamp",
+        description="Last update timestamp"
     )
     resolved_at: Optional[str] = Field(default=None, description="Resolution timestamp")
     assigned_to: Optional[str] = Field(default=None, description="Assigned agent/user")
-    metadata: Dict[str, Any] = Field(
-        default_factory=dict, description="Additional metadata"
-    )
-    history: IncidentHistory = Field(
-        default=None, description="State transition history"
-    )
+    metadata: Dict[str, Any] = Field(default_factory=dict, description="Additional metadata")
+    history: IncidentHistory = Field(default=None, description="State transition history")
 
     def __init__(self, **data):
         super().__init__(**data)

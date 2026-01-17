@@ -10,14 +10,14 @@
 Phase 4 Implementation - 基於開發階段優先順序框架
 """
 
-from .analytics import CommercialAnalytics
 from .integration import EnterpriseIntegration
+from .analytics import CommercialAnalytics
 from .recommendation import IntelligentRecommendation
 from .security import NextGenSecurity
 
 __all__ = [
-    "EnterpriseIntegration",
-    "CommercialAnalytics",
-    "IntelligentRecommendation",
-    "NextGenSecurity",
+    'EnterpriseIntegration',
+    'CommercialAnalytics',
+    'IntelligentRecommendation',
+    'NextGenSecurity',
 ]

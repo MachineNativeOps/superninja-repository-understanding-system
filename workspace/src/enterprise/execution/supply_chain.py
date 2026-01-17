@@ -22,7 +22,6 @@ logger = logging.getLogger(__name__)
 
 class AttestationType(Enum):
     """Types of attestations"""
-
     SLSA_PROVENANCE = "slsa_provenance"
     SBOM = "sbom"
     VULNERABILITY_SCAN = "vulnerability_scan"
@@ -32,7 +31,6 @@ class AttestationType(Enum):
 
 class SBOMFormat(Enum):
     """SBOM format types"""
-
     SPDX_JSON = "spdx-json"
     SPDX_TAG_VALUE = "spdx-tag-value"
     CYCLONEDX_JSON = "cyclonedx-json"
@@ -41,7 +39,6 @@ class SBOMFormat(Enum):
 
 class SLSALevel(Enum):
     """SLSA security levels"""
-
     L0 = 0  # No guarantees
     L1 = 1  # Provenance exists
     L2 = 2  # Hosted build + signed provenance
@@ -51,7 +48,6 @@ class SLSALevel(Enum):
 @dataclass
 class ImageDigest:
     """Container image digest"""
-
     algorithm: str = "sha256"
     digest: str = ""
 
@@ -73,7 +69,6 @@ class ImageReference:
 
     Immutable reference to a specific image version.
     """
-
     registry: str = "ghcr.io"
     repository: str = "machinenativeops/worker"
     tag: str = "latest"
@@ -95,7 +90,6 @@ class ImageReference:
 @dataclass
 class SBOMPackage:
     """Package entry in SBOM"""
-
     name: str = ""
     version: str = ""
     supplier: str = ""
@@ -112,7 +106,6 @@ class SBOM:
 
     Lists all components in a worker image.
     """
-
     id: UUID = field(default_factory=uuid4)
 
     # Image this SBOM describes
@@ -145,7 +138,6 @@ class SBOM:
 @dataclass
 class ImageSignature:
     """Container image signature"""
-
     id: UUID = field(default_factory=uuid4)
 
     # Image
@@ -157,7 +149,7 @@ class ImageSignature:
 
     # Signing identity
     signer_identity: str = ""  # e.g., "ci@machinenativeops.io"
-    signer_issuer: str = ""  # e.g., "https://accounts.google.com"
+    signer_issuer: str = ""    # e.g., "https://accounts.google.com"
 
     # Verification
     public_key: str | None = None
@@ -180,7 +172,6 @@ class SLSAProvenance:
 
     Documents how an artifact was built.
     """
-
     id: UUID = field(default_factory=uuid4)
 
     # Subject (what was built)
@@ -228,7 +219,6 @@ class ImageAttestation:
 
     Bundles all attestation types together.
     """
-
     id: UUID = field(default_factory=uuid4)
 
     # Image
@@ -257,23 +247,27 @@ class ImageAttestation:
 class AttestationStorage(Protocol):
     """Interface for attestation storage"""
 
-    async def save(self, attestation: ImageAttestation) -> ImageAttestation: ...
+    async def save(self, attestation: ImageAttestation) -> ImageAttestation:
+        ...
 
     async def get_by_digest(
         self,
         digest: ImageDigest,
-    ) -> ImageAttestation | None: ...
+    ) -> ImageAttestation | None:
+        ...
 
     async def get_by_image(
         self,
         image_reference: ImageReference,
-    ) -> ImageAttestation | None: ...
+    ) -> ImageAttestation | None:
+        ...
 
     async def list_attestations(
         self,
         repository: str,
         limit: int = 100,
-    ) -> list[ImageAttestation]: ...
+    ) -> list[ImageAttestation]:
+        ...
 
 
 class SignatureVerifier(Protocol):
@@ -283,13 +277,15 @@ class SignatureVerifier(Protocol):
         self,
         image_reference: ImageReference,
         signature: ImageSignature,
-    ) -> bool: ...
+    ) -> bool:
+        ...
 
     async def verify_provenance(
         self,
         image_reference: ImageReference,
         provenance: SLSAProvenance,
-    ) -> bool: ...
+    ) -> bool:
+        ...
 
 
 class SBOMScanner(Protocol):
@@ -298,7 +294,8 @@ class SBOMScanner(Protocol):
     async def scan_vulnerabilities(
         self,
         sbom: SBOM,
-    ) -> list[dict[str, Any]]: ...
+    ) -> list[dict[str, Any]]:
+        ...
 
 
 @dataclass
@@ -327,19 +324,15 @@ class SupplyChainValidator:
     max_high_vulns: int = 5
 
     # Allowed images
-    allowed_registries: list[str] = field(
-        default_factory=lambda: [
-            "ghcr.io/machinenativeops",
-            "docker.io/machinenativeops",
-        ]
-    )
+    allowed_registries: list[str] = field(default_factory=lambda: [
+        "ghcr.io/machinenativeops",
+        "docker.io/machinenativeops",
+    ])
 
-    allowed_images: list[str] = field(
-        default_factory=lambda: [
-            "ghcr.io/machinenativeops/worker",
-            "ghcr.io/machinenativeops/scanner",
-        ]
-    )
+    allowed_images: list[str] = field(default_factory=lambda: [
+        "ghcr.io/machinenativeops/worker",
+        "ghcr.io/machinenativeops/scanner",
+    ])
 
     # ------------------------------------------------------------------
     # Validation
@@ -395,10 +388,7 @@ class SupplyChainValidator:
                 errors.append(
                     f"SLSA L{self.require_slsa_level.value} provenance required but not found"
                 )
-            elif (
-                attestation.slsa_provenance.slsa_level.value
-                < self.require_slsa_level.value
-            ):
+            elif attestation.slsa_provenance.slsa_level.value < self.require_slsa_level.value:
                 errors.append(
                     f"SLSA L{self.require_slsa_level.value} required, "
                     f"got L{attestation.slsa_provenance.slsa_level.value}"
@@ -455,15 +445,9 @@ class SupplyChainValidator:
         # Scan SBOM for vulnerabilities
         if sbom and self.sbom_scanner:
             vulns = await self.sbom_scanner.scan_vulnerabilities(sbom)
-            attestation.critical_vulns = sum(
-                1 for v in vulns if v.get("severity") == "CRITICAL"
-            )
-            attestation.high_vulns = sum(
-                1 for v in vulns if v.get("severity") == "HIGH"
-            )
-            attestation.medium_vulns = sum(
-                1 for v in vulns if v.get("severity") == "MEDIUM"
-            )
+            attestation.critical_vulns = sum(1 for v in vulns if v.get("severity") == "CRITICAL")
+            attestation.high_vulns = sum(1 for v in vulns if v.get("severity") == "HIGH")
+            attestation.medium_vulns = sum(1 for v in vulns if v.get("severity") == "MEDIUM")
             attestation.low_vulns = sum(1 for v in vulns if v.get("severity") == "LOW")
 
         if self.storage:
@@ -505,7 +489,6 @@ class SupplyChainValidator:
 # Image Pinning Helpers
 # ------------------------------------------------------------------
 
-
 @dataclass
 class ImagePinConfig:
     """
@@ -513,7 +496,6 @@ class ImagePinConfig:
 
     Pins specific image versions for stability and security.
     """
-
     # Pinned images
     pinned_images: dict[str, str] = field(default_factory=dict)
     # e.g., {"worker": "ghcr.io/mno/worker@sha256:abc123..."}

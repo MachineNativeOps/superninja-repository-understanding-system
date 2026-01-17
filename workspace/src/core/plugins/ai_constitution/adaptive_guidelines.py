@@ -21,17 +21,15 @@ from typing import Any
 
 class GuidelineScope(Enum):
     """指南適用範圍"""
-
-    GLOBAL = "global"  # 全局適用
-    DOMAIN = "domain"  # 特定領域
-    USER = "user"  # 特定使用者
-    SESSION = "session"  # 特定會話
-    TASK = "task"  # 特定任務
+    GLOBAL = "global"           # 全局適用
+    DOMAIN = "domain"           # 特定領域
+    USER = "user"               # 特定使用者
+    SESSION = "session"         # 特定會話
+    TASK = "task"               # 特定任務
 
 
 class AdaptationTrigger(Enum):
     """調整觸發條件"""
-
     USER_FEEDBACK = "user_feedback"
     PERFORMANCE_METRIC = "performance_metric"
     ERROR_PATTERN = "error_pattern"
@@ -43,7 +41,6 @@ class AdaptationTrigger(Enum):
 @dataclass
 class GuidelineAdjustment:
     """指南調整記錄"""
-
     guideline_id: str
     trigger: AdaptationTrigger
     old_value: Any
@@ -57,7 +54,6 @@ class GuidelineAdjustment:
 @dataclass
 class GuidelineEvaluation:
     """指南評估結果"""
-
     guideline_id: str
     applicable: bool
     recommendation: str
@@ -71,7 +67,7 @@ class DomainGuideline:
     """
     領域指南
     Domain-specific Guidelines
-
+    
     針對特定業務領域的行為指南
     """
 
@@ -171,16 +167,14 @@ class DomainGuideline:
             self.guidelines[key]["value"] = value
 
             # 記錄調整
-            self._adjustment_history.append(
-                GuidelineAdjustment(
-                    guideline_id=f"{self.domain}.{key}",
-                    trigger=AdaptationTrigger.USER_FEEDBACK,
-                    old_value=old_value,
-                    new_value=value,
-                    reason=reason,
-                    confidence=1.0,
-                )
-            )
+            self._adjustment_history.append(GuidelineAdjustment(
+                guideline_id=f"{self.domain}.{key}",
+                trigger=AdaptationTrigger.USER_FEEDBACK,
+                old_value=old_value,
+                new_value=value,
+                reason=reason,
+                confidence=1.0
+            ))
 
     def evaluate(self, context: dict[str, Any]) -> list[GuidelineEvaluation]:
         """評估所有指南在當前情境下的適用性"""
@@ -194,7 +188,10 @@ class DomainGuideline:
         return evaluations
 
     def _evaluate_single(
-        self, key: str, guideline: dict[str, Any], context: dict[str, Any]
+        self,
+        key: str,
+        guideline: dict[str, Any],
+        context: dict[str, Any]
     ) -> GuidelineEvaluation:
         """評估單一指南"""
         applicable = True
@@ -211,9 +208,7 @@ class DomainGuideline:
 
         if "resource_constrained" in context and context["resource_constrained"]:
             if key == "batch_size":
-                recommendation = max(
-                    guideline.get("min", 100), guideline.get("value", 1000) // 2
-                )
+                recommendation = max(guideline.get("min", 100), guideline.get("value", 1000) // 2)
                 confidence = 0.75
 
         return GuidelineEvaluation(
@@ -222,7 +217,7 @@ class DomainGuideline:
             recommendation=str(recommendation),
             confidence=confidence,
             context_factors=context,
-            alternatives=alternatives,
+            alternatives=alternatives
         )
 
     def adapt(self, feedback: dict[str, Any]) -> list[GuidelineAdjustment]:
@@ -241,9 +236,7 @@ class DomainGuideline:
             if feedback_type == "too_strict":
                 if "options" in guideline:
                     options = guideline["options"]
-                    current_idx = (
-                        options.index(old_value) if old_value in options else 0
-                    )
+                    current_idx = options.index(old_value) if old_value in options else 0
                     if current_idx > 0:
                         new_value = options[current_idx - 1]
                 elif isinstance(old_value, (int, float)):
@@ -252,9 +245,7 @@ class DomainGuideline:
             elif feedback_type == "too_lenient":
                 if "options" in guideline:
                     options = guideline["options"]
-                    current_idx = (
-                        options.index(old_value) if old_value in options else 0
-                    )
+                    current_idx = options.index(old_value) if old_value in options else 0
                     if current_idx < len(options) - 1:
                         new_value = options[current_idx + 1]
                 elif isinstance(old_value, (int, float)):
@@ -268,7 +259,7 @@ class DomainGuideline:
                     old_value=old_value,
                     new_value=new_value,
                     reason=f"User feedback: {feedback_type}",
-                    confidence=0.85,
+                    confidence=0.85
                 )
                 adjustments.append(adjustment)
                 self._adjustment_history.append(adjustment)
@@ -284,7 +275,7 @@ class ContextualGuideline:
     """
     情境指南
     Contextual Guidelines
-
+    
     根據運行情境動態生成的指南
     """
 
@@ -341,13 +332,11 @@ class ContextualGuideline:
             activated["experimentation_allowed"] = True
 
         self._active_guidelines = activated
-        self._context_history.append(
-            {
-                "context": context,
-                "activated_guidelines": activated,
-                "timestamp": datetime.utcnow().isoformat(),
-            }
-        )
+        self._context_history.append({
+            "context": context,
+            "activated_guidelines": activated,
+            "timestamp": datetime.utcnow().isoformat()
+        })
 
         return activated
 
@@ -368,7 +357,7 @@ class LearningGuideline:
     """
     學習型指南
     Learning Guidelines
-
+    
     從操作經驗中學習並自動調整的指南
     """
 
@@ -385,13 +374,11 @@ class LearningGuideline:
         if operation_type not in self._learning_data:
             self._learning_data[operation_type] = []
 
-        self._learning_data[operation_type].append(
-            {
-                "operation": operation,
-                "outcome": outcome,
-                "timestamp": datetime.utcnow().isoformat(),
-            }
-        )
+        self._learning_data[operation_type].append({
+            "operation": operation,
+            "outcome": outcome,
+            "timestamp": datetime.utcnow().isoformat()
+        })
 
         # 當數據足夠時觸發學習
         if len(self._learning_data[operation_type]) >= 10:
@@ -417,12 +404,15 @@ class LearningGuideline:
                 "recommended_params": success_params,
                 "sample_size": len(data),
                 "confidence": min(0.95, 0.5 + (len(data) / 100)),
-                "learned_at": datetime.utcnow().isoformat(),
+                "learned_at": datetime.utcnow().isoformat()
             }
 
             self._learned_patterns[operation_type] = pattern
 
-    def _extract_common_params(self, records: list[dict[str, Any]]) -> dict[str, Any]:
+    def _extract_common_params(
+        self,
+        records: list[dict[str, Any]]
+    ) -> dict[str, Any]:
         """提取成功案例的共同參數"""
         common_params = {}
 
@@ -433,14 +423,18 @@ class LearningGuideline:
                 if key not in ["type", "timestamp", "id"]:
                     # 檢查此參數在所有成功案例中是否一致
                     consistent = all(
-                        r.get("operation", {}).get(key) == value for r in records
+                        r.get("operation", {}).get(key) == value
+                        for r in records
                     )
                     if consistent:
                         common_params[key] = value
 
         return common_params
 
-    def get_recommendation(self, operation_type: str) -> dict[str, Any] | None:
+    def get_recommendation(
+        self,
+        operation_type: str
+    ) -> dict[str, Any] | None:
         """獲取學習到的建議"""
         pattern = self._learned_patterns.get(operation_type)
 
@@ -454,7 +448,10 @@ class LearningGuideline:
 
         return None
 
-    def apply_learned_adjustments(self, operation: dict[str, Any]) -> dict[str, Any]:
+    def apply_learned_adjustments(
+        self,
+        operation: dict[str, Any]
+    ) -> dict[str, Any]:
         """應用學習到的調整"""
         operation_type = operation.get("type", "unknown")
         recommendation = self.get_recommendation(operation_type)
@@ -489,7 +486,7 @@ class AdaptiveGuidelineEngine:
     """
     自適應指南引擎 - 整合所有自適應指南
     Adaptive Guideline Engine - Integrates all adaptive guidelines
-
+    
     自成閉環：獨立管理所有自適應指南的評估和調整
     """
 
@@ -520,7 +517,9 @@ class AdaptiveGuidelineEngine:
         return self._domain_guidelines[domain]
 
     def evaluate_for_operation(
-        self, operation: dict[str, Any], context: dict[str, Any]
+        self,
+        operation: dict[str, Any],
+        context: dict[str, Any]
     ) -> dict[str, Any]:
         """評估操作的所有適用指南"""
         result = {
@@ -557,7 +556,7 @@ class AdaptiveGuidelineEngine:
         result["final_recommendations"] = self._merge_recommendations(
             result["domain_guidelines"],
             result["contextual_guidelines"],
-            result["learned_recommendations"],
+            result["learned_recommendations"]
         )
 
         return result
@@ -566,7 +565,7 @@ class AdaptiveGuidelineEngine:
         self,
         domain: dict[str, Any],
         contextual: dict[str, Any],
-        learned: dict[str, Any],
+        learned: dict[str, Any]
     ) -> dict[str, Any]:
         """合併所有來源的建議"""
         merged = {}
@@ -590,13 +589,17 @@ class AdaptiveGuidelineEngine:
         return merged
 
     def record_operation_outcome(
-        self, operation: dict[str, Any], outcome: dict[str, Any]
+        self,
+        operation: dict[str, Any],
+        outcome: dict[str, Any]
     ):
         """記錄操作結果供學習"""
         self.learning.record_outcome(operation, outcome)
 
     def adapt_from_feedback(
-        self, domain: str, feedback: dict[str, Any]
+        self,
+        domain: str,
+        feedback: dict[str, Any]
     ) -> list[GuidelineAdjustment]:
         """根據反饋調整指南"""
         domain_guideline = self.get_domain_guideline(domain)

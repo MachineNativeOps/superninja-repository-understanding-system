@@ -13,39 +13,25 @@ namePrefix: prod-
 labels:
 - pairs:
     environment: prod
-
   includeSelectors: false
-
 
 replicas:
 - name: super-agent
   count: 3
 
-
 images:
 - name: machinenativeops/super-agent
   newTag: v1.0.0
 
-
 patches:
 - target:
     kind: HorizontalPodAutoscaler
-
     name: super-agent-hpa
-
   patch: |-
-
     apiVersion: autoscaling/v2
-
     kind: HorizontalPodAutoscaler
-
     metadata:
-
       name: super-agent-hpa
-
     spec:
-
       minReplicas: 3
-
       maxReplicas: 10
-

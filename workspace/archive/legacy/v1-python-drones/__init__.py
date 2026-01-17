@@ -8,21 +8,15 @@ __version__ = "1.1.0"
 __author__ = "SynergyMesh Team"
 
 # 使用延遲導入以避免循環依賴
-
-
 def get_drones():
     """取得無人機類別"""
     from .drones import AutopilotDrone, BaseDrone, CoordinatorDrone, DeploymentDrone
-
     return BaseDrone, CoordinatorDrone, AutopilotDrone, DeploymentDrone
-
 
 def get_config():
     """取得配置類別"""
     from .config import DroneConfig
-
     return DroneConfig
-
 
 __all__ = [
     "__version__",

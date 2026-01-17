@@ -41,23 +41,23 @@ from .sustainable_analyzer import (
 
 __all__ = [
     # 永續發展
-    "SustainableAnalyzer",
-    "CarbonFootprint",
-    "EnergyEfficiency",
-    "GreenScore",
+    'SustainableAnalyzer',
+    'CarbonFootprint',
+    'EnergyEfficiency',
+    'GreenScore',
     # 低代碼
-    "LowCodeIntegration",
-    "CitizenDeveloper",
-    "VisualWorkflow",
-    "AutoGenerator",
+    'LowCodeIntegration',
+    'CitizenDeveloper',
+    'VisualWorkflow',
+    'AutoGenerator',
     # 隱私優先
-    "PrivacyFramework",
-    "PrivacyByDesign",
-    "DataSovereignty",
-    "ConsentManager",
+    'PrivacyFramework',
+    'PrivacyByDesign',
+    'DataSovereignty',
+    'ConsentManager',
     # 發展追蹤
-    "DevelopmentTracker",
-    "Strategy321",
-    "TeamCapability",
-    "ContinuousOptimization",
+    'DevelopmentTracker',
+    'Strategy321',
+    'TeamCapability',
+    'ContinuousOptimization',
 ]

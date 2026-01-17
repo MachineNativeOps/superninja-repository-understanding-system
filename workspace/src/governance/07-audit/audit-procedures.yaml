@@ -6,39 +6,22 @@ status: "active"
 
 audit_procedures:
   planning:
-
     - "Define scope"
-
     - "Risk assessment"
-
     - "Resource allocation"
-
   
   execution:
-
     - "Evidence collection"
-
     - "Testing procedures"
-
     - "Document review"
-
     - "Interviews"
-
   
   reporting:
-
     - "Draft findings"
-
     - "Management response"
-
     - "Final report"
-
   
   follow_up:
-
     - "Action tracking"
-
     - "Verification"
-
     - "Closure"
-

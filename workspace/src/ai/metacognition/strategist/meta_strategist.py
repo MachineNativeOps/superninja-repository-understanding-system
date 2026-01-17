@@ -9,15 +9,14 @@ Responsibilities:
 - Emergent behavior coordination
 """
 
+from typing import Dict, List, Optional, Any, Tuple
 from dataclasses import dataclass
-from datetime import datetime, timezone
 from enum import Enum
-from typing import Any, Dict, List, Optional, Tuple
+from datetime import datetime, timezone
 
 
 class StrategyType(Enum):
     """Strategy types."""
-
     OPTIMIZATION = "optimization"
     ADAPTATION = "adaptation"
     EVOLUTION = "evolution"
@@ -26,7 +25,6 @@ class StrategyType(Enum):
 
 class StrategyPriority(Enum):
     """Strategy priority levels."""
-
     CRITICAL = 1
     HIGH = 2
     MEDIUM = 3
@@ -36,7 +34,6 @@ class StrategyPriority(Enum):
 @dataclass
 class SystemState:
     """Current system state snapshot."""
-
     timestamp: datetime
     layers: Dict[str, Dict[str, Any]]
     metrics: Dict[str, float]
@@ -46,7 +43,6 @@ class SystemState:
 @dataclass
 class Strategy:
     """Strategic decision."""
-
     id: str
     type: StrategyType
     priority: StrategyPriority
@@ -60,7 +56,6 @@ class Strategy:
 @dataclass
 class StrategicGoal:
     """High-level strategic goal."""
-
     id: str
     name: str
     target_metrics: Dict[str, float]
@@ -141,9 +136,8 @@ class MetaStrategist:
         self._strategies = strategies
         return strategies
 
-    async def _strategize_for_goal(
-        self, state: SystemState, goal: StrategicGoal
-    ) -> Optional[Strategy]:
+    async def _strategize_for_goal(self, state: SystemState,
+                                   goal: StrategicGoal) -> Optional[Strategy]:
         """Generate strategy for a specific goal."""
         # Calculate gap between current and target metrics
         gaps = {}
@@ -176,9 +170,7 @@ class MetaStrategist:
             confidence=self._calculate_confidence(gaps),
         )
 
-    def _map_metric_to_action(
-        self, metric: str, gap: float
-    ) -> Tuple[str, Dict[str, Any]]:
+    def _map_metric_to_action(self, metric: str, gap: float) -> Tuple[str, Dict[str, Any]]:
         """Map a metric gap to an action and layer."""
         # Mapping of metrics to responsible layers
         metric_layer_map = {
@@ -233,13 +225,11 @@ class MetaStrategist:
                     type=StrategyType.COORDINATION,
                     priority=StrategyPriority.HIGH,
                     description=f"Cross-layer optimization for underperforming {layer}",
-                    actions=[
-                        {
-                            "type": "redistribute_load",
-                            "from_layer": layer,
-                            "to_layers": [l for l in self.AXIOM_LAYERS if l != layer],
-                        }
-                    ],
+                    actions=[{
+                        "type": "redistribute_load",
+                        "from_layer": layer,
+                        "to_layers": [l for l in self.AXIOM_LAYERS if l != layer],
+                    }],
                     affected_layers=[layer],
                     expected_outcome={"layer_health": avg_health},
                     confidence=0.6,

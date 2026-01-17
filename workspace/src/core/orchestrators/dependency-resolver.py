@@ -11,11 +11,11 @@ Dependency Resolver - 智能依賴解析和管理系統
 6. 性能優化建議
 """
 
-import json
 import logging
-from collections import defaultdict, deque
+from typing import Dict, List, Set, Tuple, Optional
 from dataclasses import dataclass, field
-from typing import Dict, List, Optional, Set, Tuple
+from collections import defaultdict, deque
+import json
 
 logger = logging.getLogger(__name__)
 
@@ -23,7 +23,6 @@ logger = logging.getLogger(__name__)
 @dataclass
 class DependencyNode:
     """依賴圖中的節點"""
-
     component_id: str
     component_type: str
     priority: int = 0
@@ -35,7 +34,6 @@ class DependencyNode:
 @dataclass
 class ExecutionPhase:
     """執行階段"""
-
     phase_number: int
     components: List[str]
     can_parallel: bool
@@ -68,7 +66,7 @@ class DependencyResolver:
         component_id: str,
         component_type: str,
         priority: int = 0,
-        weight: float = 1.0,
+        weight: float = 1.0
     ) -> bool:
         """添加組件"""
         try:
@@ -76,14 +74,18 @@ class DependencyResolver:
                 component_id=component_id,
                 component_type=component_type,
                 priority=priority,
-                weight=weight,
+                weight=weight
             )
             return True
         except Exception as e:
             logger.error(f"❌ 添加組件失敗 {component_id}: {e}")
             return False
 
-    def add_dependency(self, from_component: str, to_component: str) -> bool:
+    def add_dependency(
+        self,
+        from_component: str,
+        to_component: str
+    ) -> bool:
         """添加依賴關係"""
         try:
             # 驗證組件存在
@@ -112,7 +114,10 @@ class DependencyResolver:
             return False
 
     def _would_create_cycle(
-        self, from_component: str, to_component: str, visited: Optional[Set[str]] = None
+        self,
+        from_component: str,
+        to_component: str,
+        visited: Optional[Set[str]] = None
     ) -> bool:
         """檢查是否會創建循環"""
         if visited is None:
@@ -132,7 +137,10 @@ class DependencyResolver:
 
         return False
 
-    def topological_sort(self, component_ids: Optional[List[str]] = None) -> List[str]:
+    def topological_sort(
+        self,
+        component_ids: Optional[List[str]] = None
+    ) -> List[str]:
         """拓撲排序"""
         if component_ids is None:
             component_ids = list(self.nodes.keys())
@@ -155,7 +163,9 @@ class DependencyResolver:
         while queue:
             # 按優先級排序
             queue_list = sorted(
-                queue, key=lambda x: (self.nodes[x].priority, x), reverse=True
+                queue,
+                key=lambda x: (self.nodes[x].priority, x),
+                reverse=True
             )
             current = queue_list.pop(0)
             queue = deque(queue_list)
@@ -173,7 +183,8 @@ class DependencyResolver:
         return result
 
     def get_execution_phases(
-        self, component_ids: Optional[List[str]] = None
+        self,
+        component_ids: Optional[List[str]] = None
     ) -> List[ExecutionPhase]:
         """獲取執行階段（並行化分析）"""
         sorted_components = self.topological_sort(component_ids)
@@ -209,9 +220,10 @@ class DependencyResolver:
                 components=current_phase,
                 can_parallel=len(current_phase) > 1,
                 estimated_duration_ms=estimated_time,
-                dependency_count=len(
-                    [d for comp in current_phase for d in self.graph.get(comp, set())]
-                ),
+                dependency_count=len([
+                    d for comp in current_phase
+                    for d in self.graph.get(comp, set())
+                ])
             )
 
             phases.append(phase)
@@ -254,7 +266,8 @@ class DependencyResolver:
         return critical_path
 
     def get_parallelization_analysis(
-        self, component_ids: Optional[List[str]] = None
+        self,
+        component_ids: Optional[List[str]] = None
     ) -> Dict[str, float]:
         """獲取並行化分析"""
         phases = self.get_execution_phases(component_ids)
@@ -269,7 +282,7 @@ class DependencyResolver:
             "sequential_time_ms": sequential_time,
             "parallel_time_ms": parallel_time,
             "parallelization_factor": parallelization_factor,
-            "potential_speedup": f"{parallelization_factor:.2f}x",
+            "potential_speedup": f"{parallelization_factor:.2f}x"
         }
 
     def get_dependency_stats(self) -> Dict[str, any]:
@@ -282,7 +295,7 @@ class DependencyResolver:
             "total_dependencies": total_edges,
             "average_dependency_count": avg_degree,
             "max_dependency_depth": self._calculate_max_depth(),
-            "circular_dependencies": 0,  # 我們檢測並防止了循環
+            "circular_dependencies": 0  # 我們檢測並防止了循環
         }
 
     def _calculate_max_depth(self) -> int:
@@ -295,7 +308,11 @@ class DependencyResolver:
 
         return max_depth
 
-    def _calculate_depth(self, component: str, visited: Set[str]) -> int:
+    def _calculate_depth(
+        self,
+        component: str,
+        visited: Set[str]
+    ) -> int:
         """遞歸計算深度"""
         if component in visited:
             return 0
@@ -307,7 +324,8 @@ class DependencyResolver:
             return 1
 
         max_dep_depth = max(
-            self._calculate_depth(dep, visited.copy()) for dep in dependencies
+            self._calculate_depth(dep, visited.copy())
+            for dep in dependencies
         )
 
         return 1 + max_dep_depth
@@ -320,18 +338,26 @@ class DependencyResolver:
 
         # 檢查依賴複雜性
         if stats["average_dependency_count"] > 5:
-            recommendations.append("⚠️ 依賴複雜性高，考慮重構以減少耦合")
+            recommendations.append(
+                "⚠️ 依賴複雜性高，考慮重構以減少耦合"
+            )
 
         # 檢查並行化機會
         if analysis["parallelization_factor"] < 2:
-            recommendations.append("💡 低並行化機會，考慮優化依賴關係")
+            recommendations.append(
+                "💡 低並行化機會，考慮優化依賴關係"
+            )
 
         # 檢查深度
         if stats["max_dependency_depth"] > 5:
-            recommendations.append("🔗 依賴深度深，考慮引入中間層")
+            recommendations.append(
+                "🔗 依賴深度深，考慮引入中間層"
+            )
 
         if not recommendations:
-            recommendations.append("✅ 依賴結構健康，無特別建議")
+            recommendations.append(
+                "✅ 依賴結構健康，無特別建議"
+            )
 
         return recommendations
 
@@ -343,7 +369,7 @@ class DependencyResolver:
                     "id": node.component_id,
                     "type": node.component_type,
                     "priority": node.priority,
-                    "weight": node.weight,
+                    "weight": node.weight
                 }
                 for node in self.nodes.values()
             ],
@@ -353,9 +379,13 @@ class DependencyResolver:
                 for to_comp in self.graph[from_comp]
             ],
             "statistics": self.get_dependency_stats(),
-            "recommendations": self.get_optimization_recommendations(),
+            "recommendations": self.get_optimization_recommendations()
         }
 
 
 # 導出
-__all__ = ["DependencyResolver", "DependencyNode", "ExecutionPhase"]
+__all__ = [
+    "DependencyResolver",
+    "DependencyNode",
+    "ExecutionPhase"
+]

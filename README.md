@@ -1,11 +1,5 @@
 # MachineNativeOps
 
-> **📚 Quick Navigation**: 
-> - **Project Status** → [CONSOLIDATED_PROJECT_STATUS.md](CONSOLIDATED_PROJECT_STATUS.md)
-> - **Documentation Index** → [DOCUMENTATION_INDEX.md](DOCUMENTATION_INDEX.md)
-> - **Task Tracking** → [todo.md](todo.md)
-> - **Quick Start** → [QUICKSTART.md](QUICKSTART.md)
-
 本倉庫同時包含：
 
 - **Taxonomy Root Layer**（專案命名分類法）：以 Linux FHS 風格落地的最小根層骨架，並以嚴謹的 taxonomy 命名分類將治理配置集中到 `controlplane/`。
@@ -17,12 +11,10 @@
 
 ## 🎯 當前焦點
 
-- **✅ NEW (2026-01-16)**: Phase 2 eval() 安全修復完成，HIGH 問題減少 81%，安全合規性達到 95% - 詳見 [PHASE2_EVAL_REMEDIATION_COMPLETE.md](PHASE2_EVAL_REMEDIATION_COMPLETE.md)
-- **📊 NEW (2026-01-16)**: 專案文檔全面整合，統一狀態追蹤 - 詳見 [CONSOLIDATED_PROJECT_STATUS.md](CONSOLIDATED_PROJECT_STATUS.md)
 - 專案已鎖定執行既定的三階段重構計劃（解構 → 集成 → 重構），詳見 `INSTANT-EXECUTION-REFACTOR-PLAN.md` 與 `workspace/docs/refactor_playbooks/README.md`
-- ✨ QuantumFlow Toolkit 已完全整合，支持混合量子-古典工作流程（見 `workspace/docs/QUANTUMFLOW_INTEGRATION_REPORT.md`）
-- 🔬 量子增強驗證系統已整合，提供 8 維度驗證矩陣，99.3% 準確率，< 100ms 延遲（見 `workspace/docs/QUANTUM_VALIDATION_INTEGRATION_REPORT.md`）
-- 🔍 CI Error Analyzer 自動化工作流分析，自動檢測錯誤並提供修復建議（見 `docs/ci-error-analyzer-integration.md`）
+- ✨ **NEW**: QuantumFlow Toolkit 已完全整合，支持混合量子-古典工作流程（見 `workspace/docs/QUANTUMFLOW_INTEGRATION_REPORT.md`）
+- 🔬 **NEW**: 量子增強驗證系統已整合，提供 8 維度驗證矩陣，99.3% 準確率，< 100ms 延遲（見 `workspace/docs/QUANTUM_VALIDATION_INTEGRATION_REPORT.md`）
+- 🔍 **NEW**: CI Error Analyzer 自動化工作流分析，自動檢測錯誤並提供修復建議（見 `docs/ci-error-analyzer-integration.md`）
 - ⚡ **INSTANT 觸發器**: 自動化 PR 驗證與重構驗證，事件驅動，零人工介入（見 `.github/workflows/quantum-validation-pr.yml`）
 - 所有工作優先支持架構重構與自動化執行，不引入與計劃無關的需求
 

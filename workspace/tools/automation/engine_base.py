@@ -17,142 +17,113 @@ Version: 1.0.0
 """
 
 import asyncio
-import hashlib
 import json
-import logging
+import hashlib
 import traceback
-import uuid
 from abc import ABC, abstractmethod
-from contextlib import asynccontextmanager
-from dataclasses import asdict, dataclass, field
-from datetime import datetime, timedelta
 from enum import Enum, auto
 from pathlib import Path
+from datetime import datetime, timedelta
 from typing import (
-    Any,
-    Callable,
-    Coroutine,
-    Dict,
-    Generic,
-    List,
-    Optional,
-    Set,
-    Tuple,
-    Type,
-    TypeVar,
-    Union,
+    Dict, List, Optional, Any, Callable, TypeVar, Generic,
+    Union, Coroutine, Set, Tuple, Type
 )
+from dataclasses import dataclass, field, asdict
+from contextlib import asynccontextmanager
+import logging
+import uuid
 
 # ============================================================================
 # 類型定義
 # ============================================================================
 
-T = TypeVar("T")
-EngineResult = TypeVar("EngineResult")
+T = TypeVar('T')
+EngineResult = TypeVar('EngineResult')
 
 # ============================================================================
 # 枚舉定義
 # ============================================================================
 
-
 class EngineState(Enum):
     """引擎狀態"""
-
     UNINITIALIZED = auto()  # 未初始化
-    INITIALIZING = auto()  # 初始化中
-    IDLE = auto()  # 閒置
-    RUNNING = auto()  # 運行中
-    PAUSED = auto()  # 暫停
-    STOPPING = auto()  # 停止中
-    STOPPED = auto()  # 已停止
-    ERROR = auto()  # 錯誤
-    RECOVERING = auto()  # 恢復中
-    TERMINATED = auto()  # 已終止
-
+    INITIALIZING = auto()   # 初始化中
+    IDLE = auto()           # 閒置
+    RUNNING = auto()        # 運行中
+    PAUSED = auto()         # 暫停
+    STOPPING = auto()       # 停止中
+    STOPPED = auto()        # 已停止
+    ERROR = auto()          # 錯誤
+    RECOVERING = auto()     # 恢復中
+    TERMINATED = auto()     # 已終止
 
 class EngineType(Enum):
     """引擎類型"""
-
-    COGNITIVE = "cognitive"  # 認知推理
-    EXECUTION = "execution"  # 執行操作
-    VALIDATION = "validation"  # 驗證檢查
-    TRANSFORM = "transform"  # 轉換處理
-    MONITORING = "monitoring"  # 監控觀測
-    ORCHESTRATION = "orchestration"  # 編排調度
-    INTEGRATION = "integration"  # 整合連接
-    GENERATION = "generation"  # 生成創建
-
+    COGNITIVE = "cognitive"           # 認知推理
+    EXECUTION = "execution"           # 執行操作
+    VALIDATION = "validation"         # 驗證檢查
+    TRANSFORM = "transform"           # 轉換處理
+    MONITORING = "monitoring"         # 監控觀測
+    ORCHESTRATION = "orchestration"   # 編排調度
+    INTEGRATION = "integration"       # 整合連接
+    GENERATION = "generation"         # 生成創建
 
 class ExecutionMode(Enum):
     """執行模式"""
-
-    AUTONOMOUS = "autonomous"  # 全自主 (100% 機器)
-    SUPERVISED = "supervised"  # 監督式 (有人類監控)
-    INTERACTIVE = "interactive"  # 互動式 (需人類確認)
-    DRY_RUN = "dry_run"  # 模擬執行
-
+    AUTONOMOUS = "autonomous"         # 全自主 (100% 機器)
+    SUPERVISED = "supervised"         # 監督式 (有人類監控)
+    INTERACTIVE = "interactive"       # 互動式 (需人類確認)
+    DRY_RUN = "dry_run"              # 模擬執行
 
 class Priority(Enum):
     """優先級"""
-
-    CRITICAL = 0  # 最高優先
+    CRITICAL = 0    # 最高優先
     HIGH = 1
     NORMAL = 2
     LOW = 3
     BACKGROUND = 4  # 背景執行
 
-
 # ============================================================================
 # 配置資料結構
 # ============================================================================
 
-
 @dataclass
 class RetryConfig:
     """重試配置"""
-
     max_attempts: int = 3
-    initial_delay: float = 1.0  # 秒
-    max_delay: float = 60.0  # 秒
+    initial_delay: float = 1.0        # 秒
+    max_delay: float = 60.0           # 秒
     exponential_base: float = 2.0
     jitter: bool = True
     retry_on: List[Type[Exception]] = field(default_factory=lambda: [Exception])
 
-
 @dataclass
 class TimeoutConfig:
     """超時配置"""
-
-    initialization: float = 30.0  # 初始化超時
-    execution: float = 300.0  # 執行超時
-    shutdown: float = 30.0  # 關閉超時
-    heartbeat: float = 10.0  # 心跳間隔
-
+    initialization: float = 30.0      # 初始化超時
+    execution: float = 300.0          # 執行超時
+    shutdown: float = 30.0            # 關閉超時
+    heartbeat: float = 10.0           # 心跳間隔
 
 @dataclass
 class ResourceConfig:
     """資源配置"""
-
     max_memory_mb: int = 1024
     max_cpu_percent: float = 80.0
     max_concurrent_tasks: int = 10
     max_queue_size: int = 1000
 
-
 @dataclass
 class PersistenceConfig:
     """持久化配置"""
-
     enabled: bool = True
     state_dir: str = ".engine_state"
     checkpoint_interval: float = 60.0  # 秒
     max_checkpoints: int = 10
 
-
 @dataclass
 class EngineConfig:
     """引擎主配置"""
-
     # 基本資訊
     engine_id: str = ""
     engine_name: str = ""
@@ -187,16 +158,13 @@ class EngineConfig:
         if not self.engine_id:
             self.engine_id = str(uuid.uuid4())[:8]
 
-
 # ============================================================================
 # 事件資料結構
 # ============================================================================
 
-
 @dataclass
 class EngineEvent:
     """引擎事件"""
-
     event_id: str
     event_type: str
     engine_id: str
@@ -214,11 +182,9 @@ class EngineEvent:
             payload=payload or {},
         )
 
-
 @dataclass
 class TaskResult:
     """任務結果"""
-
     task_id: str
     success: bool
     result: Any = None
@@ -226,11 +192,9 @@ class TaskResult:
     duration_ms: float = 0.0
     metadata: Dict[str, Any] = field(default_factory=dict)
 
-
 @dataclass
 class HealthStatus:
     """健康狀態"""
-
     healthy: bool
     state: EngineState
     uptime_seconds: float
@@ -242,11 +206,9 @@ class HealthStatus:
     error_rate: float = 0.0
     details: Dict[str, Any] = field(default_factory=dict)
 
-
 # ============================================================================
 # 引擎基礎類
 # ============================================================================
-
 
 class BaseEngine(ABC):
     """
@@ -279,9 +241,7 @@ class BaseEngine(ABC):
         self._shutdown_event: asyncio.Event = None
 
         # 日誌
-        self._logger = logging.getLogger(
-            f"engine.{self.config.engine_name or self.config.engine_id}"
-        )
+        self._logger = logging.getLogger(f"engine.{self.config.engine_name or self.config.engine_id}")
 
         # 檢查點
         self._checkpoint_data: Dict[str, Any] = {}
@@ -374,9 +334,7 @@ class BaseEngine(ABC):
 
         try:
             # 初始化組件
-            self._task_queue = asyncio.Queue(
-                maxsize=self.config.resource.max_queue_size
-            )
+            self._task_queue = asyncio.Queue(maxsize=self.config.resource.max_queue_size)
             self._shutdown_event = asyncio.Event()
 
             # 載入檢查點
@@ -385,7 +343,8 @@ class BaseEngine(ABC):
 
             # 執行子類初始化
             success = await asyncio.wait_for(
-                self._initialize(), timeout=self.config.timeout.initialization
+                self._initialize(),
+                timeout=self.config.timeout.initialization
             )
 
             if not success:
@@ -443,7 +402,8 @@ class BaseEngine(ABC):
 
             # 執行子類關閉
             success = await asyncio.wait_for(
-                self._shutdown(), timeout=self.config.timeout.shutdown
+                self._shutdown(),
+                timeout=self.config.timeout.shutdown
             )
 
             self._state = EngineState.STOPPED
@@ -516,14 +476,15 @@ class BaseEngine(ABC):
 
                 # 獲取任務
                 try:
-                    task = await asyncio.wait_for(self._task_queue.get(), timeout=1.0)
+                    task = await asyncio.wait_for(
+                        self._task_queue.get(),
+                        timeout=1.0
+                    )
                 except asyncio.TimeoutError:
                     continue
 
                 # 檢查並發限制
-                while (
-                    len(self._active_tasks) >= self.config.resource.max_concurrent_tasks
-                ):
+                while len(self._active_tasks) >= self.config.resource.max_concurrent_tasks:
                     await asyncio.sleep(0.1)
 
                 # 執行任務
@@ -549,26 +510,20 @@ class BaseEngine(ABC):
             self._total_execution_time += result.duration_ms
             self._last_activity = datetime.now()
 
-            await self._emit_event(
-                "task.completed",
-                {
-                    "task_id": task_id,
-                    "success": result.success,
-                    "duration_ms": result.duration_ms,
-                },
-            )
+            await self._emit_event("task.completed", {
+                "task_id": task_id,
+                "success": result.success,
+                "duration_ms": result.duration_ms,
+            })
 
         except Exception as e:
             self._tasks_failed += 1
             self._logger.error(f"任務處理失敗 {task_id}: {e}")
 
-            await self._emit_event(
-                "task.failed",
-                {
-                    "task_id": task_id,
-                    "error": str(e),
-                },
-            )
+            await self._emit_event("task.failed", {
+                "task_id": task_id,
+                "error": str(e),
+            })
 
         finally:
             self._active_tasks.discard(task_id)
@@ -586,26 +541,24 @@ class BaseEngine(ABC):
                 start_time = datetime.now()
 
                 result = await asyncio.wait_for(
-                    self._execute(task), timeout=self.config.timeout.execution
+                    self._execute(task),
+                    timeout=self.config.timeout.execution
                 )
 
-                result.duration_ms = (
-                    datetime.now() - start_time
-                ).total_seconds() * 1000
+                result.duration_ms = (datetime.now() - start_time).total_seconds() * 1000
                 return result
 
             except tuple(retry_config.retry_on) as e:
                 last_error = e
-                self._logger.warning(f"任務 {task_id} 第 {attempt + 1} 次嘗試失敗: {e}")
+                self._logger.warning(
+                    f"任務 {task_id} 第 {attempt + 1} 次嘗試失敗: {e}"
+                )
 
                 if attempt < retry_config.max_attempts - 1:
                     # 指數退避
                     if retry_config.jitter:
                         import random
-
-                        delay *= retry_config.exponential_base + random.uniform(
-                            -0.1, 0.1
-                        )
+                        delay *= (retry_config.exponential_base + random.uniform(-0.1, 0.1))
                     else:
                         delay *= retry_config.exponential_base
 
@@ -657,16 +610,11 @@ class BaseEngine(ABC):
         """心跳循環"""
         while self._running:
             try:
-                await self._emit_event(
-                    "engine.heartbeat",
-                    {
-                        "state": self._state.name,
-                        "active_tasks": len(self._active_tasks),
-                        "queue_size": (
-                            self._task_queue.qsize() if self._task_queue else 0
-                        ),
-                    },
-                )
+                await self._emit_event("engine.heartbeat", {
+                    "state": self._state.name,
+                    "active_tasks": len(self._active_tasks),
+                    "queue_size": self._task_queue.qsize() if self._task_queue else 0,
+                })
                 await asyncio.sleep(self.config.timeout.heartbeat)
             except Exception as e:
                 self._logger.error(f"心跳錯誤: {e}")
@@ -682,19 +630,16 @@ class BaseEngine(ABC):
             uptime_seconds=self.uptime.total_seconds(),
             tasks_completed=self._tasks_completed,
             tasks_failed=self._tasks_failed,
-            last_activity=(
-                self._last_activity.isoformat() if self._last_activity else ""
-            ),
+            last_activity=self._last_activity.isoformat() if self._last_activity else "",
             error_rate=error_rate,
             details={
                 "active_tasks": len(self._active_tasks),
                 "queue_size": self._task_queue.qsize() if self._task_queue else 0,
                 "avg_task_time_ms": (
                     self._total_execution_time / self._tasks_completed
-                    if self._tasks_completed > 0
-                    else 0
+                    if self._tasks_completed > 0 else 0
                 ),
-            },
+            }
         )
 
     # ========================================================================
@@ -728,7 +673,7 @@ class BaseEngine(ABC):
         }
 
         checkpoint_file = state_dir / f"{self.engine_id}_checkpoint.json"
-        with open(checkpoint_file, "w", encoding="utf-8") as f:
+        with open(checkpoint_file, 'w', encoding='utf-8') as f:
             json.dump(checkpoint, f, indent=2, ensure_ascii=False)
 
     async def _load_checkpoint(self):
@@ -738,15 +683,11 @@ class BaseEngine(ABC):
 
         if checkpoint_file.exists():
             try:
-                with open(checkpoint_file, "r", encoding="utf-8") as f:
+                with open(checkpoint_file, 'r', encoding='utf-8') as f:
                     checkpoint = json.load(f)
 
-                self._tasks_completed = checkpoint.get("statistics", {}).get(
-                    "tasks_completed", 0
-                )
-                self._tasks_failed = checkpoint.get("statistics", {}).get(
-                    "tasks_failed", 0
-                )
+                self._tasks_completed = checkpoint.get("statistics", {}).get("tasks_completed", 0)
+                self._tasks_failed = checkpoint.get("statistics", {}).get("tasks_failed", 0)
                 self._checkpoint_data = checkpoint.get("custom_data", {})
 
                 self._logger.info(f"已載入檢查點: {checkpoint_file}")
@@ -775,7 +716,7 @@ class BaseEngine(ABC):
             while not self._task_queue.empty():
                 try:
                     self._task_queue.get_nowait()
-                except BaseException:
+                except:
                     break
 
             # 重新初始化
@@ -816,7 +757,6 @@ class BaseEngine(ABC):
 # ============================================================================
 # 專用引擎基類
 # ============================================================================
-
 
 class CognitiveEngineBase(BaseEngine):
     """認知引擎基類 - 提供高階推理能力"""

@@ -14,10 +14,7 @@ import pytest
 
 # Import the module containing validate_project_path
 sys.path.insert(
-    0,
-    str(
-        Path(__file__).parent.parent / "docs" / "examples" / "configuration" / "python"
-    ),
+    0, str(Path(__file__).parent.parent / "docs" / "examples" / "configuration" / "python")
 )
 from security_scanner import validate_project_path  # noqa: E402
 
@@ -111,27 +108,21 @@ class TestPathValidation:
         with pytest.raises(ValueError, match="forbidden characters"):
             validate_project_path("test\x00path")
 
-    def test_path_traversal_with_dotdot(
-        self, temp_base_dir, nested_dir
-    ):  # noqa: ARG002
+    def test_path_traversal_with_dotdot(self, temp_base_dir, nested_dir):  # noqa: ARG002
         """Test that path traversal is prevented (.. in path)"""
         # Create a parent directory outside base
         parent = temp_base_dir.parent / "outside"
         parent.mkdir(exist_ok=True)
 
         # Try to access it via ../
-        with pytest.raises(
-            ValueError, match="must be within the current working directory"
-        ):
+        with pytest.raises(ValueError, match="must be within the current working directory"):
             validate_project_path("../outside")
 
     def test_absolute_path_outside_base(self, temp_base_dir):  # noqa: ARG002
         """Test that absolute path outside base directory is rejected"""
         with (
             tempfile.TemporaryDirectory() as outside_dir,
-            pytest.raises(
-                ValueError, match="must be within the current working directory"
-            ),
+            pytest.raises(ValueError, match="must be within the current working directory"),
         ):
             validate_project_path(outside_dir)
 
@@ -163,9 +154,7 @@ class TestPathValidation:
             link_path = temp_base_dir / "link_to_outside"
             link_path.symlink_to(outside_path)
 
-            with pytest.raises(
-                ValueError, match="must be within the current working directory"
-            ):
+            with pytest.raises(ValueError, match="must be within the current working directory"):
                 validate_project_path(str(link_path))
 
     def test_tilde_expansion(self, temp_base_dir, monkeypatch):  # noqa: ARG002
@@ -174,16 +163,11 @@ class TestPathValidation:
         with tempfile.TemporaryDirectory() as outside_home:
             monkeypatch.setenv("HOME", outside_home)
 
-            # This should expand ~ to outside_home, which is outside
-            # temp_base_dir
-            with pytest.raises(
-                ValueError, match="must be within the current working directory"
-            ):
+            # This should expand ~ to outside_home, which is outside temp_base_dir
+            with pytest.raises(ValueError, match="must be within the current working directory"):
                 validate_project_path("~")
 
-    def test_complex_path_traversal_attempt(
-        self, temp_base_dir, nested_dir
-    ):  # noqa: ARG002
+    def test_complex_path_traversal_attempt(self, temp_base_dir, nested_dir):  # noqa: ARG002
         """Test complex path traversal attempt with ../../../"""
         # Even if the path eventually resolves inside base,
         # if it tries to escape, it should be caught
@@ -235,9 +219,7 @@ class TestPathValidationEdgeCases:
             result = validate_project_path("testdir")
             assert pathlib.Path(result).resolve() == test_dir.resolve()
         else:  # Unix-like systems are case-sensitive
-            with pytest.raises(
-                ValueError, match="does not exist or is not a directory"
-            ):
+            with pytest.raises(ValueError, match="does not exist or is not a directory"):
                 validate_project_path("testdir")
 
 

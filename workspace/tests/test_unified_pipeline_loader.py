@@ -12,52 +12,45 @@ Tests for 00-namespaces/namespaces-mcp/tools/load_unified_pipeline.py
 5. INSTANT mode detection
 """
 
-import sys
-from dataclasses import dataclass
-from pathlib import Path
-
 import pytest
-from load_unified_pipeline import (
-    MANIFEST_PATH,
-    CoreScheduling,
-    InputUnification,
-    InstantExecutionStandards,
-    InstantPipeline,
-    InstantPipelineStage,
-    LatencyThresholds,
-    McpIntegration,
-    Outputs,
-    PipelineLabels,
-    PipelineMetadata,
-    ToolAdapter,
-    UnifiedPipelineManifest,
-    UnifiedPipelineSpec,
-    has_zero_human_intervention,
-    is_instant_mode,
-    load_manifest,
-    validate_latency_compliance,
-    validate_parallelism,
-)
+import sys
+from pathlib import Path
+from dataclasses import dataclass
 
 # Add namespaces-mcp/tools to path
 project_root = Path(__file__).parent.parent
 repo_root = project_root.parent
-sys.path.insert(0, str(repo_root / "00-namespaces" / "namespaces-mcp" / "tools"))
+sys.path.insert(0, str(repo_root / '00-namespaces' / 'namespaces-mcp' / 'tools'))
 
 # Override MANIFEST_PATH for tests running from workspace directory
-WORKSPACE_MANIFEST_PATH = (
-    repo_root
-    / "00-namespaces"
-    / "namespaces-mcp"
-    / "pipelines"
-    / "unified-pipeline-config.yaml"
+WORKSPACE_MANIFEST_PATH = repo_root / '00-namespaces' / 'namespaces-mcp' / 'pipelines' / 'unified-pipeline-config.yaml'
+
+from load_unified_pipeline import (
+    InstantExecutionStandards,
+    InstantPipeline,
+    InstantPipelineStage,
+    LatencyThresholds,
+    CoreScheduling,
+    PipelineMetadata,
+    PipelineLabels,
+    UnifiedPipelineManifest,
+    UnifiedPipelineSpec,
+    InputUnification,
+    McpIntegration,
+    ToolAdapter,
+    Outputs,
+    is_instant_mode,
+    has_zero_human_intervention,
+    validate_latency_compliance,
+    validate_parallelism,
+    load_manifest,
+    MANIFEST_PATH,
 )
 
 
 # ============================================================================
 # InstantExecutionStandards Tests
 # ============================================================================
-
 
 class TestInstantExecutionStandards:
     """Test INSTANT execution standard constants."""
@@ -84,16 +77,13 @@ class TestInstantExecutionStandards:
 # InstantPipeline Human Intervention Tests
 # ============================================================================
 
-
 class TestInstantPipelineHumanIntervention:
     """Test InstantPipeline enforces zero human intervention."""
 
     def test_valid_instant_pipeline_with_zero_intervention(self):
         """InstantPipeline should accept humanIntervention=0."""
         stages = [
-            InstantPipelineStage(
-                name="test", agent="analyzer", latency=5000, parallelism=1
-            )
+            InstantPipelineStage(name="test", agent="analyzer", latency=5000, parallelism=1)
         ]
         pipeline = InstantPipeline(
             name="test-pipeline",
@@ -107,9 +97,7 @@ class TestInstantPipelineHumanIntervention:
     def test_instant_pipeline_rejects_nonzero_intervention(self):
         """InstantPipeline should reject humanIntervention != 0."""
         stages = [
-            InstantPipelineStage(
-                name="test", agent="analyzer", latency=5000, parallelism=1
-            )
+            InstantPipelineStage(name="test", agent="analyzer", latency=5000, parallelism=1)
         ]
         with pytest.raises(ValueError, match="humanIntervention must be 0"):
             InstantPipeline(
@@ -124,7 +112,6 @@ class TestInstantPipelineHumanIntervention:
 # ============================================================================
 # Latency Compliance Tests
 # ============================================================================
-
 
 class TestLatencyCompliance:
     """Test latency compliance validation."""
@@ -226,7 +213,6 @@ class TestLatencyCompliance:
 # Parallelism Validation Tests
 # ============================================================================
 
-
 class TestParallelismValidation:
     """Test parallelism boundary validation."""
 
@@ -322,7 +308,6 @@ class TestParallelismValidation:
 # Mode Detection Tests
 # ============================================================================
 
-
 class TestModeDetection:
     """Test INSTANT mode and human intervention detection."""
 
@@ -395,7 +380,6 @@ class TestModeDetection:
 # ============================================================================
 # Manifest Loading Integration Test
 # ============================================================================
-
 
 class TestManifestLoading:
     """Test loading the actual pipeline manifest."""

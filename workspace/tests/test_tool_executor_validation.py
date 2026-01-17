@@ -3,28 +3,19 @@
 Tests for CodeRunner validation logic - context-aware security checks
 """
 
-# ============================================================================
-# SECURITY NOTICE: eval() Usage in This File
-# ============================================================================
-# This test file contains eval() function usage.
-# eval() can execute arbitrary code and poses security risks.
-# All eval() usage in this file has been reviewed and documented.
-# DO NOT use this code pattern in production without proper input validation.
-# ============================================================================
-
-
 import sys
 from pathlib import Path
 
+# Add src to path for imports
+sys.path.insert(0, str(Path(__file__).parent.parent / "src"))
+
 import pytest
+
 from core.island_ai_runtime.tool_executor import (
     CodeRunner,
     ExecutionRequest,
     ToolType,
 )
-
-# Add src to path for imports
-sys.path.insert(0, str(Path(__file__).parent.parent / "src"))
 
 
 def create_request(code: str, language: str = "python") -> ExecutionRequest:
@@ -66,13 +57,10 @@ print("hello")
         assert valid, f"Should allow comments with metacharacters: {reason}"
 
     def test_dangerous_eval(self):
-        # SECURITY: eval() usage - trusted input only. Reviewed 2026-01-16
         """Actual eval() calls should be blocked"""
-        # SECURITY: eval() usage - trusted input only. Reviewed 2026-01-16
         code = 'eval("print(1)")'
         request = create_request(code, "python")
         valid, reason = self.runner.validate(request)
-        # SECURITY: eval() usage - trusted input only. Reviewed 2026-01-16
         assert not valid, "Should block eval()"
         assert "eval" in reason.lower()
 
@@ -186,13 +174,10 @@ cp.exec('ls');
         assert "exec" in reason.lower() or "child_process" in reason.lower()
 
     def test_dangerous_eval(self):
-        # SECURITY: eval() usage - trusted input only. Reviewed 2026-01-16
         """eval() calls should be blocked"""
-        # SECURITY: eval() usage - trusted input only. Reviewed 2026-01-16
         code = 'eval("console.log(1)");'
         request = create_request(code, "node")
         valid, reason = self.runner.validate(request)
-        # SECURITY: eval() usage - trusted input only. Reviewed 2026-01-16
         assert not valid, "Should block eval()"
         assert "eval" in reason.lower()
 

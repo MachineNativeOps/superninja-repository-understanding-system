@@ -44,30 +44,30 @@ from .python_bridge import (
 
 __all__ = [
     # Architecture Config
-    "TechStackConfig",
-    "LanguageConfig",
-    "FrameworkConfig",
-    "ArchitectureLayer",
-    "get_recommended_stack",
+    'TechStackConfig',
+    'LanguageConfig',
+    'FrameworkConfig',
+    'ArchitectureLayer',
+    'get_recommended_stack',
     # Framework Integrations
-    "FrameworkIntegration",
-    "LangChainIntegration",
-    "CrewAIIntegration",
-    "AutoGenIntegration",
-    "LangGraphIntegration",
-    "FrameworkOrchestrator",
+    'FrameworkIntegration',
+    'LangChainIntegration',
+    'CrewAIIntegration',
+    'AutoGenIntegration',
+    'LangGraphIntegration',
+    'FrameworkOrchestrator',
     # Multi-Agent Coordinator
-    "AgentRole",
-    "AgentCapability",
-    "MultiAgentCoordinator",
-    "AgentTeam",
-    "TaskRouter",
-    "AgentCommunicationBus",
+    'AgentRole',
+    'AgentCapability',
+    'MultiAgentCoordinator',
+    'AgentTeam',
+    'TaskRouter',
+    'AgentCommunicationBus',
     # Python Bridge
-    "PythonBridge",
-    "PythonEnvironment",
-    "PackageManager",
-    "PythonExecutor",
+    'PythonBridge',
+    'PythonEnvironment',
+    'PackageManager',
+    'PythonExecutor',
 ]
 
-__version__ = "1.0.0"
+__version__ = '1.0.0'

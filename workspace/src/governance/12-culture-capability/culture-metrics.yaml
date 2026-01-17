@@ -5,27 +5,15 @@ lastUpdated: "2025-12-10"
 status: "active"
 metrics:
   awareness:
-
     metric: "Training completion rate"
-
     target: "> 95%"
-
   engagement:
-
     metric: "Governance survey participation"
-
     target: "> 70%"
-
   adoption:
-
     metric: "Policy compliance rate"
-
     target: "> 90%"
-
   satisfaction:
-
     metric: "Governance satisfaction score"
-
     target: "> 4/5"
-
 measurement_frequency: "Quarterly"

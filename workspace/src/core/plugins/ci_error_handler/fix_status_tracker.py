@@ -17,7 +17,6 @@ from .auto_fix_engine import FixAttempt, FixStrategy
 
 class FixStatus(Enum):
     """Status of a fix"""
-
     PENDING = "pending"
     IN_PROGRESS = "in_progress"
     PR_CREATED = "pr_created"
@@ -30,7 +29,6 @@ class FixStatus(Enum):
 @dataclass
 class FixMetrics:
     """Metrics for fix tracking"""
-
     total_errors: int = 0
     total_fix_attempts: int = 0
     successful_fixes: int = 0
@@ -44,22 +42,21 @@ class FixMetrics:
     def to_dict(self) -> dict[str, Any]:
         """Convert to dictionary"""
         return {
-            "total_errors": self.total_errors,
-            "total_fix_attempts": self.total_fix_attempts,
-            "successful_fixes": self.successful_fixes,
-            "failed_fixes": self.failed_fixes,
-            "auto_fixed": self.auto_fixed,
-            "manual_fixed": self.manual_fixed,
-            "avg_time_to_fix_minutes": round(self.avg_time_to_fix_minutes, 2),
-            "fix_rate": round(self.fix_rate * 100, 2),
-            "reoccurrence_rate": round(self.reoccurrence_rate * 100, 2),
+            'total_errors': self.total_errors,
+            'total_fix_attempts': self.total_fix_attempts,
+            'successful_fixes': self.successful_fixes,
+            'failed_fixes': self.failed_fixes,
+            'auto_fixed': self.auto_fixed,
+            'manual_fixed': self.manual_fixed,
+            'avg_time_to_fix_minutes': round(self.avg_time_to_fix_minutes, 2),
+            'fix_rate': round(self.fix_rate * 100, 2),
+            'reoccurrence_rate': round(self.reoccurrence_rate * 100, 2),
         }
 
 
 @dataclass
 class FixHistory:
     """History entry for a fix"""
-
     history_id: str
     error_id: str
     status: FixStatus
@@ -71,20 +68,19 @@ class FixHistory:
     def to_dict(self) -> dict[str, Any]:
         """Convert to dictionary"""
         return {
-            "history_id": self.history_id,
-            "error_id": self.error_id,
-            "status": self.status.value,
-            "details": self.details,
-            "pr_number": self.pr_number,
-            "commit_sha": self.commit_sha,
-            "timestamp": self.timestamp.isoformat(),
+            'history_id': self.history_id,
+            'error_id': self.error_id,
+            'status': self.status.value,
+            'details': self.details,
+            'pr_number': self.pr_number,
+            'commit_sha': self.commit_sha,
+            'timestamp': self.timestamp.isoformat(),
         }
 
 
 @dataclass
 class TrackedFix:
     """A tracked fix for an error"""
-
     error_id: str
     error_category: str
     status: FixStatus
@@ -102,28 +98,28 @@ class TrackedFix:
     def to_dict(self) -> dict[str, Any]:
         """Convert to dictionary"""
         return {
-            "error_id": self.error_id,
-            "error_category": self.error_category,
-            "status": self.status.value,
-            "created_at": self.created_at.isoformat(),
-            "updated_at": self.updated_at.isoformat(),
-            "attempts_count": len(self.attempts),
-            "history_count": len(self.history),
-            "pr_number": self.pr_number,
-            "pr_url": self.pr_url,
-            "issue_number": self.issue_number,
-            "resolved_at": self.resolved_at.isoformat() if self.resolved_at else None,
-            "resolved_by": self.resolved_by,
-            "verification_status": self.verification_status,
+            'error_id': self.error_id,
+            'error_category': self.error_category,
+            'status': self.status.value,
+            'created_at': self.created_at.isoformat(),
+            'updated_at': self.updated_at.isoformat(),
+            'attempts_count': len(self.attempts),
+            'history_count': len(self.history),
+            'pr_number': self.pr_number,
+            'pr_url': self.pr_url,
+            'issue_number': self.issue_number,
+            'resolved_at': self.resolved_at.isoformat() if self.resolved_at else None,
+            'resolved_by': self.resolved_by,
+            'verification_status': self.verification_status,
         }
 
 
 class FixStatusTracker:
     """
     Fix Status Tracker
-
+    
     Track fix attempts and their results for CI/CD errors.
-
+    
     Features:
     - Track fix lifecycle (pending → in_progress → resolved)
     - Link fixes to PRs and issues
@@ -142,16 +138,19 @@ class FixStatusTracker:
         return f"HIST-{datetime.now().strftime('%Y%m%d%H%M%S')}-{self._history_counter:04d}"
 
     def start_tracking(
-        self, error_id: str, error_category: str, issue_number: int | None = None
+        self,
+        error_id: str,
+        error_category: str,
+        issue_number: int | None = None
     ) -> TrackedFix:
         """
         Start tracking a fix for an error
-
+        
         Args:
             error_id: The error ID
             error_category: Category of the error
             issue_number: Associated GitHub issue number
-
+            
         Returns:
             The tracked fix record
         """
@@ -167,14 +166,12 @@ class FixStatusTracker:
         )
 
         # Add initial history entry
-        tracked.history.append(
-            FixHistory(
-                history_id=self._generate_history_id(),
-                error_id=error_id,
-                status=FixStatus.PENDING,
-                details="Fix tracking started",
-            )
-        )
+        tracked.history.append(FixHistory(
+            history_id=self._generate_history_id(),
+            error_id=error_id,
+            status=FixStatus.PENDING,
+            details="Fix tracking started",
+        ))
 
         self._tracked_fixes[error_id] = tracked
         return tracked
@@ -185,18 +182,18 @@ class FixStatusTracker:
         status: FixStatus,
         details: str = "",
         pr_number: int | None = None,
-        commit_sha: str | None = None,
+        commit_sha: str | None = None
     ) -> TrackedFix | None:
         """
         Update the status of a tracked fix
-
+        
         Args:
             error_id: The error ID
             status: New status
             details: Details about the status change
             pr_number: Associated PR number (if applicable)
             commit_sha: Commit SHA (if applicable)
-
+            
         Returns:
             Updated TrackedFix or None if not found
         """
@@ -211,16 +208,14 @@ class FixStatusTracker:
             tracked.pr_number = pr_number
 
         # Add history entry
-        tracked.history.append(
-            FixHistory(
-                history_id=self._generate_history_id(),
-                error_id=error_id,
-                status=status,
-                details=details,
-                pr_number=pr_number,
-                commit_sha=commit_sha,
-            )
-        )
+        tracked.history.append(FixHistory(
+            history_id=self._generate_history_id(),
+            error_id=error_id,
+            status=status,
+            details=details,
+            pr_number=pr_number,
+            commit_sha=commit_sha,
+        ))
 
         # Mark as resolved if appropriate
         if status in {FixStatus.VERIFIED, FixStatus.PR_MERGED}:
@@ -228,14 +223,18 @@ class FixStatusTracker:
 
         return tracked
 
-    def add_attempt(self, error_id: str, attempt: FixAttempt) -> TrackedFix | None:
+    def add_attempt(
+        self,
+        error_id: str,
+        attempt: FixAttempt
+    ) -> TrackedFix | None:
         """
         Add a fix attempt to tracking
-
+        
         Args:
             error_id: The error ID
             attempt: The fix attempt
-
+            
         Returns:
             Updated TrackedFix or None if not found
         """
@@ -248,26 +247,29 @@ class FixStatusTracker:
         tracked.status = FixStatus.IN_PROGRESS
 
         # Add history entry
-        tracked.history.append(
-            FixHistory(
-                history_id=self._generate_history_id(),
-                error_id=error_id,
-                status=FixStatus.IN_PROGRESS,
-                details=f"Fix attempt: {attempt.fix_description}",
-            )
-        )
+        tracked.history.append(FixHistory(
+            history_id=self._generate_history_id(),
+            error_id=error_id,
+            status=FixStatus.IN_PROGRESS,
+            details=f"Fix attempt: {attempt.fix_description}",
+        ))
 
         return tracked
 
-    def link_pr(self, error_id: str, pr_number: int, pr_url: str) -> TrackedFix | None:
+    def link_pr(
+        self,
+        error_id: str,
+        pr_number: int,
+        pr_url: str
+    ) -> TrackedFix | None:
         """
         Link a PR to a tracked fix
-
+        
         Args:
             error_id: The error ID
             pr_number: PR number
             pr_url: PR URL
-
+            
         Returns:
             Updated TrackedFix or None if not found
         """
@@ -281,29 +283,30 @@ class FixStatusTracker:
         tracked.updated_at = datetime.now()
 
         # Add history entry
-        tracked.history.append(
-            FixHistory(
-                history_id=self._generate_history_id(),
-                error_id=error_id,
-                status=FixStatus.PR_CREATED,
-                details=f"Fix PR created: #{pr_number}",
-                pr_number=pr_number,
-            )
-        )
+        tracked.history.append(FixHistory(
+            history_id=self._generate_history_id(),
+            error_id=error_id,
+            status=FixStatus.PR_CREATED,
+            details=f"Fix PR created: #{pr_number}",
+            pr_number=pr_number,
+        ))
 
         return tracked
 
     def mark_pr_merged(
-        self, error_id: str, commit_sha: str, merged_by: str | None = None
+        self,
+        error_id: str,
+        commit_sha: str,
+        merged_by: str | None = None
     ) -> TrackedFix | None:
         """
         Mark a fix PR as merged
-
+        
         Args:
             error_id: The error ID
             commit_sha: Merge commit SHA
             merged_by: User who merged
-
+            
         Returns:
             Updated TrackedFix or None if not found
         """
@@ -317,29 +320,29 @@ class FixStatusTracker:
         tracked.updated_at = datetime.now()
 
         # Add history entry
-        tracked.history.append(
-            FixHistory(
-                history_id=self._generate_history_id(),
-                error_id=error_id,
-                status=FixStatus.PR_MERGED,
-                details=f"Fix PR merged by {merged_by or 'unknown'}",
-                pr_number=tracked.pr_number,
-                commit_sha=commit_sha,
-            )
-        )
+        tracked.history.append(FixHistory(
+            history_id=self._generate_history_id(),
+            error_id=error_id,
+            status=FixStatus.PR_MERGED,
+            details=f"Fix PR merged by {merged_by or 'unknown'}",
+            pr_number=tracked.pr_number,
+            commit_sha=commit_sha,
+        ))
 
         return tracked
 
     def mark_verified(
-        self, error_id: str, verification_details: str = "CI passed after fix"
+        self,
+        error_id: str,
+        verification_details: str = "CI passed after fix"
     ) -> TrackedFix | None:
         """
         Mark a fix as verified (CI passed after fix)
-
+        
         Args:
             error_id: The error ID
             verification_details: Details about verification
-
+            
         Returns:
             Updated TrackedFix or None if not found
         """
@@ -355,25 +358,27 @@ class FixStatusTracker:
             tracked.resolved_at = datetime.now()
 
         # Add history entry
-        tracked.history.append(
-            FixHistory(
-                history_id=self._generate_history_id(),
-                error_id=error_id,
-                status=FixStatus.VERIFIED,
-                details=verification_details,
-            )
-        )
+        tracked.history.append(FixHistory(
+            history_id=self._generate_history_id(),
+            error_id=error_id,
+            status=FixStatus.VERIFIED,
+            details=verification_details,
+        ))
 
         return tracked
 
-    def mark_failed(self, error_id: str, failure_reason: str) -> TrackedFix | None:
+    def mark_failed(
+        self,
+        error_id: str,
+        failure_reason: str
+    ) -> TrackedFix | None:
         """
         Mark a fix as failed
-
+        
         Args:
             error_id: The error ID
             failure_reason: Reason for failure
-
+            
         Returns:
             Updated TrackedFix or None if not found
         """
@@ -386,14 +391,12 @@ class FixStatusTracker:
         tracked.updated_at = datetime.now()
 
         # Add history entry
-        tracked.history.append(
-            FixHistory(
-                history_id=self._generate_history_id(),
-                error_id=error_id,
-                status=FixStatus.FAILED,
-                details=f"Fix failed: {failure_reason}",
-            )
-        )
+        tracked.history.append(FixHistory(
+            history_id=self._generate_history_id(),
+            error_id=error_id,
+            status=FixStatus.FAILED,
+            details=f"Fix failed: {failure_reason}",
+        ))
 
         return tracked
 
@@ -407,27 +410,21 @@ class FixStatusTracker:
 
     def get_pending_fixes(self) -> list[TrackedFix]:
         """Get all pending fixes"""
-        pending_statuses = {
-            FixStatus.PENDING,
-            FixStatus.IN_PROGRESS,
-            FixStatus.PR_CREATED,
-        }
+        pending_statuses = {FixStatus.PENDING, FixStatus.IN_PROGRESS, FixStatus.PR_CREATED}
         return [f for f in self._tracked_fixes.values() if f.status in pending_statuses]
 
     def get_resolved_fixes(self) -> list[TrackedFix]:
         """Get all resolved fixes"""
         resolved_statuses = {FixStatus.VERIFIED, FixStatus.PR_MERGED}
-        return [
-            f for f in self._tracked_fixes.values() if f.status in resolved_statuses
-        ]
+        return [f for f in self._tracked_fixes.values() if f.status in resolved_statuses]
 
     def calculate_metrics(self, since: datetime | None = None) -> FixMetrics:
         """
         Calculate fix metrics
-
+        
         Args:
             since: Only include fixes since this time
-
+            
         Returns:
             FixMetrics with calculated values
         """
@@ -440,9 +437,7 @@ class FixStatusTracker:
             return FixMetrics()
 
         total = len(fixes)
-        successful = len(
-            [f for f in fixes if f.status in {FixStatus.VERIFIED, FixStatus.PR_MERGED}]
-        )
+        successful = len([f for f in fixes if f.status in {FixStatus.VERIFIED, FixStatus.PR_MERGED}])
         failed = len([f for f in fixes if f.status == FixStatus.FAILED])
 
         # Calculate auto vs manual
@@ -487,10 +482,10 @@ class FixStatusTracker:
     def generate_summary_report(self, since: datetime | None = None) -> dict[str, Any]:
         """
         Generate a summary report of fix tracking
-
+        
         Args:
             since: Only include fixes since this time
-
+            
         Returns:
             Dictionary with summary report
         """
@@ -499,17 +494,17 @@ class FixStatusTracker:
         resolved = self.get_resolved_fixes()
 
         return {
-            "generated_at": datetime.now().isoformat(),
-            "period_start": since.isoformat() if since else None,
-            "metrics": metrics.to_dict(),
-            "pending_count": len(pending),
-            "resolved_count": len(resolved),
-            "pending_errors": [f.error_id for f in pending],
-            "recent_resolutions": [
+            'generated_at': datetime.now().isoformat(),
+            'period_start': since.isoformat() if since else None,
+            'metrics': metrics.to_dict(),
+            'pending_count': len(pending),
+            'resolved_count': len(resolved),
+            'pending_errors': [f.error_id for f in pending],
+            'recent_resolutions': [
                 {
-                    "error_id": f.error_id,
-                    "resolved_at": f.resolved_at.isoformat() if f.resolved_at else None,
-                    "pr_number": f.pr_number,
+                    'error_id': f.error_id,
+                    'resolved_at': f.resolved_at.isoformat() if f.resolved_at else None,
+                    'pr_number': f.pr_number,
                 }
                 for f in resolved[-5:]
             ],

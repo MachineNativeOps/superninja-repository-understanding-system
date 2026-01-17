@@ -30,7 +30,6 @@ logger = logging.getLogger(__name__)
 
 class Language(Enum):
     """Supported programming languages"""
-
     PYTHON = "python"
     JAVASCRIPT = "javascript"
     TYPESCRIPT = "typescript"
@@ -42,18 +41,16 @@ class Language(Enum):
 
 class BridgeType(Enum):
     """Types of language bridges"""
-
-    FFI = "ffi"  # Foreign Function Interface
-    RPC = "rpc"  # Remote Procedure Call
-    MESSAGE_QUEUE = "mq"  # Message Queue
-    REST_API = "rest"  # REST API
-    GRPC = "grpc"  # gRPC
+    FFI = "ffi"              # Foreign Function Interface
+    RPC = "rpc"              # Remote Procedure Call
+    MESSAGE_QUEUE = "mq"     # Message Queue
+    REST_API = "rest"        # REST API
+    GRPC = "grpc"            # gRPC
     WEBSOCKET = "websocket"  # WebSocket
 
 
 class BridgeStatus(Enum):
     """Bridge connection status"""
-
     DISCONNECTED = "disconnected"
     CONNECTING = "connecting"
     CONNECTED = "connected"
@@ -64,7 +61,6 @@ class BridgeStatus(Enum):
 @dataclass
 class BridgeEndpoint:
     """Endpoint for a language bridge"""
-
     endpoint_id: str
     language: Language
     host: str = "localhost"
@@ -77,7 +73,6 @@ class BridgeEndpoint:
 @dataclass
 class BridgeConnection:
     """Active bridge connection"""
-
     connection_id: str
     source: BridgeEndpoint
     target: BridgeEndpoint
@@ -91,7 +86,6 @@ class BridgeConnection:
 @dataclass
 class CodeFragment:
     """Code fragment for cross-language execution"""
-
     fragment_id: str
     language: Language
     code: str
@@ -103,7 +97,6 @@ class CodeFragment:
 @dataclass
 class ExecutionResult:
     """Result of cross-language execution"""
-
     result_id: str
     success: bool
     output: Any = None
@@ -116,16 +109,16 @@ class ExecutionResult:
 class LanguageBridgeManager:
     """
     語言橋接管理器 - 多語言代碼整合
-
+    
     Language Bridge Manager for seamless multi-language code integration.
     Enables code from different languages to work together transparently.
-
+    
     Features:
     - 自動語言偵測: Automatic language detection
     - 跨語言調用: Cross-language function calls
     - 類型轉換: Automatic type conversion
     - 錯誤處理: Unified error handling
-
+    
     設計目標:
     - 語言無關: Language-agnostic interface
     - 自動整合: Automatic code integration
@@ -139,7 +132,7 @@ class LanguageBridgeManager:
         Language.GO: 8080,
         Language.RUST: 8081,
         Language.JAVA: 8082,
-        Language.CSHARP: 8083,
+        Language.CSHARP: 8083
     }
 
     # Type mappings between languages
@@ -150,7 +143,7 @@ class LanguageBridgeManager:
             "float": "number",
             "bool": "boolean",
             "list": "Array",
-            "dict": "Object",
+            "dict": "Object"
         },
         (Language.PYTHON, Language.GO): {
             "str": "string",
@@ -158,8 +151,8 @@ class LanguageBridgeManager:
             "float": "float64",
             "bool": "bool",
             "list": "[]interface{}",
-            "dict": "map[string]interface{}",
-        },
+            "dict": "map[string]interface{}"
+        }
     }
 
     def __init__(self):
@@ -173,7 +166,7 @@ class LanguageBridgeManager:
             "bridges_created": 0,
             "executions_total": 0,
             "executions_successful": 0,
-            "bytes_transferred": 0,
+            "bytes_transferred": 0
         }
 
         logger.info("LanguageBridgeManager initialized - 語言橋接管理器已初始化")
@@ -184,20 +177,20 @@ class LanguageBridgeManager:
         host: str = "localhost",
         port: int | None = None,
         protocol: str = "http",
-        metadata: dict[str, Any] | None = None,
+        metadata: dict[str, Any] | None = None
     ) -> str:
         """
         Register a language endpoint
-
+        
         註冊語言端點
-
+        
         Args:
             language: Programming language
             host: Endpoint host
             port: Endpoint port (auto-assigned if None)
             protocol: Communication protocol
             metadata: Additional metadata
-
+            
         Returns:
             Endpoint ID
         """
@@ -212,7 +205,7 @@ class LanguageBridgeManager:
             host=host,
             port=port,
             protocol=protocol,
-            metadata=metadata or {},
+            metadata=metadata or {}
         )
 
         self.endpoints[endpoint_id] = endpoint
@@ -224,18 +217,18 @@ class LanguageBridgeManager:
         self,
         source_endpoint_id: str,
         target_endpoint_id: str,
-        bridge_type: BridgeType = BridgeType.REST_API,
+        bridge_type: BridgeType = BridgeType.REST_API
     ) -> str:
         """
         Create a bridge between two language endpoints
-
+        
         在兩個語言端點之間創建橋接
-
+        
         Args:
             source_endpoint_id: Source endpoint ID
             target_endpoint_id: Target endpoint ID
             bridge_type: Type of bridge to create
-
+            
         Returns:
             Connection ID
         """
@@ -253,7 +246,7 @@ class LanguageBridgeManager:
             target=target,
             bridge_type=bridge_type,
             status=BridgeStatus.CONNECTING,
-            established_at=datetime.now(),
+            established_at=datetime.now()
         )
 
         self.connections[connection_id] = connection
@@ -274,18 +267,18 @@ class LanguageBridgeManager:
         self,
         connection_id: str,
         code_fragment: CodeFragment,
-        timeout_seconds: float = 30.0,
+        timeout_seconds: float = 30.0
     ) -> ExecutionResult:
         """
         Execute code across language boundary
-
+        
         跨語言執行代碼
-
+        
         Args:
             connection_id: Bridge connection ID
             code_fragment: Code to execute
             timeout_seconds: Execution timeout
-
+            
         Returns:
             Execution result
         """
@@ -295,14 +288,16 @@ class LanguageBridgeManager:
         connection = self.connections.get(connection_id)
         if not connection:
             return ExecutionResult(
-                result_id=result_id, success=False, error="Bridge connection not found"
+                result_id=result_id,
+                success=False,
+                error="Bridge connection not found"
             )
 
         if connection.status != BridgeStatus.CONNECTED:
             return ExecutionResult(
                 result_id=result_id,
                 success=False,
-                error=f"Bridge not connected: {connection.status.value}",
+                error=f"Bridge not connected: {connection.status.value}"
             )
 
         self.stats["executions_total"] += 1
@@ -312,13 +307,13 @@ class LanguageBridgeManager:
             self._convert_types(
                 code_fragment.parameters,
                 code_fragment.language,
-                connection.target.language,
+                connection.target.language
             )
 
-            # Simulate execution (in real implementation, would call actual
-            # bridge)
+            # Simulate execution (in real implementation, would call actual bridge)
             output = await self._simulate_execution(
-                code_fragment, connection.target.language
+                code_fragment,
+                connection.target.language
             )
 
             execution_time = (datetime.now() - start_time).total_seconds() * 1000
@@ -334,7 +329,7 @@ class LanguageBridgeManager:
                 output=output,
                 execution_time_ms=execution_time,
                 source_language=code_fragment.language,
-                target_language=connection.target.language,
+                target_language=connection.target.language
             )
 
         except Exception as e:
@@ -344,11 +339,14 @@ class LanguageBridgeManager:
                 success=False,
                 error=str(e),
                 source_language=code_fragment.language,
-                target_language=connection.target.language,
+                target_language=connection.target.language
             )
 
     def _convert_types(
-        self, params: dict[str, Any], source_lang: Language, target_lang: Language
+        self,
+        params: dict[str, Any],
+        source_lang: Language,
+        target_lang: Language
     ) -> dict[str, Any]:
         """Convert types between languages"""
         self.TYPE_MAPPINGS.get((source_lang, target_lang), {})
@@ -358,7 +356,9 @@ class LanguageBridgeManager:
         return params
 
     async def _simulate_execution(
-        self, code_fragment: CodeFragment, target_language: Language
+        self,
+        code_fragment: CodeFragment,
+        target_language: Language
     ) -> Any:
         """Simulate cross-language execution"""
         # Simulate processing time
@@ -369,7 +369,7 @@ class LanguageBridgeManager:
             "status": "executed",
             "language": target_language.value,
             "entry_point": code_fragment.entry_point,
-            "message": f"Code executed successfully in {target_language.value}",
+            "message": f"Code executed successfully in {target_language.value}"
         }
 
     def get_bridge_status(self, connection_id: str) -> dict[str, Any] | None:
@@ -383,26 +383,25 @@ class LanguageBridgeManager:
             "source": {
                 "language": connection.source.language.value,
                 "host": connection.source.host,
-                "port": connection.source.port,
+                "port": connection.source.port
             },
             "target": {
                 "language": connection.target.language.value,
                 "host": connection.target.host,
-                "port": connection.target.port,
+                "port": connection.target.port
             },
             "bridge_type": connection.bridge_type.value,
             "status": connection.status.value,
-            "established_at": (
-                connection.established_at.isoformat()
-                if connection.established_at
-                else None
-            ),
-            "metrics": connection.metrics,
+            "established_at": connection.established_at.isoformat() if connection.established_at else None,
+            "metrics": connection.metrics
         }
 
     def list_bridges(self) -> list[dict[str, Any]]:
         """List all bridge connections"""
-        return [self.get_bridge_status(conn_id) for conn_id in self.connections]
+        return [
+            self.get_bridge_status(conn_id)
+            for conn_id in self.connections
+        ]
 
     def disconnect_bridge(self, connection_id: str) -> bool:
         """Disconnect a bridge"""
@@ -416,9 +415,10 @@ class LanguageBridgeManager:
 
     def get_statistics(self) -> dict[str, Any]:
         """Get bridge manager statistics"""
-        active_bridges = len(
-            [c for c in self.connections.values() if c.status == BridgeStatus.CONNECTED]
-        )
+        active_bridges = len([
+            c for c in self.connections.values()
+            if c.status == BridgeStatus.CONNECTED
+        ])
 
         return {
             "endpoints_registered": len(self.endpoints),
@@ -427,12 +427,9 @@ class LanguageBridgeManager:
             "executions_total": self.stats["executions_total"],
             "executions_successful": self.stats["executions_successful"],
             "success_rate": round(
-                self.stats["executions_successful"]
-                / max(self.stats["executions_total"], 1)
-                * 100,
-                2,
+                self.stats["executions_successful"] / max(self.stats["executions_total"], 1) * 100, 2
             ),
-            "supported_languages": [lang.value for lang in Language],
+            "supported_languages": [lang.value for lang in Language]
         }
 
 
@@ -445,5 +442,5 @@ __all__ = [
     "BridgeEndpoint",
     "BridgeConnection",
     "CodeFragment",
-    "ExecutionResult",
+    "ExecutionResult"
 ]

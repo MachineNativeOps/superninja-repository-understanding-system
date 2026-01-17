@@ -7,553 +7,294 @@ apiVersion: machinenativeops.io/v1
 kind: RootNamingSpec
 metadata:
   name: root-naming-specification
-
   namespace: machinenativeops-specs
-
   labels:
-
     machinenativeops.io/tier: "specs"
-
     machinenativeops.io/version: "v1.0.0"
-
     machinenativeops.io/component: "naming-spec"
-
   annotations:
-
     machinenativeops.io/description: "Machine-verifiable naming conventions for root layer"
-
     machinenativeops.io/enforcement: "strict"
-
     machinenativeops.io/last-modified: "2025-12-21T02:00:00Z"
-
 
 spec:
   version: 1
-
   scope:
-
     include_paths:
-
       - "^root\\..*\\.yaml$"
-
       - "^root\\..*\\.map$"
-
       - "^root\\..*\\.sh$"
-
     exclude_paths:
-
       - "^archive/.*"
-
       - "^tmp/.*"
-
   
   # === 核心命名規則 ===
-
   naming_rules:
-
     # 1. YAML 鍵名規範
-
     yaml_keys:
-
       description: "所有 YAML 鍵必須使用 snake_case"
-
       pattern: "^[a-z][a-z0-9_]*$"
-
       examples:
-
         valid:
-
           - "module_name"
-
           - "api_version"
-
           - "health_check"
-
           - "auto_start"
-
         invalid:
-
           - "moduleName"  # camelCase 不允許
-
           - "ModuleName"  # PascalCase 不允許
-
           - "module-name" # kebab-case 不允許
-
           - "MODULE_NAME" # UPPER_CASE 不允許
-
       exceptions:
-
         - pattern: "^[A-Z][A-Z0-9_]*$"
-
           context: "environment variables only"
-
           examples: ["GOVERNANCE_MODE", "API_KEY", "DB_HOST"]
-
     
     # 2. 模組名稱規範
-
     module_names:
-
       description: "模組名稱必須使用 kebab-case"
-
       pattern: "^[a-z][a-z0-9-]*[a-z0-9]$"
-
       min_length: 3
-
       max_length: 50
-
       examples:
-
         valid:
-
           - "governance-engine"
-
           - "trust-manager"
-
           - "config-manager"
-
           - "api-gateway"
-
         invalid:
-
           - "GovernanceEngine"  # PascalCase
-
           - "governance_engine" # snake_case
-
           - "a"                 # 太短
-
           - "governance-"       # 結尾不可為連字號
-
     
     # 3. 版本號規範
-
     version_format:
-
       description: "版本號必須符合 Semantic Versioning 2.0.0"
-
       pattern: "^v?\\d+\\.\\d+\\.\\d+(-[a-z0-9.-]+)?(\\+[a-z0-9.-]+)?$"
-
       examples:
-
         valid:
-
           - "1.0.0"
-
           - "v1.0.0"
-
           - "2.1.3-alpha"
-
           - "1.0.0-beta.1"
-
           - "1.0.0+20130313144700"
-
         invalid:
-
           - "1.0"      # 缺少 patch 版本
-
           - "v1"       # 不完整
-
           - "1.0.0.0"  # 過多段落
-
     
     # 4. API 版本規範
-
     api_version:
-
       description: "API 版本必須使用 domain/version 格式"
-
       pattern: "^[a-z0-9.-]+/v\\d+$"
-
       examples:
-
         valid:
-
           - "machinenativeops.io/v1"
-
           - "machinenativeops.io/v2"
-
           - "k8s.io/v1"
-
         invalid:
-
           - "v1"                    # 缺少 domain
-
           - "machinenativeops/v1"   # 缺少 .io
-
           - "machinenativeops.io/1" # 缺少 v 前綴
-
     
     # 5. Kind 名稱規範
-
     kind_names:
-
       description: "Kind 必須使用 PascalCase 並以 Root 開頭"
-
       pattern: "^Root[A-Z][a-zA-Z0-9]*$"
-
       examples:
-
         valid:
-
           - "RootModulesConfig"
-
           - "RootGovernanceConfig"
-
           - "RootBootstrapConfig"
-
         invalid:
-
           - "rootModulesConfig"  # 小寫開頭
-
           - "ModulesConfig"      # 缺少 Root 前綴
-
           - "Root_Config"        # 包含底線
-
     
     # 6. 標籤鍵規範
-
     label_keys:
-
       description: "標籤鍵必須使用 domain/key 格式"
-
       pattern: "^[a-z0-9.-]+/[a-z][a-z0-9-]*$"
-
       examples:
-
         valid:
-
           - "machinenativeops.io/tier"
-
           - "machinenativeops.io/version"
-
           - "machinenativeops.io/component"
-
         invalid:
-
           - "tier"                      # 缺少 domain
-
           - "machinenativeops.io/Tier"  # 大寫
-
           - "machinenativeops/tier"     # 缺少 .io
-
     
     # 7. 檔案名稱規範
-
     file_names:
-
       description: "Root 層檔案必須使用 root.<category>.<ext> 格式"
-
       pattern: "^root\\.[a-z][a-z0-9-]*\\.(yaml|map|sh)$"
-
       examples:
-
         valid:
-
           - "root.config.yaml"
-
           - "root.modules.yaml"
-
           - "root.devices.map"
-
           - "root.env.sh"
-
         invalid:
-
           - "config.yaml"        # 缺少 root. 前綴
-
           - "root.Config.yaml"   # 大寫
-
           - "root.config.yml"    # 使用 yml 而非 yaml
-
           - "root config.yaml"   # 包含空白
-
     
     # 8. 目錄名稱規範
-
     directory_names:
-
       description: "目錄名稱必須使用小寫字母和點號"
-
       pattern: "^[a-z][a-z0-9.]*[a-z0-9]$"
-
       examples:
-
         valid:
-
           - "init.d"
-
           - "bin"
-
           - "etc"
-
           - "var"
-
         invalid:
-
           - "Init.d"    # 大寫
-
           - "init-d"    # 使用連字號
-
           - "init_d"    # 使用底線
 
-
   # === 值格式規範 ===
-
   value_formats:
-
     # 1. 命名空間格式
-
     namespace:
-
       pattern: "^[a-z][a-z0-9-]*$"
-
       examples:
-
         valid: ["machinenativenops-modules", "machinenativenops-specs"]
-
         invalid: ["MachineNativeOps-Modules", "machinenativeops_modules"]
-
     
     # 2. 描述文字格式
-
     description:
-
       min_length: 10
-
       max_length: 200
-
       pattern: "^[A-Z].*[^.]$"  # 大寫開頭，不以句號結尾
-
       examples:
-
         valid: ["Core governance and policy enforcement engine"]
-
         invalid: ["core governance", "Core governance."]
-
     
     # 3. 路徑格式
-
     file_path:
-
       pattern: "^/[a-z0-9/_-]+$"
-
       examples:
-
         valid: ["/opt/machinenativenops/modules/governance-engine/main.py"]
-
         invalid: ["/Opt/MachineNativeOps/Modules/Main.py"]
-
     
     # 4. 端點格式
-
     endpoint:
-
       pattern: "^/[a-z0-9/_-]*$"
-
       examples:
-
         valid: ["/health", "/api/v1/status", "/metrics"]
-
         invalid: ["/Health", "/API/V1/Status"]
-
     
     # 5. 時間間隔格式
-
     duration:
-
       pattern: "^\\d+[smhd]$"
-
       examples:
-
         valid: ["30s", "5m", "1h", "7d"]
-
         invalid: ["30", "5 minutes", "1hour"]
-
     
     # 6. 資源量格式
-
     resource_quantity:
-
       pattern: "^\\d+[mMGT]i?$"
-
       examples:
-
         valid: ["200m", "256Mi", "1Gi", "100Mi"]
-
         invalid: ["200", "256MB", "1G"]
 
-
   # === 一致性規則 ===
-
   consistency_rules:
-
     - id: "NAMING-001"
-
       description: "同一檔案內的 metadata.name 必須與檔案用途一致"
-
       check: "metadata.name 應包含檔案類型關鍵字"
-
       examples:
-
         - file: "root.modules.yaml"
-
           valid_names: ["modules-registry-config", "modules-config"]
-
           invalid_names: ["config", "root-config"]
-
     
     - id: "NAMING-002"
-
       description: "模組名稱在所有檔案中必須一致"
-
       check: "同一模組在不同檔案中的名稱必須完全相同"
-
       scope: ["root.modules.yaml", "root.bootstrap.yaml", "root.super-execution.yaml"]
-
     
     - id: "NAMING-003"
-
       description: "標籤值必須與對應的配置值一致"
-
       check: "labels.machinenativeops.io/version 必須與 spec.version 一致"
-
       examples:
-
         valid:
-
           labels: {"machinenativeops.io/version": "v1.0.0"}
-
           spec: {"version": "1.0.0"}
-
         invalid:
-
           labels: {"machinenativeops.io/version": "v1.0.0"}
-
           spec: {"version": "2.0.0"}
 
-
   # === 禁止模式 ===
-
   forbidden_patterns:
-
     - pattern: "[A-Z]"
-
       context: "file names"
-
       reason: "檔案名稱禁止大寫字母"
-
       severity: "error"
-
     
     - pattern: "\\s"
-
       context: "file names, keys"
-
       reason: "禁止空白字元"
-
       severity: "error"
-
     
     - pattern: "\\.yml$"
-
       context: "file extensions"
-
       reason: "統一使用 .yaml 而非 .yml"
-
       severity: "error"
-
     
     - pattern: "^[^a-z]"
-
       context: "yaml keys"
-
       reason: "YAML 鍵必須以小寫字母開頭"
-
       severity: "error"
-
     
     - pattern: "[^a-z0-9_-]"
-
       context: "module names"
-
       reason: "模組名稱只允許小寫字母、數字、連字號"
-
       severity: "error"
 
-
   # === 驗證配置 ===
-
   validation:
-
     enabled: true
-
     enforcement_level: "strict"
-
     auto_fix: false
-
     report_format: "markdown"
-
     
     gates:
-
       - name: "gate-root-specs"
-
         workflow: ".github/workflows/gate-root-specs.yml"
-
         trigger: "pull_request"
-
         paths:
-
           - "root.*.yaml"
-
           - "root.*.map"
-
           - "root.*.sh"
-
     
     error_handling:
-
       on_violation:
-
         - "Block PR merge"
-
         - "Add comment with specific violations"
-
         - "Provide fix suggestions"
-
       
       escalation:
-
         first_violation: "Warning + fix suggestions"
-
         second_violation: "Block + require manual review"
-
         repeated_violations: "Escalate to governance committee"
-
 
 # === 狀態 ===
 status:
   phase: "Active"
-
   conditions:
-
     - type: "Validated"
-
       status: "True"
-
       lastTransitionTime: "2025-12-21T02:00:00Z"
-
       reason: "SpecificationComplete"
-
       message: "Naming specification is complete and validated"
-
   
   statistics:
-
     total_rules: 8
-
     total_patterns: 15
-
     total_examples: 50
-
     coverage: "100%"

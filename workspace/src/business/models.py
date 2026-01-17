@@ -4,15 +4,13 @@ MachineNativeOps Business Models
 """
 
 from datetime import datetime
-from enum import Enum
-from typing import Any, Dict, List, Optional
-
+from typing import Dict, List, Optional, Any
 from pydantic import BaseModel, Field
+from enum import Enum
 
 
 class BusinessStatus(str, Enum):
     """業務狀態枚舉"""
-
     ACTIVE = "active"
     INACTIVE = "inactive"
     PENDING = "pending"
@@ -23,7 +21,6 @@ class BusinessStatus(str, Enum):
 
 class Priority(str, Enum):
     """優先級枚舉"""
-
     LOW = "low"
     MEDIUM = "medium"
     HIGH = "high"
@@ -32,7 +29,6 @@ class Priority(str, Enum):
 
 class Project(BaseModel):
     """項目模型"""
-
     id: str = Field(..., description="項目唯一標識")
     name: str = Field(..., description="項目名稱")
     description: Optional[str] = Field(None, description="項目描述")
@@ -44,14 +40,15 @@ class Project(BaseModel):
     deadline: Optional[datetime] = Field(None, description="截止時間")
     tags: List[str] = Field(default_factory=list, description="標籤")
     metadata: Dict[str, Any] = Field(default_factory=dict, description="元數據")
-
+    
     class Config:
-        json_encoders = {datetime: lambda v: v.isoformat()}
+        json_encoders = {
+            datetime: lambda v: v.isoformat()
+        }
 
 
 class Task(BaseModel):
     """任務模型"""
-
     id: str = Field(..., description="任務唯一標識")
     project_id: str = Field(..., description="所屬項目ID")
     name: str = Field(..., description="任務名稱")
@@ -69,14 +66,15 @@ class Task(BaseModel):
     actual_hours: Optional[float] = Field(None, description="實際工時")
     tags: List[str] = Field(default_factory=list, description="標籤")
     metadata: Dict[str, Any] = Field(default_factory=dict, description="元數據")
-
+    
     class Config:
-        json_encoders = {datetime: lambda v: v.isoformat()}
+        json_encoders = {
+            datetime: lambda v: v.isoformat()
+        }
 
 
 class Resource(BaseModel):
     """資源模型"""
-
     id: str = Field(..., description="資源唯一標識")
     name: str = Field(..., description="資源名稱")
     type: str = Field(..., description="資源類型")
@@ -86,14 +84,15 @@ class Resource(BaseModel):
     location: Optional[str] = Field(None, description="位置")
     created_at: datetime = Field(default_factory=datetime.now, description="創建時間")
     metadata: Dict[str, Any] = Field(default_factory=dict, description="元數據")
-
+    
     class Config:
-        json_encoders = {datetime: lambda v: v.isoformat()}
+        json_encoders = {
+            datetime: lambda v: v.isoformat()
+        }
 
 
 class WorkflowExecution(BaseModel):
     """工作流執行模型"""
-
     id: str = Field(..., description="執行唯一標識")
     workflow_id: str = Field(..., description="工作流ID")
     name: str = Field(..., description="執行名稱")
@@ -105,34 +104,34 @@ class WorkflowExecution(BaseModel):
     results: Dict[str, Any] = Field(default_factory=dict, description="執行結果")
     error_message: Optional[str] = Field(None, description="錯誤信息")
     metadata: Dict[str, Any] = Field(default_factory=dict, description="元數據")
-
+    
     class Config:
-        json_encoders = {datetime: lambda v: v.isoformat()}
+        json_encoders = {
+            datetime: lambda v: v.isoformat()
+        }
 
 
 class BusinessMetrics(BaseModel):
     """業務指標模型"""
-
     total_projects: int = Field(0, description="項目總數")
     active_projects: int = Field(0, description="活躍項目數")
     completed_projects: int = Field(0, description="已完成項目數")
     total_tasks: int = Field(0, description="任務總數")
     completed_tasks: int = Field(0, description="已完成任務數")
-    average_completion_time: Optional[float] = Field(
-        None, description="平均完成時間（小時）"
-    )
+    average_completion_time: Optional[float] = Field(None, description="平均完成時間（小時）")
     resource_utilization: float = Field(0.0, ge=0, le=1, description="資源利用率")
     cost_efficiency: Optional[float] = Field(None, description="成本效率")
     quality_score: float = Field(0.0, ge=0, le=100, description="質量分數")
-
+    
     class Config:
-        json_encoders = {datetime: lambda v: v.isoformat()}
+        json_encoders = {
+            datetime: lambda v: v.isoformat()
+        }
 
 
 # 響應模型
 class ProjectListResponse(BaseModel):
     """項目列表響應"""
-
     projects: List[Project]
     total: int
     page: int
@@ -141,7 +140,6 @@ class ProjectListResponse(BaseModel):
 
 class TaskListResponse(BaseModel):
     """任務列表響應"""
-
     tasks: List[Task]
     total: int
     page: int
@@ -150,7 +148,6 @@ class TaskListResponse(BaseModel):
 
 class WorkflowExecutionListResponse(BaseModel):
     """工作流執行列表響應"""
-
     executions: List[WorkflowExecution]
     total: int
     page: int
@@ -160,7 +157,6 @@ class WorkflowExecutionListResponse(BaseModel):
 # 請求模型
 class CreateProjectRequest(BaseModel):
     """創建項目請求"""
-
     name: str = Field(..., min_length=1, max_length=100, description="項目名稱")
     description: Optional[str] = Field(None, max_length=500, description="項目描述")
     owner: str = Field(..., description="項目負責人")
@@ -172,7 +168,6 @@ class CreateProjectRequest(BaseModel):
 
 class CreateTaskRequest(BaseModel):
     """創建任務請求"""
-
     project_id: str = Field(..., description="所屬項目ID")
     name: str = Field(..., min_length=1, max_length=100, description="任務名稱")
     description: Optional[str] = Field(None, max_length=500, description="任務描述")
@@ -186,10 +181,7 @@ class CreateTaskRequest(BaseModel):
 
 class UpdateTaskRequest(BaseModel):
     """更新任務請求"""
-
-    name: Optional[str] = Field(
-        None, min_length=1, max_length=100, description="任務名稱"
-    )
+    name: Optional[str] = Field(None, min_length=1, max_length=100, description="任務名稱")
     description: Optional[str] = Field(None, max_length=500, description="任務描述")
     assignee: Optional[str] = Field(None, description="執行人")
     status: Optional[BusinessStatus] = Field(None, description="任務狀態")
@@ -203,7 +195,6 @@ class UpdateTaskRequest(BaseModel):
 # 查詢模型
 class ProjectQuery(BaseModel):
     """項目查詢"""
-
     status: Optional[BusinessStatus] = Field(None, description="狀態篩選")
     owner: Optional[str] = Field(None, description="負責人篩選")
     priority: Optional[Priority] = Field(None, description="優先級篩選")
@@ -216,7 +207,6 @@ class ProjectQuery(BaseModel):
 
 class TaskQuery(BaseModel):
     """任務查詢"""
-
     project_id: Optional[str] = Field(None, description="項目ID篩選")
     status: Optional[BusinessStatus] = Field(None, description="狀態篩選")
     assignee: Optional[str] = Field(None, description="執行人篩選")

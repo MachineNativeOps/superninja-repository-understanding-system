@@ -5,8 +5,8 @@ Generates comprehensive artifacts for all modules
 """
 
 import os
-from datetime import datetime
 from pathlib import Path
+from datetime import datetime
 
 BASE_DIR = Path("00-namespaces/namespaces-mcp")
 
@@ -101,7 +101,7 @@ semantic_root: false
 workflow:
   name: "{workflow_name}"
   description: "{workflow_description}"
-
+  
   steps:
 {steps}
 
@@ -119,16 +119,15 @@ metadata:
   author: "SuperNinja AI Agent"
 """
 
-
 def generate_data_management_artifacts():
     """Generate Data Management module artifacts"""
     print("📊 Generating Data Management artifacts...")
-
+    
     # Already done: schemas and specs
     # Need to generate: policies, bundles, graphs, flows
-
+    
     timestamp = datetime.utcnow().isoformat() + "Z"
-
+    
     # Generate policy
     policy_content = POLICY_TEMPLATE.format(
         roles="""    - name: "data_admin"
@@ -154,13 +153,13 @@ def generate_data_management_artifacts():
     - type: "cold_data"
       retention_period: "365d"
       storage_tier: "hdd"
-
+  
   backup_policy:
     frequency: "daily"
     retention: "30d"
     verification: "weekly"
     encryption: true
-
+  
   archival_policy:
     threshold: "90d"
     compression: true
@@ -175,7 +174,7 @@ def generate_data_management_artifacts():
     controls:
       - "access_logging"
       - "audit_trail"
-
+  
   - framework: "SOC2"
     requirements:
       - "access_control"
@@ -184,7 +183,7 @@ def generate_data_management_artifacts():
     controls:
       - "backup_verification"
       - "disaster_recovery"
-
+  
   - framework: "HIPAA"
     requirements:
       - "phi_protection"
@@ -197,12 +196,12 @@ def generate_data_management_artifacts():
     at_rest: true
     in_transit: true
     algorithm: "AES-256-GCM"
-
+  
   access_control:
     type: "RBAC"
     mfa_required: true
     session_timeout: "30m"
-
+  
   audit:
     enabled: true
     retention: "365d"
@@ -211,28 +210,28 @@ def generate_data_management_artifacts():
         rate_limiting="""  storage:
     read: {limit: "10000/s", burst: "20000"}
     write: {limit: "5000/s", burst: "10000"}
-
+  
   cache:
     get: {limit: "50000/s", burst: "100000"}
     set: {limit: "20000/s", burst: "40000"}
-
+  
   index:
     search: {limit: "1000/s", burst: "2000"}
     write: {limit: "500/s", burst: "1000"}
-
+  
   sync:
     operations: {limit: "100/s", burst: "200"}
 """,
         created_at=timestamp,
-        updated_at=timestamp,
+        updated_at=timestamp
     )
-
+    
     # Write policy file
     policy_path = BASE_DIR / "policies" / "data-management.policy.yaml"
-    with open(policy_path, "w") as f:
+    with open(policy_path, 'w') as f:
         f.write(policy_content)
     print(f"✅ Created: {policy_path}")
-
+    
     # Generate bundle
     bundle_content = BUNDLE_TEMPLATE.format(
         components="""  storage:
@@ -240,25 +239,25 @@ def generate_data_management_artifacts():
     - src/data/storage/memory-storage.ts
     - src/data/storage/file-storage.ts
     - src/data/storage/database-storage.ts
-
+  
   cache:
     - src/data/cache/cache-manager.ts
     - src/data/cache/memory-cache.ts
     - src/data/cache/redis-cache.ts
     - src/data/cache/distributed-cache.ts
-
+  
   indexing:
     - src/data/indexing/index-manager.ts
     - src/data/indexing/search-engine.ts
     - src/data/indexing/query-optimizer.ts
     - src/data/indexing/result-ranker.ts
-
+  
   sync:
     - src/data/sync/sync-manager.ts
     - src/data/sync/conflict-resolver.ts
     - src/data/sync/replication-manager.ts
     - src/data/sync/consistency-checker.ts
-
+  
   legacy:
     - src/data-management/storage-engine.ts
     - src/data-management/cache-system.ts
@@ -267,14 +266,14 @@ def generate_data_management_artifacts():
 """,
         deployment="""  strategy: "rolling"
   replicas: 3
-
+  
   health_check:
     endpoint: "/health"
     interval: "30s"
     timeout: "5s"
     healthy_threshold: 2
     unhealthy_threshold: 3
-
+  
   resources:
     requests:
       cpu: "500m"
@@ -282,7 +281,7 @@ def generate_data_management_artifacts():
     limits:
       cpu: "2000m"
       memory: "4Gi"
-
+  
   environment:
     - name: "STORAGE_BACKEND"
       value: "database"
@@ -298,7 +297,7 @@ def generate_data_management_artifacts():
       required: true
     - check: "security_scan"
       required: true
-
+  
   post_deployment:
     - check: "health_check"
       required: true
@@ -312,7 +311,7 @@ def generate_data_management_artifacts():
 """,
         rollback="""  enabled: true
   automatic: true
-
+  
   triggers:
     - condition: "health_check_failed"
       threshold: 3
@@ -320,50 +319,50 @@ def generate_data_management_artifacts():
       duration: "5m"
     - condition: "latency_p95 > 100ms"
       duration: "10m"
-
+  
   strategy: "immediate"
   preserve_data: true
 """,
         created_at=timestamp,
-        updated_at=timestamp,
+        updated_at=timestamp
     )
-
+    
     bundle_path = BASE_DIR / "bundles" / "data-management.bundle.yaml"
-    with open(bundle_path, "w") as f:
+    with open(bundle_path, 'w') as f:
         f.write(bundle_content)
     print(f"✅ Created: {bundle_path}")
-
+    
     # Generate graph
     graph_content = GRAPH_TEMPLATE.format(
         nodes="""  - id: "storage_interface"
     type: "interface"
     layer: 1
     module: "data/storage"
-
+  
   - id: "cache_manager"
     type: "service"
     layer: 2
     module: "data/cache"
     depends_on: ["storage_interface"]
-
+  
   - id: "index_manager"
     type: "service"
     layer: 2
     module: "data/indexing"
     depends_on: ["storage_interface"]
-
+  
   - id: "sync_manager"
     type: "service"
     layer: 2
     module: "data/sync"
     depends_on: ["storage_interface", "cache_manager"]
-
+  
   - id: "search_engine"
     type: "service"
     layer: 3
     module: "data/indexing"
     depends_on: ["index_manager"]
-
+  
   - id: "replication_manager"
     type: "service"
     layer: 3
@@ -374,27 +373,27 @@ def generate_data_management_artifacts():
     to: "storage_interface"
     type: "depends_on"
     relationship: "uses"
-
+  
   - from: "index_manager"
     to: "storage_interface"
     type: "depends_on"
     relationship: "uses"
-
+  
   - from: "sync_manager"
     to: "storage_interface"
     type: "depends_on"
     relationship: "uses"
-
+  
   - from: "sync_manager"
     to: "cache_manager"
     type: "depends_on"
     relationship: "invalidates"
-
+  
   - from: "search_engine"
     to: "index_manager"
     type: "depends_on"
     relationship: "queries"
-
+  
   - from: "replication_manager"
     to: "sync_manager"
     type: "depends_on"
@@ -404,12 +403,12 @@ def generate_data_management_artifacts():
     interface: "MessageHandler"
     usage: "data_sync_events"
     direction: "bidirectional"
-
+  
   - module: "monitoring"
     interface: "MetricsCollector"
     usage: "performance_metrics"
     direction: "outbound"
-
+  
   - module: "configuration"
     interface: "ConfigManager"
     usage: "runtime_config"
@@ -418,7 +417,7 @@ def generate_data_management_artifacts():
         dag_validation="""  acyclic: true
   max_depth: 4
   semantic_closure: true
-
+  
   validation_rules:
     - "No circular dependencies"
     - "All dependencies must be in lower layers"
@@ -426,14 +425,14 @@ def generate_data_management_artifacts():
     - "All integration points must be documented"
 """,
         created_at=timestamp,
-        updated_at=timestamp,
+        updated_at=timestamp
     )
-
+    
     graph_path = BASE_DIR / "graphs" / "data-management.graph.yaml"
-    with open(graph_path, "w") as f:
+    with open(graph_path, 'w') as f:
         f.write(graph_content)
     print(f"✅ Created: {graph_path}")
-
+    
     # Generate flow
     flow_content = FLOW_TEMPLATE.format(
         workflow_name="data_pipeline",
@@ -445,7 +444,7 @@ def generate_data_management_artifacts():
         sources: ["api", "file", "stream", "database"]
         batch_size: 1000
         timeout: "30s"
-
+    
     - id: "validate"
       type: "transform"
       component: "DataValidator"
@@ -453,14 +452,14 @@ def generate_data_management_artifacts():
       config:
         schema_validation: true
         data_quality_checks: true
-
+    
     - id: "transform"
       type: "transform"
       component: "DataTransformer"
       depends_on: ["validate"]
       config:
         transformations: ["normalize", "enrich", "deduplicate"]
-
+    
     - id: "cache"
       type: "cache"
       component: "CacheManager"
@@ -468,7 +467,7 @@ def generate_data_management_artifacts():
       config:
         ttl: "1h"
         eviction_policy: "LRU"
-
+    
     - id: "index"
       type: "index"
       component: "IndexManager"
@@ -476,7 +475,7 @@ def generate_data_management_artifacts():
       config:
         index_type: "full_text"
         analyzer: "standard"
-
+    
     - id: "store"
       type: "output"
       component: "StorageInterface"
@@ -484,7 +483,7 @@ def generate_data_management_artifacts():
       config:
         backend: "database"
         replication: 3
-
+    
     - id: "sync"
       type: "sync"
       component: "SyncManager"
@@ -492,7 +491,7 @@ def generate_data_management_artifacts():
       config:
         mode: "bidirectional"
         conflict_resolution: "last-write-wins"
-
+    
     - id: "replicate"
       type: "replicate"
       component: "ReplicationManager"
@@ -503,13 +502,13 @@ def generate_data_management_artifacts():
 """,
         execution="""    mode: "parallel"
     timeout: "5m"
-
+    
     retry:
       max_attempts: 3
       backoff: "exponential"
       initial_delay: "1s"
       max_delay: "30s"
-
+    
     error_handling:
       strategy: "continue_on_error"
       dead_letter_queue: true
@@ -520,7 +519,7 @@ def generate_data_management_artifacts():
       - "latency"
       - "error_rate"
       - "data_quality_score"
-
+    
     alerts:
       - condition: "error_rate > 5%"
         severity: "warning"
@@ -528,39 +527,37 @@ def generate_data_management_artifacts():
         severity: "warning"
       - condition: "throughput < 100/s"
         severity: "info"
-
+    
     logging:
       level: "info"
       include_payload: false
       retention: "7d"
 """,
         created_at=timestamp,
-        updated_at=timestamp,
+        updated_at=timestamp
     )
-
+    
     flow_path = BASE_DIR / "flows" / "data-pipeline.flow.yaml"
-    with open(flow_path, "w") as f:
+    with open(flow_path, 'w') as f:
         f.write(flow_content)
     print(f"✅ Created: {flow_path}")
-
+    
     print("✅ Data Management artifacts complete!")
-
 
 def main():
     """Main execution"""
     print("🚀 MCP Level 2 Artifacts Generator")
     print("=" * 50)
-
+    
     # Generate Data Management artifacts
     generate_data_management_artifacts()
-
+    
     print("\n" + "=" * 50)
     print("✅ All artifacts generated successfully!")
     print("\nNext steps:")
     print("1. Review generated files")
     print("2. Run validation tests")
     print("3. Commit changes")
-
 
 if __name__ == "__main__":
     main()

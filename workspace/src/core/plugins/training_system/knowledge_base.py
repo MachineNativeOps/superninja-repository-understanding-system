@@ -17,7 +17,6 @@ from typing import Any
 
 class KnowledgeCategory(Enum):
     """Knowledge categories for organization."""
-
     DATABASE = "database"
     SECURITY = "security"
     ARCHITECTURE = "architecture"
@@ -36,10 +35,9 @@ class KnowledgeCategory(Enum):
 class ConceptDefinition:
     """
     Defines a technical concept with comprehensive details.
-
+    
     概念定義：技術概念的完整定義
     """
-
     id: str
     name: str
     category: KnowledgeCategory
@@ -59,8 +57,7 @@ class ConceptDefinition:
     real_world_examples: list[str] = field(default_factory=list)
 
     # Metadata
-    # beginner, intermediate, advanced, expert
-    difficulty_level: str = "intermediate"
+    difficulty_level: str = "intermediate"  # beginner, intermediate, advanced, expert
     tags: list[str] = field(default_factory=list)
     references: list[str] = field(default_factory=list)
     last_updated: datetime = field(default_factory=datetime.now)
@@ -70,10 +67,9 @@ class ConceptDefinition:
 class BestPractice:
     """
     Defines a best practice with reasoning and examples.
-
+    
     最佳實踐：為什麼這樣做是正確的
     """
-
     id: str
     name: str
     category: KnowledgeCategory
@@ -105,10 +101,9 @@ class BestPractice:
 class AntiPattern:
     """
     Defines an anti-pattern to avoid with alternatives.
-
+    
     反模式：應該避免的做法以及原因
     """
-
     id: str
     name: str
     category: KnowledgeCategory
@@ -141,10 +136,9 @@ class AntiPattern:
 class DomainKnowledge:
     """
     Complete domain knowledge collection.
-
+    
     領域知識：特定技術領域的完整知識集合
     """
-
     domain: KnowledgeCategory
     name: str
     description: str
@@ -167,9 +161,9 @@ class DomainKnowledge:
 class KnowledgeBase:
     """
     Comprehensive AI Knowledge Base System.
-
+    
     AI 知識庫：所有 AI 智能體的知識來源
-
+    
     核心功能：
     1. 領域知識管理 - Domain knowledge management
     2. 概念查詢 - Concept lookup
@@ -218,7 +212,7 @@ class KnowledgeBase:
                 "為外鍵建立索引",
                 "考慮使用連接池",
                 "定期分析和優化查詢",
-            ],
+            ]
         )
 
         # Add indexing concept
@@ -381,7 +375,7 @@ await db.audit_log.create(data={'action': 'user_created', 'user_id': user.id})
                 "實施速率限制",
                 "定期更新依賴",
                 "使用 HTTPS",
-            ],
+            ]
         )
 
         # Password handling best practice
@@ -418,10 +412,10 @@ def verify_password(password: str, hashed: str) -> bool:
 def save_user(email: str, password: str):
     # 明文存儲密碼！
     db.users.create({'email': email, 'password': password})
-
+    
 # ❌ 使用弱哈希
 import hashlib
-hashed = hashlib.sha256(password.encode()).hexdigest()  # MD5 太弱了！
+hashed = hashlib.md5(password.encode()).hexdigest()  # MD5 太弱了！
 """,
             priority="critical",
             tags=["password", "authentication", "hashing"],
@@ -495,7 +489,7 @@ user = db.users.find_first(where={'email': email})
                 "明確服務邊界",
                 "設計時考慮失敗",
                 "監控和可觀測性優先",
-            ],
+            ]
         )
 
         self.domains[KnowledgeCategory.ARCHITECTURE] = domain
@@ -524,7 +518,7 @@ user = db.users.find_first(where={'email': email})
                 "關注關鍵路徑",
                 "使用適當的緩存策略",
                 "考慮異步處理",
-            ],
+            ]
         )
 
         self.domains[KnowledgeCategory.PERFORMANCE] = domain
@@ -535,9 +529,7 @@ user = db.users.find_first(where={'email': email})
         """Get a specific concept by ID."""
         return self.concepts.get(concept_id)
 
-    def search_concepts(
-        self, query: str, category: KnowledgeCategory | None = None
-    ) -> list[ConceptDefinition]:
+    def search_concepts(self, query: str, category: KnowledgeCategory | None = None) -> list[ConceptDefinition]:
         """Search concepts by keyword."""
         query_lower = query.lower()
         results = []
@@ -546,11 +538,9 @@ user = db.users.find_first(where={'email': email})
             if category and concept.category != category:
                 continue
 
-            if (
-                query_lower in concept.name.lower()
-                or query_lower in concept.definition.lower()
-                or any(query_lower in tag.lower() for tag in concept.tags)
-            ):
+            if (query_lower in concept.name.lower() or
+                query_lower in concept.definition.lower() or
+                any(query_lower in tag.lower() for tag in concept.tags)):
                 results.append(concept)
 
         return results
@@ -559,13 +549,10 @@ user = db.users.find_first(where={'email': email})
         """Get a specific best practice by ID."""
         return self.best_practices.get(practice_id)
 
-    def get_best_practices_for_category(
-        self, category: KnowledgeCategory
-    ) -> list[BestPractice]:
+    def get_best_practices_for_category(self, category: KnowledgeCategory) -> list[BestPractice]:
         """Get all best practices for a category."""
         return [
-            practice
-            for practice in self.best_practices.values()
+            practice for practice in self.best_practices.values()
             if practice.category == category
         ]
 
@@ -573,19 +560,14 @@ user = db.users.find_first(where={'email': email})
         """Get a specific anti-pattern by ID."""
         return self.anti_patterns.get(pattern_id)
 
-    def get_anti_patterns_for_category(
-        self, category: KnowledgeCategory
-    ) -> list[AntiPattern]:
+    def get_anti_patterns_for_category(self, category: KnowledgeCategory) -> list[AntiPattern]:
         """Get all anti-patterns for a category."""
         return [
-            pattern
-            for pattern in self.anti_patterns.values()
+            pattern for pattern in self.anti_patterns.values()
             if pattern.category == category
         ]
 
-    def get_domain_knowledge(
-        self, category: KnowledgeCategory
-    ) -> DomainKnowledge | None:
+    def get_domain_knowledge(self, category: KnowledgeCategory) -> DomainKnowledge | None:
         """Get complete domain knowledge."""
         return self.domains.get(category)
 
@@ -617,12 +599,10 @@ user = db.users.find_first(where={'email': email})
         if pattern.category in self.domains:
             self.domains[pattern.category].anti_patterns[pattern.id] = pattern
 
-    def get_relevant_knowledge(
-        self, context: str, max_results: int = 5
-    ) -> dict[str, Any]:
+    def get_relevant_knowledge(self, context: str, max_results: int = 5) -> dict[str, Any]:
         """
         Get relevant knowledge based on context.
-
+        
         根據上下文獲取相關知識
         """
         context_lower = context.lower()
@@ -636,47 +616,32 @@ user = db.users.find_first(where={'email': email})
 
         # Find relevant concepts
         for concept in self.concepts.values():
-            score = self._calculate_relevance(
-                context_lower, concept.name, concept.definition, concept.tags
-            )
+            score = self._calculate_relevance(context_lower, concept.name, concept.definition, concept.tags)
             if score > 0:
                 relevant["concepts"].append((concept, score))
 
         relevant["concepts"] = [
-            c
-            for c, _ in sorted(relevant["concepts"], key=lambda x: x[1], reverse=True)[
-                :max_results
-            ]
+            c for c, _ in sorted(relevant["concepts"], key=lambda x: x[1], reverse=True)[:max_results]
         ]
 
         # Find relevant best practices
         for practice in self.best_practices.values():
-            score = self._calculate_relevance(
-                context_lower, practice.name, practice.principle, practice.tags
-            )
+            score = self._calculate_relevance(context_lower, practice.name, practice.principle, practice.tags)
             if score > 0:
                 relevant["best_practices"].append((practice, score))
 
         relevant["best_practices"] = [
-            p
-            for p, _ in sorted(
-                relevant["best_practices"], key=lambda x: x[1], reverse=True
-            )[:max_results]
+            p for p, _ in sorted(relevant["best_practices"], key=lambda x: x[1], reverse=True)[:max_results]
         ]
 
         # Find relevant anti-patterns
         for pattern in self.anti_patterns.values():
-            score = self._calculate_relevance(
-                context_lower, pattern.name, pattern.description, pattern.tags
-            )
+            score = self._calculate_relevance(context_lower, pattern.name, pattern.description, pattern.tags)
             if score > 0:
                 relevant["anti_patterns"].append((pattern, score))
 
         relevant["anti_patterns"] = [
-            p
-            for p, _ in sorted(
-                relevant["anti_patterns"], key=lambda x: x[1], reverse=True
-            )[:max_results]
+            p for p, _ in sorted(relevant["anti_patterns"], key=lambda x: x[1], reverse=True)[:max_results]
         ]
 
         # Collect tips from relevant domains
@@ -687,9 +652,7 @@ user = db.users.find_first(where={'email': email})
 
         return relevant
 
-    def _calculate_relevance(
-        self, context: str, name: str, description: str, tags: list[str]
-    ) -> float:
+    def _calculate_relevance(self, context: str, name: str, description: str, tags: list[str]) -> float:
         """Calculate relevance score for knowledge item."""
         score = 0.0
         context_words = set(context.split())

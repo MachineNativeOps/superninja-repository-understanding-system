@@ -36,26 +36,26 @@ from .skills_training import (
 
 __all__ = [
     # Knowledge Base
-    "KnowledgeBase",
-    "DomainKnowledge",
-    "ConceptDefinition",
-    "BestPractice",
-    "AntiPattern",
-    "KnowledgeCategory",
+    'KnowledgeBase',
+    'DomainKnowledge',
+    'ConceptDefinition',
+    'BestPractice',
+    'AntiPattern',
+    'KnowledgeCategory',
     # Skills Training
-    "SkillsTrainingSystem",
-    "Skill",
-    "SkillLevel",
-    "TrainingModule",
-    "TrainingSession",
-    "SkillAssessment",
-    "LearningPath",
+    'SkillsTrainingSystem',
+    'Skill',
+    'SkillLevel',
+    'TrainingModule',
+    'TrainingSession',
+    'SkillAssessment',
+    'LearningPath',
     # Example Library
-    "ExampleLibrary",
-    "CodeExample",
-    "ScenarioExample",
-    "DecisionExample",
-    "ExampleCategory",
+    'ExampleLibrary',
+    'CodeExample',
+    'ScenarioExample',
+    'DecisionExample',
+    'ExampleCategory',
 ]
 
-__version__ = "1.0.0"
+__version__ = '1.0.0'

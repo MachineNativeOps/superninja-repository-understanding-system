@@ -21,36 +21,31 @@ Author: MachineNativeOps Platform Team
 Date: 2025-12-20
 """
 
+import re
+import os
+import sys
+import json
+import shutil
 import argparse
 import hashlib
-import json
-import os
-import re
-import shutil
-import sys
-from collections import defaultdict
+from pathlib import Path
+from typing import Dict, List, Tuple, Set, Optional
 from dataclasses import dataclass, field
 from datetime import datetime
-from pathlib import Path
-from typing import Dict, List, Optional, Set, Tuple
+from collections import defaultdict
 
 # Optional YAML support
 try:
     import yaml
-
     YAML_AVAILABLE = True
 except ImportError:
     YAML_AVAILABLE = False
-    print(
-        "Warning: PyYAML not installed. YAML validation will be limited.",
-        file=sys.stderr,
-    )
+    print("Warning: PyYAML not installed. YAML validation will be limited.", file=sys.stderr)
 
 
 @dataclass
 class ConversionMatch:
     """Represents a single conversion match."""
-
     pattern: str
     original: str
     replacement: str
@@ -62,7 +57,6 @@ class ConversionMatch:
 @dataclass
 class ConversionResult:
     """Represents the result of a conversion operation."""
-
     file_path: str
     file_type: str
     total_matches: int = 0
@@ -77,7 +71,6 @@ class ConversionResult:
 @dataclass
 class MigrationSummary:
     """Summary of the entire migration operation."""
-
     total_files_scanned: int = 0
     total_files_modified: int = 0
     total_conversions: int = 0
@@ -109,7 +102,7 @@ class AxiomNamespaceMigrator:
         verbose: bool = False,
         backup: bool = True,
         validate_only: bool = False,
-        backup_dir: Optional[str] = None,
+        backup_dir: Optional[str] = None
     ):
         self.dry_run = dry_run
         self.verbose = verbose
@@ -119,8 +112,7 @@ class AxiomNamespaceMigrator:
         self.results: List[ConversionResult] = []
         self.summary = MigrationSummary()
 
-        # Comprehensive conversion rules (ordered by specificity - longest
-        # first)
+        # Comprehensive conversion rules (ordered by specificity - longest first)
         self.conversion_rules = self._build_conversion_rules()
 
         # Validation patterns (must NOT exist after conversion)
@@ -128,14 +120,14 @@ class AxiomNamespaceMigrator:
 
         # File extensions to process by category
         self.file_categories = {
-            "yaml": {".yaml", ".yml"},
-            "json": {".json"},
-            "python": {".py"},
-            "javascript": {".js", ".ts", ".jsx", ".tsx"},
-            "markdown": {".md", ".mdx"},
-            "shell": {".sh", ".bash"},
-            "config": {".conf", ".toml", ".ini"},
-            "text": {".txt"},
+            'yaml': {'.yaml', '.yml'},
+            'json': {'.json'},
+            'python': {'.py'},
+            'javascript': {'.js', '.ts', '.jsx', '.tsx'},
+            'markdown': {'.md', '.mdx'},
+            'shell': {'.sh', '.bash'},
+            'config': {'.conf', '.toml', '.ini'},
+            'text': {'.txt'}
         }
 
         # All processable extensions
@@ -145,19 +137,9 @@ class AxiomNamespaceMigrator:
 
         # Excluded directories
         self.excluded_dirs = {
-            ".git",
-            "node_modules",
-            "__pycache__",
-            ".venv",
-            "venv",
-            "dist",
-            "build",
-            "target",
-            ".axiom-migration-backup",
-            ".next",
-            ".nuxt",
-            "coverage",
-            ".pytest_cache",
+            '.git', 'node_modules', '__pycache__', '.venv',
+            'venv', 'dist', 'build', 'target', '.axiom-migration-backup',
+            '.next', '.nuxt', 'coverage', '.pytest_cache'
         }
 
     def _build_conversion_rules(self) -> List[Tuple[str, str, str]]:
@@ -168,58 +150,62 @@ class AxiomNamespaceMigrator:
         """
         rules = [
             # API Version conversions (most specific first)
-            (
-                r"apiVersion:\s*axiom\.io/v(\d+)",
-                r"apiVersion: machinenativeops.io/v\1",
-                "api_version",
-            ),
-            (r"axiom\.io/v(\d+)", r"machinenativeops.io/v\1", "api_version"),
+            (r'apiVersion:\s*axiom\.io/v(\d+)', r'apiVersion: machinenativeops.io/v\1', 'api_version'),
+            (r'axiom\.io/v(\d+)', r'machinenativeops.io/v\1', 'api_version'),
+
             # Kind/Type conversions (full type names first)
-            (r"\bAxiomGlobalBaseline\b", r"MachineNativeOpsGlobalBaseline", "kind"),
-            (r"\bAxiomNamespaceConfig\b", r"MachineNativeOpsNamespaceConfig", "kind"),
-            (r"\bAxiomAutoMonitor\b", r"MachineNativeOpsAutoMonitor", "kind"),
-            (r"\bAxiomConfigValidator\b", r"MachineNativeOpsConfigValidator", "kind"),
-            (
-                r"\bAxiomPerformanceBenchmarker\b",
-                r"MachineNativeOpsPerformanceBenchmarker",
-                "kind",
-            ),
-            (r"\bAxiomQuantumOptimizer\b", r"MachineNativeOpsQuantumOptimizer", "kind"),
-            (r"\bAxiomSecurityScanner\b", r"MachineNativeOpsSecurityScanner", "kind"),
-            (r"\bAxiom([A-Z][a-zA-Z0-9]*)\b", r"MachineNativeOps\1", "kind"),
+            (r'\bAxiomGlobalBaseline\b', r'MachineNativeOpsGlobalBaseline', 'kind'),
+            (r'\bAxiomNamespaceConfig\b', r'MachineNativeOpsNamespaceConfig', 'kind'),
+            (r'\bAxiomAutoMonitor\b', r'MachineNativeOpsAutoMonitor', 'kind'),
+            (r'\bAxiomConfigValidator\b', r'MachineNativeOpsConfigValidator', 'kind'),
+            (r'\bAxiomPerformanceBenchmarker\b', r'MachineNativeOpsPerformanceBenchmarker', 'kind'),
+            (r'\bAxiomQuantumOptimizer\b', r'MachineNativeOpsQuantumOptimizer', 'kind'),
+            (r'\bAxiomSecurityScanner\b', r'MachineNativeOpsSecurityScanner', 'kind'),
+            (r'\bAxiom([A-Z][a-zA-Z0-9]*)\b', r'MachineNativeOps\1', 'kind'),
+
             # URN conversions
-            (r"urn:axiom:", r"urn:machinenativeops:", "urn"),
+            (r'urn:axiom:', r'urn:machinenativeops:', 'urn'),
+
             # Domain/Label conversions
-            (r"axiom\.io/", r"machinenativeops.io/", "domain"),
+            (r'axiom\.io/', r'machinenativeops.io/', 'domain'),
+
             # Registry conversions
-            (r"registry\.axiom\.io", r"registry.machinenativeops.io", "registry"),
-            (r"ghcr\.io/axiom", r"ghcr.io/machinenativeops", "registry"),
+            (r'registry\.axiom\.io', r'registry.machinenativeops.io', 'registry'),
+            (r'ghcr\.io/axiom', r'ghcr.io/machinenativeops', 'registry'),
+
             # Path conversions (filesystem)
-            (r"/etc/axiom", r"/etc/machinenativeops", "path"),
-            (r"/opt/axiom", r"/opt/machinenativeops", "path"),
-            (r"/var/lib/axiom", r"/var/lib/machinenativeops", "path"),
-            (r"/var/log/axiom", r"/var/log/machinenativeops", "path"),
-            (r"/var/cache/axiom", r"/var/cache/machinenativeops", "path"),
-            (r"/tmp/axiom", r"/tmp/machinenativeops", "path"),
+            (r'/etc/axiom', r'/etc/machinenativeops', 'path'),
+            (r'/opt/axiom', r'/opt/machinenativeops', 'path'),
+            (r'/var/lib/axiom', r'/var/lib/machinenativeops', 'path'),
+            (r'/var/log/axiom', r'/var/log/machinenativeops', 'path'),
+            (r'/var/cache/axiom', r'/var/cache/machinenativeops', 'path'),
+            (r'/tmp/axiom', r'/tmp/machinenativeops', 'path'),
+
             # Cluster/Resource name conversions
-            (r"\baxiom-etcd-cluster\b", r"super-agent-etcd-cluster", "cluster"),
-            (r"\baxiom-cluster\b", r"machinenativeops-cluster", "cluster"),
+            (r'\baxiom-etcd-cluster\b', r'super-agent-etcd-cluster', 'cluster'),
+            (r'\baxiom-cluster\b', r'machinenativeops-cluster', 'cluster'),
+
             # Namespace conversions (YAML context)
-            (r"namespace:\s*axiom\b", r"namespace: machinenativeops", "namespace"),
+            (r'namespace:\s*axiom\b', r'namespace: machinenativeops', 'namespace'),
+
             # Resource prefix conversions
-            (r"\baxiom-([a-z0-9-]+)", r"machinenativeops-\1", "resource_name"),
+            (r'\baxiom-([a-z0-9-]+)', r'machinenativeops-\1', 'resource_name'),
+
             # Python/Code specific conversions
-            (r"axiom_system", r"machinenativeops_system", "python"),
-            (r"axiom_monitor", r"machinenativeops_monitor", "python"),
-            (r"axiom_validator", r"machinenativeops_validator", "python"),
-            (r"axiom_config", r"machinenativeops_config", "python"),
+            (r'axiom_system', r'machinenativeops_system', 'python'),
+            (r'axiom_monitor', r'machinenativeops_monitor', 'python'),
+            (r'axiom_validator', r'machinenativeops_validator', 'python'),
+            (r'axiom_config', r'machinenativeops_config', 'python'),
+
             # Environment variable conversions
-            (r"\bAXIOM_([A-Z_]+)", r"MNO_\1", "env_var"),
+            (r'\bAXIOM_([A-Z_]+)', r'MNO_\1', 'env_var'),
+
             # General namespace conversion (least specific, last)
-            (r"\baxiom\b(?!\.io)(?![a-zA-Z0-9_-])", r"machinenativeops", "namespace"),
+            (r'\baxiom\b(?!\.io)(?![a-zA-Z0-9_-])', r'machinenativeops', 'namespace'),
+
             # Case-sensitive AXIOM conversions
-            (r"\bAXIOM\b", r"MachineNativeOps", "brand"),
-            (r"\bAxiom\b(?![A-Z])", r"MachineNativeOps", "brand"),
+            (r'\bAXIOM\b', r'MachineNativeOps', 'brand'),
+            (r'\bAxiom\b(?![A-Z])', r'MachineNativeOps', 'brand'),
         ]
 
         return rules
@@ -227,13 +213,13 @@ class AxiomNamespaceMigrator:
     def _build_forbidden_patterns(self) -> List[Tuple[str, str]]:
         """Build patterns that should NOT exist after successful conversion."""
         return [
-            (r"\baxiom\.io/", "Legacy axiom.io domain found"),
-            (r"\bAxiom[A-Z]", "Legacy Axiom class/type name found"),
-            (r"urn:axiom:", "Legacy axiom URN found"),
-            (r"/etc/axiom/", "Legacy axiom filesystem path found"),
-            (r"/opt/axiom/", "Legacy axiom filesystem path found"),
-            (r"apiVersion:\s*axiom\.io", "Legacy axiom API version found"),
-            (r"namespace:\s*axiom\b", "Legacy axiom namespace found"),
+            (r'\baxiom\.io/', "Legacy axiom.io domain found"),
+            (r'\bAxiom[A-Z]', "Legacy Axiom class/type name found"),
+            (r'urn:axiom:', "Legacy axiom URN found"),
+            (r'/etc/axiom/', "Legacy axiom filesystem path found"),
+            (r'/opt/axiom/', "Legacy axiom filesystem path found"),
+            (r'apiVersion:\s*axiom\.io', "Legacy axiom API version found"),
+            (r'namespace:\s*axiom\b', "Legacy axiom namespace found"),
         ]
 
     def _get_file_category(self, file_path: Path) -> str:
@@ -242,7 +228,7 @@ class AxiomNamespaceMigrator:
         for category, extensions in self.file_categories.items():
             if suffix in extensions:
                 return category
-        return "unknown"
+        return 'unknown'
 
     def _create_backup(self, file_path: Path) -> Optional[str]:
         """Create a backup of the file before modification."""
@@ -254,9 +240,7 @@ class AxiomNamespaceMigrator:
 
         # Create timestamped backup path
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-        relative_path = (
-            file_path.relative_to(Path.cwd()) if file_path.is_absolute() else file_path
-        )
+        relative_path = file_path.relative_to(Path.cwd()) if file_path.is_absolute() else file_path
         backup_path = backup_base / f"{timestamp}" / relative_path
 
         backup_path.parent.mkdir(parents=True, exist_ok=True)
@@ -267,7 +251,7 @@ class AxiomNamespaceMigrator:
     def _find_matches(self, content: str, file_path: str) -> List[ConversionMatch]:
         """Find all matches in the content with line numbers and context."""
         matches = []
-        lines = content.split("\n")
+        lines = content.split('\n')
 
         for pattern, replacement, category in self.conversion_rules:
             for line_num, line in enumerate(lines, 1):
@@ -275,33 +259,29 @@ class AxiomNamespaceMigrator:
                     context_start = max(0, line_num - 2)
                     context_end = min(len(lines), line_num + 2)
                     context_lines = lines[context_start:context_end]
-                    context = "\n".join(
-                        f"  {i+context_start+1}: {l}"
-                        for i, l in enumerate(context_lines)
-                    )
+                    context = '\n'.join(f"  {i+context_start+1}: {l}" for i, l in enumerate(context_lines))
 
-                    matches.append(
-                        ConversionMatch(
-                            pattern=pattern,
-                            original=match.group(0),
-                            replacement=re.sub(pattern, replacement, match.group(0)),
-                            line_number=line_num,
-                            column=match.start() + 1,
-                            context=context,
-                        )
-                    )
+                    matches.append(ConversionMatch(
+                        pattern=pattern,
+                        original=match.group(0),
+                        replacement=re.sub(pattern, replacement, match.group(0)),
+                        line_number=line_num,
+                        column=match.start() + 1,
+                        context=context
+                    ))
 
         return matches
 
     def convert_file(self, file_path: Path) -> ConversionResult:
         """Convert namespace references in a single file."""
         result = ConversionResult(
-            file_path=str(file_path), file_type=self._get_file_category(file_path)
+            file_path=str(file_path),
+            file_type=self._get_file_category(file_path)
         )
 
         try:
             # Read file content
-            with open(file_path, "r", encoding="utf-8") as f:
+            with open(file_path, 'r', encoding='utf-8') as f:
                 content = f.read()
 
             original_content = content
@@ -316,22 +296,16 @@ class AxiomNamespaceMigrator:
                 if matches:
                     match_count = len(matches)
                     result.total_matches += match_count
-                    result.patterns_matched[category] = (
-                        result.patterns_matched.get(category, 0) + match_count
-                    )
+                    result.patterns_matched[category] = result.patterns_matched.get(category, 0) + match_count
 
                     content = re.sub(pattern, replacement, content, flags=re.MULTILINE)
 
                     if self.verbose:
-                        print(
-                            f"  [{category}] Pattern '{pattern[:40]}...': {match_count} matches"
-                        )
+                        print(f"  [{category}] Pattern '{pattern[:40]}...': {match_count} matches")
 
             # Count actual conversions (characters changed)
             if content != original_content:
-                result.conversions = sum(
-                    1 for a, b in zip(original_content, content) if a != b
-                ) + abs(len(content) - len(original_content))
+                result.conversions = sum(1 for a, b in zip(original_content, content) if a != b) + abs(len(content) - len(original_content))
 
             # Validate converted content
             self._validate_content(content, result)
@@ -341,16 +315,14 @@ class AxiomNamespaceMigrator:
                 if self.backup:
                     result.backup_path = self._create_backup(file_path)
 
-                with open(file_path, "w", encoding="utf-8") as f:
+                with open(file_path, 'w', encoding='utf-8') as f:
                     f.write(content)
 
                 if self.verbose:
                     print(f"✓ Updated {file_path}: {result.total_matches} conversions")
             elif result.total_matches > 0 and self.dry_run:
                 if self.verbose:
-                    print(
-                        f"⊡ Would update {file_path}: {result.total_matches} conversions"
-                    )
+                    print(f"⊡ Would update {file_path}: {result.total_matches} conversions")
 
         except UnicodeDecodeError:
             result.errors.append(f"Unable to read file: not valid UTF-8")
@@ -370,7 +342,7 @@ class AxiomNamespaceMigrator:
             matches = list(re.finditer(pattern, content, re.MULTILINE))
             if matches:
                 # Find line numbers for warnings
-                lines = content.split("\n")
+                lines = content.split('\n')
                 line_nums = []
                 for match in matches[:5]:  # Limit to first 5 matches
                     pos = 0
@@ -415,7 +387,7 @@ class AxiomNamespaceMigrator:
         files_to_process = []
 
         # Collect all files first
-        for file_path in directory_path.rglob("*"):
+        for file_path in directory_path.rglob('*'):
             if file_path.is_file() and self.should_process_file(file_path):
                 files_to_process.append(file_path)
 
@@ -442,15 +414,11 @@ class AxiomNamespaceMigrator:
 
             # Track by file type
             file_type = result.file_type
-            self.summary.files_by_type[file_type] = (
-                self.summary.files_by_type.get(file_type, 0) + 1
-            )
+            self.summary.files_by_type[file_type] = self.summary.files_by_type.get(file_type, 0) + 1
 
             # Track pattern summary
             for category, count in result.patterns_matched.items():
-                self.summary.patterns_summary[category] = (
-                    self.summary.patterns_summary.get(category, 0) + count
-                )
+                self.summary.patterns_summary[category] = self.summary.patterns_summary.get(category, 0) + count
 
         return results
 
@@ -466,11 +434,7 @@ class AxiomNamespaceMigrator:
             self.summary.total_conversions = result.total_matches
             self.summary.total_errors = len(result.errors)
             self.summary.total_warnings = len(result.warnings)
-            self.results = (
-                [result]
-                if result.total_matches > 0 or result.warnings or result.errors
-                else []
-            )
+            self.results = [result] if result.total_matches > 0 or result.warnings or result.errors else []
         elif path.is_dir():
             self.results = self.convert_directory(path)
         else:
@@ -482,11 +446,7 @@ class AxiomNamespaceMigrator:
 
     def generate_report(self) -> str:
         """Generate a detailed conversion report."""
-        duration = (
-            (self.summary.end_time - self.summary.start_time).total_seconds()
-            if self.summary.end_time
-            else 0
-        )
+        duration = (self.summary.end_time - self.summary.start_time).total_seconds() if self.summary.end_time else 0
 
         report = []
         report.append("=" * 80)
@@ -495,11 +455,7 @@ class AxiomNamespaceMigrator:
         report.append(f"  Tool Version: {self.VERSION}")
         report.append(f"  Generated: {datetime.now().isoformat()}")
         report.append(f"  Duration: {duration:.2f} seconds")
-        mode = (
-            "Validation Only"
-            if self.validate_only
-            else "Dry Run" if self.dry_run else "Live Conversion"
-        )
+        mode = 'Validation Only' if self.validate_only else 'Dry Run' if self.dry_run else 'Live Conversion'
         report.append(f"  Mode: {mode}")
         report.append("")
 
@@ -528,9 +484,7 @@ class AxiomNamespaceMigrator:
             report.append("─" * 80)
             report.append("  CONVERSIONS BY CATEGORY")
             report.append("─" * 80)
-            for category, count in sorted(
-                self.summary.patterns_summary.items(), key=lambda x: -x[1]
-            ):
+            for category, count in sorted(self.summary.patterns_summary.items(), key=lambda x: -x[1]):
                 report.append(f"  {category:20} {count:5} matches")
             report.append("")
 
@@ -568,9 +522,7 @@ class AxiomNamespaceMigrator:
         report.append("=" * 80)
         if self.summary.total_errors == 0 and self.summary.total_warnings == 0:
             if self.summary.total_conversions == 0:
-                report.append(
-                    "  ✓ All files are compliant with MachineNativeOps namespace standards"
-                )
+                report.append("  ✓ All files are compliant with MachineNativeOps namespace standards")
             else:
                 report.append("  ✓ Conversion completed successfully")
         elif self.summary.total_errors == 0:
@@ -583,27 +535,19 @@ class AxiomNamespaceMigrator:
 
     def generate_json_report(self) -> dict:
         """Generate a JSON-serializable report."""
-        duration = (
-            (self.summary.end_time - self.summary.start_time).total_seconds()
-            if self.summary.end_time
-            else 0
-        )
+        duration = (self.summary.end_time - self.summary.start_time).total_seconds() if self.summary.end_time else 0
 
         return {
             "version": self.VERSION,
             "generated_at": datetime.now().isoformat(),
             "duration_seconds": duration,
-            "mode": (
-                "validation"
-                if self.validate_only
-                else "dry_run" if self.dry_run else "live"
-            ),
+            "mode": 'validation' if self.validate_only else 'dry_run' if self.dry_run else 'live',
             "summary": {
                 "files_scanned": self.summary.total_files_scanned,
                 "files_modified": self.summary.total_files_modified,
                 "total_conversions": self.summary.total_conversions,
                 "errors": self.summary.total_errors,
-                "warnings": self.summary.total_warnings,
+                "warnings": self.summary.total_warnings
             },
             "files_by_type": self.summary.files_by_type,
             "patterns_summary": self.summary.patterns_summary,
@@ -615,17 +559,17 @@ class AxiomNamespaceMigrator:
                     "patterns_matched": r.patterns_matched,
                     "backup_path": r.backup_path,
                     "warnings": r.warnings,
-                    "errors": r.errors,
+                    "errors": r.errors
                 }
                 for r in self.results
             ],
-            "success": self.summary.total_errors == 0,
+            "success": self.summary.total_errors == 0
         }
 
     def save_report(self, report: str, output_path: str):
         """Save report to file."""
         try:
-            with open(output_path, "w", encoding="utf-8") as f:
+            with open(output_path, 'w', encoding='utf-8') as f:
                 f.write(report)
             print(f"\nReport saved to: {output_path}")
         except Exception as e:
@@ -635,7 +579,7 @@ class AxiomNamespaceMigrator:
 def main():
     """Main entry point for the namespace migrator."""
     parser = argparse.ArgumentParser(
-        description="AXIOM to MachineNativeOps Namespace Migration Tool",
+        description='AXIOM to MachineNativeOps Namespace Migration Tool',
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="""
 ╔══════════════════════════════════════════════════════════════════════════════╗
@@ -665,48 +609,28 @@ def main():
 ║    - namespace:     namespace: axiom → namespace: machinenativeops          ║
 ║                                                                              ║
 ╚══════════════════════════════════════════════════════════════════════════════╝
-        """,
+        """
     )
 
-    parser.add_argument("path", type=str, help="File or directory path to process")
-    parser.add_argument(
-        "--dry-run",
-        action="store_true",
-        help="Show what would be changed without modifying files",
-    )
-    parser.add_argument(
-        "--verbose",
-        "-v",
-        action="store_true",
-        help="Enable verbose output with detailed match information",
-    )
-    parser.add_argument(
-        "--validate",
-        action="store_true",
-        help="Validate only - check for legacy patterns without converting",
-    )
-    parser.add_argument(
-        "--backup",
-        action="store_true",
-        default=True,
-        help="Create backup before modifying files (default: True)",
-    )
-    parser.add_argument(
-        "--no-backup", action="store_true", help="Disable backup creation"
-    )
-    parser.add_argument(
-        "--backup-dir",
-        type=str,
-        default=".axiom-migration-backup",
-        help="Directory for backup files (default: .axiom-migration-backup)",
-    )
-    parser.add_argument(
-        "--report", action="store_true", help="Generate detailed report file"
-    )
-    parser.add_argument(
-        "--json", action="store_true", help="Output report in JSON format"
-    )
-    parser.add_argument("--output", "-o", type=str, help="Output path for report file")
+    parser.add_argument('path', type=str, help='File or directory path to process')
+    parser.add_argument('--dry-run', action='store_true',
+                        help='Show what would be changed without modifying files')
+    parser.add_argument('--verbose', '-v', action='store_true',
+                        help='Enable verbose output with detailed match information')
+    parser.add_argument('--validate', action='store_true',
+                        help='Validate only - check for legacy patterns without converting')
+    parser.add_argument('--backup', action='store_true', default=True,
+                        help='Create backup before modifying files (default: True)')
+    parser.add_argument('--no-backup', action='store_true',
+                        help='Disable backup creation')
+    parser.add_argument('--backup-dir', type=str, default='.axiom-migration-backup',
+                        help='Directory for backup files (default: .axiom-migration-backup)')
+    parser.add_argument('--report', action='store_true',
+                        help='Generate detailed report file')
+    parser.add_argument('--json', action='store_true',
+                        help='Output report in JSON format')
+    parser.add_argument('--output', '-o', type=str,
+                        help='Output path for report file')
 
     args = parser.parse_args()
 
@@ -725,7 +649,7 @@ def main():
         verbose=args.verbose,
         backup=do_backup and not args.dry_run and not args.validate,
         validate_only=args.validate,
-        backup_dir=args.backup_dir,
+        backup_dir=args.backup_dir
     )
 
     # Print header
@@ -733,9 +657,7 @@ def main():
     print("  AXIOM → MachineNativeOps Namespace Migration Tool")
     print("=" * 80)
     print(f"  Target: {path.absolute()}")
-    print(
-        f"  Mode: {'Validation Only' if args.validate else 'Dry Run' if args.dry_run else 'Live Conversion'}"
-    )
+    print(f"  Mode: {'Validation Only' if args.validate else 'Dry Run' if args.dry_run else 'Live Conversion'}")
     if do_backup and not args.dry_run and not args.validate:
         print(f"  Backup: {args.backup_dir}")
     print("=" * 80)
@@ -746,9 +668,7 @@ def main():
 
     # Generate and display report
     if args.json:
-        report = json.dumps(
-            migrator.generate_json_report(), indent=2, ensure_ascii=False
-        )
+        report = json.dumps(migrator.generate_json_report(), indent=2, ensure_ascii=False)
     else:
         report = migrator.generate_report()
 
@@ -759,7 +679,7 @@ def main():
         output_path = args.output
         if not output_path:
             timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-            extension = ".json" if args.json else ".txt"
+            extension = '.json' if args.json else '.txt'
             output_path = f"axiom-migration-report-{timestamp}{extension}"
 
         migrator.save_report(report, output_path)
@@ -768,5 +688,5 @@ def main():
     sys.exit(1 if migrator.summary.total_errors > 0 else 0)
 
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     main()

@@ -12,18 +12,16 @@ Generates a comprehensive governance matrix showing:
 """
 
 import json
-import sys
-from dataclasses import asdict, dataclass
-from enum import Enum
-from pathlib import Path
-from typing import Any, Dict, List, Tuple
-
 import yaml
+import sys
+from pathlib import Path
+from typing import Dict, List, Tuple, Any
+from dataclasses import dataclass, asdict
+from enum import Enum
 
 
 class ComplianceStatus(Enum):
     """Compliance status levels"""
-
     COMPLIANT = "✅"
     PARTIAL = "⚠️"
     NON_COMPLIANT = "❌"
@@ -33,7 +31,6 @@ class ComplianceStatus(Enum):
 @dataclass
 class ComplianceResult:
     """Result of a compliance check"""
-
     dimension: str
     meta_domain: str
     status: ComplianceStatus
@@ -162,9 +159,7 @@ class GovernanceMatrixValidator:
             if dim_path.exists():
                 has_readme = (dim_path / "README.md").exists()
                 has_automation = (dim_path / "automation_engine.py").exists()
-                print(
-                    f"  ✅ {dimension:<30} (README: {has_readme}, automation: {has_automation})"
-                )
+                print(f"  ✅ {dimension:<30} (README: {has_readme}, automation: {has_automation})")
             else:
                 print(f"  ❌ {dimension:<30} (NOT FOUND)")
 
@@ -214,8 +209,7 @@ class GovernanceMatrixValidator:
         """Calculate overall compliance percentage"""
         total = len(self.DIMENSIONS) * len(self.META_DOMAINS)
         compliant = sum(
-            1
-            for dim_statuses in self.matrix.values()
+            1 for dim_statuses in self.matrix.values()
             for status in dim_statuses.values()
             if status == ComplianceStatus.COMPLIANT
         )
@@ -227,8 +221,7 @@ class GovernanceMatrixValidator:
 
         for dimension, statuses in self.matrix.items():
             missing = [
-                meta
-                for meta, status in statuses.items()
+                meta for meta, status in statuses.items()
                 if status != ComplianceStatus.COMPLIANT
             ]
             if missing:

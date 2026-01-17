@@ -22,7 +22,6 @@ logger = logging.getLogger(__name__)
 
 class ResourceType(Enum):
     """Types of resources for capacity planning"""
-
     ANALYSIS_RUNS = "analysis_runs"
     CONCURRENT_RUNS = "concurrent_runs"
     STORAGE_GB = "storage_gb"
@@ -33,7 +32,6 @@ class ResourceType(Enum):
 
 class PlanTier(Enum):
     """Subscription plan tiers"""
-
     FREE = "free"
     STARTER = "starter"
     PROFESSIONAL = "professional"
@@ -47,7 +45,6 @@ class CapacityPlan:
 
     Defines resource limits based on subscription tier.
     """
-
     tier: PlanTier = PlanTier.FREE
 
     # Analysis limits
@@ -141,7 +138,6 @@ class UsageForecast:
     """
     Usage forecast for capacity planning
     """
-
     resource_type: ResourceType
     current_usage: float
     forecasted_usage: float
@@ -171,7 +167,6 @@ class CostEstimate:
     """
     Cost estimate for an organization
     """
-
     org_id: UUID = field(default_factory=uuid4)
     period_start: datetime = field(default_factory=datetime.utcnow)
     period_end: datetime = field(default_factory=datetime.utcnow)
@@ -196,7 +191,6 @@ class CostEstimate:
 @dataclass
 class UsageRecord:
     """Record of resource usage"""
-
     org_id: UUID
     resource_type: ResourceType
     amount: float
@@ -207,7 +201,8 @@ class UsageRecord:
 class UsageStorage(Protocol):
     """Interface for usage data storage"""
 
-    async def record_usage(self, record: UsageRecord) -> None: ...
+    async def record_usage(self, record: UsageRecord) -> None:
+        ...
 
     async def get_usage(
         self,
@@ -215,20 +210,23 @@ class UsageStorage(Protocol):
         resource_type: ResourceType,
         start_time: datetime,
         end_time: datetime,
-    ) -> float: ...
+    ) -> float:
+        ...
 
     async def get_usage_history(
         self,
         org_id: UUID,
         resource_type: ResourceType,
         days: int = 30,
-    ) -> list[UsageRecord]: ...
+    ) -> list[UsageRecord]:
+        ...
 
 
 class PlanProvider(Protocol):
     """Interface for getting org's capacity plan"""
 
-    async def get_plan(self, org_id: UUID) -> CapacityPlan: ...
+    async def get_plan(self, org_id: UUID) -> CapacityPlan:
+        ...
 
 
 @dataclass
@@ -247,24 +245,20 @@ class CapacityManager:
     plan_provider: PlanProvider | None = None
 
     # Cost rates ($ per unit)
-    rates: dict[str, float] = field(
-        default_factory=lambda: {
-            "analysis_overage": 0.01,  # $0.01 per analysis over limit
-            "storage_gb": 0.10,  # $0.10 per GB per month
-            "compute_hour": 0.50,  # $0.50 per compute hour
-            "egress_gb": 0.05,  # $0.05 per GB egress
-        }
-    )
+    rates: dict[str, float] = field(default_factory=lambda: {
+        "analysis_overage": 0.01,     # $0.01 per analysis over limit
+        "storage_gb": 0.10,           # $0.10 per GB per month
+        "compute_hour": 0.50,         # $0.50 per compute hour
+        "egress_gb": 0.05,            # $0.05 per GB egress
+    })
 
     # Plan base costs
-    plan_costs: dict[PlanTier, float] = field(
-        default_factory=lambda: {
-            PlanTier.FREE: 0.0,
-            PlanTier.STARTER: 49.0,
-            PlanTier.PROFESSIONAL: 199.0,
-            PlanTier.ENTERPRISE: 999.0,
-        }
-    )
+    plan_costs: dict[PlanTier, float] = field(default_factory=lambda: {
+        PlanTier.FREE: 0.0,
+        PlanTier.STARTER: 49.0,
+        PlanTier.PROFESSIONAL: 199.0,
+        PlanTier.ENTERPRISE: 999.0,
+    })
 
     # ------------------------------------------------------------------
     # Usage Tracking
@@ -541,9 +535,7 @@ class CapacityManager:
         )
 
         # Calculate overages
-        analysis_usage = await self.get_current_usage(
-            org_id, ResourceType.ANALYSIS_RUNS
-        )
+        analysis_usage = await self.get_current_usage(org_id, ResourceType.ANALYSIS_RUNS)
         if analysis_usage > plan.monthly_analysis_limit:
             overage = analysis_usage - plan.monthly_analysis_limit
             estimate.overage_analysis_cost = overage * self.rates["analysis_overage"]

@@ -12,13 +12,9 @@ apiVersion: v1
 kind: Namespace
 metadata:
   name: Team-Frontend-Prod
-
   labels:
-
     environment: "prod"
-
     tenant: "platform-team"
-
 # 預期結果: ❌ FAIL - 包含大寫字母
 
 ---
@@ -27,13 +23,9 @@ apiVersion: v1
 kind: Namespace
 metadata:
   name: team_frontend_prod
-
   labels:
-
     environment: "prod"
-
     tenant: "platform-team"
-
 # 預期結果: ❌ FAIL - 使用底線而非破折號
 
 ---
@@ -42,13 +34,9 @@ apiVersion: v1
 kind: Namespace
 metadata:
   name: frontend-production
-
   labels:
-
     environment: "prod"
-
     tenant: "platform-team"
-
 # 預期結果: ❌ FAIL - 不匹配任何 canonical pattern
 
 ---
@@ -57,13 +45,9 @@ apiVersion: v1
 kind: Namespace
 metadata:
   name: ab
-
   labels:
-
     environment: "dev"
-
     tenant: "test"
-
 # 預期結果: ❌ FAIL - 少於 3 字符
 
 ---
@@ -72,13 +56,9 @@ apiVersion: v1
 kind: Namespace
 metadata:
   name: team-very-long-namespace-name-that-exceeds-the-kubernetes-limit-of-sixtythree-characters
-
   labels:
-
     environment: "dev"
-
     tenant: "platform-team"
-
 # 預期結果: ❌ FAIL - 超過 63 字符限制
 
 ---
@@ -91,13 +71,9 @@ apiVersion: v1
 kind: Namespace
 metadata:
   name: team-frontend-prod
-
   labels:
-
     tenant: "platform-team"
-
     # missing: environment
-
 # 預期結果: ❌ FAIL - 缺少必需標籤 'environment'
 
 ---
@@ -106,13 +82,9 @@ apiVersion: v1
 kind: Namespace
 metadata:
   name: team-backend-dev
-
   labels:
-
     environment: "dev"
-
     # missing: tenant
-
 # 預期結果: ❌ FAIL - 缺少必需標籤 'tenant'
 
 ---
@@ -121,13 +93,9 @@ apiVersion: v1
 kind: Namespace
 metadata:
   name: team-mobile-staging
-
   labels:
-
     app: "mobile"
-
     # missing: environment, tenant
-
 # 預期結果: ❌ FAIL - 缺少多個必需標籤
 
 ---
@@ -140,13 +108,9 @@ apiVersion: v1
 kind: Namespace
 metadata:
   name: team-core-prod
-
   labels:
-
     environment: "prod"
-
     tenant: "platform-team"
-
 # 預期結果: ❌ FAIL - 'core' 是保留關鍵字
 
 ---
@@ -155,13 +119,9 @@ apiVersion: v1
 kind: Namespace
 metadata:
   name: team-system-dev
-
   labels:
-
     environment: "dev"
-
     tenant: "platform-team"
-
 # 預期結果: ❌ FAIL - 'system' 是保留關鍵字
 
 ---
@@ -170,13 +130,9 @@ apiVersion: v1
 kind: Namespace
 metadata:
   name: team-internal-staging
-
   labels:
-
     environment: "staging"
-
     tenant: "platform-team"
-
 # 預期結果: ❌ FAIL - 'internal' 是保留關鍵字
 
 ---
@@ -185,13 +141,9 @@ apiVersion: v1
 kind: Namespace
 metadata:
   name: team-legacy-prod
-
   labels:
-
     environment: "prod"
-
     tenant: "platform-team"
-
 # 預期結果: ❌ FAIL - 'legacy' 是保留關鍵字
 
 ---
@@ -204,13 +156,9 @@ apiVersion: v1
 kind: Namespace
 metadata:
   name: team-frontend-prod
-
   labels:
-
     environment: "production"  # 應該是 'prod'
-
     tenant: "platform-team"
-
 # 預期結果: ❌ FAIL - 環境值不合法
 
 ---
@@ -219,13 +167,9 @@ apiVersion: v1
 kind: Namespace
 metadata:
   name: team-backend-dev
-
   labels:
-
     environment: "development"  # 應該是 'dev'
-
     tenant: "platform-team"
-
 # 預期結果: ❌ FAIL - 環境值不合法
 
 ---
@@ -234,13 +178,9 @@ apiVersion: v1
 kind: Namespace
 metadata:
   name: team-mobile-custom
-
   labels:
-
     environment: "custom"  # 不在允許列表中
-
     tenant: "platform-team"
-
 # 預期結果: ❌ FAIL - 環境值不在允許列表
 
 ---
@@ -253,13 +193,9 @@ apiVersion: v1
 kind: Namespace
 metadata:
   name: team-frontend@prod
-
   labels:
-
     environment: "prod"
-
     tenant: "platform-team"
-
 # 預期結果: ❌ FAIL - 包含非法字符 '@'
 
 ---
@@ -268,13 +204,9 @@ apiVersion: v1
 kind: Namespace
 metadata:
   name: team--frontend--prod
-
   labels:
-
     environment: "prod"
-
     tenant: "platform-team"
-
 # 預期結果: ❌ FAIL - 包含連續破折號
 
 ---
@@ -283,13 +215,9 @@ apiVersion: v1
 kind: Namespace
 metadata:
   name: -team-frontend-prod
-
   labels:
-
     environment: "prod"
-
     tenant: "platform-team"
-
 # 預期結果: ❌ FAIL - 以破折號開頭
 
 ---
@@ -298,13 +226,9 @@ apiVersion: v1
 kind: Namespace
 metadata:
   name: team-frontend-prod-
-
   labels:
-
     environment: "prod"
-
     tenant: "platform-team"
-
 # 預期結果: ❌ FAIL - 以破折號結尾
 
 ---
@@ -317,15 +241,10 @@ apiVersion: v1
 kind: Namespace
 metadata:
   name: team-frontend-prod
-
   # missing: machinenativeops.io/canonical-urn annotation
-
   labels:
-
     environment: "prod"
-
     tenant: "platform-team"
-
 # 預期結果: ⚠️ WARNING - 缺少 URN annotation
 
 ---
@@ -334,19 +253,12 @@ apiVersion: v1
 kind: Namespace
 metadata:
   name: team-backend-dev
-
   annotations:
-
     machinenativeops.io/canonical-urn: "urn:machinenativeops:team:backend:env:dev:v1"
-
     # missing: machinenativeops.io/description
-
   labels:
-
     environment: "dev"
-
     tenant: "platform-team"
-
 # 預期結果: ⚠️ WARNING - 缺少描述 annotation
 
 ---
@@ -359,13 +271,9 @@ apiVersion: v1
 kind: Namespace
 metadata:
   name: Team-Core-Production
-
   labels:
-
     app: "frontend"
-
     # missing: environment, tenant
-
 # 預期結果: ❌ FAIL - 多個違規
 # - 包含大寫字母
 # - 不符合 canonical pattern
@@ -378,15 +286,10 @@ apiVersion: v1
 kind: Namespace
 metadata:
   name: team_frontend_staging
-
   labels:
-
     environment: "stage"  # 應該是 'staging'
-
     tenant: "platform-team"
-
     # missing URN annotation
-
 # 預期結果: ❌ FAIL + ⚠️ WARNING
 # - 使用底線
 # - 環境值錯誤
@@ -427,27 +330,15 @@ apiVersion: v1
 kind: Namespace
 metadata:
   name: team-frontend-prod
-
   annotations:
-
     machinenativeops.io/canonical-urn: "urn:machinenativeops:team:frontend:env:prod:v1"
-
     machinenativeops.io/description: "Frontend team production environment"
-
     machinenativeops.io/owner: "frontend-team@example.com"
-
   labels:
-
     environment: "prod"
-
     tenant: "platform-team"
-
     team: "frontend-team"
-
     domain: "frontend"
-
     app.kubernetes.io/name: "frontend"
-
     app.kubernetes.io/managed-by: "helm"
-
 # 預期結果: ✅ PASS - 完全符合所有規則

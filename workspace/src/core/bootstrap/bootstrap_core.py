@@ -9,16 +9,15 @@ Responsibilities:
 - Foundation integrity verification
 """
 
-import hashlib
-import json
+from typing import Dict, Any, Optional
 from dataclasses import dataclass
 from enum import Enum
-from typing import Any, Dict, Optional
+import hashlib
+import json
 
 
 class BootstrapState(Enum):
     """Bootstrap state enumeration."""
-
     UNINITIALIZED = "uninitialized"
     INITIALIZING = "initializing"
     READY = "ready"
@@ -29,7 +28,6 @@ class BootstrapState(Enum):
 @dataclass
 class FoundationConfig:
     """Immutable foundation configuration."""
-
     version: str = "2.0.0"
     integrity_check: bool = True
     merkle_enabled: bool = True
@@ -92,7 +90,7 @@ class BootstrapCore:
                 "integrity_check": self.config.integrity_check,
                 "merkle_enabled": self.config.merkle_enabled,
                 "quantum_safe": self.config.quantum_safe,
-            },
+            }
         }
         self._state_hash = hashlib.sha256(
             json.dumps(state_data, sort_keys=True).encode()
@@ -111,7 +109,6 @@ class BootstrapCore:
 
 class BootstrapError(Exception):
     """Bootstrap error exception."""
-
     pass
 
 

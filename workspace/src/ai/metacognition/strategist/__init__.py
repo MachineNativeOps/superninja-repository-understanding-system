@@ -6,11 +6,11 @@ AXIOM Layer 11 Components
 
 from .meta_strategist import (
     MetaStrategist,
-    StrategicGoal,
     Strategy,
-    StrategyPriority,
     StrategyType,
+    StrategyPriority,
     SystemState,
+    StrategicGoal,
 )
 
 __all__ = [

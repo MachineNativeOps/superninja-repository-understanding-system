@@ -334,16 +334,11 @@ class CLIBridge:
             value_str = str(value).lower()
             for pattern in dangerous_patterns:
                 if pattern in value_str:
-                    violations.append(
-                        f"Dangerous pattern detected in '{key}': {pattern}"
-                    )
+                    violations.append(f"Dangerous pattern detected in '{key}': {pattern}")
                     risk_score += 0.5
 
         # Check for production targets
-        if (
-            "prod" in task.target_path.lower()
-            or "production" in task.target_path.lower()
-        ):
+        if "prod" in task.target_path.lower() or "production" in task.target_path.lower():
             recommendations.append("Consider using staging environment first")
             risk_score += 0.2
 
@@ -465,12 +460,12 @@ class CLIBridge:
             "target": task.target_path,
             "invoked_by": task.invoked_by,
             "started_at": task.started_at.isoformat() if task.started_at else None,
-            "completed_at": (
-                task.completed_at.isoformat() if task.completed_at else None
-            ),
+            "completed_at": task.completed_at.isoformat() if task.completed_at else None,
             "status": task.status.value,
             "result_summary": (
-                task.result.get("output") if isinstance(task.result, dict) else None
+                task.result.get("output")
+                if isinstance(task.result, dict)
+                else None
             ),
         }
 

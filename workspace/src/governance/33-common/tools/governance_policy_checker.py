@@ -14,18 +14,16 @@ Checks for:
 """
 
 import json
-import sys
-from dataclasses import dataclass
-from pathlib import Path
-from typing import Any, Dict, List, Tuple
-
 import yaml
+import sys
+from pathlib import Path
+from typing import Dict, List, Tuple, Any
+from dataclasses import dataclass
 
 
 @dataclass
 class PolicyCheckResult:
     """Result of a policy check"""
-
     policy_file: str
     domain: str
     valid: bool
@@ -70,7 +68,7 @@ class GovernancePolicyChecker:
 
         try:
             with open(policy_path) as f:
-                if policy_path.suffix == ".yaml" or policy_path.suffix == ".yml":
+                if policy_path.suffix == '.yaml' or policy_path.suffix == '.yml':
                     policy = yaml.safe_load(f)
                 else:
                     policy = json.load(f)
@@ -81,7 +79,7 @@ class GovernancePolicyChecker:
                 valid=False,
                 errors=[f"Failed to parse: {str(e)}"],
                 warnings=[],
-                metrics={},
+                metrics={}
             )
 
         if not policy:
@@ -92,7 +90,7 @@ class GovernancePolicyChecker:
                 valid=False,
                 errors=errors,
                 warnings=[],
-                metrics={},
+                metrics={}
             )
 
         # Check required fields
@@ -124,20 +122,15 @@ class GovernancePolicyChecker:
 
         # Check compliance metrics
         if "compliance_metrics" in policy:
-            metrics["compliance_metric_count"] = len(
-                policy.get("compliance_metrics", [])
-            )
+            metrics["compliance_metric_count"] = len(policy.get("compliance_metrics", []))
         else:
             warnings.append("Consider adding 'compliance_metrics' field")
 
         # Check version format
         if "version" in policy:
             import re
-
             if not re.match(r"^\d+\.\d+(\.\d+)?$", str(policy["version"])):
-                warnings.append(
-                    f"Version should follow semantic versioning: {policy['version']}"
-                )
+                warnings.append(f"Version should follow semantic versioning: {policy['version']}")
 
         valid = len(errors) == 0
 
@@ -147,7 +140,7 @@ class GovernancePolicyChecker:
             valid=valid,
             errors=errors,
             warnings=warnings,
-            metrics=metrics,
+            metrics=metrics
         )
 
     def check_domain_policies(self, domain_path: Path) -> List[PolicyCheckResult]:
@@ -182,14 +175,10 @@ class GovernancePolicyChecker:
 
         # Check meta-governance domains
         meta_domains = [
-            "architecture-governance",
-            "api-governance",
-            "data-governance",
-            "testing-governance",
-            "identity-tenancy-governance",
-            "performance-reliability-governance",
-            "cost-management-governance",
-            "docs-governance",
+            "architecture-governance", "api-governance", "data-governance",
+            "testing-governance", "identity-tenancy-governance",
+            "performance-reliability-governance", "cost-management-governance",
+            "docs-governance"
         ]
 
         for domain_name in meta_domains:
@@ -205,13 +194,9 @@ class GovernancePolicyChecker:
                 for result in results:
                     if result.valid:
                         total_valid += 1
-                        print(
-                            f"  ✅ {domain_name}: {result.policy_file.split('/')[-1]}"
-                        )
+                        print(f"  ✅ {domain_name}: {result.policy_file.split('/')[-1]}")
                     else:
-                        print(
-                            f"  ❌ {domain_name}: {result.policy_file.split('/')[-1]}"
-                        )
+                        print(f"  ❌ {domain_name}: {result.policy_file.split('/')[-1]}")
                         for error in result.errors:
                             print(f"      • {error}")
                     total_errors += len(result.errors)
@@ -225,10 +210,8 @@ class GovernancePolicyChecker:
             "invalid_policies": total_checks - total_valid,
             "total_errors": total_errors,
             "total_warnings": total_warnings,
-            "compliance_rate": (
-                (total_valid / total_checks * 100) if total_checks > 0 else 0
-            ),
-            "domain_results": domain_results,
+            "compliance_rate": (total_valid / total_checks * 100) if total_checks > 0 else 0,
+            "domain_results": domain_results
         }
 
         return overall_valid, report

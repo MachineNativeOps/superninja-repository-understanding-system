@@ -4,18 +4,10 @@ kind: Policy
 rules:
 - level: Metadata
   namespaces: ["*"]
-
   resources:
-
   - group: ""
-
     resources: ["namespaces"]
-
   - group: "machinesdk.io"
-
     resources: ["namespaces"]
-
   omitStages:
-
   - "RequestReceived"
-

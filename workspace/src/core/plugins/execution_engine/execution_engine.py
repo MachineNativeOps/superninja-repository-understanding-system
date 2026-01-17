@@ -24,7 +24,6 @@ from typing import Any
 
 class ExecutionStatus(Enum):
     """執行狀態"""
-
     PENDING = "pending"
     VALIDATING = "validating"
     PLANNING = "planning"
@@ -37,7 +36,6 @@ class ExecutionStatus(Enum):
 
 class ActionType(Enum):
     """行動類型"""
-
     DATABASE = "database"
     DEPLOYMENT = "deployment"
     FILE_SYSTEM = "file_system"
@@ -113,9 +111,9 @@ class ExecutionResult:
 class ExecutionEngine:
     """
     執行引擎 - 核心執行組件
-
+    
     將「知道如何做」轉換為「能夠實際做」
-
+    
     核心原則：
     1. 知識 ≠ 能力：有知識不代表能執行
     2. 理論 ≠ 實踐：需要實際的連接器和執行器
@@ -184,18 +182,18 @@ class ExecutionEngine:
         self,
         action_type: ActionType,
         action_params: dict[str, Any],
-        context: ExecutionContext | None = None,
+        context: ExecutionContext | None = None
     ) -> ExecutionResult:
         """
         執行行動 - 核心執行方法
-
+        
         這是將「知道」轉換為「能做」的關鍵
-
+        
         Args:
             action_type: 行動類型
             action_params: 行動參數
             context: 執行上下文
-
+            
         Returns:
             ExecutionResult: 執行結果
         """
@@ -222,9 +220,7 @@ class ExecutionEngine:
 
             # 階段 2：執行前置處理
             for pre_processor in self._pre_processors:
-                await self._safe_call(
-                    pre_processor, action_type, action_params, context
-                )
+                await self._safe_call(pre_processor, action_type, action_params, context)
 
             # 階段 3：構建執行計劃
             result.status = ExecutionStatus.PLANNING
@@ -273,7 +269,9 @@ class ExecutionEngine:
 
             # 階段 6：執行後置處理
             for post_processor in self._post_processors:
-                await self._safe_call(post_processor, action_type, result, context)
+                await self._safe_call(
+                    post_processor, action_type, result, context
+                )
 
         except Exception as e:
             result.status = ExecutionStatus.FAILED
@@ -307,7 +305,7 @@ class ExecutionEngine:
         self,
         action_type: ActionType,
         action_params: dict[str, Any],
-        context: ExecutionContext,
+        context: ExecutionContext
     ) -> bool:
         """驗證執行能力 - 確保我們真的能執行這個行動"""
 
@@ -316,9 +314,7 @@ class ExecutionEngine:
             raise ValueError(f"No executor registered for action type: {action_type}")
 
         # 檢查權限
-        required_permissions = self._get_required_permissions(
-            action_type, action_params
-        )
+        required_permissions = self._get_required_permissions(action_type, action_params)
         for perm in required_permissions:
             if perm not in context.permissions:
                 raise PermissionError(f"Missing required permission: {perm}")
@@ -342,7 +338,7 @@ class ExecutionEngine:
         self,
         action_type: ActionType,
         action_params: dict[str, Any],
-        context: ExecutionContext,
+        context: ExecutionContext
     ) -> dict[str, Any]:
         """構建執行計劃"""
 
@@ -383,44 +379,36 @@ class ExecutionEngine:
         steps = []
 
         # 連接步驟
-        steps.append(
-            {
-                "name": "connect",
-                "description": "建立數據庫連接",
-                "params": {"database": params.get("database", "default")},
-            }
-        )
+        steps.append({
+            "name": "connect",
+            "description": "建立數據庫連接",
+            "params": {"database": params.get("database", "default")},
+        })
 
         # 備份步驟（對於修改操作）
         if operation in ["insert", "update", "delete", "alter"]:
-            steps.append(
-                {
-                    "name": "backup",
-                    "description": "創建數據備份",
-                    "params": {"table": params.get("table")},
-                }
-            )
+            steps.append({
+                "name": "backup",
+                "description": "創建數據備份",
+                "params": {"table": params.get("table")},
+            })
 
         # 執行步驟
-        steps.append(
-            {
-                "name": "execute_sql",
-                "description": f"執行 {operation} 操作",
-                "params": {
-                    "sql": params.get("sql"),
-                    "operation": operation,
-                },
-            }
-        )
+        steps.append({
+            "name": "execute_sql",
+            "description": f"執行 {operation} 操作",
+            "params": {
+                "sql": params.get("sql"),
+                "operation": operation,
+            },
+        })
 
         # 驗證步驟
-        steps.append(
-            {
-                "name": "verify",
-                "description": "驗證操作結果",
-                "params": {"expected": params.get("expected_result")},
-            }
-        )
+        steps.append({
+            "name": "verify",
+            "description": "驗證操作結果",
+            "params": {"expected": params.get("expected_result")},
+        })
 
         return steps
 
@@ -430,52 +418,42 @@ class ExecutionEngine:
         steps = []
 
         # 準備步驟
-        steps.append(
-            {
-                "name": "prepare",
-                "description": "準備部署環境",
-                "params": {"environment": params.get("environment", "staging")},
-            }
-        )
+        steps.append({
+            "name": "prepare",
+            "description": "準備部署環境",
+            "params": {"environment": params.get("environment", "staging")},
+        })
 
         # 構建步驟
-        steps.append(
-            {
-                "name": "build",
-                "description": "構建應用程序",
-                "params": {"version": params.get("version")},
-            }
-        )
+        steps.append({
+            "name": "build",
+            "description": "構建應用程序",
+            "params": {"version": params.get("version")},
+        })
 
         # 測試步驟
-        steps.append(
-            {
-                "name": "test",
-                "description": "執行部署前測試",
-                "params": {"test_suite": params.get("test_suite", "smoke")},
-            }
-        )
+        steps.append({
+            "name": "test",
+            "description": "執行部署前測試",
+            "params": {"test_suite": params.get("test_suite", "smoke")},
+        })
 
         # 部署步驟
-        steps.append(
-            {
-                "name": "deploy",
-                "description": f"使用 {strategy} 策略部署",
-                "params": {
-                    "strategy": strategy,
-                    "replicas": params.get("replicas", 1),
-                },
-            }
-        )
+        steps.append({
+            "name": "deploy",
+            "description": f"使用 {strategy} 策略部署",
+            "params": {
+                "strategy": strategy,
+                "replicas": params.get("replicas", 1),
+            },
+        })
 
         # 健康檢查步驟
-        steps.append(
-            {
-                "name": "health_check",
-                "description": "執行健康檢查",
-                "params": {"timeout": params.get("health_check_timeout", 60)},
-            }
-        )
+        steps.append({
+            "name": "health_check",
+            "description": "執行健康檢查",
+            "params": {"timeout": params.get("health_check_timeout", 60)},
+        })
 
         return steps
 
@@ -485,32 +463,26 @@ class ExecutionEngine:
         steps = []
 
         # 檢查步驟
-        steps.append(
-            {
-                "name": "check_path",
-                "description": "檢查路徑存在性和權限",
-                "params": {"path": params.get("path")},
-            }
-        )
+        steps.append({
+            "name": "check_path",
+            "description": "檢查路徑存在性和權限",
+            "params": {"path": params.get("path")},
+        })
 
         # 備份步驟（對於修改操作）
         if operation in ["write", "delete", "move"]:
-            steps.append(
-                {
-                    "name": "backup",
-                    "description": "創建文件備份",
-                    "params": {"path": params.get("path")},
-                }
-            )
+            steps.append({
+                "name": "backup",
+                "description": "創建文件備份",
+                "params": {"path": params.get("path")},
+            })
 
         # 執行步驟
-        steps.append(
-            {
-                "name": f"execute_{operation}",
-                "description": f"執行 {operation} 操作",
-                "params": params,
-            }
-        )
+        steps.append({
+            "name": f"execute_{operation}",
+            "description": f"執行 {operation} 操作",
+            "params": params,
+        })
 
         return steps
 
@@ -573,31 +545,25 @@ class ExecutionEngine:
         steps = []
 
         # 驗證授權
-        steps.append(
-            {
-                "name": "verify_authorization",
-                "description": "驗證安全操作授權",
-                "params": {"required_level": params.get("security_level", "standard")},
-            }
-        )
+        steps.append({
+            "name": "verify_authorization",
+            "description": "驗證安全操作授權",
+            "params": {"required_level": params.get("security_level", "standard")},
+        })
 
         # 審計記錄
-        steps.append(
-            {
-                "name": "create_audit_log",
-                "description": "創建審計記錄",
-                "params": {"operation": operation},
-            }
-        )
+        steps.append({
+            "name": "create_audit_log",
+            "description": "創建審計記錄",
+            "params": {"operation": operation},
+        })
 
         # 執行操作
-        steps.append(
-            {
-                "name": f"execute_{operation}",
-                "description": f"執行安全操作: {operation}",
-                "params": params,
-            }
-        )
+        steps.append({
+            "name": f"execute_{operation}",
+            "description": f"執行安全操作: {operation}",
+            "params": params,
+        })
 
         return steps
 
@@ -606,7 +572,7 @@ class ExecutionEngine:
         action_type: ActionType,
         action_params: dict[str, Any],
         context: ExecutionContext,
-        execution_plan: dict[str, Any],
+        execution_plan: dict[str, Any]
     ) -> Any:
         """執行實際行動"""
 
@@ -620,7 +586,7 @@ class ExecutionEngine:
         self,
         action_type: ActionType,
         action_params: dict[str, Any],
-        execution_plan: dict[str, Any],
+        execution_plan: dict[str, Any]
     ) -> dict[str, Any]:
         """模擬執行（Dry Run）"""
 
@@ -637,7 +603,7 @@ class ExecutionEngine:
         action_type: ActionType,
         action_params: dict[str, Any],
         output: Any,
-        context: ExecutionContext,
+        context: ExecutionContext
     ) -> dict[str, Any]:
         """驗證執行結果"""
 
@@ -649,45 +615,37 @@ class ExecutionEngine:
 
         # 基本輸出檢查
         if output is None:
-            verification["checks"].append(
-                {
-                    "name": "output_exists",
-                    "passed": False,
-                    "message": "No output produced",
-                }
-            )
+            verification["checks"].append({
+                "name": "output_exists",
+                "passed": False,
+                "message": "No output produced",
+            })
             verification["passed"] = False
         else:
-            verification["checks"].append(
-                {
-                    "name": "output_exists",
-                    "passed": True,
-                    "message": "Output produced successfully",
-                }
-            )
+            verification["checks"].append({
+                "name": "output_exists",
+                "passed": True,
+                "message": "Output produced successfully",
+            })
 
         # 檢查是否有錯誤
         if isinstance(output, dict):
             if output.get("error"):
-                verification["checks"].append(
-                    {
-                        "name": "no_errors",
-                        "passed": False,
-                        "message": f"Error in output: {output.get('error')}",
-                    }
-                )
+                verification["checks"].append({
+                    "name": "no_errors",
+                    "passed": False,
+                    "message": f"Error in output: {output.get('error')}",
+                })
                 verification["passed"] = False
 
             # Dry run 總是通過
             if output.get("simulated"):
                 verification["passed"] = True
-                verification["checks"].append(
-                    {
-                        "name": "dry_run",
-                        "passed": True,
-                        "message": "Dry run simulation completed",
-                    }
-                )
+                verification["checks"].append({
+                    "name": "dry_run",
+                    "passed": True,
+                    "message": "Dry run simulation completed",
+                })
 
         return verification
 
@@ -696,7 +654,7 @@ class ExecutionEngine:
         action_type: ActionType,
         action_params: dict[str, Any],
         context: ExecutionContext,
-        execution_plan: dict[str, Any],
+        execution_plan: dict[str, Any]
     ) -> dict[str, Any]:
         """執行回滾"""
 
@@ -714,26 +672,28 @@ class ExecutionEngine:
                 await self._execute_rollback_step(step, context)
                 rollback_result["steps_rolled_back"] += 1
             except Exception as e:
-                rollback_result["errors"].append(
-                    {
-                        "step": step.get("name"),
-                        "error": str(e),
-                    }
-                )
+                rollback_result["errors"].append({
+                    "step": step.get("name"),
+                    "error": str(e),
+                })
 
         rollback_result["success"] = len(rollback_result["errors"]) == 0
 
         return rollback_result
 
     async def _execute_rollback_step(
-        self, step: dict[str, Any], context: ExecutionContext
+        self,
+        step: dict[str, Any],
+        context: ExecutionContext
     ):
         """執行單個回滾步驟"""
         # 模擬回滾執行
         await asyncio.sleep(0.01)
 
     def _get_required_permissions(
-        self, action_type: ActionType, action_params: dict[str, Any]
+        self,
+        action_type: ActionType,
+        action_params: dict[str, Any]
     ) -> list[str]:
         """獲取所需權限"""
 
@@ -751,7 +711,9 @@ class ExecutionEngine:
         return permission_map.get(action_type, [])
 
     def _get_required_connectors(
-        self, action_type: ActionType, action_params: dict[str, Any]
+        self,
+        action_type: ActionType,
+        action_params: dict[str, Any]
     ) -> list[str]:
         """獲取所需連接器"""
 
@@ -776,8 +738,8 @@ class ExecutionEngine:
         total = self._stats["total_executions"]
         current_avg = self._stats["average_duration_ms"]
         self._stats["average_duration_ms"] = (
-            current_avg * (total - 1) + result.duration_ms
-        ) / total
+            (current_avg * (total - 1) + result.duration_ms) / total
+        )
 
     async def _safe_call(self, func: Callable, *args, **kwargs) -> Any:
         """安全調用函數"""
@@ -792,7 +754,10 @@ class ExecutionEngine:
     # ============ 默認執行器實現 ============
 
     async def _execute_database_action(
-        self, params: dict[str, Any], context: ExecutionContext, plan: dict[str, Any]
+        self,
+        params: dict[str, Any],
+        context: ExecutionContext,
+        plan: dict[str, Any]
     ) -> dict[str, Any]:
         """數據庫行動執行器"""
 
@@ -809,7 +774,10 @@ class ExecutionEngine:
         }
 
     async def _execute_deployment_action(
-        self, params: dict[str, Any], context: ExecutionContext, plan: dict[str, Any]
+        self,
+        params: dict[str, Any],
+        context: ExecutionContext,
+        plan: dict[str, Any]
     ) -> dict[str, Any]:
         """部署行動執行器"""
 
@@ -825,7 +793,10 @@ class ExecutionEngine:
         }
 
     async def _execute_filesystem_action(
-        self, params: dict[str, Any], context: ExecutionContext, plan: dict[str, Any]
+        self,
+        params: dict[str, Any],
+        context: ExecutionContext,
+        plan: dict[str, Any]
     ) -> dict[str, Any]:
         """文件系統行動執行器"""
 
@@ -840,7 +811,10 @@ class ExecutionEngine:
         }
 
     async def _execute_network_action(
-        self, params: dict[str, Any], context: ExecutionContext, plan: dict[str, Any]
+        self,
+        params: dict[str, Any],
+        context: ExecutionContext,
+        plan: dict[str, Any]
     ) -> dict[str, Any]:
         """網絡行動執行器"""
 
@@ -853,7 +827,10 @@ class ExecutionEngine:
         }
 
     async def _execute_api_action(
-        self, params: dict[str, Any], context: ExecutionContext, plan: dict[str, Any]
+        self,
+        params: dict[str, Any],
+        context: ExecutionContext,
+        plan: dict[str, Any]
     ) -> dict[str, Any]:
         """API 調用行動執行器"""
 
@@ -867,7 +844,10 @@ class ExecutionEngine:
         }
 
     async def _execute_config_action(
-        self, params: dict[str, Any], context: ExecutionContext, plan: dict[str, Any]
+        self,
+        params: dict[str, Any],
+        context: ExecutionContext,
+        plan: dict[str, Any]
     ) -> dict[str, Any]:
         """配置行動執行器"""
 
@@ -880,7 +860,10 @@ class ExecutionEngine:
         }
 
     async def _execute_security_action(
-        self, params: dict[str, Any], context: ExecutionContext, plan: dict[str, Any]
+        self,
+        params: dict[str, Any],
+        context: ExecutionContext,
+        plan: dict[str, Any]
     ) -> dict[str, Any]:
         """安全行動執行器"""
 
@@ -895,7 +878,10 @@ class ExecutionEngine:
         }
 
     async def _execute_monitoring_action(
-        self, params: dict[str, Any], context: ExecutionContext, plan: dict[str, Any]
+        self,
+        params: dict[str, Any],
+        context: ExecutionContext,
+        plan: dict[str, Any]
     ) -> dict[str, Any]:
         """監控行動執行器"""
 
@@ -908,7 +894,11 @@ class ExecutionEngine:
 
     # ============ 公開 API ============
 
-    def register_executor(self, action_type: ActionType, executor: Callable):
+    def register_executor(
+        self,
+        action_type: ActionType,
+        executor: Callable
+    ):
         """註冊自定義執行器"""
         self._executors[action_type] = executor
 
@@ -917,7 +907,9 @@ class ExecutionEngine:
         self._connectors[name] = connector
 
     def register_capability_validator(
-        self, action_type: ActionType, validator: Callable
+        self,
+        action_type: ActionType,
+        validator: Callable
     ):
         """註冊能力驗證器"""
         self._capability_validators[action_type] = validator
@@ -934,6 +926,9 @@ class ExecutionEngine:
         """獲取執行統計"""
         return self._stats.copy()
 
-    def get_execution_history(self, limit: int = 100) -> list[ExecutionResult]:
+    def get_execution_history(
+        self,
+        limit: int = 100
+    ) -> list[ExecutionResult]:
         """獲取執行歷史"""
         return self._execution_history[-limit:]

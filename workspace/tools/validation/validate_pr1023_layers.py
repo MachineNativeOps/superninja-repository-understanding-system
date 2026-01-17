@@ -21,6 +21,7 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Iterable, List
 
+
 REPO_ROOT = Path(__file__).resolve().parents[2]
 
 
@@ -34,7 +35,9 @@ class Check:
     def run(self) -> dict:
         matches: List[str] = []
         for pattern in self.patterns:
-            matches.extend(str(p) for p in REPO_ROOT.glob(pattern) if p.exists())
+            matches.extend(
+                str(p) for p in REPO_ROOT.glob(pattern) if p.exists()
+            )
         return {
             "name": self.name,
             "patterns": self.patterns,
@@ -111,11 +114,7 @@ def main() -> int:
     all_passed = all(r["passed"] for r in results)
 
     if args.json_output:
-        print(
-            json.dumps(
-                {"passed": all_passed, "results": results}, indent=2, ensure_ascii=False
-            )
-        )
+        print(json.dumps({"passed": all_passed, "results": results}, indent=2, ensure_ascii=False))
     else:
         for result in results:
             status = "PASS" if result["passed"] else "FAIL"

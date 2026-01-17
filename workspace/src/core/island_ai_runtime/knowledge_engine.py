@@ -90,9 +90,7 @@ class RepoGraph:
         """獲取節點"""
         return self.nodes.get(node_id)
 
-    def get_neighbors(
-        self, node_id: str, edge_type: EdgeType | None = None
-    ) -> list[GraphNode]:
+    def get_neighbors(self, node_id: str, edge_type: EdgeType | None = None) -> list[GraphNode]:
         """獲取鄰居節點"""
         neighbors = []
         for edge in self.edges:
@@ -111,11 +109,7 @@ class RepoGraph:
                 for n in self.nodes.values()
             ],
             "edges": [
-                {
-                    "source": e.source_id,
-                    "target": e.target_id,
-                    "type": e.edge_type.value,
-                }
+                {"source": e.source_id, "target": e.target_id, "type": e.edge_type.value}
                 for e in self.edges
             ],
         }
@@ -173,9 +167,7 @@ class VectorStore:
         self.vectors: dict[str, list[float]] = {}
         self.metadata: dict[str, dict[str, Any]] = {}
 
-    def upsert(
-        self, id: str, vector: list[float], metadata: dict[str, Any] | None = None
-    ) -> None:
+    def upsert(self, id: str, vector: list[float], metadata: dict[str, Any] | None = None) -> None:
         """插入或更新向量"""
         self.vectors[id] = vector
         self.metadata[id] = metadata or {}
@@ -185,9 +177,7 @@ class VectorStore:
         self.vectors.pop(id, None)
         self.metadata.pop(id, None)
 
-    def search(
-        self, query_vector: list[float], top_k: int = 10
-    ) -> list[tuple[str, float]]:
+    def search(self, query_vector: list[float], top_k: int = 10) -> list[tuple[str, float]]:
         """搜索最相似的向量"""
         scores = []
         for id, vector in self.vectors.items():
@@ -276,9 +266,7 @@ class KnowledgeEngine:
             if node:
                 search_results.append(
                     SearchResult(
-                        node=node,
-                        score=score,
-                        context=node.content[:500] if node.content else "",
+                        node=node, score=score, context=node.content[:500] if node.content else ""
                     )
                 )
 
@@ -307,11 +295,7 @@ class KnowledgeEngine:
         # 獲取鄰居
         for neighbor in self.repo_graph.get_neighbors(node_id):
             context["neighbors"].append(
-                {
-                    "id": neighbor.id,
-                    "name": neighbor.name,
-                    "type": neighbor.node_type.value,
-                }
+                {"id": neighbor.id, "name": neighbor.name, "type": neighbor.node_type.value}
             )
 
         return context
@@ -319,4 +303,4 @@ class KnowledgeEngine:
     @staticmethod
     def _generate_id(path: str) -> str:
         """生成節點 ID"""
-        return hashlib.sha256(path.encode()).hexdigest()
+        return hashlib.md5(path.encode()).hexdigest()

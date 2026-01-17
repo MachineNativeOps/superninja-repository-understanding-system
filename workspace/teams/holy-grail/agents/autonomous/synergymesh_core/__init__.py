@@ -18,16 +18,15 @@ Phase 2 - Advanced Interaction & Orchestration:
 設計哲學: 讓程式服務於人類，而非人類服務於程式
 """
 
-from .autonomous_coordinator import AutonomousCoordinator
-from .ecosystem_orchestrator import EcosystemOrchestrator
-
 # Phase 1: Core Components
 from .natural_language_processor import NaturalLanguageProcessor
+from .autonomous_coordinator import AutonomousCoordinator
+from .self_evolution_engine import SelfEvolutionEngine
+from .ecosystem_orchestrator import EcosystemOrchestrator
 
 # Phase 2: Advanced Interaction & Orchestration
 from .nli_layer import NaturalLanguageInteractionLayer
 from .orchestration_layer import IntentUnderstandingEngine, TaskOrchestrationEngine
-from .self_evolution_engine import SelfEvolutionEngine
 
 __all__ = [
     # Phase 1

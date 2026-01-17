@@ -17,13 +17,13 @@ import asyncio
 import logging
 import sys
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Dict, Any, Optional, List
 
-from coordinator import EngineCoordinator
 from governance_automation_launcher import (
-    GovernanceAutomationEngine,
     GovernanceAutomationLauncher,
+    GovernanceAutomationEngine,
 )
+from coordinator import EngineCoordinator
 
 
 class IntegratedGovernanceAutomationLauncher:
@@ -68,7 +68,7 @@ class IntegratedGovernanceAutomationLauncher:
         if not logger.handlers:
             handler = logging.StreamHandler(sys.stdout)
             formatter = logging.Formatter(
-                "%(asctime)s - [INTEGRATED] %(levelname)s - %(message)s"
+                '%(asctime)s - [INTEGRATED] %(levelname)s - %(message)s'
             )
             handler.setFormatter(formatter)
             logger.addHandler(handler)
@@ -82,9 +82,7 @@ class IntegratedGovernanceAutomationLauncher:
         self.logger.info("=" * 80)
 
         # Step 1: Initialize main launcher
-        self.logger.info(
-            "\n📍 Step 1: Initializing Main Governance Automation Launcher..."
-        )
+        self.logger.info("\n📍 Step 1: Initializing Main Governance Automation Launcher...")
         self.main_launcher = GovernanceAutomationLauncher(self.governance_root)
         if not await self.main_launcher.initialize_engines():
             self.logger.error("Failed to initialize main launcher")
@@ -127,9 +125,7 @@ class IntegratedGovernanceAutomationLauncher:
         # Register handlers for coordinator messages
         async def handle_metrics_request(message):
             """Handle metrics request from engines."""
-            metrics = (
-                self.main_launcher.get_metrics_report() if self.main_launcher else {}
-            )
+            metrics = self.main_launcher.get_metrics_report() if self.main_launcher else {}
             return metrics
 
         async def handle_task_submission(message):
@@ -137,12 +133,8 @@ class IntegratedGovernanceAutomationLauncher:
             self.logger.info(f"Task submitted: {message.payload}")
             return {"status": "accepted"}
 
-        self.coordinator.register_message_handler(
-            "metrics_request", handle_metrics_request
-        )
-        self.coordinator.register_message_handler(
-            "task_submission", handle_task_submission
-        )
+        self.coordinator.register_message_handler("metrics_request", handle_metrics_request)
+        self.coordinator.register_message_handler("task_submission", handle_task_submission)
 
         self.logger.info("Communication channels configured")
 
@@ -176,7 +168,6 @@ class IntegratedGovernanceAutomationLauncher:
         self.logger.info("🎯 Starting Integrated Automation System")
 
         import time
-
         start_time = time.time()
         iteration = 0
 
@@ -221,15 +212,9 @@ class IntegratedGovernanceAutomationLauncher:
         print("=" * 100)
 
         print("\n📊 Integration Status:")
-        print(
-            f"  Main Launcher:       {'✅ Ready' if self.integration_status['main_launcher'] else '❌ Not Ready'}"
-        )
-        print(
-            f"  Coordinator:         {'✅ Ready' if self.integration_status['coordinator'] else '❌ Not Ready'}"
-        )
-        print(
-            f"  Existing Launchers:  {'✅ Integrated' if self.integration_status['existing_launchers'] else '⚠️  Optional'}"
-        )
+        print(f"  Main Launcher:       {'✅ Ready' if self.integration_status['main_launcher'] else '❌ Not Ready'}")
+        print(f"  Coordinator:         {'✅ Ready' if self.integration_status['coordinator'] else '❌ Not Ready'}")
+        print(f"  Existing Launchers:  {'✅ Integrated' if self.integration_status['existing_launchers'] else '⚠️  Optional'}")
 
         if self.main_launcher:
             main_report = self.main_launcher.get_metrics_report()
@@ -263,10 +248,12 @@ class IntegratedGovernanceAutomationLauncher:
             "timestamp": asyncio.get_event_loop().time(),
             "integration_status": self.integration_status,
             "main_launcher": (
-                self.main_launcher.get_metrics_report() if self.main_launcher else None
+                self.main_launcher.get_metrics_report()
+                if self.main_launcher else None
             ),
             "coordinator": (
-                self.coordinator.get_coordinator_status() if self.coordinator else None
+                self.coordinator.get_coordinator_status()
+                if self.coordinator else None
             ),
             "existing_launchers": self.existing_launchers,
         }
@@ -286,7 +273,6 @@ async def main():
     except Exception as e:
         print(f"❌ Error: {e}")
         import traceback
-
         traceback.print_exc()
         return 1
 

@@ -25,7 +25,6 @@ logger = logging.getLogger(__name__)
 
 class CheckRunStatus(Enum):
     """Check run status values"""
-
     QUEUED = "queued"
     IN_PROGRESS = "in_progress"
     COMPLETED = "completed"
@@ -33,7 +32,6 @@ class CheckRunStatus(Enum):
 
 class CheckRunConclusion(Enum):
     """Check run conclusion values (when completed)"""
-
     SUCCESS = "success"
     FAILURE = "failure"
     NEUTRAL = "neutral"
@@ -45,7 +43,6 @@ class CheckRunConclusion(Enum):
 
 class CommitStatus(Enum):
     """Commit status values"""
-
     PENDING = "pending"
     SUCCESS = "success"
     FAILURE = "failure"
@@ -55,19 +52,16 @@ class CommitStatus(Enum):
 @dataclass
 class CheckRunOutput:
     """Check run output annotation"""
-
     title: str = ""
     summary: str = ""
     text: str = ""
     annotations: list[dict[str, Any]] = field(default_factory=list)
-    # Each annotation: {path, start_line, end_line, annotation_level, message,
-    # title}
+    # Each annotation: {path, start_line, end_line, annotation_level, message, title}
 
 
 @dataclass
 class CheckRunResult:
     """Result of creating/updating a check run"""
-
     check_run_id: int = 0
     url: str = ""
     status: CheckRunStatus = CheckRunStatus.QUEUED
@@ -79,7 +73,6 @@ class CheckRunResult:
 @dataclass
 class StatusResult:
     """Result of creating a commit status"""
-
     status_id: int = 0
     url: str = ""
     state: CommitStatus = CommitStatus.PENDING
@@ -88,7 +81,6 @@ class StatusResult:
 @dataclass
 class CommentResult:
     """Result of creating a comment"""
-
     comment_id: int = 0
     url: str = ""
 
@@ -101,20 +93,23 @@ class HTTPClient(Protocol):
         url: str,
         data: dict[str, Any] = None,
         headers: dict[str, str] = None,
-    ) -> dict[str, Any]: ...
+    ) -> dict[str, Any]:
+        ...
 
     async def patch(
         self,
         url: str,
         data: dict[str, Any] = None,
         headers: dict[str, str] = None,
-    ) -> dict[str, Any]: ...
+    ) -> dict[str, Any]:
+        ...
 
 
 class TokenProvider(Protocol):
     """Interface for getting installation tokens"""
 
-    async def get_token(self, org_id: UUID, installation_id: str) -> str: ...
+    async def get_token(self, org_id: UUID, installation_id: str) -> str:
+        ...
 
 
 @dataclass
@@ -200,8 +195,7 @@ class CheckRunWriter:
             if output.text:
                 payload["output"]["text"] = output.text
             if output.annotations:
-                # Max 50 per request
-                payload["output"]["annotations"] = output.annotations[:50]
+                payload["output"]["annotations"] = output.annotations[:50]  # Max 50 per request
 
         # Create check run with retries
         response = await self._request_with_retry(
@@ -223,9 +217,7 @@ class CheckRunWriter:
             check_run_id=check_run_id,
             url=response.get("html_url", ""),
             status=status,
-            started_at=(
-                datetime.utcnow() if status == CheckRunStatus.IN_PROGRESS else None
-            ),
+            started_at=datetime.utcnow() if status == CheckRunStatus.IN_PROGRESS else None,
         )
 
     async def update_check_run(
@@ -341,7 +333,7 @@ class CheckRunWriter:
         batch_size = 50
 
         for i in range(0, len(annotations), batch_size):
-            batch = annotations[i: i + batch_size]
+            batch = annotations[i:i + batch_size]
 
             output = CheckRunOutput(
                 title=output_title,
@@ -375,19 +367,15 @@ class CheckRunWriter:
         for attempt in range(self.max_retries):
             try:
                 if method == "post":
-                    return await self.http_client.post(
-                        url, data=payload, headers=headers
-                    )
+                    return await self.http_client.post(url, data=payload, headers=headers)
                 elif method == "patch":
-                    return await self.http_client.patch(
-                        url, data=payload, headers=headers
-                    )
+                    return await self.http_client.patch(url, data=payload, headers=headers)
                 else:
                     raise ValueError(f"Unsupported method: {method}")
 
             except Exception as e:
                 last_error = e
-                delay = min(self.base_delay * (2**attempt), self.max_delay)
+                delay = min(self.base_delay * (2 ** attempt), self.max_delay)
 
                 logger.warning(
                     f"Request failed (attempt {attempt + 1}/{self.max_retries}): "
@@ -541,9 +529,7 @@ class CommentWriter:
                 headers=headers,
             )
 
-            logger.info(
-                f"Comment updated: repo={repo_full_name} pr={pr_number} id={existing_id}"
-            )
+            logger.info(f"Comment updated: repo={repo_full_name} pr={pr_number} id={existing_id}")
 
             return CommentResult(
                 comment_id=existing_id,
@@ -598,7 +584,6 @@ class CommentWriter:
 # ------------------------------------------------------------------
 # Gate Result Write-back Helper
 # ------------------------------------------------------------------
-
 
 @dataclass
 class GateWriteback:
